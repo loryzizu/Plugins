@@ -63,7 +63,7 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
         topLineLayout.setSizeUndefined();
         topLineLayout.setSpacing(true);
 
-        Button btnAddQuery = new Button();
+        Button btnAddQuery  = new Button();
         btnAddQuery.setCaption("Add query tab");
         btnAddQuery.setSizeUndefined();
         btnAddQuery.addClickListener(new Button.ClickListener() {
