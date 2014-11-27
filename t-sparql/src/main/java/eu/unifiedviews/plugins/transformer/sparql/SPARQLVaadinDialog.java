@@ -10,6 +10,7 @@ import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -36,9 +37,9 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
         UPDATE
     };
 
-    private Accordion accordion;
+    private TabSheet tabsheet;
 
-    private Button btnDelete;
+  
 
     private final LinkedList<TextArea> queries = new LinkedList<>();
 
@@ -63,7 +64,7 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
         topLineLayout.setSizeUndefined();
         topLineLayout.setSpacing(true);
 
-        Button btnAddQuery  = new Button();
+        Button btnAddQuery = new Button();
         btnAddQuery.setCaption("Add query tab");
         btnAddQuery.setSizeUndefined();
         btnAddQuery.addClickListener(new Button.ClickListener() {
@@ -75,38 +76,14 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
         });
         topLineLayout.addComponent(btnAddQuery);
 
-        btnDelete = new Button("Delete current");
-        btnDelete.setEnabled(false);
-        btnDelete.setSizeUndefined();
-        btnDelete.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                if (accordion.getSelectedTab() == null) {
-                    return;
-                }
-
-                final Tab tab = accordion.getTab(accordion.getSelectedTab());
-                final int index = accordion.getTabPosition(tab);
-
-                TextArea txtQuery = queries.get(index);
-                queries.remove(txtQuery);
-                queryTypes.remove(txtQuery);
-                accordion.removeTab(tab);
-
-                btnDelete.setEnabled(!queries.isEmpty());
-            }
-        });
-
-        topLineLayout.addComponent(btnDelete);
-
+        
         mainLayout.addComponent(topLineLayout);
         mainLayout.setExpandRatio(topLineLayout, 0);
 
-        accordion = new Accordion();
-        accordion.setSizeFull();
-        mainLayout.addComponent(accordion);
-        mainLayout.setExpandRatio(accordion, 1);
+        tabsheet = new TabSheet();
+        tabsheet.setSizeFull();
+        mainLayout.addComponent(tabsheet);
+        mainLayout.setExpandRatio(tabsheet, 1);
 
         mainLayout.addComponent(new TextField(OUTPUT_GRAPH_SYMBOLIC_NAME, outputGraphSymbolicName));
         CheckBox rewriteConstructToInsertCheckbox = new CheckBox(REWRITE_CONSTRUCT_TO_INSERT_LABEL, true);
@@ -132,8 +109,9 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
         this.queries.add(txtQuery);
         this.queryTypes.put(txtQuery, QueryType.INVALID);
 
-        final Tab tab = this.accordion.addTab(subLayout, "Query");
-
+        final Tab tab = this.tabsheet.addTab(subLayout, "Query");
+        this.tabsheet.getTab(subLayout).setClosable(true);
+        
         txtQuery.addValidator(new Validator() {
 
             @Override
@@ -174,7 +152,7 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
             }
         });
 
-        accordion.setSelectedTab(tab);
+        tabsheet.setSelectedTab(tab);
     }
 
     /**
@@ -192,14 +170,13 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
     public void setConfiguration(SPARQLConfig_V1 conf) throws DPUConfigException {
         queries.clear();
         queryTypes.clear();
-        accordion.removeAllComponents();
+        tabsheet.removeAllComponents();
 
         for (SPARQLQueryPair pair : conf.getQueryPairs()) {
             addGraph(pair.getSPARQLQuery());
         }
 
-        btnDelete.setEnabled(!conf.getQueryPairs().isEmpty());
-        outputGraphSymbolicName.setValue(conf.getOutputGraphSymbolicName());
+                outputGraphSymbolicName.setValue(conf.getOutputGraphSymbolicName());
     }
 
     /**
