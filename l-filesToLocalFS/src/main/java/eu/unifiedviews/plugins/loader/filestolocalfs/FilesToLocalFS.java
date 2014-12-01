@@ -13,6 +13,8 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.nio.file.ExtendedCopyOption;
+
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
@@ -65,6 +67,7 @@ public class FilesToLocalFS extends
         ArrayList<CopyOption> copyOptions = new ArrayList<>(1);
         if (config.isReplaceExisting()) {
             copyOptions.add(StandardCopyOption.REPLACE_EXISTING);
+            copyOptions.add(ExtendedCopyOption.INTERRUPTIBLE);
         }
         CopyOption[] copyOptionsArray = copyOptions.toArray(new CopyOption[copyOptions.size()]);
 
