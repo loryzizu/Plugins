@@ -139,7 +139,7 @@ public class FilesToLocalFS extends
                             filesOutput.getMetadataWriteGraphname());
 
                     outputMetadataConnection.add(valueFactory.createStatement(
-                            distributionRoot, DCAT.DOWNLOAD_URL, valueFactory.createURI(outputFile.toURI().toASCIIString())),
+                            distributionRoot, DCAT.ACCESS_URL, valueFactory.createURI(outputFile.toURI().toASCIIString())),
                             filesOutput.getMetadataWriteGraphname());
 
                     if (dpuContext.isDebugging()) {

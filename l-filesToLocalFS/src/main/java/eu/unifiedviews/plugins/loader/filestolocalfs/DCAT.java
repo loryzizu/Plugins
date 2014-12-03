@@ -28,9 +28,13 @@ public class DCAT {
     /** http://www.w3.org/ns/dcat#downloadURL */
     public final static URI DOWNLOAD_URL;
 
+    /** http://www.w3.org/ns/dcat#accessURL */
+    public final static URI ACCESS_URL;
+
     static {
         ValueFactory factory = ValueFactoryImpl.getInstance();
         DISTRIBUTION = factory.createURI(RDF.NAMESPACE, "Distribution");
         DOWNLOAD_URL = factory.createURI(RDF.NAMESPACE, "downloadURL");
+        ACCESS_URL = factory.createURI(RDF.NAMESPACE, "accessURL");
     }
 }
