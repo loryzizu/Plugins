@@ -94,7 +94,7 @@ public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialo
         MapHelper mapHelper = MapHelpers.create(filesInput);
         VirtualPathHelper inputVirtualPathHelper = VirtualPathHelpers.create(filesInput);
         VirtualPathHelper outputVirtualPathHelper = VirtualPathHelpers.create(filesOutput);
-        String xsltParametersMapName = config.getXlstParametersMapName();
+        String xsltParametersMapName = config.getXsltParametersMapName();
         try {
             while (shouldContinue && filesIteration.hasNext()) {
                 FilesDataUnit.Entry entry;
@@ -128,8 +128,10 @@ public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialo
 //                    XdmNode source = builder.build(new StreamSource(entry.getFilesystemURI().toASCIIString()));
 //                    trans.setInitialContextNode(source);
                     XsltTransformer trans = exp.load();
+                    LOG.debug("XSLT map name: {} for symbolic name: {}", xsltParametersMapName, inSymbolicName);
                     Map<String, String> xsltParameters = mapHelper.getMap(inSymbolicName, xsltParametersMapName);
                     if (xsltParameters != null) {
+                        LOG.debug("XSLT params size: {}", xsltParameters.keySet().size());
                         for (String key : xsltParameters.keySet()) {
                             trans.setParameter(new QName(key), new XdmAtomicValue(xsltParameters.get(key)));
                         }
