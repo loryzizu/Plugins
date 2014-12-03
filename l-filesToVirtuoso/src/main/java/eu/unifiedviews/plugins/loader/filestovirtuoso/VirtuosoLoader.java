@@ -7,11 +7,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.openrdf.model.BNode;
+import org.openrdf.model.Resource;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.model.vocabulary.DCTERMS;
+import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.Update;
@@ -24,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
@@ -36,6 +43,8 @@ import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
 public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> implements ConfigDialogProvider<VirtuosoLoaderConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(VirtuosoLoader.class);
+
+    public static final String PREDICATE_HAS_DISTRIBUTION = "http://comsode.eu/hasDistribution";
 
     @DataUnit.AsOutput(name = "rdfOutput")
     public WritableRDFDataUnit rdfOutput;
@@ -128,6 +137,7 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
         Connection connection = null;
         boolean started = false;
         ExecutorService executor = null;
+        RepositoryConnection outputMetadataConnection = null;
         try {
             connection = DriverManager.getConnection(config.getVirtuosoUrl(), config.getUsername(), config.getPassword());
             Statement statementNow = connection.createStatement();
@@ -224,10 +234,33 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
             resultSetErrorRows.close();
             statementsErrorRows.close();
 
-            rdfOutput.addExistingDataGraph(config.getTargetContext(), new URIImpl(config.getTargetContext()));
+            outputMetadataConnection = rdfOutput.getConnection();
+            ValueFactory valueFactory = outputMetadataConnection.getValueFactory();
+            String outputSymbolicName = config.getTargetContext();
+            rdfOutput.addExistingDataGraph(outputSymbolicName, new URIImpl(config.getTargetContext()));
+
+            Resource symbolicNameResource = outputMetadataConnection.getStatements(
+                    null, valueFactory.createURI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME), valueFactory.createLiteral(outputSymbolicName),
+                    false, rdfOutput.getMetadataGraphnames().toArray(new URIImpl[0])).next().getSubject();
+
+            BNode distributionRoot = valueFactory.createBNode();
+            outputMetadataConnection.add(valueFactory.createStatement(
+                    symbolicNameResource, valueFactory.createURI(PREDICATE_HAS_DISTRIBUTION), distributionRoot),
+                    rdfOutput.getMetadataWriteGraphname());
+            outputMetadataConnection.add(valueFactory.createStatement(
+                    distributionRoot, RDF.TYPE, DCAT.DISTRIBUTION),
+                    rdfOutput.getMetadataWriteGraphname());
+
+            outputMetadataConnection.add(valueFactory.createStatement(
+                    distributionRoot, DCTERMS.MODIFIED, valueFactory.createLiteral(new Date())),
+                    rdfOutput.getMetadataWriteGraphname());
+
+            outputMetadataConnection.add(valueFactory.createStatement(
+                    distributionRoot, DCAT.ACCESS_URL, valueFactory.createURI(config.getTargetContext())),
+                    rdfOutput.getMetadataWriteGraphname());
 
             LOG.info("Done.");
-        } catch (DataUnitException | SQLException ex) {
+        } catch (DataUnitException | SQLException | RepositoryException ex) {
             throw new DPUException("Error executing query", ex);
         } finally {
             LOG.info("User cancelled.");
@@ -263,6 +296,13 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
                     connection.close();
                 } catch (SQLException ex) {
                     LOG.warn("Error closing connection", ex);
+                }
+            }
+            if (outputMetadataConnection != null) {
+                try {
+                    outputMetadataConnection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error in close", ex);
                 }
             }
         }
