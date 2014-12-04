@@ -12,7 +12,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.openrdf.model.BNode;
 import org.openrdf.model.Resource;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
@@ -243,20 +242,16 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
                     null, valueFactory.createURI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME), valueFactory.createLiteral(outputSymbolicName),
                     false, rdfOutput.getMetadataGraphnames().toArray(new URIImpl[0])).next().getSubject();
 
-            BNode distributionRoot = valueFactory.createBNode();
             outputMetadataConnection.add(valueFactory.createStatement(
-                    symbolicNameResource, valueFactory.createURI(PREDICATE_HAS_DISTRIBUTION), distributionRoot),
-                    rdfOutput.getMetadataWriteGraphname());
-            outputMetadataConnection.add(valueFactory.createStatement(
-                    distributionRoot, RDF.TYPE, DCAT.DISTRIBUTION),
+                    symbolicNameResource, RDF.TYPE, DCAT.Distribution),
                     rdfOutput.getMetadataWriteGraphname());
 
             outputMetadataConnection.add(valueFactory.createStatement(
-                    distributionRoot, DCTERMS.MODIFIED, valueFactory.createLiteral(new Date())),
+                    symbolicNameResource, DCTERMS.MODIFIED, valueFactory.createLiteral(new Date())),
                     rdfOutput.getMetadataWriteGraphname());
 
             outputMetadataConnection.add(valueFactory.createStatement(
-                    distributionRoot, DCAT.ACCESS_URL, valueFactory.createURI(config.getTargetContext())),
+                    symbolicNameResource, DCAT.accessURL, valueFactory.createURI(config.getTargetContext())),
                     rdfOutput.getMetadataWriteGraphname());
 
             LOG.info("Done.");
