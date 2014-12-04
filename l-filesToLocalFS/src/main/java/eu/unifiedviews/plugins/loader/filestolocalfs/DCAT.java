@@ -5,7 +5,6 @@ import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.NamespaceImpl;
 import org.openrdf.model.impl.ValueFactoryImpl;
-import org.openrdf.model.vocabulary.RDF;
 
 public class DCAT {
 
@@ -23,18 +22,22 @@ public class DCAT {
     public static final Namespace NS = new NamespaceImpl(PREFIX, NAMESPACE);
 
     /** http://www.w3.org/ns/dcat#Distribution */
-    public final static URI DISTRIBUTION;
+    public final static URI Distribution;
+
+    /** http://www.w3.org/ns/dcat#distribution */
+    public final static URI distribution;
 
     /** http://www.w3.org/ns/dcat#downloadURL */
-    public final static URI DOWNLOAD_URL;
+    public final static URI downloadURL;
 
     /** http://www.w3.org/ns/dcat#accessURL */
-    public final static URI ACCESS_URL;
+    public final static URI accessURL;
 
     static {
         ValueFactory factory = ValueFactoryImpl.getInstance();
-        DISTRIBUTION = factory.createURI(RDF.NAMESPACE, "Distribution");
-        DOWNLOAD_URL = factory.createURI(RDF.NAMESPACE, "downloadURL");
-        ACCESS_URL = factory.createURI(RDF.NAMESPACE, "accessURL");
+        Distribution = factory.createURI(NAMESPACE, "Distribution");
+        distribution = factory.createURI(NAMESPACE, "distribution");
+        downloadURL = factory.createURI(NAMESPACE, "downloadURL");
+        accessURL = factory.createURI(NAMESPACE, "accessURL");
     }
 }

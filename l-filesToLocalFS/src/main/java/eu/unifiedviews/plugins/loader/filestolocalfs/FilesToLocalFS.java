@@ -10,7 +10,6 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.openrdf.model.BNode;
 import org.openrdf.model.Resource;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
@@ -126,20 +125,16 @@ public class FilesToLocalFS extends
                             null, valueFactory.createURI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME), valueFactory.createLiteral(entry.getSymbolicName()),
                             false, filesOutput.getMetadataGraphnames().toArray(new URIImpl[0])).next().getSubject();
 
-                    BNode distributionRoot = valueFactory.createBNode();
                     outputMetadataConnection.add(valueFactory.createStatement(
-                            symbolicNameResource, valueFactory.createURI(PREDICATE_HAS_DISTRIBUTION), distributionRoot),
-                            filesOutput.getMetadataWriteGraphname());
-                    outputMetadataConnection.add(valueFactory.createStatement(
-                            distributionRoot, RDF.TYPE, DCAT.DISTRIBUTION),
+                            symbolicNameResource, RDF.TYPE, DCAT.Distribution),
                             filesOutput.getMetadataWriteGraphname());
 
                     outputMetadataConnection.add(valueFactory.createStatement(
-                            distributionRoot, DCTERMS.MODIFIED, valueFactory.createLiteral(new Date())),
+                            symbolicNameResource, DCTERMS.MODIFIED, valueFactory.createLiteral(new Date())),
                             filesOutput.getMetadataWriteGraphname());
 
                     outputMetadataConnection.add(valueFactory.createStatement(
-                            distributionRoot, DCAT.ACCESS_URL, valueFactory.createURI(outputFile.toURI().toASCIIString())),
+                            symbolicNameResource, DCAT.accessURL, valueFactory.createURI(outputFile.toURI().toASCIIString())),
                             filesOutput.getMetadataWriteGraphname());
 
                     if (dpuContext.isDebugging()) {
