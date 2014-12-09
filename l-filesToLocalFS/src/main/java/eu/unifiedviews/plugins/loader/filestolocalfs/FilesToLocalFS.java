@@ -165,16 +165,8 @@ public class FilesToLocalFS extends
             } catch (DataUnitException ex) {
                 LOG.warn("Error closing filesInput", ex);
             }
-            try {
-                inputVirtualPathHelper.close();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error in close", ex);
-            }
-            try {
-                copyHelper.close();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error in close", ex);
-            }
+            inputVirtualPathHelper.close();
+            copyHelper.close();
         }
     }
 
