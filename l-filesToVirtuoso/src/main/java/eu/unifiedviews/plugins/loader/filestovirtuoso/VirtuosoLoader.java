@@ -32,6 +32,7 @@ import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
+import eu.unifiedviews.helpers.dataunit.virtualgraphhelper.VirtualGraphHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
@@ -232,7 +233,8 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
             statementsErrorRows.close();
 
             String outputSymbolicName = config.getTargetContext();
-            rdfOutput.addExistingDataGraph(outputSymbolicName, new URIImpl(config.getTargetContext()));
+            rdfOutput.addExistingDataGraph(outputSymbolicName, new URIImpl(outputSymbolicName));
+            VirtualGraphHelpers.setVirtualGraph(rdfOutput, outputSymbolicName, config.getTargetContext());
 
             Map<String, String> resource = ResourceHelpers.getResource(rdfOutput, outputSymbolicName);
             if (resource == null) {
