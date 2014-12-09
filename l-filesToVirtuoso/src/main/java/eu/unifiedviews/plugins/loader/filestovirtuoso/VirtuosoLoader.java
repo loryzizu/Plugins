@@ -8,15 +8,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.openrdf.model.Resource;
-import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.model.vocabulary.DCTERMS;
-import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.Update;
@@ -29,11 +27,11 @@ import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
@@ -233,29 +231,18 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
             resultSetErrorRows.close();
             statementsErrorRows.close();
 
-            outputMetadataConnection = rdfOutput.getConnection();
-            ValueFactory valueFactory = outputMetadataConnection.getValueFactory();
             String outputSymbolicName = config.getTargetContext();
             rdfOutput.addExistingDataGraph(outputSymbolicName, new URIImpl(config.getTargetContext()));
 
-            Resource symbolicNameResource = outputMetadataConnection.getStatements(
-                    null, valueFactory.createURI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME), valueFactory.createLiteral(outputSymbolicName),
-                    false, rdfOutput.getMetadataGraphnames().toArray(new URIImpl[0])).next().getSubject();
-
-            outputMetadataConnection.add(valueFactory.createStatement(
-                    symbolicNameResource, RDF.TYPE, DCAT.Distribution),
-                    rdfOutput.getMetadataWriteGraphname());
-
-            outputMetadataConnection.add(valueFactory.createStatement(
-                    symbolicNameResource, DCTERMS.MODIFIED, valueFactory.createLiteral(new Date())),
-                    rdfOutput.getMetadataWriteGraphname());
-
-            outputMetadataConnection.add(valueFactory.createStatement(
-                    symbolicNameResource, DCAT.accessURL, valueFactory.createURI(config.getTargetContext())),
-                    rdfOutput.getMetadataWriteGraphname());
+            Map<String, String> resource = ResourceHelpers.getResource(rdfOutput, outputSymbolicName);
+            if (resource == null) {
+                resource = new HashMap<>();
+            }
+            resource.put("last_modified", ConvertUtils.dateToString(new Date()));
+            ResourceHelpers.setResource(rdfOutput, outputSymbolicName, resource);
 
             LOG.info("Done.");
-        } catch (DataUnitException | SQLException | RepositoryException ex) {
+        } catch (DataUnitException | SQLException ex) {
             throw new DPUException("Error executing query", ex);
         } finally {
             LOG.info("User cancelled.");
