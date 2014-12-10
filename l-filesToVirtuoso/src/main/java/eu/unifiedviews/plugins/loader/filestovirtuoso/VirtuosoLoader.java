@@ -32,6 +32,7 @@ import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
+import eu.unifiedviews.helpers.dataunit.utils.ConvertUtils;
 import eu.unifiedviews.helpers.dataunit.virtualgraphhelper.VirtualGraphHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
