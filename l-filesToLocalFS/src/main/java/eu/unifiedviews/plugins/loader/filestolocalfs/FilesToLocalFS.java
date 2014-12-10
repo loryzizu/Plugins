@@ -9,8 +9,6 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -27,8 +25,8 @@ import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelper;
 import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
 import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
-import eu.unifiedviews.helpers.dataunit.utils.ConvertUtils;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
@@ -115,11 +113,8 @@ public class FilesToLocalFS extends
                     java.nio.file.Files.setPosixFilePermissions(outputPath, PosixFilePermissions.fromString("rw-r--r--"));
 
                     copyHelper.copyMetadata(entry.getSymbolicName());
-                    Map<String, String> resource = ResourceHelpers.getResource(filesOutput, entry.getSymbolicName());
-                    if (resource == null) {
-                        resource = new HashMap<>();
-                    }
-                    resource.put("last_modified", ConvertUtils.dateToString(new Date()));
+                    Resource resource = ResourceHelpers.getResource(filesOutput, entry.getSymbolicName());
+                    resource.setLast_modified(new Date());
                     ResourceHelpers.setResource(filesOutput, entry.getSymbolicName(), resource);
 
                     if (dpuContext.isDebugging()) {

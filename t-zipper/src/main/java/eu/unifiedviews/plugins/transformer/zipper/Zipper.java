@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -21,8 +20,8 @@ import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
 import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
-import eu.unifiedviews.helpers.dataunit.utils.ConvertUtils;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
@@ -82,10 +81,11 @@ public class Zipper extends ConfigurableBase<ZipperConfig_V1> implements ConfigD
             zipFile = new File(java.net.URI.create(zipFileUri));
             // add metadata
             VirtualPathHelpers.setVirtualPath(outFilesData, zipSymbolicName, config.getZipFile());
-            HashMap<String, String> resource = new HashMap<>();
-            resource.put("format", "application/zip");
-            resource.put("mimetype", "application/zip");
-            resource.put("last_modified", ConvertUtils.dateToString(new Date()));
+            Resource resource = new Resource();
+            resource.setFormat("application/zip");
+            resource.setMimetype("application/zip");
+            resource.setCreated(new Date());
+            resource.setLast_modified(new Date());
             ResourceHelpers.setResource(outFilesData, zipSymbolicName, resource);
             //
             // Create zip file

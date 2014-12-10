@@ -8,8 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -31,8 +29,8 @@ import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
 import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
-import eu.unifiedviews.helpers.dataunit.utils.ConvertUtils;
 import eu.unifiedviews.helpers.dataunit.virtualgraphhelper.VirtualGraphHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
@@ -237,11 +235,8 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
             rdfOutput.addExistingDataGraph(outputSymbolicName, new URIImpl(outputSymbolicName));
             VirtualGraphHelpers.setVirtualGraph(rdfOutput, outputSymbolicName, config.getTargetContext());
 
-            Map<String, String> resource = ResourceHelpers.getResource(rdfOutput, outputSymbolicName);
-            if (resource == null) {
-                resource = new HashMap<>();
-            }
-            resource.put("last_modified", ConvertUtils.dateToString(new Date()));
+            Resource resource = ResourceHelpers.getResource(rdfOutput, outputSymbolicName);
+            resource.setLast_modified(new Date());
             ResourceHelpers.setResource(rdfOutput, outputSymbolicName, resource);
 
             LOG.info("Done.");
