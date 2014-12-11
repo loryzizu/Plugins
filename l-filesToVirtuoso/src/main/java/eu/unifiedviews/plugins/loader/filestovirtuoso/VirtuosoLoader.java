@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +29,9 @@ import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
+import eu.unifiedviews.helpers.dataunit.virtualgraphhelper.VirtualGraphHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
@@ -36,6 +40,8 @@ import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
 public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> implements ConfigDialogProvider<VirtuosoLoaderConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(VirtuosoLoader.class);
+
+    public static final String PREDICATE_HAS_DISTRIBUTION = "http://comsode.eu/hasDistribution";
 
     @DataUnit.AsOutput(name = "rdfOutput")
     public WritableRDFDataUnit rdfOutput;
@@ -128,6 +134,7 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
         Connection connection = null;
         boolean started = false;
         ExecutorService executor = null;
+        RepositoryConnection outputMetadataConnection = null;
         try {
             connection = DriverManager.getConnection(config.getVirtuosoUrl(), config.getUsername(), config.getPassword());
             Statement statementNow = connection.createStatement();
@@ -224,7 +231,13 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
             resultSetErrorRows.close();
             statementsErrorRows.close();
 
-            rdfOutput.addExistingDataGraph(config.getTargetContext(), new URIImpl(config.getTargetContext()));
+            String outputSymbolicName = config.getTargetContext();
+            rdfOutput.addExistingDataGraph(outputSymbolicName, new URIImpl(outputSymbolicName));
+            VirtualGraphHelpers.setVirtualGraph(rdfOutput, outputSymbolicName, config.getTargetContext());
+
+            Resource resource = ResourceHelpers.getResource(rdfOutput, outputSymbolicName);
+            resource.setLast_modified(new Date());
+            ResourceHelpers.setResource(rdfOutput, outputSymbolicName, resource);
 
             LOG.info("Done.");
         } catch (DataUnitException | SQLException ex) {
@@ -263,6 +276,13 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
                     connection.close();
                 } catch (SQLException ex) {
                     LOG.warn("Error closing connection", ex);
+                }
+            }
+            if (outputMetadataConnection != null) {
+                try {
+                    outputMetadataConnection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error in close", ex);
                 }
             }
         }

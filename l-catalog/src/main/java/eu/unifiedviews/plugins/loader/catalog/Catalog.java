@@ -1,20 +1,23 @@
 package eu.unifiedviews.plugins.loader.catalog;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Set;
-import java.util.regex.Pattern;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.openrdf.rio.UnsupportedRDFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,16 +30,18 @@ import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
 import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceConverter;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
+import eu.unifiedviews.helpers.dataunit.virtualgraphhelper.VirtualGraphHelpers;
+import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
 
 @DPU.AsLoader
-public class Catalog extends
-        ConfigurableBase<CatalogConfig_V1> implements
-        ConfigDialogProvider<CatalogConfig_V1> {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(Catalog.class);
+public class Catalog extends ConfigurableBase<CatalogConfig_V1> implements ConfigDialogProvider<CatalogConfig_V1> {
+    private static final Logger LOG = LoggerFactory.getLogger(Catalog.class);
 
     @DataUnit.AsInput(name = "filesInput", optional = true)
     public FilesDataUnit filesInput;
@@ -58,82 +63,129 @@ public class Catalog extends
             throw new DPUException("No input data unit for me, exiting");
         }
 
-//        ResourceHelper filesResourceHelper = ResourceHelpers.create(filesInput);
-//        ResourceHelper graphsResourceHelper = ResourceHelpers.create(rdfInput);
-        try {
-            Set<FilesDataUnit.Entry> fileEntries = FilesHelper.getFiles(filesInput);
-            Set<RDFDataUnit.Entry> graphEntries = RDFHelper.getGraphs(rdfInput);
-
-            StringBuilder sb = new StringBuilder("[");
-            for (FilesDataUnit.Entry entry : fileEntries) {
-                String symbolicName = entry.getSymbolicName();
-                String resourceUri = entry.getFileURIString();
-                resourceUri = resourceUri.replaceFirst(Pattern.quote("file:/var/www"), "http://" + config.getHostname() + "/");
-                resourceUri = URI.create(resourceUri).normalize().toASCIIString();
-                sb.append("{ \"uri\": \"");
-                sb.append(resourceUri);
-                sb.append("\", \"name\": \"");
-                sb.append(symbolicName);
-                sb.append("\" },");
-                if (dpuContext.canceled()) {
-                    throw new DPUException("Cancelled");
-                }
-            }
-            for (RDFDataUnit.Entry entry : graphEntries) {
-                String symbolicName = entry.getSymbolicName();
-                String resourceUri;// = entry.getDataGraphURI().stringValue();
-//                resourceUri = "http://" + config.getHostname() + ":8890/sparql?query=SELECT { ?s ?p ?o } FROM GRAPH <" + resourceUri + "> WHERE { ?s ?p ?o }";
-                resourceUri = new URIBuilder().setHost(config.getHostname()).setScheme("http").setPort(8890).setPath("/sparql").addParameter("query",
-                        "SELECT ?s ?p ?o FROM <" + entry.getDataGraphURI().stringValue() + "> WHERE { ?s ?p ?o }").build().toASCIIString();// (resourceUri).normalize().toASCIIString();
-                sb.append("{ \"uri\": \"");
-                sb.append(resourceUri);
-                sb.append("\", \"name\": \"");
-                sb.append(symbolicName);
-                sb.append("\" },");
-                if (dpuContext.canceled()) {
-                    throw new DPUException("Cancelled");
-                }
-            }
-
-            sb.delete(sb.length() - 1, sb.length());
-            sb.append("]");
-            LOG.info("Request: " + sb.toString());
-            CloseableHttpClient client = HttpClients.createDefault();
-            URIBuilder uriBuilder = new URIBuilder(config.getCatalogApiLocation());
-            uriBuilder.setPath(uriBuilder.getPath() + '/' + config.getDatasetId());
-            HttpPost httpPost = new HttpPost(uriBuilder.build().normalize());
-            httpPost.addHeader(new BasicHeader("Content-Type", "application/json"));
-            httpPost.setEntity(new StringEntity(sb.toString(), Charset.forName("utf-8")));
+        if (filesInput != null) {
             CloseableHttpResponse response = null;
             try {
+                Set<FilesDataUnit.Entry> files = FilesHelper.getFiles(filesInput);
+                JSONObject rootObject = new JSONObject();
+                rootObject.put("pipelineId", 307);
+                JSONArray resourcesArray = new JSONArray();
+                for (FilesDataUnit.Entry file : files) {
+                    String storageId = VirtualPathHelpers.getVirtualPath(filesInput, file.getSymbolicName());
+                    if (storageId == null || storageId.isEmpty()) {
+                        storageId = file.getSymbolicName();
+                    }
+
+                    JSONObject storageObject = new JSONObject();
+                    storageObject.put("type", "FILE");
+                    storageObject.put("value", storageId);
+
+                    Resource resource = ResourceHelpers.getResource(filesInput, file.getSymbolicName());
+                    resource.setName(storageId);
+
+                    JSONObject resourceExtras = new JSONObject(resource.getExtras());
+
+                    JSONObject resourceEntity = new JSONObject(ResourceConverter.toMap(resource));
+                    resourceEntity.put("extras", resourceExtras);
+
+                    JSONObject resourceObject = new JSONObject();
+                    resourceObject.put("storageId", storageObject);
+                    resourceObject.put("resource", resourceEntity);
+
+                    resourcesArray.put(resourceObject);
+                }
+                rootObject.put("resources", resourcesArray);
+
+                LOG.info("Request (json): " + rootObject.toString(2));
+
+                CloseableHttpClient client = HttpClients.createDefault();
+                URIBuilder uriBuilder = new URIBuilder(config.getCatalogApiLocation());
+                uriBuilder.setPath(uriBuilder.getPath());
+                HttpPost httpPost = new HttpPost(uriBuilder.build().normalize());
+                HttpEntity entity = EntityBuilder.create()
+                        .setText(rootObject.toString(2))
+                        .setContentType(ContentType.APPLICATION_JSON.withCharset(Charset.forName("utf-8")))
+                        .build();
+                httpPost.setEntity(entity);
                 response = client.execute(httpPost);
                 if (response.getStatusLine().getStatusCode() == 200) {
                     LOG.info("Response:" + EntityUtils.toString(response.getEntity()));
                 } else {
                     LOG.error("Response:" + EntityUtils.toString(response.getEntity()));
                 }
-            } catch (IOException ex) {
-                throw new DPUException(ex);
+            } catch (UnsupportedRDFormatException | DataUnitException | IOException | URISyntaxException | JSONException ex) {
+                throw new DPUException("Error exporting metadata", ex);
             } finally {
                 if (response != null) {
-                    response.close();
+                    try {
+                        response.close();
+                    } catch (IOException ex) {
+                        LOG.warn("Error in close", ex);
+                    }
                 }
             }
-        } catch (DataUnitException ex) {
-            throw new DPUException("Error in dataunit.", ex);
-        } catch (IOException | URISyntaxException ex) {
-            throw new DPUException("Error in http client", ex);
-        } finally {
-//            try {
-//                filesResourceHelper.close();
-//            } catch (DataUnitException ex) {
-//                LOG.warn("Error in close", ex);
-//            }
-//            try {
-//                graphsResourceHelper.close();
-//            } catch (DataUnitException ex) {
-//                LOG.warn("Error in close", ex);
-//            }
+        }
+        if (rdfInput != null) {
+            CloseableHttpResponse response = null;
+            try {
+                Set<RDFDataUnit.Entry> graphs = RDFHelper.getGraphs(rdfInput);
+                JSONObject rootObject = new JSONObject();
+                rootObject.put("pipelineId", 307);
+                JSONArray resourcesArray = new JSONArray();
+                for (RDFDataUnit.Entry graph : graphs) {
+                    String storageId = VirtualGraphHelpers.getVirtualGraph(rdfInput, graph.getSymbolicName());
+                    if (storageId == null || storageId.isEmpty()) {
+                        storageId = graph.getSymbolicName();
+                    }
+
+                    JSONObject storageObject = new JSONObject();
+                    storageObject.put("type", "RDF");
+                    storageObject.put("value", storageId);
+
+                    Resource resource = ResourceHelpers.getResource(rdfInput, graph.getSymbolicName());
+                    resource.setName(storageId);
+
+                    JSONObject resourceExtras = new JSONObject(resource.getExtras());
+
+                    JSONObject resourceEntity = new JSONObject(ResourceConverter.toMap(resource));
+                    resourceEntity.put("extras", resourceExtras);
+
+                    JSONObject resourceObject = new JSONObject();
+                    resourceObject.put("storageId", storageObject);
+                    resourceObject.put("resource", resourceEntity);
+
+                    resourcesArray.put(resourceObject);
+                }
+                rootObject.put("resources", resourcesArray);
+
+                LOG.info("Request (json): " + rootObject.toString(2));
+
+                CloseableHttpClient client = HttpClients.createDefault();
+                URIBuilder uriBuilder = new URIBuilder(config.getCatalogApiLocation());
+                uriBuilder.setPath(uriBuilder.getPath());
+                HttpPost httpPost = new HttpPost(uriBuilder.build().normalize());
+                HttpEntity entity = EntityBuilder.create()
+                        .setText(rootObject.toString(2))
+                        .setContentType(ContentType.APPLICATION_JSON.withCharset(Charset.forName("utf-8")))
+                        .build();
+                httpPost.setEntity(entity);
+                response = client.execute(httpPost);
+                if (response.getStatusLine().getStatusCode() == 200) {
+                    LOG.info("Response:" + EntityUtils.toString(response.getEntity()));
+                } else {
+                    LOG.error("Response:" + EntityUtils.toString(response.getEntity()));
+                }
+            } catch (UnsupportedRDFormatException | DataUnitException | IOException | URISyntaxException | JSONException ex) {
+                throw new DPUException("Error exporting metadata", ex);
+            } finally {
+                if (response != null) {
+                    try {
+                        response.close();
+                    } catch (IOException ex) {
+                        LOG.warn("Error in close", ex);
+                    }
+                }
+            }
         }
     }
 
