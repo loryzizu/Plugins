@@ -156,7 +156,7 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
                     /**
                      * Copy all metadata from graph symbolicName to new file symbolicName
                      */
-                    copyHelper.copyMetadata(inputGraph.getSymbolicName());
+//                    copyHelper.copyMetadata(inputGraph.getSymbolicName());
                     /**
                      * Lets create {@link File} object, notice we have to create {@link URI} from
                      * the outputFileURIString before providing it to {@link File} constructor.
