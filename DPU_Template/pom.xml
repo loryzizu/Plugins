@@ -9,8 +9,8 @@
 		<version>1.1.0</version>
 		<relativePath></relativePath>
 	</parent>
-	<!-- TODO 1: fill the DPU groupId, without special characters, use '_' 
-		instead of whitespaces -->
+	<!-- TODO 1: fill the DPU groupId, without special characters, use '_' instead 
+		of whitespaces -->
 	<groupId>com.example</groupId>
 	<!-- TODO 1: fill the DPU artifactId, without special characters, use '_' 
 		instead of whitespaces -->
@@ -45,6 +45,38 @@
 
 	<dependencies>
 		<!-- TODO 7: add dependencies here -->
+		<!-- The dependencies which are provided by container by default are listed 
+			here -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient-osgi</artifactId>
+			<version>4.3.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore-osgi</artifactId>
+			<version>4.3.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.compendium</artifactId>
+			<version>4.3.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.servicemix.bundles</groupId>
+			<artifactId>org.apache.servicemix.bundles.jsch</artifactId>
+			<version>0.1.49_1</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>

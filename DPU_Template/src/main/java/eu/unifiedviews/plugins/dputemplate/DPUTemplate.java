@@ -1,12 +1,29 @@
 package eu.unifiedviews.plugins.dputemplate;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Set;
+
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.Rio;
+import org.openrdf.rio.UnsupportedRDFormatException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
@@ -22,6 +39,10 @@ import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
  */
 @DPU.AsTransformer
 public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implements ConfigDialogProvider<DPUTemplateConfig_V1> {
+    /**
+     * We use slf4j for logging
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(DPUTemplate.class);
 
     /**
      * We define one data unit on input, containing RDF graphs ({@link RDFDataUnit})
@@ -68,6 +89,111 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
      */
     @Override
     public void execute(DPUContext dpuContext) throws DPUException {
+        /**
+         * Lets be nice and log that we are starting and the configuration we have.
+         */
+        String shortMessage = this.getClass().getSimpleName() + " starting.";
+        String longMessage = String.valueOf(config);
+        /**
+         * You can send messages for user to read, up to ~10 messages per whole {@link DPU} execution.
+         * Messages have only informative value for the user, stating that work is being done
+         * or updating progress information. Only most relevant events should be sent as messages.
+         */
+        dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
+
+        /**
+         * Obtain all input graphs into one Set
+         * This is suitable up to ~100 000 graphs,
+         * if you need to process more graphs, consult {@link RDFDataUnit.Iteration} documentation.
+         */
+        Set<RDFDataUnit.Entry> inputGraphs = null;
+        try {
+            inputGraphs = RDFHelper.getGraphs(rdfInput);
+        } catch (DataUnitException ex) {
+            /**
+             * There is nothing we can do if container fails to provide us data.
+             */
+            throw new DPUException("Could not obtain input graphs", ex);
+        }
+
+        /**
+         * Obtain connection to internal RDF storage and use it to export data to files.
+         */
+        RepositoryConnection connection = null;
+        try {
+            /**
+             * Get the connection
+             */
+            connection = rdfInput.getConnection();
+            /**
+             * Iterate all input graphs
+             */
+            for (RDFDataUnit.Entry inputGraph : inputGraphs) {
+                FileWriter fileWriter = null;
+                try {
+                    /**
+                     * We export each graph into one file. So we are polite and copy all metadata we can about one symbolicName
+                     * on input.
+                     * The outputFileURIString will be something in form
+                     * file:/tmp/42198412907
+                     */
+                    String outputFileURIString = filesOutput.addNewFile(inputGraph.getSymbolicName());
+                    /**
+                     * Lets create {@link File} object, notice we have to create {@link URI} from
+                     * the outputFileURIString before providing it to {@link File} constructor.
+                     */
+                    File outputFile = new File(URI.create(outputFileURIString));
+
+                    fileWriter = new FileWriter(outputFile);
+                    connection.export(Rio.createWriter(RDFFormat.RDFXML, fileWriter));
+                } catch (IOException | DataUnitException | RepositoryException | RDFHandlerException | UnsupportedRDFormatException ex) {
+                    /**
+                     * Should we just skip the graph or should we fail execution
+                     */
+                    if (Boolean.TRUE.equals(config.getSkipGraphOnError())) {
+                        /**
+                         * Lets log the problem.
+                         * Please, do not send messages using {@link DPUContext#sendMessage} is similar situations,
+                         * since number of graphs or files on input can be large (~100000), sending messages for each graph/file
+                         * would fill the database and cause performance penalty.
+                         */
+                        LOG.warn("Unable to process graph {} into file.", inputGraph, ex);
+                    } else {
+                        /**
+                         * Do not skip graph, so lets fail execution by re-throwing the exception
+                         */
+                        throw new DPUException("Unable to process graph " + inputGraph + " into file. Not set to skip graph, failing execution.", ex);
+                    }
+                } finally {
+                    if (fileWriter != null) {
+                        try {
+                            fileWriter.close();
+                        } catch (IOException ex) {
+                            LOG.warn("Error in close", ex);
+                        }
+                    }
+                }
+            }
+        } catch (DataUnitException ex) {
+            /**
+             * There is nothing we can do, if the container is not providing us data
+             */
+            throw new DPUException("Error in execution", ex);
+        } finally {
+            /**
+             * We have to close the connection after we have used it
+             */
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    /**
+                     * There is nothing we can do if close throws exception, just log it
+                     */
+                    LOG.warn("Error in close", ex);
+                }
+            }
+        }
 
     }
 }
