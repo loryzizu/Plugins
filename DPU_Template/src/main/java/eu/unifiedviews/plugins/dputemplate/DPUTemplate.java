@@ -3,6 +3,7 @@ package eu.unifiedviews.plugins.dputemplate;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Set;
 
@@ -87,7 +88,6 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
      * And finally, we will generate one new file, which name is configured by user in dialog
      * and it will contain list of symbolicName;graphUri;fileLocation for each graph-file pair on each line
      * it is of no practical meaning, just to show the API
-     *
      */
     @Override
     public void execute(DPUContext dpuContext) throws DPUException {
@@ -126,9 +126,18 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
          * Create our metadata copy helper
          */
         CopyHelper copyHelper = CopyHelpers.create(rdfInput, filesOutput);
+
+        File outputCsvFile = null;
+        PrintWriter outputCsvWriter = null;
         try {
             /**
-             * Get the connection
+             * Lets create our output file with symbolicName;graphUri;fileLocation
+             * The getBaseFileURIString gives us base temp directory that we should use to create our new files.
+             */
+            outputCsvFile = File.createTempFile("ourList", ".csv", new File(URI.create(filesOutput.getBaseFileURIString())));
+            outputCsvWriter = new PrintWriter(new FileWriter(outputCsvFile));
+            /**
+             * Get the connection to RDF storage
              */
             connection = rdfInput.getConnection();
             /**
@@ -155,7 +164,15 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
                     File outputFile = new File(URI.create(outputFileURIString));
 
                     fileWriter = new FileWriter(outputFile);
+                    /**
+                     * Export the data.
+                     */
                     connection.export(Rio.createWriter(RDFFormat.RDFXML, fileWriter));
+                    /**
+                     * Everything went OK, so add the line to our output CSV file:
+                     * symbolicName;graphUri;fileLocation
+                     */
+                    outputCsvWriter.println(inputGraph.getSymbolicName() + ";" + inputGraph.getDataGraphURI().stringValue() + ";" + outputFileURIString);
                 } catch (IOException | DataUnitException | RepositoryException | RDFHandlerException | UnsupportedRDFormatException ex) {
                     /**
                      * Should we just skip the graph or should we fail execution
@@ -184,9 +201,14 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
                     }
                 }
             }
-        } catch (DataUnitException ex) {
             /**
-             * There is nothing we can do, if the container is not providing us data
+             * All graphs processed, lets add our CSV file to output data unit under symbolicName "csvFile"
+             * Since the file already exists, we use addExistingFile method
+             */
+            filesOutput.addExistingFile("csvFile", outputCsvFile.toURI().toASCIIString());
+        } catch (DataUnitException | IOException ex) {
+            /**
+             * There is nothing we can do
              */
             throw new DPUException("Error in execution", ex);
         } finally {
@@ -209,6 +231,10 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
             if (copyHelper != null) {
                 copyHelper.close();
             }
+            /**
+             * Close the writer
+             */
+            outputCsvWriter.close();
         }
     }
 }
