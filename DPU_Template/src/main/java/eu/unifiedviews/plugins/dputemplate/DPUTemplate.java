@@ -23,6 +23,8 @@ import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelper;
+import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
 import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
@@ -120,6 +122,10 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
          * Obtain connection to internal RDF storage and use it to export data to files.
          */
         RepositoryConnection connection = null;
+        /**
+         * Create our metadata copy helper
+         */
+        CopyHelper copyHelper = CopyHelpers.create(rdfInput, filesOutput);
         try {
             /**
              * Get the connection
@@ -138,6 +144,10 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
                      * file:/tmp/42198412907
                      */
                     String outputFileURIString = filesOutput.addNewFile(inputGraph.getSymbolicName());
+                    /**
+                     * Copy all metadata from graph symbolicName to new file symbolicName
+                     */
+                    copyHelper.copyMetadata(inputGraph.getSymbolicName());
                     /**
                      * Lets create {@link File} object, notice we have to create {@link URI} from
                      * the outputFileURIString before providing it to {@link File} constructor.
@@ -193,7 +203,12 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
                     LOG.warn("Error in close", ex);
                 }
             }
+            /**
+             * CopyHelper also need closing
+             */
+            if (copyHelper != null) {
+                copyHelper.close();
+            }
         }
-
     }
 }
