@@ -6,14 +6,14 @@
 	<parent>
 		<groupId>eu.unifiedviews.plugins</groupId>
 		<artifactId>dpu-base-pom</artifactId>
-		<version>1.0.1</version>
+		<version>1.1.0</version>
 		<relativePath />
 	</parent>
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-l-filesToVirtuoso</artifactId>
 	<name>L-FilesToVirtuoso</name>
 	<description>VirtuosoLoader issues Virtuoso internal functions to load directory of RDF data.</description>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 	<packaging>bundle</packaging>
 
 	<repositories>
@@ -22,35 +22,31 @@
 			<name>maven.eea.sk-public</name>
 			<url>http://maven.eea.sk/artifactory/public/</url>
 		</repository>
-		<repository>
-			<id>cz.cuni.mff.ms.xrg.odcl</id>
-			<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/groups/public/</url>
-		</repository>
 	</repositories>
 
-	<properties>
-		<dpu.package>eu.unifiedviews.plugins.loader.filestovirtuoso</dpu.package>
-		<dpu.mainClass>VirtuosoLoader</dpu.mainClass>
-	</properties>
+    <properties>
+        <dpu.package>eu.unifiedviews.plugins.loader.filestovirtuoso</dpu.package>
+        <dpu.mainClass>VirtuosoLoader</dpu.mainClass>
+    </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.openlinksw</groupId>
-			<artifactId>virt_sesame2</artifactId>
-			<version>2.7</version>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>eu.comsode</groupId>
+            <artifactId>com.openlinksw.virtuoso.virt_sesame2</artifactId>
+            <version>1.18-7-develop-SNAPSHOT</version>
+        </dependency>
 
-		<dependency>
-			<groupId>com.openlinksw</groupId>
-			<artifactId>virtjdbc</artifactId>
-			<version>4.1</version>
-		</dependency>
+        <dependency>
+            <groupId>eu.comsode</groupId>
+            <artifactId>com.openlinksw.virtuoso.virtjdbc4_1</artifactId>
+            <version>3.74-7-develop-SNAPSHOT</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.0</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

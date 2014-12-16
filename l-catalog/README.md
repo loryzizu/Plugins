@@ -1,16 +1,16 @@
-# L-FilesToSparql #
+# L-FilesToLocalFS #
 ----------
 
 ###General###
 
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
-|**Name:**                     |L-FilesToSparql                                              |
-|**Description:**              |Loads RDF data stored in Files to the specified remote SPARQL endpoint. |
+|**Name:**                     |L-FilesToLocalFS                                             |
+|**Description:**              |Loads files to the specified local host directory. |
 |                              |                                                               |
-|**DPU class name:**           |FilesToSparqlEndpoint     | 
-|**Configuration class name:** |FilesToSparqlEndpointConfig_V1                           |
-|**Dialogue class name:**      |FilesToSparqlEndpointVaadinDialog | 
+|**DPU class name:**           |FilesToLocalFS     | 
+|**Configuration class name:** |FilesToLocalFSConfig_V1                           |
+|**Dialogue class name:**      |FilesToLocalFSVaadinDialog | 
 
 ***
 
@@ -19,11 +19,10 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|**Query endpoint URL:** |TODO: provide description  |
-|**Update endpoint URL:** |TODO: provide description |
-|**Commit size (0 = one file, one transaction, 1 = autocommit connection, n = commit every n triples):** |self-descriptive |
-|**Skip file on error (checkbox)**|Do not stop the pipeline execution if error occurs. |
-|**Target contexts:** |TODO: provide description  |
+|**Destination directory absolute path** |Destination path for file to load.  |
+|**Move files instead of copy (checkbox)** | Additional self-descriptive option for load.|
+|**Replace existing copy (checkbox)** | Additional self-descriptive option for load. |
+|**Skip file on error (checkbox)** | Additional self-descriptive option for load. |
 
 ***
 
@@ -31,7 +30,7 @@
 
 |Name                |Type       |DataUnit                         |Description                        |
 |--------------------|-----------|---------------------------------|-----------------------------------|
-|filesInput |i |FilesDataUnit  |File containing RDF data.  |
+|filesInput |i |FilesDataUnit |File loaded to specified (local host) destiation.  |
 
 ***
 

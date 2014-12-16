@@ -22,7 +22,7 @@
 			<url>http://maven.eea.sk/artifactory/public/</url>
 		</repository>
 	</repositories>
-	
+
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.extractor.filestoscp</dpu.package>
 		<dpu.mainClass>FilesToScp</dpu.mainClass>

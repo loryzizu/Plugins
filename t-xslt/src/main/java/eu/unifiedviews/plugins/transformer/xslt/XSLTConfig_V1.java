@@ -8,7 +8,7 @@ public class XSLTConfig_V1 {
 
     private boolean skipOnError = false;
 
-    private String xlstParametersMapName = "xlstParameters";
+    private String xsltParametersMapName = "xsltParameters";
 
     private String outputFileExtension = "";
 
@@ -40,12 +40,12 @@ public class XSLTConfig_V1 {
         this.skipOnError = skipOnError;
     }
 
-    public String getXlstParametersMapName() {
-        return xlstParametersMapName;
+    public String getXsltParametersMapName() {
+        return xsltParametersMapName;
     }
 
-    public void setXlstParametersMapName(String xlstParametersMapName) {
-        this.xlstParametersMapName = xlstParametersMapName;
+    public void setXsltParametersMapName(String xsltParametersMapName) {
+        this.xsltParametersMapName = xsltParametersMapName;
     }
 
     public String getOutputFileExtension() {
@@ -58,6 +58,6 @@ public class XSLTConfig_V1 {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "[templateFile=" + xslTemplateFileNameShownInDialog + ",skipOnError=" + String.valueOf(skipOnError) + ",xsltParametersMapName=" + xlstParametersMapName + ",outputFileExtension=" + outputFileExtension + "]";
+        return this.getClass().getSimpleName() + "[templateFile=" + xslTemplateFileNameShownInDialog + ",skipOnError=" + String.valueOf(skipOnError) + ",xsltParametersMapName=" + xsltParametersMapName + ",outputFileExtension=" + outputFileExtension + "]";
     }
 }

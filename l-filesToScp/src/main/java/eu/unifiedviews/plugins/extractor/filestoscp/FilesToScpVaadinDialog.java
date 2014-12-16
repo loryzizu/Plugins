@@ -142,5 +142,4 @@ public class FilesToScpVaadinDialog extends BaseConfigDialog<FilesToScpConfig_V1
         }
         return dest;
     }
-
 }
