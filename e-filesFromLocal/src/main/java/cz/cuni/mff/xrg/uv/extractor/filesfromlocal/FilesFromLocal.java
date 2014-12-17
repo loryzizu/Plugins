@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
@@ -28,11 +26,13 @@ import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
 @DPU.AsExtractor
 public class FilesFromLocal extends ConfigurableBase<FilesFromLocalConfig_V1> implements ConfigDialogProvider<FilesFromLocalConfig_V1> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(
-            FilesFromLocal.class);
-
     @DataUnit.AsOutput(name = "output")
     public WritableFilesDataUnit outFilesData;
+
+    @Override
+    public AbstractConfigDialog<FilesFromLocalConfig_V1> getConfigurationDialog() {
+        return new FilesFromLocalVaadinDialog();
+    }
 
     public FilesFromLocal() {
         super(FilesFromLocalConfig_V1.class);
@@ -64,11 +64,6 @@ public class FilesFromLocal extends ConfigurableBase<FilesFromLocalConfig_V1> im
         } else {
             throw new DPUException("Can't determine source type.");
         }
-    }
-
-    @Override
-    public AbstractConfigDialog<FilesFromLocalConfig_V1> getConfigurationDialog() {
-        return new FilesFromLocalVaadinDialog();
     }
 
     private void addOneFile(String symbolicName, String virtualPath, File file) throws DataUnitException {
