@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.uv.extractor.filesfromlocal;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
@@ -14,6 +15,8 @@ import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
@@ -40,28 +43,26 @@ public class FilesFromLocal extends ConfigurableBase<FilesFromLocalConfig_V1> im
         File source = new File(config.getSource());
 
         if (source.isDirectory()) {
-            //
-            // extract from directory
-            //
-            try {
-                scanDirectory(source);
-            } catch (DataUnitException ex) {
-                context.sendMessage(DPUContext.MessageType.ERROR,
-                        "Problem with DataUnit", null, ex);
+            final Path directoryPath = source.toPath();
+            final Iterator<File> iter = FileUtils.iterateFiles(source, null, true);
+            while (iter.hasNext()) {
+                final File newFile = iter.next();
+                final String relativePath = directoryPath.relativize(newFile.toPath()).toString();
+                final String newSymbolicName = relativePath;
+                try {
+                    addOneFile(newSymbolicName, relativePath, newFile);
+                } catch (DataUnitException ex) {
+                    throw new DPUException("Problem with DataUnit", ex);
+                }
             }
         } else if (source.isFile()) {
-            //
-            // extract single file
-            //
             try {
-                outFilesData.addExistingFile(source.getName(), source.toURI().toASCIIString());
-                VirtualPathHelpers.setVirtualPath(outFilesData, source.getName(), source.getName());
+                addOneFile(source.getName(), source.getName(), source);
             } catch (DataUnitException ex) {
-                context.sendMessage(DPUContext.MessageType.ERROR,
-                        "Problem with DataUnit", null, ex);
+                throw new DPUException("Problem with DataUnit", ex);
             }
         } else {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Can't determine source type.");
+            throw new DPUException("Can't determine source type.");
         }
     }
 
@@ -70,20 +71,13 @@ public class FilesFromLocal extends ConfigurableBase<FilesFromLocalConfig_V1> im
         return new FilesFromLocalVaadinDialog();
     }
 
-    private void scanDirectory(File directory) throws eu.unifiedviews.dataunit.DataUnitException {
-        final Path directoryPath = directory.toPath();
-        final Iterator<File> iter = FileUtils.iterateFiles(directory, null, true);
-        while (iter.hasNext()) {
-            final File newFile = iter.next();
-            final String relativePath = directoryPath.relativize(newFile.toPath()).toString();
-            final String newSymbolicName = relativePath;
-            // add file
-            outFilesData.addExistingFile(newSymbolicName, newFile.toURI().toString());
-            //
-            // add metadata
-            //
-            VirtualPathHelpers.setVirtualPath(outFilesData, newSymbolicName, relativePath);
-        }
+    private void addOneFile(String symbolicName, String virtualPath, File file) throws DataUnitException {
+        outFilesData.addExistingFile(symbolicName, file.toURI().toASCIIString());
+        VirtualPathHelpers.setVirtualPath(outFilesData, symbolicName, virtualPath);
+        Resource resource = ResourceHelpers.getResource(outFilesData, symbolicName);
+        Date now = new Date();
+        resource.setCreated(now);
+        resource.setLast_modified(now);
+        ResourceHelpers.setResource(outFilesData, symbolicName, resource);
     }
-
 }
