@@ -1,6 +1,7 @@
 package eu.unifiedviews.plugins.transformer.xslt;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.Date;
@@ -29,9 +30,12 @@ import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
 import eu.unifiedviews.helpers.dataunit.maphelper.MapHelper;
 import eu.unifiedviews.helpers.dataunit.maphelper.MapHelpers;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
@@ -96,22 +100,16 @@ public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialo
         VirtualPathHelper outputVirtualPathHelper = VirtualPathHelpers.create(filesOutput);
         String xsltParametersMapName = config.getXsltParametersMapName();
         try {
+            File baseOutputDirectory = new File(URI.create(filesOutput.getBaseFileURIString()));
             while (shouldContinue && filesIteration.hasNext()) {
                 FilesDataUnit.Entry entry;
                 entry = filesIteration.next();
 
                 String inSymbolicName = entry.getSymbolicName();
 
-                String outputFilename = filesOutput.addNewFile(inSymbolicName);
-                String inputVirtualPath = inputVirtualPathHelper.getVirtualPath(inSymbolicName);
-                if (inputVirtualPath != null && config.getOutputFileExtension() != null && !config.getOutputFileExtension().isEmpty()) {
-                    outputVirtualPathHelper.setVirtualPath(inSymbolicName, FilenameUtils.removeExtension(inputVirtualPath) + config.getOutputFileExtension());
-                } else if (config.getOutputFileExtension() != null && !config.getOutputFileExtension().isEmpty()) {
-                    outputVirtualPathHelper.setVirtualPath(inSymbolicName, inSymbolicName + config.getOutputFileExtension());
-                }
-                File outputFile = new File(URI.create(outputFilename));
-                File inputFile = new File(URI.create(entry.getFileURIString()));
                 try {
+                    File outputFile = File.createTempFile("", "", baseOutputDirectory);
+                    File inputFile = new File(URI.create(entry.getFileURIString()));
                     index++;
 
                     Date start = new Date();
@@ -142,38 +140,38 @@ public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialo
                     trans.getUnderlyingController().clearDocumentPool();
 
                     filesSuccessfulCount++;
+                    CopyHelpers.copyMetadata(inSymbolicName, filesInput, filesOutput);
+                    filesOutput.updateExistingFileURI(inSymbolicName, outputFile.toURI().toASCIIString());
+                    String inputVirtualPath = inputVirtualPathHelper.getVirtualPath(inSymbolicName);
+                    if (inputVirtualPath != null && config.getOutputFileExtension() != null && !config.getOutputFileExtension().isEmpty()) {
+                        outputVirtualPathHelper.setVirtualPath(inSymbolicName, FilenameUtils.removeExtension(inputVirtualPath) + config.getOutputFileExtension());
+                    } else if (config.getOutputFileExtension() != null && !config.getOutputFileExtension().isEmpty()) {
+                        outputVirtualPathHelper.setVirtualPath(inSymbolicName, inSymbolicName + config.getOutputFileExtension());
+                    }
+                    Resource resource = ResourceHelpers.getResource(filesOutput, inSymbolicName);
+                    Date now = new Date();
+                    resource.setLast_modified(now);
+                    ResourceHelpers.setResource(filesOutput, inSymbolicName, resource);
 
                     if (dpuContext.isDebugging()) {
                         LOG.debug("Processed {} file in {}s", appendNumber(index), (System.currentTimeMillis() - start.getTime()) / 1000);
                         LOG.debug("Memory used: " + String.valueOf((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024) + "M");
                     }
-                } catch (SaxonApiException | DataUnitException ex) {
-                    dpuContext.sendMessage(
-                            config.isSkipOnError() ? DPUContext.MessageType.WARNING : DPUContext.MessageType.ERROR,
-                                    "Error processing " + appendNumber(index) + " file",
-                                    String.valueOf(entry),
-                                    ex);
+                } catch (SaxonApiException | IOException | DataUnitException ex) {
+                    if (config.isSkipOnError()) {
+                        LOG.warn("Error processing {} file {}", appendNumber(index), String.valueOf(entry), ex);
+                    } else {
+                        throw new DPUException("Error processing " + appendNumber(index) + " file" + String.valueOf(entry), ex);
+                    }
                 }
                 shouldContinue = !dpuContext.canceled();
             }
         } catch (DataUnitException ex) {
             throw new DPUException("Error iterating filesInput.", ex);
         } finally {
-            try {
-                mapHelper.close();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error in close", ex);
-            }
-            try {
-                inputVirtualPathHelper.close();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error in close", ex);
-            }
-            try {
-                outputVirtualPathHelper.close();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error in close", ex);
-            }
+            mapHelper.close();
+            inputVirtualPathHelper.close();
+            outputVirtualPathHelper.close();
         }
         String message = String.format("Processed %d/%d", filesSuccessfulCount, index);
         dpuContext.sendMessage(filesSuccessfulCount < index ? DPUContext.MessageType.WARNING : DPUContext.MessageType.INFO, message);
