@@ -1,5 +1,6 @@
 package eu.unifiedviews.plugins.transformer.filesrenamer;
 
+import java.util.Date;
 import java.util.Iterator;
 
 import org.slf4j.Logger;
@@ -14,6 +15,8 @@ import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.NonConfigurableBase;
@@ -71,6 +74,10 @@ public class Renamer extends NonConfigurableBase {
 
                     CopyHelpers.copyMetadata(entry.getSymbolicName(), filesInput, filesOutput);
                     virtualPathHelperOutput.setVirtualPath(entry.getSymbolicName(), newVirtualPath);
+                    Resource resource = ResourceHelpers.getResource(filesOutput, entry.getSymbolicName());
+                    Date now = new Date();
+                    resource.setLast_modified(now);
+                    ResourceHelpers.setResource(filesOutput, entry.getSymbolicName(), resource);
 
                     filesSuccessfulCount++;
                 } catch (DataUnitException ex) {
@@ -84,12 +91,8 @@ public class Renamer extends NonConfigurableBase {
                 shouldContinue = !dpuContext.canceled();
             }
         } finally {
-            try {
-                virtualPathHelperInput.close();
-                virtualPathHelperOutput.close();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error closing filesInput", ex);
-            }
+            virtualPathHelperInput.close();
+            virtualPathHelperOutput.close();
         }
         String message = String.format("Processed %d/%d", filesSuccessfulCount, index);
         dpuContext.sendMessage(filesSuccessfulCount < index ? DPUContext.MessageType.WARNING : DPUContext.MessageType.INFO, message);
