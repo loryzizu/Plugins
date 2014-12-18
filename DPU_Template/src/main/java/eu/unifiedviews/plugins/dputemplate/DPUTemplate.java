@@ -52,7 +52,7 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
      * The name in {@link DataUnit.AsInput} has to be designed carefully, as once user creates pipelines with
      * your {@link DPU}, you can not change the name (it would break the pipeline graph).
      */
-    @DataUnit.AsInput(name = "rdfIinput")
+    @DataUnit.AsInput(name = "rdfInput")
     public RDFDataUnit rdfInput;
 
     /**
@@ -134,7 +134,7 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
              * Lets create our output file with symbolicName;graphUri;fileLocation
              * The getBaseFileURIString gives us base temp directory that we should use to create our new files.
              */
-            outputCsvFile = File.createTempFile("ourList", ".csv", new File(URI.create(filesOutput.getBaseFileURIString())));
+            outputCsvFile = File.createTempFile("___", config.getOutputFilename(), new File(URI.create(filesOutput.getBaseFileURIString())));
             outputCsvWriter = new PrintWriter(new FileWriter(outputCsvFile));
             /**
              * Get the connection to RDF storage
@@ -156,7 +156,7 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
                     /**
                      * Copy all metadata from graph symbolicName to new file symbolicName
                      */
-//                    copyHelper.copyMetadata(inputGraph.getSymbolicName());
+                    copyHelper.copyMetadata(inputGraph.getSymbolicName());
                     /**
                      * Lets create {@link File} object, notice we have to create {@link URI} from
                      * the outputFileURIString before providing it to {@link File} constructor.
@@ -167,12 +167,12 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
                     /**
                      * Export the data.
                      */
-                    connection.export(Rio.createWriter(RDFFormat.RDFXML, fileWriter));
+                    connection.export(Rio.createWriter(RDFFormat.RDFXML, fileWriter), inputGraph.getDataGraphURI());
                     /**
                      * Everything went OK, so add the line to our output CSV file:
                      * symbolicName;graphUri;fileLocation
                      */
-                    outputCsvWriter.println(inputGraph.getSymbolicName() + ";" + inputGraph.getDataGraphURI().stringValue() + ";" + outputFileURIString);
+                    outputCsvWriter.println(inputGraph.getSymbolicName() + ";" + inputGraph.getDataGraphURI().stringValue() + ";" + outputFile.getCanonicalPath());
                 } catch (IOException | DataUnitException | RepositoryException | RDFHandlerException | UnsupportedRDFormatException ex) {
                     /**
                      * Should we just skip the graph or should we fail execution
@@ -205,7 +205,7 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
              * All graphs processed, lets add our CSV file to output data unit under symbolicName "csvFile"
              * Since the file already exists, we use addExistingFile method
              */
-            filesOutput.addExistingFile("csvFile", outputCsvFile.toURI().toASCIIString());
+            filesOutput.addExistingFile(config.getOutputFilename(), outputCsvFile.toURI().toASCIIString());
         } catch (DataUnitException | IOException ex) {
             /**
              * There is nothing we can do
@@ -234,7 +234,9 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
             /**
              * Close the writer
              */
-            outputCsvWriter.close();
+            if (outputCsvWriter != null) {
+                outputCsvWriter.close();
+            }
         }
     }
 }
