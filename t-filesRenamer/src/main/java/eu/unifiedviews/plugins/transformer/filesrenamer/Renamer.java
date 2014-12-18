@@ -12,6 +12,7 @@ import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
@@ -66,11 +67,10 @@ public class Renamer extends NonConfigurableBase {
                     entry = filesIteration.next();
                     index++;
 
-                    final String newSymbolicName = entry.getSymbolicName() + ".ttl";
                     final String newVirtualPath = virtualPathHelperInput.getVirtualPath(entry.getSymbolicName()) + ".ttl";
 
-                    filesOutput.addExistingFile(newSymbolicName, entry.getFileURIString());
-                    virtualPathHelperOutput.setVirtualPath(newSymbolicName, newVirtualPath);
+                    CopyHelpers.copyMetadata(entry.getSymbolicName(), filesInput, filesOutput);
+                    virtualPathHelperOutput.setVirtualPath(entry.getSymbolicName(), newVirtualPath);
 
                     filesSuccessfulCount++;
                 } catch (DataUnitException ex) {
