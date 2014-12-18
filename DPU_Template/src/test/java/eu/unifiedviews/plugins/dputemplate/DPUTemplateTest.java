@@ -44,7 +44,7 @@ public class DPUTemplateTest {
         WritableFilesDataUnit filesOutput = env.createFilesOutput("filesOutput");
 
         InputStream testOutput = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("onetriple.ttl");
+                .getResourceAsStream("onetriple.rdf");
 
         RepositoryConnection connection = null;
         try {
