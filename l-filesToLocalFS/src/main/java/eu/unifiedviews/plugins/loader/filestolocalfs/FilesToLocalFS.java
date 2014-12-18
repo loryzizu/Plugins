@@ -94,9 +94,9 @@ public class FilesToLocalFS extends
                     String outputRelativePath = inputVirtualPathHelper.getVirtualPath(entry.getSymbolicName());
                     if (outputRelativePath == null || outputRelativePath.isEmpty()) {
                         outputRelativePath = entry.getSymbolicName();
+                        VirtualPathHelpers.setVirtualPath(filesOutput, entry.getSymbolicName(), outputRelativePath);
                     }
-                    File outputFile = new File(destinationAbsolutePath + File.separator
-                            + outputRelativePath);
+                    File outputFile = new File(destinationAbsolutePath + File.separator + outputRelativePath);
                     new File(FilenameUtils.getFullPath(outputFile.getAbsolutePath())).mkdirs();
 
                     Path outputPath = outputFile.toPath();
@@ -116,6 +116,7 @@ public class FilesToLocalFS extends
                     Resource resource = ResourceHelpers.getResource(filesOutput, entry.getSymbolicName());
                     resource.setLast_modified(new Date());
                     ResourceHelpers.setResource(filesOutput, entry.getSymbolicName(), resource);
+                    filesOutput.updateExistingFileURI(entry.getSymbolicName(), outputRelativePath);
 
                     if (dpuContext.isDebugging()) {
                         LOG.debug("Processed {} file in {}s", appendNumber(index), (System.currentTimeMillis() - start.getTime()) / 1000);

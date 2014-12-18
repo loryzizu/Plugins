@@ -62,10 +62,6 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
 
     private static final String DELETE = "delete from DB.DBA.load_list where ll_file like ?";
 
-    private static final String MOVE_QUERY = "DEFINE sql:log-enable 3 MOVE <%s> TO <%s>";
-
-    private static final String ADD_QUERY = "DEFINE sql:log-enable 3 ADD <%s> TO <%s>";
-
     private static final String CLEAR_QUERY = "DEFINE sql:log-enable 3 CLEAR GRAPH <%s>";
 
     private static final String RUN = "rdf_loader_run()";
@@ -102,16 +98,6 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
                 update.execute();
                 LOG.info("Cleared destination graph");
             }
-//            else {
-//                LOG.info("Adding loaded data to destination graph");
-//                Update update = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(ADD_QUERY, config.getTargetTempContext(), config.getTargetContext()));
-//                update.execute();
-//                LOG.info("Added data to destination graph.");
-//                LOG.info("Clearing temporary graph.");
-//                Update update2 = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(CLEAR_QUERY, config.getTargetTempContext()));
-//                update2.execute();
-//                LOG.info("Cleared temporary graph.");
-//            }
         } catch (MalformedQueryException | RepositoryException | UpdateExecutionException ex) {
             throw new DPUException("Error working with Virtuoso using Repository API", ex);
         } finally {
@@ -148,7 +134,6 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
             PreparedStatement statementLdDir = connection.prepareStatement(config.isIncludeSubdirectories() ? LD_DIR_ALL : LD_DIR);
             statementLdDir.setString(1, config.getLoadDirectoryPath());
             statementLdDir.setString(2, config.getLoadFilePattern());
-//            statementLdDir.setString(3, config.getTargetTempContext());
             statementLdDir.setString(3, config.getTargetContext());
             ResultSet resultSetLdDir = statementLdDir.executeQuery();
             resultSetLdDir.close();
