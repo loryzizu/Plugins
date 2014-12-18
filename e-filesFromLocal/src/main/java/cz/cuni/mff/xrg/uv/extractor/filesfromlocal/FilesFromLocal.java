@@ -73,6 +73,7 @@ public class FilesFromLocal extends ConfigurableBase<FilesFromLocalConfig_V1> im
         Date now = new Date();
         resource.setCreated(now);
         resource.setLast_modified(now);
+        resource.getExtras().setSource(file.toURI().toASCIIString());
         ResourceHelpers.setResource(outFilesData, symbolicName, resource);
     }
 }
