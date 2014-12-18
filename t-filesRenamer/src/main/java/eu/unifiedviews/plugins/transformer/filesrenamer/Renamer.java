@@ -81,11 +81,7 @@ public class Renamer extends NonConfigurableBase {
 
                     filesSuccessfulCount++;
                 } catch (DataUnitException ex) {
-                    dpuContext.sendMessage(
-                            DPUContext.MessageType.ERROR,
-                            "DataUnit exception.",
-                            "",
-                            ex);
+                    throw new DPUException("DataUnit exception.", ex);
                 }
 
                 shouldContinue = !dpuContext.canceled();
