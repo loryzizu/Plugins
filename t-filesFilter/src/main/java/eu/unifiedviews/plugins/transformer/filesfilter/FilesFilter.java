@@ -14,6 +14,7 @@ import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
@@ -99,21 +100,7 @@ public class FilesFilter extends ConfigurableBase<FilesFilterConfig_V1> implemen
                 }
                 LOG.debug("Entry '{}' pass the filter.", entry.getSymbolicName());
                 // if we are here, then file pass through our filters
-                // CopyHelpers.copyMetadata(entry.getSymbolicName(), inFilesData, outFilesData);
-
-                //
-                // TODO here we should rather somehow copy metadata from input
-                //  to output metadata graps, as otherwise we create new
-                //  triples
-                outFilesData.addExistingFile(entry.getSymbolicName(), entry.getFileURIString());
-                // TODO Remove this
-                // as a hack copy virtual path now
-                final String virtualPath = VirtualPathHelpers.getVirtualPath(inFilesData, entry.getSymbolicName());
-                if (virtualPath == null) {
-                    LOG.debug("Null virtualPath for {}", entry.getSymbolicName());
-                } else {
-                    VirtualPathHelpers.setVirtualPath(outFilesData, entry.getSymbolicName(), virtualPath);
-                }
+                CopyHelpers.copyMetadata(entry.getSymbolicName(), inFilesData, outFilesData);
             }
         } catch (DataUnitException ex) {
             context.sendMessage(DPUContext.MessageType.ERROR, "Problem with DataUnit", "", ex);
