@@ -54,7 +54,7 @@ public class UnZipper extends ConfigurableBase<UnZipperConfig_V1>
         try {
             filesIteration = FilesHelper.getFiles(inFilesData).iterator();
         } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "Can't get file iterator.", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, Messages.getString("errors.dpu.failed"), Messages.getString("errors.file.iterator"), ex);
             return;
         }
 
@@ -63,7 +63,7 @@ public class UnZipper extends ConfigurableBase<UnZipperConfig_V1>
             baseTargetDirectory = new File(java.net.URI.create(outFilesData.getBaseFileURIString()));
         } catch (DataUnitException ex) {
             context.sendMessage(DPUContext.MessageType.ERROR,
-                    "DPU Failed", "Can't get base output directory.", ex);
+                    Messages.getString("errors.dpu.failed"), Messages.getString("errors.file.outputdir"), ex);
             return;
         }
 
@@ -111,7 +111,7 @@ public class UnZipper extends ConfigurableBase<UnZipperConfig_V1>
             }
         } catch (DataUnitException ex) {
             context.sendMessage(DPUContext.MessageType.ERROR,
-                    "Problem with data unit.", "", ex);
+                    Messages.getString("errors.dpu.generalfailed"), "", ex);
         } finally {
         }
     }
@@ -148,12 +148,12 @@ public class UnZipper extends ConfigurableBase<UnZipperConfig_V1>
         try {
             final ZipFile zip = new ZipFile(zipFile);
             if (zip.isEncrypted()) {
-                context.sendMessage(DPUContext.MessageType.ERROR, "Extraction failed.", "Zip file is encrypted.");
+                context.sendMessage(DPUContext.MessageType.ERROR, Messages.getString("errors.dpu.extraction.failed"), Messages.getString("errors.file.encrypted"));
                 return false;
             }
             zip.extractAll(targetDirectory.toString());
         } catch (ZipException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Extraction failed.", "", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, Messages.getString("errors.dpu.extraction.failed"), "", ex);
             return false;
         }
         return true;

@@ -26,9 +26,8 @@ public class UnZipperVaadinDialog extends BaseConfigDialog<UnZipperConfig_V1> {
         mainLayout.setWidth("100%");
         mainLayout.setHeight("-1px");
 
-        checkNotPrefix = new CheckBox("Do not prefix symbolic name");
-        checkNotPrefix.setDescription("If checked then output symbolic names of output files are not prefixed with symbolic name of unzipped file."
-                + "Uncheck to prevent symbolic names collision if multiple zip files with same structure are unzipped. If you do not know, then uncheck this.");
+        checkNotPrefix = new CheckBox(Messages.getString("dialog.unzip.noprefix"));
+        checkNotPrefix.setDescription(Messages.getString("dialog.unzip.noprefix.description"));
         mainLayout.addComponent(checkNotPrefix);
 
         setCompositionRoot(mainLayout);
@@ -52,10 +51,10 @@ public class UnZipperVaadinDialog extends BaseConfigDialog<UnZipperConfig_V1> {
 
         if (checkNotPrefix.getValue() == true) {
             // is true, then we do not use prefixes
-            desc.append("Not prefixed.");
+            desc.append(Messages.getString("dialog.unzip.notprefixed"));
         } else {
             // if false prefix is not used
-            desc.append("Prefixed.");
+            desc.append(Messages.getString("dialog.unzip.prefixed"));
         }
 
         return desc.toString();
