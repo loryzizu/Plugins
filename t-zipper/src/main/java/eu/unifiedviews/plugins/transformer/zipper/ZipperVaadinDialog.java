@@ -27,16 +27,12 @@ public class ZipperVaadinDialog extends BaseConfigDialog<ZipperConfig_V1> {
         mainLayout.setWidth("100%");
         mainLayout.setHeight("-1px");
 
-        txtZipFile = new TextField("Zip file path/name (with extension):");
+        txtZipFile = new TextField(Messages.getString("dialog.zip.filename"));
         txtZipFile.setWidth("100%");
         txtZipFile.setRequired(true);
         mainLayout.addComponent(txtZipFile);
 
-        mainLayout.addComponent(new Label(
-                "Given path/name must be relative ie. /data.zip, /data/out.zip. "
-                        + "<br/> Absolute path like c:/ must not be used. "
-                        + "In case unix system /dir/data.zip is interpreted"
-                        + "as a relative path.", ContentMode.HTML));
+        mainLayout.addComponent(new Label(Messages.getString("dialog.zip.filename.specification"), ContentMode.HTML));
 
         setCompositionRoot(mainLayout);
     }
@@ -49,7 +45,7 @@ public class ZipperVaadinDialog extends BaseConfigDialog<ZipperConfig_V1> {
     @Override
     protected ZipperConfig_V1 getConfiguration() throws DPUConfigException {
         if (!txtZipFile.isValid()) {
-            throw new DPUConfigException("Destination must be filled.");
+            throw new DPUConfigException(Messages.getString("dialog.zip.valid.input.filename"));
         }
         ZipperConfig_V1 cnf = new ZipperConfig_V1();
         cnf.setZipFile(txtZipFile.getValue());
@@ -60,7 +56,7 @@ public class ZipperVaadinDialog extends BaseConfigDialog<ZipperConfig_V1> {
     public String getDescription() {
         final StringBuilder desc = new StringBuilder();
 
-        desc.append("Load data into ");
+        desc.append(Messages.getString("dialog.zip.description"));
         desc.append(txtZipFile.getValue());
 
         return desc.toString();

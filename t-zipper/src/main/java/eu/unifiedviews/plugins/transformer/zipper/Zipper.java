@@ -66,7 +66,7 @@ public class Zipper extends ConfigurableBase<ZipperConfig_V1> implements ConfigD
         try {
             filesIteration = FilesHelper.getFiles(inFilesData).iterator();
         } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "Can't get file iterator.", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, Messages.getString("errors.dpu.failed"), Messages.getString("errors.file.iterator"), ex);
             return;
         }
         //
@@ -119,7 +119,7 @@ public class Zipper extends ConfigurableBase<ZipperConfig_V1> implements ConfigD
                 LOG.debug("Adding file: {}", entry.getSymbolicName());
                 if (!addZipEntry(zos, buffer, entry)) {
                     if (firstFailure) {
-                        context.sendMessage(DPUContext.MessageType.ERROR, "Faild to zip all files");
+                        context.sendMessage(DPUContext.MessageType.ERROR, Messages.getString("errors.zip.failed"));
                     }
                     firstFailure = false;
                 } else {
@@ -127,7 +127,7 @@ public class Zipper extends ConfigurableBase<ZipperConfig_V1> implements ConfigD
                 }
             }
         } catch (IOException | DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Failed to create zip file.", "", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, Messages.getString("errors.file.zip.failed"), "", ex);
         }
 
     }
