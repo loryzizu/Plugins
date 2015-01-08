@@ -72,13 +72,13 @@ public class FilesToScp extends ConfigurableBase<FilesToScpConfig_V1> implements
                 final String relativePath = VirtualPathHelpers.getVirtualPath(inFilesData, entry.getSymbolicName());
                 // TODO We can try to use symbolicName here
                 if (relativePath == null) {
-                    context.sendMessage(DPUContext.MessageType.WARNING, "No virtual path set for: " + entry.getSymbolicName() + ". File is ignored.");
+                    context.sendMessage(DPUContext.MessageType.WARNING, Messages.getString("error.scp.virtualpath") + " " + entry.getSymbolicName() + Messages.getString("error.scp.ignorefile"));
                     continue;
                 }
                 FileUtils.copyFile(new File(java.net.URI.create(entry.getFileURIString())), new File(toUploadDir, relativePath));
             }
         } catch (IOException | DataUnitException ex) {
-            throw new DPUException("Failed to prepare files before transfer.", ex);
+            throw new DPUException(Messages.getString("error.scp.filepreparation"), ex);
         } finally {
             try {
                 filesIteration.close();
@@ -96,9 +96,9 @@ public class FilesToScp extends ConfigurableBase<FilesToScpConfig_V1> implements
             }
         } catch (SCPPException ex) {
             if (config.isSoftFail()) {
-                context.sendMessage(DPUContext.MessageType.WARNING, "Failed to upload file/directory", "", ex);
+                context.sendMessage(DPUContext.MessageType.WARNING, Messages.getString("error.scp.uploadfail"), "", ex);
             } else {
-                throw new DPUException("Upload failed.", ex);
+                throw new DPUException(Messages.getString("error.scp.upload"), ex);
             }
         }
         // TODO Delte forking directory

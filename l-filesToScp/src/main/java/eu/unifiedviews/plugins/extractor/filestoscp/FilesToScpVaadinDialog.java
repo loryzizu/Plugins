@@ -42,28 +42,28 @@ public class FilesToScpVaadinDialog extends BaseConfigDialog<FilesToScpConfig_V1
         txtHost = new TextField();
         txtHost.setWidth("100%");
         txtHost.setHeight("-1px");
-        txtHost.setCaption("Host:");
+        txtHost.setCaption(Messages.getString("dialog.scp.hostname"));
         txtHost.setRequired(true);
         mainLayout.addComponent(txtHost);
 
         txtPort = new TextField();
         txtPort.setWidth("100%");
         txtPort.setHeight("-1px");
-        txtPort.setCaption("Port:");
+        txtPort.setCaption(Messages.getString("dialog.scp.port"));
         txtPort.setRequired(true);
         mainLayout.addComponent(txtPort);
 
         txtUser = new TextField();
         txtUser.setWidth("100%");
         txtUser.setHeight("-1px");
-        txtUser.setCaption("Username:");
+        txtUser.setCaption(Messages.getString("dialog.scp.username"));
         txtUser.setRequired(true);
         mainLayout.addComponent(txtUser);
 
         txtPassword = new PasswordField();
         txtPassword.setWidth("100%");
         txtPassword.setHeight("-1px");
-        txtPassword.setCaption("Password:");
+        txtPassword.setCaption(Messages.getString("dialog.scp.password"));
         txtPassword.setRequired(true);
         txtPassword.setNullRepresentation("");
         mainLayout.addComponent(txtPassword);
@@ -71,18 +71,18 @@ public class FilesToScpVaadinDialog extends BaseConfigDialog<FilesToScpConfig_V1
         txtDestination = new TextField();
         txtDestination.setWidth("100%");
         txtDestination.setHeight("-1px");
-        txtDestination.setCaption("Destination: (must exist and not end with '/')");
+        txtDestination.setCaption(Messages.getString("dialog.scp.destination"));
         txtDestination.setRequired(true);
         txtDestination.setNullRepresentation("");
         mainLayout.addComponent(txtDestination);
 
-        mainLayout.addComponent(new Label("Note: You need rights to access the target directory and all its parent directories"));
+        mainLayout.addComponent(new Label(Messages.getString("dialog.scp.destination.note")));
 
         chbSoftFail = new CheckBox();
-        chbSoftFail.setCaption("Soft failure");
+        chbSoftFail.setCaption(Messages.getString("dialog.scp.softfailure"));
         mainLayout.addComponent(chbSoftFail);
 
-        mainLayout.addComponent(new Label("If 'Soft failure' is checked and upload failed, then pipeline continue, otherwise the pipeline is stopped."));
+        mainLayout.addComponent(new Label(Messages.getString("dialog.scp.softfailure.note")));
 
         Panel panel = new Panel();
         panel.setSizeFull();
@@ -104,7 +104,7 @@ public class FilesToScpVaadinDialog extends BaseConfigDialog<FilesToScpConfig_V1
     @Override
     protected FilesToScpConfig_V1 getConfiguration() throws DPUConfigException {
         if (!txtHost.isValid()) {
-            throw new DPUConfigException("Output file name must be specified!");
+            throw new DPUConfigException(Messages.getString("dialog.scp.destination.validation"));
         }
 
         FilesToScpConfig_V1 cnf = new FilesToScpConfig_V1();
@@ -112,7 +112,7 @@ public class FilesToScpVaadinDialog extends BaseConfigDialog<FilesToScpConfig_V1
         try {
             cnf.setPort(Integer.parseInt(txtPort.getValue()));
         } catch (NumberFormatException e) {
-            throw new DPUConfigException("Port must be a number.");
+            throw new DPUConfigException(Messages.getString("dialog.scp.port.validation"));
         }
         cnf.setUsername(txtUser.getValue());
         cnf.setPassword(txtPassword.getValue());
@@ -125,7 +125,7 @@ public class FilesToScpVaadinDialog extends BaseConfigDialog<FilesToScpConfig_V1
     public String getDescription() {
         StringBuilder desc = new StringBuilder();
 
-        desc.append("Upload into ");
+        desc.append(Messages.getString("dialog.scp.upload") + " ");
         desc.append(txtUser.getValue());
         desc.append("@");
         desc.append(txtHost.getValue());
