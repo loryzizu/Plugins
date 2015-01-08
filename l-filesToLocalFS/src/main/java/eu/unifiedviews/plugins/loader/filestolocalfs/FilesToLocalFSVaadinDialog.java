@@ -16,13 +16,13 @@ public class FilesToLocalFSVaadinDialog extends BaseConfigDialog<FilesToLocalFSC
 
     private static final long serialVersionUID = -5668436075836909428L;
 
-    private static final String DESTINATION_LABEL = "Destination directory absolute path";
+    private static final String DESTINATION_LABEL = Messages.getString("dialog.tlfs.destination");
 
-    private static final String MOVE_FILES_LABEL = "Move files instead of copy";
+    private static final String MOVE_FILES_LABEL = Messages.getString("dialog.tlfs.move");
 
-    private static final String REPLACE_EXISTING_LABEL = "Replace existing files";
+    private static final String REPLACE_EXISTING_LABEL = Messages.getString("dialog.tlfs.replace");
 
-    private static final String SKIP_ON_ERROR_LABEL = "Skip file on error";
+    private static final String SKIP_ON_ERROR_LABEL = Messages.getString("dialog.tlfs.skip");
 
     private ObjectProperty<String> destination = new ObjectProperty<String>("");
 
