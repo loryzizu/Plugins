@@ -55,7 +55,7 @@ public class FilesToLocalFS extends
     @Override
     public void execute(DPUContext dpuContext) throws DPUException,
             InterruptedException {
-        Messages messages = new Messages(dpuContext.getLocale());
+        Messages messages = new Messages(dpuContext.getLocale(), this.getClass().getClassLoader());
         String shortMessage = this.getClass().getSimpleName() + " " + messages.getString("status.tlfs.starting");
         String longMessage = String.valueOf(config);
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);

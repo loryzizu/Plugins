@@ -7,12 +7,14 @@ import com.vaadin.ui.TextField;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class FilesToLocalFSVaadinDialog extends BaseConfigDialog<FilesToLocalFSConfig_V1> {
+public class FilesToLocalFSVaadinDialog extends BaseConfigDialog<FilesToLocalFSConfig_V1> implements InitializableConfigDialog {
 
     private static final long serialVersionUID = -5668436075836909428L;
 
@@ -24,13 +26,16 @@ public class FilesToLocalFSVaadinDialog extends BaseConfigDialog<FilesToLocalFSC
 
     private ObjectProperty<Boolean> skipOnError = new ObjectProperty<Boolean>(false);
 
+    private Messages messages;
+
     public FilesToLocalFSVaadinDialog() {
         super(FilesToLocalFSConfig_V1.class);
-
     }
 
     @Override
     public void initialize() {
+        messages = new Messages(getContext().getLocale(), this.getClass().getClassLoader());
+
         FormLayout mainLayout = new FormLayout();
 
         // top-level component properties
