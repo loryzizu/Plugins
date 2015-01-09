@@ -30,6 +30,7 @@ import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 @DPU.AsLoader
 public class FilesToLocalFS extends
@@ -54,7 +55,8 @@ public class FilesToLocalFS extends
     @Override
     public void execute(DPUContext dpuContext) throws DPUException,
             InterruptedException {
-        String shortMessage = this.getClass().getSimpleName() + " " + Messages.getString("status.tlfs.starting");
+        Messages messages = new Messages(dpuContext.getLocale());
+        String shortMessage = this.getClass().getSimpleName() + " " + messages.getString("status.tlfs.starting");
         String longMessage = String.valueOf(config);
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
 
@@ -62,12 +64,12 @@ public class FilesToLocalFS extends
         try {
             filesIteration = filesInput.getIteration();
         } catch (DataUnitException ex) {
-            throw new DPUException(Messages.getString("error.tlfs.fileinput"), ex);
+            throw new DPUException(messages.getString("error.tlfs.fileinput"), ex);
         }
         File destinationDirFile = new File(config.getDestination());
         destinationDirFile.mkdirs();
         String destinationAbsolutePath = destinationDirFile.getAbsolutePath();
-        
+
         boolean moveFiles = config.isMoveFiles();
         ArrayList<CopyOption> copyOptions = new ArrayList<>(1);
         if (config.isReplaceExisting()) {
@@ -122,14 +124,14 @@ public class FilesToLocalFS extends
                     if (config.isSkipOnError()) {
                         LOG.warn("Error processing {} file {}", appendNumber(index), String.valueOf(entry), ex);
                     } else {
-                        throw new DPUException(Messages.getString("error.tlfs.processing") + " " + appendNumber(index) + " " + Messages.getString("error.tlfs.file") + " " + String.valueOf(entry), ex);
+                        throw new DPUException(messages.getString("error.tlfs.processing") + " " + appendNumber(index) + " " + messages.getString("error.tlfs.file") + " " + String.valueOf(entry), ex);
                     }
                 }
 
                 shouldContinue = !dpuContext.canceled();
             }
         } catch (DataUnitException ex) {
-            throw new DPUException(Messages.getString("error.fileinput.iterator"), ex);
+            throw new DPUException(messages.getString("error.fileinput.iterator"), ex);
         } finally {
             try {
                 filesIteration.close();
