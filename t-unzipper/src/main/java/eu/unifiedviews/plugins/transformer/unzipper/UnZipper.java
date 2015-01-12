@@ -42,7 +42,7 @@ public class UnZipper extends ConfigurableBase<UnZipperConfig_V1>
     public WritableFilesDataUnit outFilesData;
 
     private DPUContext context;
-    
+
     private Messages messages;
 
     public UnZipper() {
@@ -53,7 +53,7 @@ public class UnZipper extends ConfigurableBase<UnZipperConfig_V1>
     public void execute(DPUContext context) throws DPUException {
         this.context = context;
         this.messages = new Messages(context.getLocale(), this.getClass().getClassLoader());
-        
+
         final Iterator<FilesDataUnit.Entry> filesIteration;
         try {
             filesIteration = FilesHelper.getFiles(inFilesData).iterator();
