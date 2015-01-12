@@ -26,6 +26,7 @@ import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 /**
  * @author Škoda Petr
@@ -42,6 +43,8 @@ public class Zipper extends ConfigurableBase<ZipperConfig_V1> implements ConfigD
     public WritableFilesDataUnit outFilesData;
 
     private DPUContext context;
+    
+    private Messages messages;
 
     /**
      * Is set to true if the symbolicName is used as a path/file name.
@@ -62,11 +65,12 @@ public class Zipper extends ConfigurableBase<ZipperConfig_V1> implements ConfigD
     @Override
     public void execute(DPUContext context) throws DPUException {
         this.context = context;
+        this.messages = new Messages(context.getLocale(), this.getClass().getClassLoader());
         final Iterator<FilesDataUnit.Entry> filesIteration;
         try {
             filesIteration = FilesHelper.getFiles(inFilesData).iterator();
         } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, Messages.getString("errors.dpu.failed"), Messages.getString("errors.file.iterator"), ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.dpu.failed"), messages.getString("errors.file.iterator"), ex);
             return;
         }
         //
@@ -119,7 +123,7 @@ public class Zipper extends ConfigurableBase<ZipperConfig_V1> implements ConfigD
                 LOG.debug("Adding file: {}", entry.getSymbolicName());
                 if (!addZipEntry(zos, buffer, entry)) {
                     if (firstFailure) {
-                        context.sendMessage(DPUContext.MessageType.ERROR, Messages.getString("errors.zip.failed"));
+                        context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.zip.failed"));
                     }
                     firstFailure = false;
                 } else {
@@ -127,7 +131,7 @@ public class Zipper extends ConfigurableBase<ZipperConfig_V1> implements ConfigD
                 }
             }
         } catch (IOException | DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, Messages.getString("errors.file.zip.failed"), "", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.file.zip.failed"), "", ex);
         }
 
     }
