@@ -2,22 +2,29 @@ package eu.unifiedviews.plugins.transformer.unzipper;
 
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.VerticalLayout;
+
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 /**
  * @author Škoda Petr
  */
-public class UnZipperVaadinDialog extends BaseConfigDialog<UnZipperConfig_V1> {
+public class UnZipperVaadinDialog extends BaseConfigDialog<UnZipperConfig_V1> implements InitializableConfigDialog {
 
     private CheckBox checkNotPrefix;
+    
+    private Messages messages;
 
     public UnZipperVaadinDialog() {
         super(UnZipperConfig_V1.class);
-        buildMainLayout();
     }
-
-    private void buildMainLayout() {
+    
+    @Override
+    public void initialize() {
+        this.messages = new Messages(getContext().getLocale(), this.getClass().getClassLoader());
+        
         setWidth("100%");
         setHeight("100%");
 
@@ -26,11 +33,12 @@ public class UnZipperVaadinDialog extends BaseConfigDialog<UnZipperConfig_V1> {
         mainLayout.setWidth("100%");
         mainLayout.setHeight("-1px");
 
-        checkNotPrefix = new CheckBox(Messages.getString("dialog.unzip.noprefix"));
-        checkNotPrefix.setDescription(Messages.getString("dialog.unzip.noprefix.description"));
+        checkNotPrefix = new CheckBox(messages.getString("dialog.unzip.noprefix"));
+        checkNotPrefix.setDescription(messages.getString("dialog.unzip.noprefix.description"));
         mainLayout.addComponent(checkNotPrefix);
 
         setCompositionRoot(mainLayout);
+        
     }
 
     @Override
@@ -51,10 +59,10 @@ public class UnZipperVaadinDialog extends BaseConfigDialog<UnZipperConfig_V1> {
 
         if (checkNotPrefix.getValue() == true) {
             // is true, then we do not use prefixes
-            desc.append(Messages.getString("dialog.unzip.notprefixed"));
+            desc.append(messages.getString("dialog.unzip.notprefixed"));
         } else {
             // if false prefix is not used
-            desc.append(Messages.getString("dialog.unzip.prefixed"));
+            desc.append(messages.getString("dialog.unzip.prefixed"));
         }
 
         return desc.toString();

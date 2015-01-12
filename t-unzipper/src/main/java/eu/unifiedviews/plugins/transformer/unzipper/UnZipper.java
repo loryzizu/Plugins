@@ -24,6 +24,7 @@ import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 /**
  * @author Škoda Petr
@@ -41,6 +42,8 @@ public class UnZipper extends ConfigurableBase<UnZipperConfig_V1>
     public WritableFilesDataUnit outFilesData;
 
     private DPUContext context;
+    
+    private Messages messages;
 
     public UnZipper() {
         super(UnZipperConfig_V1.class);
@@ -49,12 +52,13 @@ public class UnZipper extends ConfigurableBase<UnZipperConfig_V1>
     @Override
     public void execute(DPUContext context) throws DPUException {
         this.context = context;
-
+        this.messages = new Messages(context.getLocale(), this.getClass().getClassLoader());
+        
         final Iterator<FilesDataUnit.Entry> filesIteration;
         try {
             filesIteration = FilesHelper.getFiles(inFilesData).iterator();
         } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, Messages.getString("errors.dpu.failed"), Messages.getString("errors.file.iterator"), ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.dpu.failed"), messages.getString("errors.file.iterator"), ex);
             return;
         }
 
@@ -63,7 +67,7 @@ public class UnZipper extends ConfigurableBase<UnZipperConfig_V1>
             baseTargetDirectory = new File(java.net.URI.create(outFilesData.getBaseFileURIString()));
         } catch (DataUnitException ex) {
             context.sendMessage(DPUContext.MessageType.ERROR,
-                    Messages.getString("errors.dpu.failed"), Messages.getString("errors.file.outputdir"), ex);
+                    messages.getString("errors.dpu.failed"), messages.getString("errors.file.outputdir"), ex);
             return;
         }
 
@@ -111,7 +115,7 @@ public class UnZipper extends ConfigurableBase<UnZipperConfig_V1>
             }
         } catch (DataUnitException ex) {
             context.sendMessage(DPUContext.MessageType.ERROR,
-                    Messages.getString("errors.dpu.generalfailed"), "", ex);
+                    messages.getString("errors.dpu.generalfailed"), "", ex);
         } finally {
         }
     }
@@ -148,12 +152,12 @@ public class UnZipper extends ConfigurableBase<UnZipperConfig_V1>
         try {
             final ZipFile zip = new ZipFile(zipFile);
             if (zip.isEncrypted()) {
-                context.sendMessage(DPUContext.MessageType.ERROR, Messages.getString("errors.dpu.extraction.failed"), Messages.getString("errors.file.encrypted"));
+                context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.dpu.extraction.failed"), messages.getString("errors.file.encrypted"));
                 return false;
             }
             zip.extractAll(targetDirectory.toString());
         } catch (ZipException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, Messages.getString("errors.dpu.extraction.failed"), "", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.dpu.extraction.failed"), "", ex);
             return false;
         }
         return true;
