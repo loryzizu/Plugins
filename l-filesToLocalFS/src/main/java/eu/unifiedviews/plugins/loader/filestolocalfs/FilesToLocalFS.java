@@ -109,7 +109,11 @@ public class FilesToLocalFS extends
                     } else {
                         java.nio.file.Files.copy(inputPath, outputPath, copyOptionsArray);
                     }
-                    java.nio.file.Files.setPosixFilePermissions(outputPath, PosixFilePermissions.fromString("rw-r--r--"));
+                    try {
+                        java.nio.file.Files.setPosixFilePermissions(outputPath, PosixFilePermissions.fromString("rw-r--r--"));
+                    } catch (UnsupportedOperationException ex) {
+
+                    }
 
                     copyHelper.copyMetadata(entry.getSymbolicName());
                     Resource resource = ResourceHelpers.getResource(filesOutput, entry.getSymbolicName());
