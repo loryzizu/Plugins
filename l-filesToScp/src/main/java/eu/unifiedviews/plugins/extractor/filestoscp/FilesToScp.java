@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import uk.co.marcoratto.scp.SCP;
 import uk.co.marcoratto.scp.SCPPException;
 import uk.co.marcoratto.scp.listeners.SCPListenerPrintStream;
-
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
@@ -21,9 +20,9 @@ import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 /**
- *
  * @author Škoda Petr
  */
 @DPU.AsLoader
@@ -40,6 +39,7 @@ public class FilesToScp extends ConfigurableBase<FilesToScpConfig_V1> implements
 
     @Override
     public void execute(DPUContext context) throws DPUException {
+        Messages messages = new Messages(context.getLocale(), this.getClass().getClassLoader());
         final FilesDataUnit.Iteration filesIteration;
         try {
             filesIteration = inFilesData.getIteration();
@@ -72,13 +72,13 @@ public class FilesToScp extends ConfigurableBase<FilesToScpConfig_V1> implements
                 final String relativePath = VirtualPathHelpers.getVirtualPath(inFilesData, entry.getSymbolicName());
                 // TODO We can try to use symbolicName here
                 if (relativePath == null) {
-                    context.sendMessage(DPUContext.MessageType.WARNING, Messages.getString("error.scp.virtualpath") + " " + entry.getSymbolicName() + Messages.getString("error.scp.ignorefile"));
+                    context.sendMessage(DPUContext.MessageType.WARNING, messages.getString("error.scp.virtualpath") + " " + entry.getSymbolicName() + messages.getString("error.scp.ignorefile"));
                     continue;
                 }
                 FileUtils.copyFile(new File(java.net.URI.create(entry.getFileURIString())), new File(toUploadDir, relativePath));
             }
         } catch (IOException | DataUnitException ex) {
-            throw new DPUException(Messages.getString("error.scp.filepreparation"), ex);
+            throw new DPUException(messages.getString("error.scp.filepreparation"), ex);
         } finally {
             try {
                 filesIteration.close();
@@ -96,9 +96,9 @@ public class FilesToScp extends ConfigurableBase<FilesToScpConfig_V1> implements
             }
         } catch (SCPPException ex) {
             if (config.isSoftFail()) {
-                context.sendMessage(DPUContext.MessageType.WARNING, Messages.getString("error.scp.uploadfail"), "", ex);
+                context.sendMessage(DPUContext.MessageType.WARNING, messages.getString("error.scp.uploadfail"), "", ex);
             } else {
-                throw new DPUException(Messages.getString("error.scp.upload"), ex);
+                throw new DPUException(messages.getString("error.scp.upload"), ex);
             }
         }
         // TODO Delte forking directory
