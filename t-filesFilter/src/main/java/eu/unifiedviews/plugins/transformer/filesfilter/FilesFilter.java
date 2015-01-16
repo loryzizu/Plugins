@@ -20,6 +20,7 @@ import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 @DPU.AsTransformer
 public class FilesFilter extends ConfigurableBase<FilesFilterConfig_V1> implements ConfigDialogProvider<FilesFilterConfig_V1> {
@@ -43,12 +44,13 @@ public class FilesFilter extends ConfigurableBase<FilesFilterConfig_V1> implemen
 
     @Override
     public void execute(DPUContext context) throws DPUException {
+        Messages messages = new Messages(context.getLocale(), this.getClass().getClassLoader());
         Pattern pattern = null;
         if (config.isUseRegExp()) {
             try {
                 pattern = Pattern.compile(config.getObject());
             } catch (PatternSyntaxException ex) {
-                context.sendMessage(DPUContext.MessageType.ERROR, "Configuration problem", "Error in object regexp.", ex);
+                context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("FilesFilter.problem.configuration"), messages.getString("FilesFilter.error.regexp"), ex);
                 return;
             }
         }
@@ -59,7 +61,7 @@ public class FilesFilter extends ConfigurableBase<FilesFilterConfig_V1> implemen
         try {
             filesIteration = FilesHelper.getFiles(inFilesData).iterator();
         } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "Can't get file iterator.", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("FilesFilter.dpu.failed"), messages.getString("FilesFilter.error.iterator"), ex);
             return;
         }
         //
@@ -103,7 +105,7 @@ public class FilesFilter extends ConfigurableBase<FilesFilterConfig_V1> implemen
                 CopyHelpers.copyMetadata(entry.getSymbolicName(), inFilesData, outFilesData);
             }
         } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Problem with DataUnit", "", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("FilesFilter.problem.dataunit"), "", ex);
         }
     }
 

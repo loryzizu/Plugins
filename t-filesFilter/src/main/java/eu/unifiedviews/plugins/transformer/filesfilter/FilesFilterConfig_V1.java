@@ -1,9 +1,8 @@
 package eu.unifiedviews.plugins.transformer.filesfilter;
 
-
 public class FilesFilterConfig_V1 {
 
-     public static final String SYMBOLIC_NAME = "FIXED_SYMBOLIC_NAME";
+    public static final String SYMBOLIC_NAME = "FIXED_SYMBOLIC_NAME";
 
     public static final String VIRTUAL_PATH = "VIRTUAL_PATH";
 
