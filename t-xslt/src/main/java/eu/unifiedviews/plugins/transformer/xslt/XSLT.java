@@ -108,7 +108,7 @@ public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialo
                 String inSymbolicName = entry.getSymbolicName();
 
                 try {
-                    File outputFile = File.createTempFile("", "", baseOutputDirectory);
+                    File outputFile = File.createTempFile("t-xslt-dpu", "", baseOutputDirectory);
                     File inputFile = new File(URI.create(entry.getFileURIString()));
                     index++;
 

@@ -56,7 +56,34 @@
 			<artifactId>xml-resolver</artifactId>
 			<version>1.2</version>
 		</dependency>
+
+		<dependency>
+			<groupId>cz.cuni.mff.xrg.odcs</groupId>
+			<artifactId>module-test</artifactId>
+			<version>${module-test.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>resources*.properties</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
+
+
 </project>
 
 
