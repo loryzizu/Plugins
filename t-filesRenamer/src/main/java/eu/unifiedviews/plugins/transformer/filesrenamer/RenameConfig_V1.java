@@ -1,44 +1,59 @@
 package eu.unifiedviews.plugins.transformer.filesrenamer;
 
-
 public class RenameConfig_V1 {
 
-    private String xslTemplate = "";
+    private String mask = "[N]"; // default value
 
-    private String xslTemplateFileNameShownInDialog = "";
+    private String extensionMask = "[E]"; // default value
 
-    private boolean skipOnError = false;
+    private Integer counterStart = 0; // default value
 
-    public RenameConfig_V1() {
+    private Integer counterStep = 1; // default value
+
+    private Integer counterDigits = 1; // default value
+
+    public String getMask() {
+        return mask;
     }
 
-    public String getXslTemplate() {
-        return xslTemplate;
+    public void setMask(String mask) {
+        this.mask = mask;
     }
 
-    public void setXslTemplate(String xslTemplate) {
-        this.xslTemplate = xslTemplate;
+    public String getExtensionMask() {
+        return extensionMask;
     }
 
-    public String getXslTemplateFileNameShownInDialog() {
-        return xslTemplateFileNameShownInDialog;
+    public void setExtensionMask(String extensionMask) {
+        this.extensionMask = extensionMask;
     }
 
-    public void setXslTemplateFileNameShownInDialog(
-            String xslTemplateFileNameShownInDialog) {
-        this.xslTemplateFileNameShownInDialog = xslTemplateFileNameShownInDialog;
+    public Integer getCounterStart() {
+        return counterStart;
     }
 
-    public boolean isSkipOnError() {
-        return skipOnError;
+    public void setCounterStart(Integer counterStart) {
+        this.counterStart = counterStart;
     }
 
-    public void setSkipOnError(boolean skipOnError) {
-        this.skipOnError = skipOnError;
+    public Integer getCounterStep() {
+        return counterStep;
+    }
+
+    public void setCounterStep(Integer counterStep) {
+        this.counterStep = counterStep;
+    }
+
+    public Integer getCounterDigits() {
+        return counterDigits;
+    }
+
+    public void setCounterDigits(Integer counterDigits) {
+        this.counterDigits = counterDigits;
     }
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "[templateFile=" + xslTemplateFileNameShownInDialog + ",skipOnError=" + String.valueOf(skipOnError) + "]";
+        return "RenameConfig_V1 [mask=" + mask + ", extensionMask=" + extensionMask + ", counterStart=" + counterStart + ", counterStep=" + counterStep + ", counterDigits=" + counterDigits + "]";
     }
 }
