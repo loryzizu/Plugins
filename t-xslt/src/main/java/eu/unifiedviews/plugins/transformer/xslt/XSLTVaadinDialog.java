@@ -15,13 +15,15 @@ import com.vaadin.ui.*;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
 public class XSLTVaadinDialog extends
-        BaseConfigDialog<XSLTConfig_V1> {
+        BaseConfigDialog<XSLTConfig_V1> implements InitializableConfigDialog {
 
     /**
      *
@@ -31,9 +33,9 @@ public class XSLTVaadinDialog extends
     private static final Logger log = LoggerFactory
             .getLogger(XSLTVaadinDialog.class);
 
-    private static final String SKIP_ON_ERROR_LABEL = "Skip file on error";
+    private static final String SKIP_ON_ERROR_LABEL = "dialog.xslt.skiperror";
 
-    private static final String OUTPUT_FILE_EXTENSTION_LABEL = "Output file extension";
+    private static final String OUTPUT_FILE_EXTENSTION_LABEL = "dialog.xslt.fileextension";
 
     private Label lFileName;
 
@@ -46,23 +48,21 @@ public class XSLTVaadinDialog extends
     private ObjectProperty<Boolean> skipOnError = new ObjectProperty<Boolean>(false);
 
     private ObjectProperty<String> outputFileExtension = new ObjectProperty<String>("");
+    
+    private Messages messages;
 
     // TODO refactor
     static int fl = 0;
 
     public XSLTVaadinDialog() {
         super(XSLTConfig_V1.class);
-        buildMainLayout();
-        Panel panel = new Panel();
-        panel.setSizeFull();
-        panel.setContent(mainLayout);
-        setCompositionRoot(panel);
-        // setCompositionRoot(mainLayout);
-        // setCompositionRoot(p);
     }
-
-    private VerticalLayout buildMainLayout() {
-        // common part: create layout
+    
+    @Override
+    public void initialize() {
+        this.messages = new Messages(getContext().getLocale(), this.getClass().getClassLoader());
+        
+     // common part: create layout
         mainLayout = new VerticalLayout();
         mainLayout.setImmediate(false);
         mainLayout.setWidth("100%");
@@ -70,9 +70,9 @@ public class XSLTVaadinDialog extends
         mainLayout.setMargin(false);
         mainLayout.setSpacing(true);
 
-        mainLayout.addComponent(new CheckBox(SKIP_ON_ERROR_LABEL, skipOnError));
+        mainLayout.addComponent(new CheckBox(this.messages.getString(SKIP_ON_ERROR_LABEL), skipOnError));
 
-        mainLayout.addComponent(new TextField(OUTPUT_FILE_EXTENSTION_LABEL, outputFileExtension));
+        mainLayout.addComponent(new TextField(this.messages.getString(OUTPUT_FILE_EXTENSTION_LABEL), outputFileExtension));
 
         // top-level component properties
         setWidth("100%");
@@ -82,9 +82,9 @@ public class XSLTVaadinDialog extends
         final FileUploadReceiver fileUploadReceiver = new FileUploadReceiver();
 
         // Upload component
-        Upload fileUpload = new Upload("XSLT Template: ", fileUploadReceiver);
+        Upload fileUpload = new Upload(this.messages.getString("dialog.xslt.upload"), fileUploadReceiver);
         fileUpload.setImmediate(true);
-        fileUpload.setButtonCaption("Upload");
+        fileUpload.setButtonCaption(this.messages.getString("dialog.xslt.uploadbutton"));
         // Upload started event listener
         fileUpload.addStartedListener(new Upload.StartedListener() {
             /**
@@ -136,10 +136,7 @@ public class XSLTVaadinDialog extends
                             "yyyy/MM/dd HH:mm:ss");
                     Date date = new Date();
 
-                    lFileName.setValue("File "
-                            + fileUploadReceiver.getFileName()
-                            + " was successfully uploaded on: "
-                            + dateFormat.format(date));
+                    lFileName.setValue(messages.getString("dialog.xslt.messages.upload", fileUploadReceiver.getFileName(), dateFormat.format(date)));
 
                     //
                 } else {
@@ -153,16 +150,16 @@ public class XSLTVaadinDialog extends
         });
 
         // The window with upload information
-        uploadInfoWindow = new UploadInfoWindow(fileUpload);
+        uploadInfoWindow = new UploadInfoWindow(fileUpload, this.messages);
 
         mainLayout.addComponent(fileUpload);
 
         // label for xslt filename
-        lFileName = new Label("File not uploaded");
+        lFileName = new Label(this.messages.getString("dialog.xslt.notuploaded"));
         mainLayout.addComponent(lFileName);
 
         Label lInput = new Label();
-        lInput.setValue("Input:");
+        lInput.setValue(this.messages.getString("dialog.xslt.input"));
         mainLayout.addComponent(lInput);
 
         // ***************
@@ -187,10 +184,15 @@ public class XSLTVaadinDialog extends
         mainLayout.addComponent(taXSLTemplate);
         // mainLayout.setColumnExpandRatio(0, 0.00001f);
         // mainLayout.setColumnExpandRatio(1, 0.99999f);
-
-        return mainLayout;
+        
+        Panel panel = new Panel();
+        panel.setSizeFull();
+        panel.setContent(mainLayout);
+        setCompositionRoot(panel);
+        // setCompositionRoot(mainLayout);
+        // setCompositionRoot(p);
     }
-
+    
     @Override
     public void setConfiguration(XSLTConfig_V1 conf)
             throws DPUConfigException {
@@ -212,7 +214,7 @@ public class XSLTVaadinDialog extends
         // check that certain xslt was uploaded
         if (taXSLTemplate.getValue().trim().isEmpty()) {
             // no config!
-            throw new DPUConfigException("No configuration file uploaded");
+            throw new DPUConfigException(this.messages.getString("dialog.xslt.errors.configupload"));
 
         }
 
@@ -224,7 +226,7 @@ public class XSLTVaadinDialog extends
         conf.setXslTemplateFileNameShownInDialog(lFileName.getValue().trim());
         conf.setSkipOnError(skipOnError.getValue());
         if (!outputFileExtension.getValue().startsWith(".")) {
-            throw new DPUConfigException(OUTPUT_FILE_EXTENSTION_LABEL + " should start with \".\" (e.g. \".xml\", \".ttl\")");
+            throw new DPUConfigException(this.messages.getString("dialog.xslt.errors.extension"));
         }
         conf.setOutputFileExtension(outputFileExtension.getValue());
         return conf;
@@ -295,6 +297,8 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
     private final Button cancelButton;
 
     private final Upload upload;
+    
+    private final Messages messages;
 
     /**
      * Basic constructor
@@ -302,11 +306,11 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
      * @param upload
      *            . Upload component
      */
-    public UploadInfoWindow(Upload nextUpload) {
-
+    public UploadInfoWindow(Upload nextUpload, Messages messages) {
         super("Status");
+        this.messages = messages;
         this.upload = nextUpload;
-        this.cancelButton = new Button("Cancel");
+        this.cancelButton = new Button(this.messages.getString("dialog.xslt.uploadinfo.cancelbtn"));
 
         setComponent();
 
@@ -342,15 +346,15 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
         cancelButton.setStyleName("small");
         stateLayout.addComponent(cancelButton);
 
-        stateLayout.setCaption("Current state");
-        state.setValue("Idle");
+        stateLayout.setCaption(this.messages.getString("dialog.xslt.uploadinfo.state"));
+        state.setValue(this.messages.getString("dialog.xslt.uploadinfo.idle"));
         formLayout.addComponent(stateLayout);
 
-        fileName.setCaption("File name");
+        fileName.setCaption(this.messages.getString("dialog.xslt.uploadinfo.filename"));
         formLayout.addComponent(fileName);
 
         // progress indicator
-        pi.setCaption("Progress");
+        pi.setCaption(this.messages.getString("dialog.xslt.uploadinfo.progress"));
         pi.setVisible(false);
         formLayout.addComponent(pi);
 
@@ -367,7 +371,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
      */
     @Override
     public void uploadFinished(final Upload.FinishedEvent event) {
-        state.setValue("Idle");
+        state.setValue(this.messages.getString("dialog.xslt.uploadinfo.idle"));
         pi.setVisible(false);
         textualProgress.setVisible(false);
         cancelButton.setVisible(false);
@@ -385,7 +389,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
         pi.setPollingInterval(500); // hit server frequantly to get
         textualProgress.setVisible(true);
         // updates to client
-        state.setValue("Uploading");
+        state.setValue(this.messages.getString("dialog.xslt.uploadinfo.uploading"));
         fileName.setValue(event.getFilename());
 
         cancelButton.setVisible(true);
@@ -398,7 +402,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
     public void updateProgress(final long readBytes, final long contentLength) {
         // this method gets called several times during the update
         pi.setValue(new Float(readBytes / (float) contentLength));
-        textualProgress.setValue("Processed " + readBytes / 1024
-                + " k bytes of " + contentLength / 1024 + " k");
+        textualProgress.setValue(this.messages.getString("dialog.xslt.uploadinfo.textprogress", 
+                readBytes / 1024, contentLength / 1024));
     }
 }
