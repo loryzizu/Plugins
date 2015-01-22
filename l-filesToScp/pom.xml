@@ -26,7 +26,6 @@
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.extractor.filestoscp</dpu.package>
 		<dpu.mainClass>FilesToScp</dpu.mainClass>
-		<embed.transitive>false</embed.transitive>
 	</properties>
 
 	<dependencies>
