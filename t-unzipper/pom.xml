@@ -26,6 +26,7 @@
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.transformer.unzipper</dpu.package>
 		<dpu.mainClass>UnZipper</dpu.mainClass>
+		<embed.transitive>false</embed.transitive>
 		<mockito.version>1.10.8</mockito.version>
 		<powermock.version>1.6.1</powermock.version>
 		<junit.version>4.12</junit.version>
