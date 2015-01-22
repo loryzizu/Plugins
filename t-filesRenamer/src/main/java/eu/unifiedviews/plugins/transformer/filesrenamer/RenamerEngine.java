@@ -27,7 +27,7 @@ public class RenamerEngine {
 
     private Map<Integer, String> positionToControlMarkExtensionMap;
 
-    private RenameConfig_V1 config;
+    private RenameConfig_V2 config;
 
     private Counter counter;
 
@@ -181,11 +181,11 @@ public class RenamerEngine {
         }
     }
 
-    public RenameConfig_V1 getConfig() {
+    public RenameConfig_V2 getConfig() {
         return config;
     }
 
-    public void setConfig(RenameConfig_V1 config) {
+    public void setConfig(RenameConfig_V2 config) {
         this.config = config;
     }
 

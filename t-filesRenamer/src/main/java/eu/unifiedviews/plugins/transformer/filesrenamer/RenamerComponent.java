@@ -256,8 +256,8 @@ public class RenamerComponent extends CustomComponent {
                 + messages.getString("RenamerComponent.description4"), ContentMode.HTML));
     }
 
-    public RenameConfig_V1 getConfig() {
-        RenameConfig_V1 config = new RenameConfig_V1();
+    public RenameConfig_V2 getConfig() {
+        RenameConfig_V2 config = new RenameConfig_V2();
         config.setMask(textField_1.getValue());
         config.setExtensionMask(textField_2.getValue());
         config.setCounterStart(counterStart.getValue());
@@ -266,7 +266,7 @@ public class RenamerComponent extends CustomComponent {
         return config;
     }
 
-    public void setConfig(RenameConfig_V1 config) {
+    public void setConfig(RenameConfig_V2 config) {
         textField_1.setValue(config.getMask());
         textField_2.setValue(config.getExtensionMask());
         textField_3.setValue(config.getCounterStart().toString());

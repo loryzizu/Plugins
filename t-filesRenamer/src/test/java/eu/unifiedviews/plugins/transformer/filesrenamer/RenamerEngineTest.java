@@ -11,7 +11,7 @@ public class RenamerEngineTest {
 
     @Test
     public void counterTest() {
-        RenameConfig_V1 config = new RenameConfig_V1();
+        RenameConfig_V2 config = new RenameConfig_V2();
         config.setCounterStart(0);
         config.setCounterStep(1);
         config.setCounterDigits(2);
@@ -26,7 +26,7 @@ public class RenamerEngineTest {
         assertEquals("01", engine.getCounter().next());
         assertEquals("02", engine.getCounter().next());
 
-        config = new RenameConfig_V1();
+        config = new RenameConfig_V2();
         config.setCounterStart(1);
         config.setCounterStep(2);
         config.setCounterDigits(3);
@@ -40,7 +40,7 @@ public class RenamerEngineTest {
         assertEquals("003", engine.getCounter().next());
         assertEquals("005", engine.getCounter().next());
 
-        config = new RenameConfig_V1();
+        config = new RenameConfig_V2();
         config.setCounterStart(99);
         config.setCounterStep(1);
         config.setCounterDigits(2);
@@ -71,7 +71,7 @@ public class RenamerEngineTest {
 
     @Test
     public void renameTest() {
-        RenameConfig_V1 config = new RenameConfig_V1();
+        RenameConfig_V2 config = new RenameConfig_V2();
         config.setMask("te[N]st[C]ing");
         config.setExtensionMask("[E]");
         config.setCounterStart(0);

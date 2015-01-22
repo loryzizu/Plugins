@@ -30,7 +30,7 @@ import eu.unifiedviews.helpers.dpu.localization.Messages;
  * @author mva
  */
 @DPU.AsTransformer
-public class Renamer extends ConfigurableBase<RenameConfig_V1> implements ConfigDialogProvider<RenameConfig_V1> {
+public class Renamer extends ConfigurableBase<RenameConfig_V2> implements ConfigDialogProvider<RenameConfig_V2> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Renamer.class);
 
@@ -41,11 +41,11 @@ public class Renamer extends ConfigurableBase<RenameConfig_V1> implements Config
     public WritableFilesDataUnit outFilesData;
 
     public Renamer() {
-        super(RenameConfig_V1.class);
+        super(RenameConfig_V2.class);
     }
 
     @Override
-    public AbstractConfigDialog<RenameConfig_V1> getConfigurationDialog() {
+    public AbstractConfigDialog<RenameConfig_V2> getConfigurationDialog() {
         return new RenameVaadinDialog();
     }
 

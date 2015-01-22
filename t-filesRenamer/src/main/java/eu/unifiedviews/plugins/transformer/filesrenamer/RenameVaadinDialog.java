@@ -17,7 +17,7 @@ import eu.unifiedviews.helpers.dpu.localization.Messages;
  * configuration.
  */
 public class RenameVaadinDialog extends
-        BaseConfigDialog<RenameConfig_V1> implements InitializableConfigDialog {
+        BaseConfigDialog<RenameConfig_V2> implements InitializableConfigDialog {
 
     /**
      * 
@@ -35,7 +35,7 @@ public class RenameVaadinDialog extends
     private String[] exampleArray = { "/example/log1.txt", "/example/log2.txt", "/example/data.zip", "/example/noextension" };
 
     public RenameVaadinDialog() {
-        super(RenameConfig_V1.class);
+        super(RenameConfig_V2.class);
     }
 
     public void initialize() {
@@ -87,13 +87,13 @@ public class RenameVaadinDialog extends
     }
 
     @Override
-    public void setConfiguration(RenameConfig_V1 config)
+    public void setConfiguration(RenameConfig_V2 config)
             throws DPUConfigException {
         component.setConfig(config);
     }
 
     @Override
-    public RenameConfig_V1 getConfiguration()
+    public RenameConfig_V2 getConfiguration()
             throws DPUConfigException {
         return component.getConfig();
     }
