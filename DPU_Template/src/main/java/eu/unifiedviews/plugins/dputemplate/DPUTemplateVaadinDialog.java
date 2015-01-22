@@ -7,22 +7,13 @@ import com.vaadin.ui.TextField;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class DPUTemplateVaadinDialog extends BaseConfigDialog<DPUTemplateConfig_V1> {
-
-    /**
-     * Lets define some label for our text box
-     */
-    private static final String OUTPUT_FILENAME_LABEL = "Output filename (symbolicName and virtualPath)";
-
-    /**
-     * Lets define some label for our check box
-     */
-    private static final String SKIP_GRAPH_ON_ERROR_LABEL = "Skip graph on error";
+public class DPUTemplateVaadinDialog extends BaseConfigDialog<DPUTemplateConfig_V1> implements InitializableConfigDialog {
 
     /**
      * Define Vaadin data binding property for String type, the default value is irrelevant, we reset the value immediately
@@ -40,10 +31,23 @@ public class DPUTemplateVaadinDialog extends BaseConfigDialog<DPUTemplateConfig_
 
     public DPUTemplateVaadinDialog() {
         super(DPUTemplateConfig_V1.class);
-        initialize();
     }
-
-    private void initialize() {
+    
+    /**
+     * When DPU implements InitializableConfigDialog interface, backend will call initialize method right after
+     * DPU's GUI constructor. Method is called only once, therefore it is ideal place to build a GUI layout.
+     */
+    @Override
+    public void initialize() {
+        /**
+         * Retrieve current Locale form DPU's context.
+         */
+        Locale locale = getContext().getLocale();
+        /**
+         * Create a class, that is used for retrieving internationalized messages using Locale and classLoader.
+         */
+        Messages messages = new Messages(locale, this.getClass().getClassLoader());
+        
         /**
          * Simple layout suitable for simple forms
          */
@@ -58,7 +62,7 @@ public class DPUTemplateVaadinDialog extends BaseConfigDialog<DPUTemplateConfig_
         /**
          * Create our text box, use the label and data binding property
          */
-        TextField txtOutputFilename = new TextField(OUTPUT_FILENAME_LABEL, outputFilename);
+        TextField txtOutputFilename = new TextField(messages.getString("dialog.output.filename"), outputFilename);
         /**
          * Be nice, fill the width of window please
          */
@@ -71,7 +75,7 @@ public class DPUTemplateVaadinDialog extends BaseConfigDialog<DPUTemplateConfig_
         /**
          * Create our check box, use the label and data binding property
          */
-        CheckBox chkSkipGraphOnError = new CheckBox(SKIP_GRAPH_ON_ERROR_LABEL, skipGraphOnError);
+        CheckBox chkSkipGraphOnError = new CheckBox(messages.getString("dialog.skipOnError"), skipGraphOnError);
         /**
          * Be nice, fill the width of window please
          */

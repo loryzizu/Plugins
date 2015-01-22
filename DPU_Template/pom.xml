@@ -6,6 +6,7 @@
 	<parent>
 		<groupId>eu.unifiedviews.plugins</groupId>
 		<artifactId>dpu-base-pom</artifactId>
+		<!-- TODO 0: check the newest version of dpu-base-pom and replace it in the following tag-->
 		<version>1.1.0</version>
 		<relativePath></relativePath>
 	</parent>

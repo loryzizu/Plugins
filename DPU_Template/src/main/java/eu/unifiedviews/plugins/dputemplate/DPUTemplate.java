@@ -30,6 +30,7 @@ import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 /**
  * We choose the type of this {@link DPU}, it can be {@link DPU.AsExtractor}, {@link DPU.AsLoader}, {@link DPU.AsTransformer}.
@@ -60,6 +61,11 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
      */
     @DataUnit.AsOutput(name = "filesOutput")
     public WritableFilesDataUnit filesOutput;
+    
+    /**
+     * We define class used for retrieving internationalized messages.
+     */
+    private Messages messages;
 
     /**
      * Public non-parametric constructor has to call super constructor in {@link ConfigurableBase}
@@ -92,6 +98,14 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
     @Override
     public void execute(DPUContext dpuContext) throws DPUException {
         /**
+         * Retrieve locale configuration used in back-end.
+         */
+        Locale locale = dpuContext.getLocale();
+        /**
+         * Create new messages object using retrieved locale and class loader.
+         */
+        this.messages = new Messages(locale, this.getClass().getClassLoader());
+        /**
          * Lets be nice and log that we are starting and the configuration we have.
          */
         String shortMessage = this.getClass().getSimpleName() + " starting.";
@@ -115,7 +129,7 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
             /**
              * There is nothing we can do if container fails to provide us data.
              */
-            throw new DPUException("Could not obtain input graphs", ex);
+            throw new DPUException(messages.getString("error.obtain.input"), ex);
         }
 
         /**
@@ -189,7 +203,7 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
                         /**
                          * Do not skip graph, so lets fail execution by re-throwing the exception
                          */
-                        throw new DPUException("Unable to process graph " + inputGraph + " into file. Not set to skip graph, failing execution.", ex);
+                        throw new DPUException(messages.getString("error.process.graph", inputGraph), ex);
                     }
                 } finally {
                     if (fileWriter != null) {
@@ -210,7 +224,7 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig_V1> implemen
             /**
              * There is nothing we can do
              */
-            throw new DPUException("Error in execution", ex);
+            throw new DPUException(messages.getString("errors.dpu.failed"), ex);
         } finally {
             /**
              * We have to close the connection after we have used it
