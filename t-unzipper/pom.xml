@@ -13,7 +13,7 @@
 	<artifactId>uv-t-unzipper</artifactId>
 	<name>T-UnZipper</name>
 	<description>UnZip input file into files based on zip content.</description>
-	<version>1.4.0</version>
+	<version>1.5.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	<repositories>
 		<repository>
