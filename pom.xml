@@ -10,6 +10,7 @@
 	<!-- list of core modules -->
 	<modules>
 		<!-- EXTRACTORS -->
+		<module>e-filesDownload</module>
 		<module>e-filesFromLocal</module>
 		<module>e-rdfFromSparql</module>
 		<module>e-httpDownload</module>
