@@ -33,6 +33,7 @@
 		<module>l-filesToLocalFS</module>
 		<module>l-filesToScp</module>
 		<module>l-filesToVirtuoso</module>
+		<module>l-filesUpload</module>
 	</modules>
 
 	<repositories>
