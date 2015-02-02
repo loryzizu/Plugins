@@ -6,7 +6,7 @@
 |                              |                                                                             |
 |------------------------------|-----------------------------------------------------------------------------|
 |**Name:**                     |L-FilesUpload                                                                |
-|**Description:**              |Uploads list of files.                                                       |
+|**Description:**              |Uploads list of files. Replaces L-FilesToLocalFS and L-FilesToScp.           |
 |                              |                                                                             |
 |**DPU class name:**           |FilesUpload                                                                  | 
 |**Configuration class name:** |FilesUploadConfig_V1                                                         |
@@ -16,17 +16,19 @@
 
 ###Configuration parameters###
 
-|Parameter                                       |Description                                                              |                                                        
+|Parameter                                       |Description                                                              |
 |------------------------------------------------|-------------------------------------------------------------------------|
-|TODO                                            |                                                                         |
+|**Destination directory absolute path***        |Destination path for files to upload.                                    |
+|**Username:**                                   |Username for destination host.                                           |
+|**Password:**                                   |Password for the username.                                               |
 
 ***
 
 ### Inputs and outputs ###
 
-|Name         |Type           |DataUnit     |Description             |
-|-------------|---------------|-------------|------------------------|
-|TODO         |               |             |                        |
+|Name         |Type           |DataUnit      |Description                               |
+|-------------|---------------|--------------|------------------------------------------|
+|filesInput   |i              |FilesDataUnit |Files to upload to specified destination. |
 
 ***
 
@@ -34,7 +36,7 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|N/A              |N/A                         |                                
+|1.0.0-SNAPSHOT   |N/A                         |
 
 
 ***
