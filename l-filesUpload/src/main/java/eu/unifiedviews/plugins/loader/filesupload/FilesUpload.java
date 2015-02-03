@@ -67,7 +67,13 @@ public class FilesUpload extends ConfigurableBase<FilesUploadConfig_V1> implemen
                     break;
                 }
 
-                FileObject fileObject = standardFileSystemManager.resolveFile(config.getUri() + virtualPathHelper.getVirtualPath(entry.getSymbolicName()), fileSystemOptions);
+                String fileName = virtualPathHelper.getVirtualPath(entry.getSymbolicName());
+
+                if (StringUtils.isBlank(fileName)) {
+                    fileName = entry.getSymbolicName();
+                }
+
+                FileObject fileObject = standardFileSystemManager.resolveFile(config.getUri() + fileName, fileSystemOptions);
                 fileObject.copyFrom(standardFileSystemManager.resolveFile(entry.getFileURIString()), Selectors.SELECT_SELF);
             }
         } catch (Exception e) {
