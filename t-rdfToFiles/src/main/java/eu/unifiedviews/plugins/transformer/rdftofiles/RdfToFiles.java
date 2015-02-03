@@ -76,22 +76,35 @@ public class RdfToFiles extends ConfigurableBase<RdfToFilesConfig_V1> implements
         //
         final Map<String, URI> graphUris = new HashMap<>();
         try (RDFDataUnit.Iteration iter = inRdfData.getIteration()) {
+            LOG.debug("Get input graphs");
+            int x = 0;
             while (iter.hasNext()) {
                 final RDFDataUnit.Entry entry = iter.next();
                 graphUris.put(entry.getSymbolicName(), entry.getDataGraphURI());
+                x++;
+                LOG.debug("Found "+ entry.getSymbolicName() +" with URI "+ entry.getDataGraphURI());
             }
+            LOG.debug("Total graphs found: " + x);
         } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR,
-                    "Failed to get graph names.", "", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, "Failed to get graph names.", "", ex);
             return;
         }
         // convert from rdf to files
+        LOG.info("Start converting RDF to "+ config.getRdfFileFormat() +" format");
         try {
             // TODO export metadata graph ?!!
             if (config.isMergeGraphs()) {
+                LOG.debug("Export RDF in a single file");
+
                 exportSingle(graphUris);
+
+                LOG.debug("Export Finished!");
             } else {
+                LOG.debug("Export RDF in multiple files");
+
                 exportMultiple(graphUris);
+
+                LOG.debug("Export Finished!");
             }
         } catch (DataUnitException ex) {
             context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed.", "Problem with DataUnit.", ex);
@@ -107,7 +120,7 @@ public class RdfToFiles extends ConfigurableBase<RdfToFilesConfig_V1> implements
      * 
      * @param graphUris
      * @throws DataUnitException
-     * @throws eu.unifiedviews.plugins.extractor.sparql.ExportFailedException
+     * @throws eu.unifiedviews.plugins.transformer.rdftofiles.ExportFailedException
      */
     private void exportSingle(Map<String, URI> graphUris) throws DataUnitException, ExportFailedException {
         final RdfToFilesConfig_V1.GraphToFileInfo info = config.getGraphToFileInfo().get(0);
@@ -131,7 +144,7 @@ public class RdfToFiles extends ConfigurableBase<RdfToFilesConfig_V1> implements
      * 
      * @param graphUris
      * @throws DataUnitException
-     * @throws eu.unifiedviews.plugins.extractor.sparql.ExportFailedException
+     * @throws eu.unifiedviews.plugins.transformer.rdftofiles.ExportFailedException
      */
     private void exportMultiple(Map<String, URI> graphUris) throws DataUnitException, ExportFailedException {
         for (RdfToFilesConfig_V1.GraphToFileInfo info : config.getGraphToFileInfo()) {
@@ -183,6 +196,8 @@ public class RdfToFiles extends ConfigurableBase<RdfToFilesConfig_V1> implements
     private String exportGraph(URI[] uris, String fileName) throws DataUnitException, ExportFailedException {
         final String outputFileUri = outFilesData.addNewFile(fileName);
 
+        LOG.debug("Creating "+ fileName);
+
         final File outputFile = new File(java.net.URI.create(outputFileUri));
         // create parent
         outputFile.getParentFile().mkdirs();
@@ -200,7 +215,7 @@ public class RdfToFiles extends ConfigurableBase<RdfToFilesConfig_V1> implements
                 // and assign new writer
                 writer = writerRenamer;
             }
-            // export
+            LOG.debug("Exporting Graph "+ config.getOutGraphName());
             connection.export(writer, uris);
         } catch (IOException ex) {
             throw new ExportFailedException("IO exception.", ex);
