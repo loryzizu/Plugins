@@ -82,8 +82,7 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
         table.setColumnHeader("uri", messages.getString("FilesDownloadVaadinDialog.uri"));
         table.setColumnHeader("username", messages.getString("FilesDownloadVaadinDialog.username"));
         table.setColumnHeader("password", messages.getString("FilesDownloadVaadinDialog.password"));
-        table.setColumnHeader("symbolicName", messages.getString("FilesDownloadVaadinDialog.symbolicName"));
-        table.setColumnHeader("virtualPath", messages.getString("FilesDownloadVaadinDialog.virtualPath"));
+        table.setColumnHeader("fileName", messages.getString("FilesDownloadVaadinDialog.fileName"));
         table.setEditable(true);
         table.setHeight("200");
         table.setTableFieldFactory(new TableFieldFactory() {
@@ -99,13 +98,15 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
                     result.setWidth("400");
                 } else if (propertyId.equals("password")) {
                     result = new PasswordField();
+                } else if (propertyId.equals("fileName")) {
+                    result.setDescription(messages.getString("FilesDownloadVaadinDialog.fileName.description"));
                 }
 
                 return result;
             }
 
         });
-        table.setVisibleColumns("remove", "uri", "username", "password", "symbolicName", "virtualPath");
+        table.setVisibleColumns("remove", "uri", "username", "password", "fileName");
 
         mainLayout.addComponent(table);
 

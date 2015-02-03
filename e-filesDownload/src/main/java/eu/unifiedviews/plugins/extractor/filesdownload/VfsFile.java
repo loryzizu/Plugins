@@ -10,9 +10,7 @@ public class VfsFile {
 
     private String password = "";
 
-    private String symbolicName = "";
-
-    private String virtualPath = "";
+    private String fileName = "";
 
     public boolean isDisplayed() {
         return displayed;
@@ -46,20 +44,12 @@ public class VfsFile {
         this.password = password;
     }
 
-    public String getSymbolicName() {
-        return symbolicName;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setSymbolicName(String symbolicName) {
-        this.symbolicName = symbolicName;
-    }
-
-    public String getVirtualPath() {
-        return virtualPath;
-    }
-
-    public void setVirtualPath(String virtualPath) {
-        this.virtualPath = virtualPath;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
 }

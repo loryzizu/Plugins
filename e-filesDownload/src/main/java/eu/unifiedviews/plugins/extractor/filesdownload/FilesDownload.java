@@ -8,7 +8,6 @@ import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.AllFileSelector;
-import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.FileType;
@@ -78,32 +77,25 @@ public class FilesDownload extends ConfigurableBase<FilesDownloadConfig_V1> impl
                 FileObject[] fileObjects = standardFileSystemManager.resolveFile(vfsFile.getUri(), fileSystemOptions).findFiles(new AllFileSelector());
 
                 for (FileObject fileObject : fileObjects) {
-                    FileName fileName = fileObject.getName();
-                    String symbolicName = fileName.getBaseName();
-
-                    if (StringUtils.isNotBlank(vfsFile.getSymbolicName())) {
-                        symbolicName = vfsFile.getSymbolicName();
-                    }
-
                     if (FileType.FILE.equals(fileObject.getType())) {
-                        FileUtils.copyInputStreamToFile(fileObject.getContent().getInputStream(), new File(new URI(filesOutput.addNewFile(symbolicName))));
+                        String fileName = fileObject.getName().getPathDecoded();
 
-                        Resource resource = resourceHelper.getResource(symbolicName);
+                        if (StringUtils.isNotBlank(vfsFile.getFileName())) {
+                            fileName = vfsFile.getFileName();
+                        }
+
+                        FileUtils.copyInputStreamToFile(fileObject.getContent().getInputStream(), new File(new URI(filesOutput.addNewFile(fileName))));
+
+                        Resource resource = resourceHelper.getResource(fileName);
                         Date now = new Date();
 
                         resource.setCreated(now);
                         resource.setLast_modified(now);
                         resource.getExtras().setSource(URIUtil.decode(vfsFile.getUri(), "utf8"));
 
-                        resourceHelper.setResource(symbolicName, resource);
+                        resourceHelper.setResource(fileName, resource);
 
-                        String virtualPath = fileName.getPathDecoded();
-
-                        if (StringUtils.isNotBlank(vfsFile.getVirtualPath())) {
-                            virtualPath = vfsFile.getVirtualPath();
-                        }
-
-                        virtualPathHelper.setVirtualPath(symbolicName, virtualPath);
+                        virtualPathHelper.setVirtualPath(fileName, fileName);
                     }
                 }
             }
