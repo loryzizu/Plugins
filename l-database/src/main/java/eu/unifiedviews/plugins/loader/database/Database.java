@@ -2,7 +2,6 @@ package eu.unifiedviews.plugins.loader.database;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,7 +11,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +51,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
         String longMessage = String.format("Configuration: DatabaseUrl: %s, username: %s, password: %s, "
                 + "useSSL: %s, targetTable: %s, clearTargetTable: %s, dropTargetTable: %s",
                 this.config.getDatabaseURL(), this.config.getUserName(), "***",
-                this.config.isUseSSL(), this.config.getTableName(), this.config.isClearTargetTable(),
+                this.config.isUseSSL(), this.config.getTableNamePrefix(), this.config.isClearTargetTable(),
                 this.config.isDropTargetTable());
         LOG.info(shortMessage + " " + longMessage);
 
@@ -75,7 +73,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
         PreparedStatement insertStmnt = null;
         Connection conn = null;
         try {
-            conn = createConnection();
+            conn = DatabaseHelper.createConnection(this.config);
 
             int index = 1;
             while (!this.context.canceled() && tablesIteration.hasNext()) {
@@ -89,11 +87,11 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
                     if (bTableExists) {
                         LOG.debug("Target table already exists");
                         if (this.config.isDropTargetTable()) {
-                            LOG.info(String.format("Dropping table %s", this.config.getTableName()));
+                            LOG.info(String.format("Dropping table %s", this.config.getTableNamePrefix()));
                             dropTable(conn, targetTableName);
                             bTableExists = false;
                         } else if (this.config.isClearTargetTable()) {
-                            LOG.info(String.format("Truncating table %s", this.config.getTableName()));
+                            LOG.info(String.format("Truncating table %s", this.config.getTableNamePrefix()));
                             truncateTable(conn);
                         }
                     }
@@ -107,7 +105,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
                             return;
                         }
                     }
-                    insertStmnt = conn.prepareStatement(QueryBuilder.getInsertQueryForPreparedStatement(this.config.getTableName(), sourceColumns));
+                    insertStmnt = conn.prepareStatement(QueryBuilder.getInsertQueryForPreparedStatement(this.config.getTableNamePrefix(), sourceColumns));
                     insertDataFromSourceToTarget(insertStmnt, sourceColumns, sourceTableName);
                     conn.commit();
                 } catch (Exception e) {
@@ -148,12 +146,11 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
         } finally {
             DatabaseHelper.tryCloseDbResources(sourceConnection, stmnt, sourceData);
         }
-
     }
 
     private String createTargetTableName(int index) {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.config.getTableName());
+        sb.append(this.config.getTableNamePrefix());
         sb.append("_");
         sb.append(index);
 
@@ -200,7 +197,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
             DatabaseHelper.tryCloseConnection(conn);
         }
 
-        return null;
+        return columns;
     }
 
     private boolean checkTablesConsistent(Connection conn, String targetTableName, List<ColumnDefinition> sourceColumns) throws Exception {
@@ -237,7 +234,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
     }
 
     private final void truncateTable(Connection conn) throws SQLException {
-        String query = QueryBuilder.getQueryForTruncateTable(this.config.getTableName());
+        String query = QueryBuilder.getQueryForTruncateTable(this.config.getTableNamePrefix());
         Statement stmnt = null;
         try {
             stmnt = conn.createStatement();
@@ -274,22 +271,6 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
             DatabaseHelper.tryCloseResultSet(tables);
         }
         return bTableExists;
-    }
-
-    private Connection createConnection() throws SQLException {
-        Connection connection = null;
-        final Properties connectionProperties = new Properties();
-        connectionProperties.setProperty("user", this.config.getUserName());
-        connectionProperties.setProperty("password", this.config.getUserPassword());
-        // TODO: Do we need to validate client / server certificates?
-        if (this.config.isUseSSL()) {
-            connectionProperties.setProperty("ssl", "true");
-            connectionProperties.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
-        }
-        connection = DriverManager.getConnection(this.config.getDatabaseURL(), connectionProperties);
-        connection.setAutoCommit(false);
-
-        return connection;
     }
 
     @Override

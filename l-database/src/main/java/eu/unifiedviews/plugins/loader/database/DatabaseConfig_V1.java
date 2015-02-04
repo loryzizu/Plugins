@@ -8,7 +8,7 @@ public class DatabaseConfig_V1 {
 
     private String userPassword;
 
-    private String tableName;
+    private String tableNamePrefix;
 
     private boolean dropTargetTable;
 
@@ -43,12 +43,12 @@ public class DatabaseConfig_V1 {
         this.userPassword = userPassword;
     }
 
-    public String getTableName() {
-        return this.tableName;
+    public String getTableNamePrefix() {
+        return this.tableNamePrefix;
     }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    public void setTableNamePrefix(String tableName) {
+        this.tableNamePrefix = tableName;
     }
 
     public boolean isDropTargetTable() {

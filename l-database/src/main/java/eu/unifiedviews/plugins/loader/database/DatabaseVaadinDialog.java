@@ -1,6 +1,11 @@
 package eu.unifiedviews.plugins.loader.database;
 
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -31,6 +36,10 @@ public class DatabaseVaadinDialog extends BaseConfigDialog<DatabaseConfig_V1> im
     private Messages messages;
 
     VerticalLayout mainLayout;
+
+    private Button btnTestConnection;
+
+    private Label lblTestConnection;
 
     public DatabaseVaadinDialog() {
         super(DatabaseConfig_V1.class);
@@ -75,11 +84,22 @@ public class DatabaseVaadinDialog extends BaseConfigDialog<DatabaseConfig_V1> im
         this.chckUseSsl.setCaption(this.messages.getString("dialog.dbload.usessl"));
         this.mainLayout.addComponent(this.chckUseSsl);
 
+        this.btnTestConnection = new Button();
+        this.btnTestConnection.setCaption(this.messages.getString("dialog.extractdb.testdb"));
+        this.btnTestConnection.addClickListener(createTestClickListener());
+        this.mainLayout.addComponent(this.btnTestConnection);
+
+        this.lblTestConnection = new Label();
+        this.lblTestConnection.setWidth("100%");
+        this.lblTestConnection.setValue("");
+        this.mainLayout.addComponent(this.lblTestConnection);
+
         this.txtTableName = new TextField();
         this.txtTableName.setCaption(this.messages.getString("dialog.dbload.tablename"));
         this.txtTableName.setRequired(true);
         this.txtTableName.setNullRepresentation("");
         this.txtTableName.setWidth("100%");
+        this.txtTableName.setDescription(this.messages.getString("dialog.dbload.tooltip.tablename"));
 
         this.mainLayout.addComponent(this.txtTableName);
 
@@ -91,7 +111,55 @@ public class DatabaseVaadinDialog extends BaseConfigDialog<DatabaseConfig_V1> im
         this.chckDropTable.setCaption(this.messages.getString("dialog.dbload.droptable"));
         this.mainLayout.addComponent(this.chckDropTable);
 
-        setCompositionRoot(this.mainLayout);
+        Panel panel = new Panel();
+        panel.setSizeFull();
+        panel.setContent(this.mainLayout);
+        setCompositionRoot(panel);
+    }
+
+    private ClickListener createTestClickListener() {
+        ClickListener listener = new ClickListener() {
+
+            private static final long serialVersionUID = -3540329527677997780L;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                DatabaseVaadinDialog.this.lblTestConnection.setValue("");
+                if (checkConnectionParametersInput()) {
+                    boolean bTestResult = true;
+                    try {
+                        bTestResult = DatabaseHelper.testDatabaseConnection(getConfiguration());
+                    } catch (DPUConfigException e) {
+                        bTestResult = false;
+                    }
+                    if (bTestResult) {
+                        DatabaseVaadinDialog.this.lblTestConnection.setValue(DatabaseVaadinDialog.this.messages.getString("dialog.messages.testsuccess"));
+                    } else {
+                        DatabaseVaadinDialog.this.lblTestConnection.setValue(DatabaseVaadinDialog.this.messages.getString("dialog.messages.testfail"));
+                    }
+                } else {
+                    DatabaseVaadinDialog.this.lblTestConnection.setValue(DatabaseVaadinDialog.this.messages.getString("dialog.messages.dbparams"));
+                }
+            }
+        };
+
+        return listener;
+    }
+
+    private boolean checkConnectionParametersInput() {
+        boolean bResult = true;
+        if (this.txtDatabaseURL.getValue() == null || this.txtDatabaseURL.getValue().equals("")) {
+            bResult = false;
+        }
+        if (this.txtUserName.getValue() == null || this.txtUserName.getValue().equals("")) {
+            bResult = false;
+        }
+        if (this.txtPassword.getValue() == null || this.txtPassword.getValue().equals("")) {
+            bResult = false;
+        }
+
+        return bResult;
+
     }
 
     @Override
@@ -102,7 +170,7 @@ public class DatabaseVaadinDialog extends BaseConfigDialog<DatabaseConfig_V1> im
         config.setUserName(this.txtUserName.getValue());
         config.setUserPassword(this.txtPassword.getValue());
         config.setUseSSL(this.chckUseSsl.getValue());
-        config.setTableName(this.txtTableName.getValue());
+        config.setTableNamePrefix(this.txtTableName.getValue());
         config.setClearTargetTable(this.chckClearTable.getValue());
         config.setDropTargetTable(this.chckDropTable.getValue());
 
@@ -114,7 +182,7 @@ public class DatabaseVaadinDialog extends BaseConfigDialog<DatabaseConfig_V1> im
         this.txtDatabaseURL.setValue(config.getDatabaseURL());
         this.txtUserName.setValue(config.getUserName());
         this.chckUseSsl.setValue(config.isUseSSL());
-        this.txtTableName.setValue(config.getTableName());
+        this.txtTableName.setValue(config.getTableNamePrefix());
         this.chckClearTable.setValue(config.isClearTargetTable());
         this.chckDropTable.setValue(config.isDropTargetTable());
         this.txtPassword.setValue(config.getUserPassword());
