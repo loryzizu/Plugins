@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>eu.unifiedviews.plugins</groupId>
+		<artifactId>dpu-base-pom</artifactId>
+		<version>1.3.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>uv-l-database</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>bundle</packaging>
+	<name>L-Database</name>
+	<description>Loads data from internal data unit relational database into external relational database</description>
+
+	<properties>
+		<dpu.package>eu.unifiedviews.plugins.loader.database</dpu.package>
+		<dpu.mainClass>Database</dpu.mainClass>
+		<embed.transitive>true</embed.transitive>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.3-1100-jdbc41</version>
+		</dependency>
+		
+		<!--  JUnit tests dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>cz.cuni.mff.xrg.odcs</groupId>
+			<artifactId>module-test</artifactId>
+			<version>${module-test.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>maven.eea.sk</id>
+			<name>maven.eea.sk-public</name>
+			<url>http://maven.eea.sk/artifactory/public/</url>
+		</repository>
+	</repositories>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>resources*.properties</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
+
+
+</project>
