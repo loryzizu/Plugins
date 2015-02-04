@@ -40,7 +40,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
     @Override
     public void execute(DPUContext context) throws DPUException, InterruptedException {
         this.context = context;
-        this.messages = new Messages(context.getLocale(), this.getClass().getClassLoader());
+        this.messages = new Messages(this.context.getLocale(), this.getClass().getClassLoader());
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.format("Configuration: DatabaseUrl: %s, username: %s, password: %s, "
                 + "useSSL: %s, SQL query: %s",
@@ -87,7 +87,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
 
                 LOG.debug("Creating internal db representation as " + createTableQuery);
                 createInternalTable(createTableQuery);
-                LOG.debug("Created database table in internal database");
+                LOG.debug("Database table in internal database successfully created");
 
                 LOG.debug("Inserting data from source table into internal table");
                 insertDataFromSelect(meta, rs, tableName);
@@ -133,7 +133,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
             }
             conn.commit();
         } catch (SQLException e) {
-            LOG.error("Failed to load data into internal table");
+            LOG.error("Failed to load data into internal table", e);
             DatabaseHelper.tryRollbackConnection(conn);
             throw new DataUnitException("Error loading SQL data into internal database");
         } finally {
