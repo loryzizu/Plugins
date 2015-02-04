@@ -47,8 +47,6 @@ public class QueryBuilder {
         query.append("CREATE TABLE ");
         query.append(tableName);
         query.append(" (");
-        query.append("id SERIAL PRIMARY KEY");
-        query.append(", ");
 
         for (ColumnDefinition column : columns) {
             query.append(column.getColumnName());
@@ -104,7 +102,7 @@ public class QueryBuilder {
             query.append(", ");
         }
         query.setLength(query.length() - 2);
-        query.append(" FROM");
+        query.append(" FROM ");
         query.append(sourceTableName);
         query.append(";");
 

@@ -11,8 +11,6 @@ import eu.unifiedviews.plugins.loader.database.QueryBuilder;
 
 public class QueryBuilderTest {
 
-    private static final String[] FILE_HEADERS_1 = new String[] { "column1", "column2", "column3" };
-
     private static final ColumnDefinition COLUMN_1 = new ColumnDefinition("column1", "integer", 4);
 
     private static final ColumnDefinition COLUMN_2 = new ColumnDefinition("column2", "varchar", 12, 255);
@@ -27,7 +25,7 @@ public class QueryBuilderTest {
 
     private static final String EXPECTED_TRUNCATE_TABLE_QUERY_1 = "TRUNCATE TABLE " + TABLE_NAME_1;
 
-    private static final String EXPECTED_CREATE_TABLE_QUERY_1 = "CREATE TABLE " + TABLE_NAME_1 + " (id SERIAL PRIMARY KEY, column1 INTEGER, column2 VARCHAR(255), column3 VARCHAR(255))";
+    private static final String EXPECTED_CREATE_TABLE_QUERY_1 = "CREATE TABLE " + TABLE_NAME_1 + " (column1 INTEGER, column2 VARCHAR(255), column3 VARCHAR(255))";
 
     @Test
     public void getInsertQueryForPreparedStatement() {

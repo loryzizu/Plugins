@@ -83,7 +83,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
 
                 try {
                     List<ColumnDefinition> sourceColumns = getColumnDefinitionsForSourceTable(sourceTableName);
-                    bTableExists = checkTableExists(conn, sourceTableName);
+                    bTableExists = checkTableExists(conn, targetTableName);
                     if (bTableExists) {
                         LOG.debug("Target table already exists");
                         if (this.config.isDropTargetTable()) {
@@ -105,7 +105,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
                             return;
                         }
                     }
-                    insertStmnt = conn.prepareStatement(QueryBuilder.getInsertQueryForPreparedStatement(this.config.getTableNamePrefix(), sourceColumns));
+                    insertStmnt = conn.prepareStatement(QueryBuilder.getInsertQueryForPreparedStatement(targetTableName, sourceColumns));
                     insertDataFromSourceToTarget(insertStmnt, sourceColumns, sourceTableName);
                     conn.commit();
                 } catch (Exception e) {
@@ -183,7 +183,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
             dbm = conn.getMetaData();
             rs = dbm.getColumns(null, null, sourceTableName, null);
             while (rs.next()) {
-                String columnName = rs.getString("COLUMN_NAME");
+                String columnName = rs.getString("COLUMN_NAME").toLowerCase();
                 columns.add(new ColumnDefinition(columnName,
                         rs.getString("TYPE_NAME"),
                         rs.getInt("DATA_TYPE"),
