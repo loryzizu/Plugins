@@ -104,7 +104,6 @@ public class QueryBuilder {
         query.setLength(query.length() - 2);
         query.append(" FROM ");
         query.append(sourceTableName);
-        query.append(";");
 
         return query.toString();
     }
