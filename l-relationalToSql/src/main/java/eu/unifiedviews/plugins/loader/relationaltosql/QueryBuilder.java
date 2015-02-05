@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.loader.database;
+package eu.unifiedviews.plugins.loader.relationaltosql;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

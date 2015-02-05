@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.loader.database;
+package eu.unifiedviews.plugins.loader.relationaltosql;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -15,7 +15,7 @@ import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
 import eu.unifiedviews.helpers.dpu.localization.Messages;
 
-public class DatabaseVaadinDialog extends BaseConfigDialog<DatabaseConfig_V1> implements InitializableConfigDialog {
+public class RelationalToSqlVaadinDialog extends BaseConfigDialog<RelationalToSqlConfig_V1> implements InitializableConfigDialog {
 
     private static final long serialVersionUID = 1680354540248433247L;
 
@@ -41,8 +41,8 @@ public class DatabaseVaadinDialog extends BaseConfigDialog<DatabaseConfig_V1> im
 
     private Label lblTestConnection;
 
-    public DatabaseVaadinDialog() {
-        super(DatabaseConfig_V1.class);
+    public RelationalToSqlVaadinDialog() {
+        super(RelationalToSqlConfig_V1.class);
     }
 
     @Override
@@ -124,21 +124,21 @@ public class DatabaseVaadinDialog extends BaseConfigDialog<DatabaseConfig_V1> im
 
             @Override
             public void buttonClick(ClickEvent event) {
-                DatabaseVaadinDialog.this.lblTestConnection.setValue("");
+                RelationalToSqlVaadinDialog.this.lblTestConnection.setValue("");
                 if (checkConnectionParametersInput()) {
                     boolean bTestResult = true;
                     try {
-                        bTestResult = DatabaseHelper.testDatabaseConnection(getConfiguration());
+                        bTestResult = RelationalToSqlHelper.testDatabaseConnection(getConfiguration());
                     } catch (DPUConfigException e) {
                         bTestResult = false;
                     }
                     if (bTestResult) {
-                        DatabaseVaadinDialog.this.lblTestConnection.setValue(DatabaseVaadinDialog.this.messages.getString("dialog.messages.testsuccess"));
+                        RelationalToSqlVaadinDialog.this.lblTestConnection.setValue(RelationalToSqlVaadinDialog.this.messages.getString("dialog.messages.testsuccess"));
                     } else {
-                        DatabaseVaadinDialog.this.lblTestConnection.setValue(DatabaseVaadinDialog.this.messages.getString("dialog.messages.testfail"));
+                        RelationalToSqlVaadinDialog.this.lblTestConnection.setValue(RelationalToSqlVaadinDialog.this.messages.getString("dialog.messages.testfail"));
                     }
                 } else {
-                    DatabaseVaadinDialog.this.lblTestConnection.setValue(DatabaseVaadinDialog.this.messages.getString("dialog.messages.dbparams"));
+                    RelationalToSqlVaadinDialog.this.lblTestConnection.setValue(RelationalToSqlVaadinDialog.this.messages.getString("dialog.messages.dbparams"));
                 }
             }
         };
@@ -163,8 +163,8 @@ public class DatabaseVaadinDialog extends BaseConfigDialog<DatabaseConfig_V1> im
     }
 
     @Override
-    protected DatabaseConfig_V1 getConfiguration() throws DPUConfigException {
-        DatabaseConfig_V1 config = new DatabaseConfig_V1();
+    protected RelationalToSqlConfig_V1 getConfiguration() throws DPUConfigException {
+        RelationalToSqlConfig_V1 config = new RelationalToSqlConfig_V1();
 
         config.setDatabaseURL(this.txtDatabaseURL.getValue());
         config.setUserName(this.txtUserName.getValue());
@@ -178,7 +178,7 @@ public class DatabaseVaadinDialog extends BaseConfigDialog<DatabaseConfig_V1> im
     }
 
     @Override
-    protected void setConfiguration(DatabaseConfig_V1 config) throws DPUConfigException {
+    protected void setConfiguration(RelationalToSqlConfig_V1 config) throws DPUConfigException {
         this.txtDatabaseURL.setValue(config.getDatabaseURL());
         this.txtUserName.setValue(config.getUserName());
         this.chckUseSsl.setValue(config.isUseSSL());

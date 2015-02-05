@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.loader.database.test;
+package eu.unifiedviews.plugins.loader.relationaltosql.test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.unifiedviews.plugins.loader.database.ColumnDefinition;
-import eu.unifiedviews.plugins.loader.database.QueryBuilder;
+import eu.unifiedviews.plugins.loader.relationaltosql.ColumnDefinition;
+import eu.unifiedviews.plugins.loader.relationaltosql.QueryBuilder;
 
 public class QueryBuilderTest {
 

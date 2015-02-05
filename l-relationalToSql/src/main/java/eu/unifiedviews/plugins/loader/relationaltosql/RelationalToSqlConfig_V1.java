@@ -1,6 +1,6 @@
-package eu.unifiedviews.plugins.loader.database;
+package eu.unifiedviews.plugins.loader.relationaltosql;
 
-public class DatabaseConfig_V1 {
+public class RelationalToSqlConfig_V1 {
 
     private String databaseURL;
 

@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.loader.database;
+package eu.unifiedviews.plugins.loader.relationaltosql;
 
 public class ColumnDefinition {
 

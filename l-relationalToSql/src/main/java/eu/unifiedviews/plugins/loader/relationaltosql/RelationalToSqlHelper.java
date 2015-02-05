@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.loader.database;
+package eu.unifiedviews.plugins.loader.relationaltosql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,9 +10,9 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatabaseHelper {
+public class RelationalToSqlHelper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DatabaseHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RelationalToSqlHelper.class);
 
     public static void tryCloseStatement(Statement stmnt) {
         try {
@@ -60,7 +60,7 @@ public class DatabaseHelper {
         }
     }
 
-    public static boolean testDatabaseConnection(DatabaseConfig_V1 config) {
+    public static boolean testDatabaseConnection(RelationalToSqlConfig_V1 config) {
         boolean bConnectResult = true;
 
         try {
@@ -84,7 +84,7 @@ public class DatabaseHelper {
         return bConnectResult;
     }
 
-    public static Connection createConnection(DatabaseConfig_V1 config) throws SQLException {
+    public static Connection createConnection(RelationalToSqlConfig_V1 config) throws SQLException {
         Connection connection = null;
         final Properties connectionProperties = new Properties();
         connectionProperties.setProperty("user", config.getUserName());

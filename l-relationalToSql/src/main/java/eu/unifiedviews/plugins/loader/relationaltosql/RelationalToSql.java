@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.loader.database;
+package eu.unifiedviews.plugins.loader.relationaltosql;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -28,9 +28,9 @@ import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
 import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 @DPU.AsLoader
-public class Database extends ConfigurableBase<DatabaseConfig_V1> implements ConfigDialogProvider<DatabaseConfig_V1> {
+public class RelationalToSql extends ConfigurableBase<RelationalToSqlConfig_V1> implements ConfigDialogProvider<RelationalToSqlConfig_V1> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Database.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RelationalToSql.class);
 
     private DPUContext context;
 
@@ -39,8 +39,8 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
     @DataUnit.AsInput(name = "input")
     public RelationalDataUnit inTablesData;
 
-    public Database() {
-        super(DatabaseConfig_V1.class);
+    public RelationalToSql() {
+        super(RelationalToSqlConfig_V1.class);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
         PreparedStatement insertStmnt = null;
         Connection conn = null;
         try {
-            conn = DatabaseHelper.createConnection(this.config);
+            conn = RelationalToSqlHelper.createConnection(this.config);
 
             int index = 1;
             while (!this.context.canceled() && tablesIteration.hasNext()) {
@@ -111,20 +111,20 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
                     conn.commit();
                 } catch (Exception e) {
                     LOG.error("Failed to load data from internal table: {} into external table: {}", sourceTableName, targetTableName, e);
-                    DatabaseHelper.tryRollbackConnection(conn);
+                    RelationalToSqlHelper.tryRollbackConnection(conn);
                 } finally {
-                    DatabaseHelper.tryCloseStatement(insertStmnt);
+                    RelationalToSqlHelper.tryCloseStatement(insertStmnt);
                 }
             }
         } catch (SQLException se) {
-            DatabaseHelper.tryRollbackConnection(conn);
+            RelationalToSqlHelper.tryRollbackConnection(conn);
             LOG.error("Database error occurred during loading data from internal database to external SQL database", se);
             throw new DPUException(this.messages.getString("errors.dpu.insertfail"), se);
         } catch (Exception e) {
             LOG.error("Error during loading data from internal database to external SQL database", e);
             throw new DPUException(this.messages.getString("errors.dpu.insertfail"), e);
         } finally {
-            DatabaseHelper.tryCloseConnection(conn);;
+            RelationalToSqlHelper.tryCloseConnection(conn);;
         }
     }
 
@@ -145,7 +145,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
             LOG.error("Failed to insert data from internal source table into external table", e);
             throw e;
         } finally {
-            DatabaseHelper.tryCloseDbResources(sourceConnection, stmnt, sourceData);
+            RelationalToSqlHelper.tryCloseDbResources(sourceConnection, stmnt, sourceData);
         }
     }
 
@@ -170,7 +170,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
             LOG.error("Failed to create target database table " + targetTableName, e);
             throw e;
         } finally {
-            DatabaseHelper.tryCloseStatement(stmnt);
+            RelationalToSqlHelper.tryCloseStatement(stmnt);
         }
     }
 
@@ -194,8 +194,8 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
             LOG.error("Failed to obtain columns from the source internal database table " + sourceTableName, e);
             throw e;
         } finally {
-            DatabaseHelper.tryCloseResultSet(rs);
-            DatabaseHelper.tryCloseConnection(conn);
+            RelationalToSqlHelper.tryCloseResultSet(rs);
+            RelationalToSqlHelper.tryCloseConnection(conn);
         }
 
         return columns;
@@ -219,7 +219,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
         } catch (SQLException e) {
             throw new Exception("Failed to check consistency between existing table and provided files");
         } finally {
-            DatabaseHelper.tryCloseResultSet(rs);
+            RelationalToSqlHelper.tryCloseResultSet(rs);
         }
 
         // TODO: check data types
@@ -242,7 +242,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
             stmnt.executeUpdate(query);
             conn.commit();
         } finally {
-            DatabaseHelper.tryCloseStatement(stmnt);
+            RelationalToSqlHelper.tryCloseStatement(stmnt);
         }
     }
 
@@ -254,7 +254,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
             stmnt.executeUpdate(query);
             conn.commit();
         } finally {
-            DatabaseHelper.tryCloseStatement(stmnt);
+            RelationalToSqlHelper.tryCloseStatement(stmnt);
         }
     }
 
@@ -269,14 +269,14 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
                 bTableExists = true;
             }
         } finally {
-            DatabaseHelper.tryCloseResultSet(tables);
+            RelationalToSqlHelper.tryCloseResultSet(tables);
         }
         return bTableExists;
     }
 
     @Override
-    public AbstractConfigDialog<DatabaseConfig_V1> getConfigurationDialog() {
-        return new DatabaseVaadinDialog();
+    public AbstractConfigDialog<RelationalToSqlConfig_V1> getConfigurationDialog() {
+        return new RelationalToSqlVaadinDialog();
     }
 
 }
