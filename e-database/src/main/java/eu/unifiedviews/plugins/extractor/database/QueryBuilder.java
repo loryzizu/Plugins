@@ -6,28 +6,28 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class QueryBuilder {
-    
+
     public static String getInsertQueryForPreparedStatement(ResultSetMetaData meta, String tableName) throws SQLException {
         StringBuilder query = new StringBuilder("INSERT INTO ");
         query.append(tableName);
         query.append(" (");
         for (int i = 1; i <= meta.getColumnCount(); i++) {
             query.append(meta.getColumnLabel(i));
-            query.append(",");
+            query.append(", ");
         }
-        query.setLength(query.length() - 1);
+        query.setLength(query.length() - 2);
         query.append(") VALUES (");
 
         for (int i = 1; i <= meta.getColumnCount(); i++) {
             query.append("?");
-            query.append(",");
+            query.append(", ");
         }
-        query.setLength(query.length() - 1);
+        query.setLength(query.length() - 2);
         query.append(")");
 
         return query.toString();
     }
-    
+
     public static String getCreateTableQueryFromMetaData(ResultSetMetaData meta, String tableName) throws SQLException {
         int columnsCount = meta.getColumnCount();
         StringBuilder query = new StringBuilder();
@@ -52,12 +52,11 @@ public class QueryBuilder {
             query.append(" ");
             query.append(meta.getColumnTypeName(i));
             // Add size modification to String data types
-            if (appendSizeToColumnType(meta.getColumnClassName(i))) {
+            if (shouldAppendSizeToColumnType(meta.getColumnClassName(i))) {
                 query.append("(");
                 query.append(meta.getPrecision(i));
                 query.append(")");
             }
-            
             query.append(", ");
         }
 
@@ -66,8 +65,8 @@ public class QueryBuilder {
 
         return query.toString();
     }
-    
-    private static boolean appendSizeToColumnType(String typeClass) {
+
+    private static boolean shouldAppendSizeToColumnType(String typeClass) {
         boolean bResult = false;
         try {
             if (Class.forName(typeClass).isAssignableFrom(String.class)) {
@@ -76,7 +75,7 @@ public class QueryBuilder {
         } catch (ClassNotFoundException e) {
             // just ignore
         }
-        
+
         return bResult;
     }
 
