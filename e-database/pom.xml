@@ -9,12 +9,12 @@
   <artifactId>uv-e-database</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
-  <name>E-Database</name>
+  <name>E-RelationalFromSql</name>
   <description>Extracts data from relational database using SQL queries</description>
   
   <properties>
-		<dpu.package>eu.unifiedviews.plugins.extractor.database</dpu.package>
-		<dpu.mainClass>Database</dpu.mainClass>
+		<dpu.package>eu.unifiedviews.plugins.extractor.relationalfromsql</dpu.package>
+		<dpu.mainClass>RelationalFromSql</dpu.mainClass>
 		<mockito.version>1.10.8</mockito.version>
 		<powermock.version>1.6.1</powermock.version>
 		<junit.version>4.12</junit.version>
