@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.extractor.database;
+package eu.unifiedviews.plugins.extractor.sqltorelational;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,9 +22,9 @@ import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
 import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 @DPU.AsExtractor
-public class Database extends ConfigurableBase<DatabaseConfig_V1> implements ConfigDialogProvider<DatabaseConfig_V1> {
+public class SqlToRelational extends ConfigurableBase<SqlToRelationalConfig_V1> implements ConfigDialogProvider<SqlToRelationalConfig_V1> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Database.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SqlToRelational.class);
 
     private Messages messages;
 
@@ -33,8 +33,8 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
     @DataUnit.AsOutput(name = "internalDb")
     public WritableRelationalDataUnit outInternalDb;
 
-    public Database() {
-        super(DatabaseConfig_V1.class);
+    public SqlToRelational() {
+        super(SqlToRelationalConfig_V1.class);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
         try {
             try {
                 LOG.debug("Connecting to the source database");
-                conn = DatabaseHelper.createConnection(this.config);
+                conn = SqlToRelationalHelper.createConnection(this.config);
                 LOG.debug("Connected to the source database");
             } catch (SQLException e) {
                 throw new DPUException(this.messages.getString("errors.db.connectionfailed"), e);
@@ -78,7 +78,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
             }
 
             try {
-                String sourceTableName = DatabaseHelper.getSourceTableName(this.config.getSqlQuery());
+                String sourceTableName = SqlToRelationalHelper.getSourceTableName(this.config.getSqlQuery());
 
                 String tableName = this.outInternalDb.addNewDatabaseTable(sourceTableName);
                 LOG.debug("New database table {} added to relational data unit", tableName);
@@ -96,7 +96,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
                 throw new DPUException(this.messages.getString("errors.db.transformfailed"), e);
             }
         } finally {
-            DatabaseHelper.tryCloseDbResources(conn, stmnt, rs);
+            SqlToRelationalHelper.tryCloseDbResources(conn, stmnt, rs);
         }
     }
 
@@ -110,11 +110,11 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
             conn.commit();
         } catch (SQLException e) {
             LOG.error("Failed to create internal db table", e);
-            DatabaseHelper.tryRollbackConnection(conn);
+            SqlToRelationalHelper.tryRollbackConnection(conn);
             throw new DataUnitException("Error creating internal database table");
         } finally {
-            DatabaseHelper.tryCloseStatement(stmnt);
-            DatabaseHelper.tryCloseConnection(conn);
+            SqlToRelationalHelper.tryCloseStatement(stmnt);
+            SqlToRelationalHelper.tryCloseConnection(conn);
         }
     }
 
@@ -134,11 +134,11 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
             conn.commit();
         } catch (SQLException e) {
             LOG.error("Failed to load data into internal table", e);
-            DatabaseHelper.tryRollbackConnection(conn);
+            SqlToRelationalHelper.tryRollbackConnection(conn);
             throw new DataUnitException("Error loading SQL data into internal database");
         } finally {
-            DatabaseHelper.tryCloseStatement(ps);
-            DatabaseHelper.tryCloseConnection(conn);
+            SqlToRelationalHelper.tryCloseStatement(ps);
+            SqlToRelationalHelper.tryCloseConnection(conn);
         }
     }
 
@@ -153,8 +153,8 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
     }
 
     @Override
-    public AbstractConfigDialog<DatabaseConfig_V1> getConfigurationDialog() {
-        return new DatabaseVaadinDialog();
+    public AbstractConfigDialog<SqlToRelationalConfig_V1> getConfigurationDialog() {
+        return new SqlToRelationalVaadinDialog();
     }
 
 }

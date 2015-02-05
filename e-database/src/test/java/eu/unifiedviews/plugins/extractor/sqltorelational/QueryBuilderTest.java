@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.extractor.database;
+package eu.unifiedviews.plugins.extractor.sqltorelational;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import eu.unifiedviews.plugins.extractor.sqltorelational.QueryBuilder;
 
 public class QueryBuilderTest {
 
