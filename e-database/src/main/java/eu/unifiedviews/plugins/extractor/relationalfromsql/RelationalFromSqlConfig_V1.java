@@ -1,6 +1,6 @@
-package eu.unifiedviews.plugins.extractor.database;
+package eu.unifiedviews.plugins.extractor.relationalfromsql;
 
-public class DatabaseConfig_V1 {
+public class RelationalFromSqlConfig_V1 {
 	
 	 private String databaseURL;
 
