@@ -6,11 +6,11 @@
     <version>1.3.0-SNAPSHOT</version>
   </parent>
   
-  <artifactId>uv-e-database</artifactId>
+  <artifactId>uv-e-relationalFromSql</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>E-RelationalFromSql</name>
-  <description>Extracts data from relational database using SQL queries</description>
+  <description>Extracts data from relational database using SQL queries and stores them into internal data unit relational database</description>
   
   <properties>
 		<dpu.package>eu.unifiedviews.plugins.extractor.relationalfromsql</dpu.package>
