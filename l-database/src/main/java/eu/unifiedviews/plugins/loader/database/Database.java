@@ -80,6 +80,7 @@ public class Database extends ConfigurableBase<DatabaseConfig_V1> implements Con
                 final RelationalDataUnit.Entry entry = tablesIteration.next();
                 final String sourceTableName = entry.getTableName();
                 final String targetTableName = createTargetTableName(index);
+                index++;
 
                 try {
                     List<ColumnDefinition> sourceColumns = getColumnDefinitionsForSourceTable(sourceTableName);
