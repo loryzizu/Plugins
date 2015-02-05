@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.extractor.sqltorelational;
+package eu.unifiedviews.plugins.extractor.database;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

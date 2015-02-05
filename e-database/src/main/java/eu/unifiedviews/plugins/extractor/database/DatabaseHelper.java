@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.extractor.sqltorelational;
+package eu.unifiedviews.plugins.extractor.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,9 +13,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SqlToRelationalHelper {
+public class DatabaseHelper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SqlToRelationalHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DatabaseHelper.class);
 
     public static String getInternalTableName(ResultSetMetaData meta) throws SQLException {
         int columnsCount = meta.getColumnCount();
@@ -99,7 +99,7 @@ public class SqlToRelationalHelper {
         }
     }
     
-    public static boolean testDatabaseConnection(SqlToRelationalConfig_V1 config) {
+    public static boolean testDatabaseConnection(DatabaseConfig_V1 config) {
         boolean bConnectResult = true;
         
         try {
@@ -123,7 +123,7 @@ public class SqlToRelationalHelper {
         return bConnectResult;
     }
     
-    public static Connection createConnection(SqlToRelationalConfig_V1 config) throws SQLException {
+    public static Connection createConnection(DatabaseConfig_V1 config) throws SQLException {
         Connection connection = null;
         final Properties connectionProperties = new Properties();
         connectionProperties.setProperty("user", config.getUserName());
