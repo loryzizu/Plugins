@@ -80,7 +80,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
             try {
                 // H2 database converts names to UPPER case
                 String tableName = this.config.getTargetTableName().toUpperCase();
-                if (RelationalFromSqlHelper.checkTableExists(getConnectionInternal(), tableName)) {
+                if (RelationalFromSqlHelper.checkTableExists(conn, tableName)) {
                     this.context.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.db.tableunique.short"), this.messages.getString("errors.db.tableunique.long"));
                     return;
                 }
