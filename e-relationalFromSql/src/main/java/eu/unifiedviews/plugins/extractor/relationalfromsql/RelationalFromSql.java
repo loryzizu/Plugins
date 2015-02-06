@@ -78,9 +78,10 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
             }
 
             try {
-                String tableName = this.config.getTargetTableName();
+                // H2 database converts names to UPPER case
+                String tableName = this.config.getTargetTableName().toUpperCase();
 
-                String createTableQuery = QueryBuilder.getCreateTableQueryFromMetaData(meta, this.config.getTargetTableName());
+                String createTableQuery = QueryBuilder.getCreateTableQueryFromMetaData(meta, tableName);
 
                 LOG.debug("Creating internal db representation as " + createTableQuery);
                 createInternalTable(createTableQuery);
