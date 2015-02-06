@@ -106,7 +106,9 @@ public class RelationalToSql extends ConfigurableBase<RelationalToSqlConfig_V1> 
                             return;
                         }
                     }
-                    insertStmnt = conn.prepareStatement(QueryBuilder.getInsertQueryForPreparedStatement(targetTableName, sourceColumns));
+                    String insertQuery = QueryBuilder.getInsertQueryForPreparedStatement(targetTableName, sourceColumns);
+                    LOG.debug("Creating prepared statement for insert into external database using query: {}", insertQuery);
+                    insertStmnt = conn.prepareStatement(insertQuery);
                     insertDataFromSourceToTarget(insertStmnt, sourceColumns, sourceTableName);
                     conn.commit();
                 } catch (Exception e) {
@@ -162,6 +164,7 @@ public class RelationalToSql extends ConfigurableBase<RelationalToSqlConfig_V1> 
         Statement stmnt = null;
         try {
             String query = QueryBuilder.getQueryForCreateTable(targetTableName, sourceColumns);
+            LOG.debug("Creating table in external database using query: {}", query);
 
             stmnt = conn.createStatement();
             stmnt.executeUpdate(query);
