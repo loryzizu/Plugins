@@ -15,6 +15,7 @@
 		<module>e-rdfFromSparql</module>
 		<module>e-httpDownload</module>
 		<module>e-uploadToFiles</module>
+		<module>e-database</module>
 
 		<!-- TRANSFORMERS -->
 		<module>t-sparql</module>
