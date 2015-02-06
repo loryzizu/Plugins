@@ -78,16 +78,17 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
             }
 
             try {
-                String sourceTableName = RelationalFromSqlHelper.getSourceTableName(this.config.getSqlQuery());
+                String tableName = this.config.getTargetTableName();
 
-                String tableName = this.outInternalDb.addNewDatabaseTable(sourceTableName);
-                LOG.debug("New database table {} added to relational data unit", tableName);
-
-                String createTableQuery = QueryBuilder.getCreateTableQueryFromMetaData(meta, tableName);
+                String createTableQuery = QueryBuilder.getCreateTableQueryFromMetaData(meta, this.config.getTargetTableName());
 
                 LOG.debug("Creating internal db representation as " + createTableQuery);
                 createInternalTable(createTableQuery);
                 LOG.debug("Database table in internal database successfully created");
+
+                // For now, symbolic name and real table name are the same - user inserted
+                this.outInternalDb.addExistingDatabaseTable(tableName, tableName);
+                LOG.debug("New database table {} added to relational data unit", tableName);
 
                 LOG.debug("Inserting data from source table into internal table");
                 insertDataFromSelect(meta, rs, tableName);

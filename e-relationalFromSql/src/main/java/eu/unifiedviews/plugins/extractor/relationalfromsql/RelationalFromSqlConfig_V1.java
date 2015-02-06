@@ -1,19 +1,21 @@
 package eu.unifiedviews.plugins.extractor.relationalfromsql;
 
 public class RelationalFromSqlConfig_V1 {
-	
-	 private String databaseURL;
 
-	 private String userName;
+    private String databaseURL;
 
-	 private String userPassword;
-	 
-	 private boolean useSSL;
-	 
-	 private String sqlQuery;
-	 
-	 // TODO: This should be generic. Now for test purposes, only Postgres is used
-	 private String jdbcDriverName = "org.postgresql.Driver";
+    private String userName;
+
+    private String userPassword;
+
+    private boolean useSSL;
+
+    private String sqlQuery;
+
+    private String targetTableName;
+
+    // TODO: This should be generic. Now for test purposes, only Postgres is used
+    private String jdbcDriverName = "org.postgresql.Driver";
 
     public String getDatabaseURL() {
         return this.databaseURL;
@@ -61,6 +63,14 @@ public class RelationalFromSqlConfig_V1 {
 
     public void setJdbcDriverName(String jdbcDriverName) {
         this.jdbcDriverName = jdbcDriverName;
+    }
+
+    public String getTargetTableName() {
+        return this.targetTableName;
+    }
+
+    public void setTargetTableName(String targetTableName) {
+        this.targetTableName = targetTableName;
     }
 
 }
