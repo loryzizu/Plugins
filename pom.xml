@@ -29,6 +29,7 @@
 		<module>t-unzipper</module>
 		<module>t-tabular</module>
 		<module>t-metadata</module>
+		<module>t-relational</module>
 
 		<!-- LOADERS -->
 		<module>l-rdfToSparql</module>
