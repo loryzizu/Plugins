@@ -32,24 +32,24 @@ public class RelationalFromSqlHelper {
 
         return tableName.toString();
     }
-    
+
     public static String getSourceTableName(String selectQuery) throws SQLException {
         String query = selectQuery.replaceAll(";", "");
         String[] tokens = query.split("\\s");
         StringBuilder tableName = new StringBuilder();
         Set<String> tables = new HashSet<String>();
-        for (int i=1; i<tokens.length; i++) {
-            if (tokens[i-1].equalsIgnoreCase("FROM") || tokens[i-1].equalsIgnoreCase("JOIN")) {
+        for (int i = 1; i < tokens.length; i++) {
+            if (tokens[i - 1].equalsIgnoreCase("FROM") || tokens[i - 1].equalsIgnoreCase("JOIN")) {
                 tables.add(tokens[i]);
             }
         }
-        
+
         for (String table : tables) {
             tableName.append(table);
             tableName.append("_");
         }
         tableName.setLength(tableName.length() - 1);
-        
+
         return tableName.toString();
     }
 
@@ -98,10 +98,9 @@ public class RelationalFromSqlHelper {
             }
         }
     }
-    
+
     public static boolean testDatabaseConnection(RelationalFromSqlConfig_V1 config) {
         boolean bConnectResult = true;
-        
         try {
             Class.forName(config.getJdbcDriverName());
         } catch (ClassNotFoundException e) {
@@ -109,7 +108,7 @@ public class RelationalFromSqlHelper {
             bConnectResult = false;
             return bConnectResult;
         }
-        
+
         Connection conn = null;
         try {
             conn = createConnection(config);
@@ -119,10 +118,10 @@ public class RelationalFromSqlHelper {
         } finally {
             tryCloseConnection(conn);
         }
-        
+
         return bConnectResult;
     }
-    
+
     public static Connection createConnection(RelationalFromSqlConfig_V1 config) throws SQLException {
         Connection connection = null;
         final Properties connectionProperties = new Properties();
@@ -139,7 +138,5 @@ public class RelationalFromSqlHelper {
 
         return connection;
     }
-
-    
 
 }
