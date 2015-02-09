@@ -1,6 +1,7 @@
 package eu.unifiedviews.plugins.extractor.relationalfromsql;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -60,6 +61,17 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
         ResultSetMetaData meta = null;
 
         try {
+            String tableName = this.config.getTargetTableName().toUpperCase();
+
+            try {
+                if (checkInternalTableExists(tableName)) {
+                    this.context.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.db.tableunique.short", tableName), this.messages.getString("errors.db.tableunique.long"));
+                    return;
+                }
+            } catch (SQLException | DataUnitException e) {
+                throw new DPUException(this.messages.getString("errors.db.internaltable"));
+            }
+
             try {
                 LOG.debug("Connecting to the source database");
                 conn = RelationalFromSqlHelper.createConnection(this.config);
@@ -78,13 +90,6 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
             }
 
             try {
-                // H2 database converts names to UPPER case
-                String tableName = this.config.getTargetTableName().toUpperCase();
-                if (RelationalFromSqlHelper.checkTableExists(conn, tableName)) {
-                    this.context.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.db.tableunique.short"), this.messages.getString("errors.db.tableunique.long"));
-                    return;
-                }
-
                 String createTableQuery = QueryBuilder.getCreateTableQueryFromMetaData(meta, tableName);
 
                 LOG.debug("Creating internal db representation as " + createTableQuery);
@@ -146,6 +151,25 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
             RelationalFromSqlHelper.tryCloseStatement(ps);
             RelationalFromSqlHelper.tryCloseConnection(conn);
         }
+    }
+
+    private boolean checkInternalTableExists(String targetTableName) throws SQLException, DataUnitException {
+        Connection conn = null;
+        boolean bTableExists = false;
+        DatabaseMetaData dbm = null;
+        ResultSet tables = null;
+        try {
+            conn = getConnectionInternal();
+            dbm = conn.getMetaData();
+            tables = dbm.getTables(null, null, targetTableName, null);
+            if (tables.next()) {
+                bTableExists = true;
+            }
+        } finally {
+            RelationalFromSqlHelper.tryCloseResultSet(tables);
+            RelationalFromSqlHelper.tryCloseConnection(conn);
+        }
+        return bTableExists;
     }
 
     private void fillInsertData(PreparedStatement ps, ResultSetMetaData meta, ResultSet rs) throws SQLException {

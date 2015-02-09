@@ -1,7 +1,6 @@
 package eu.unifiedviews.plugins.extractor.relationalfromsql;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -52,22 +51,6 @@ public class RelationalFromSqlHelper {
         tableName.setLength(tableName.length() - 1);
         
         return tableName.toString();
-    }
-
-    public static boolean checkTableExists(Connection conn, String targetTableName) throws SQLException {
-        boolean bTableExists = false;
-        DatabaseMetaData dbm = null;
-        ResultSet tables = null;
-        try {
-            dbm = conn.getMetaData();
-            tables = dbm.getTables(null, null, targetTableName, null);
-            if (tables.next()) {
-                bTableExists = true;
-            }
-        } finally {
-            tryCloseResultSet(tables);
-        }
-        return bTableExists;
     }
 
     public static void tryCloseDbResources(Connection conn, Statement stmnt, ResultSet rs) {
