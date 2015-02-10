@@ -1,5 +1,6 @@
 package eu.unifiedviews.plugins.extractor.uploadtofiles;
 
+import java.util.Date;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -11,6 +12,8 @@ import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
@@ -45,9 +48,15 @@ public class UploadToFiles extends ConfigurableBase<UploadToFilesConfig_V1> impl
             try {
                 filesOutput.addExistingFile(symbolicName, symbolicNameToURIMap.get(symbolicName));
                 VirtualPathHelpers.setVirtualPath(filesOutput, symbolicName, symbolicNameToVirtualPathMap.get(symbolicName));
+                Resource resource = ResourceHelpers.getResource(filesOutput, symbolicName);
+                Date now = new Date();
+                resource.setCreated(now);
+                resource.setLast_modified(now);
+                resource.getExtras().setSource(symbolicNameToURIMap.get(symbolicName));
+                ResourceHelpers.setResource(filesOutput, symbolicName, resource);
                 if (dpuContext.isDebugging()) {
-                    LOG.debug("Providing " + symbolicName + " from " + symbolicNameToURIMap.get(symbolicName) 
-                    		+ " with virtual path " + symbolicNameToVirtualPathMap.get(symbolicName));
+                    LOG.debug("Providing " + symbolicName + " from " + symbolicNameToURIMap.get(symbolicName)
+                            + " with virtual path " + symbolicNameToVirtualPathMap.get(symbolicName));
                 }
             } catch (DataUnitException ex) {
                 throw new DPUException("Error when providing: Symbolic name " + symbolicName + " from location " + symbolicNameToURIMap.get(symbolicName), ex);

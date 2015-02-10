@@ -1,5 +1,6 @@
 package eu.unifiedviews.plugins.transformer.filesrenamer;
 
+import java.util.Date;
 import java.util.Iterator;
 
 import org.slf4j.Logger;
@@ -12,109 +13,87 @@ import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
-import eu.unifiedviews.helpers.dpu.NonConfigurableBase;
+import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
+import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
+/**
+ * Filenames renaming transformation DPU.
+ * 
+ * @author mva
+ */
 @DPU.AsTransformer
-public class Renamer extends NonConfigurableBase {
+public class Renamer extends ConfigurableBase<RenameConfig_V2> implements ConfigDialogProvider<RenameConfig_V2> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Renamer.class);
 
-    @DataUnit.AsInput(name = "filesInput")
-    public FilesDataUnit filesInput;
+    @DataUnit.AsInput(name = "input")
+    public FilesDataUnit inFilesData;
 
-    @DataUnit.AsOutput(name = "filesOutput")
-    public WritableFilesDataUnit filesOutput;
+    @DataUnit.AsOutput(name = "output")
+    public WritableFilesDataUnit outFilesData;
 
     public Renamer() {
-//        super(FilesToFilesRenameTransformerConfig.class);
+        super(RenameConfig_V2.class);
     }
 
-//    @Override
-//    public AbstractConfigDialog<FilesToFilesRenameTransformerConfig> getConfigurationDialog() {
-//        return new FilesToFilesRenameTransformerConfigDialog();
-//    }
+    @Override
+    public AbstractConfigDialog<RenameConfig_V2> getConfigurationDialog() {
+        return new RenameVaadinDialog();
+    }
 
     @Override
-    public void execute(DPUContext dpuContext) throws DPUException {
-        //check that XSLT is available
-
-        String shortMessage = this.getClass().getSimpleName() + " starting.";
-//        String longMessage = String.valueOf(config);
-//        dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
-        dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, "");
-
+    public void execute(DPUContext context) throws DPUException {
+        Messages messages = new Messages(context.getLocale(), this.getClass().getClassLoader());
         final Iterator<FilesDataUnit.Entry> filesIteration;
         try {
-            filesIteration = FilesHelper.getFiles(filesInput).iterator();
+            filesIteration = FilesHelper.getFiles(inFilesData).iterator();
         } catch (DataUnitException ex) {
-            throw new DPUException("Could not obtain filesInput", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.file.iterator"), "", ex);
+            return;
         }
-        long filesSuccessfulCount = 0L;
-        long index = 0L;
-        boolean shouldContinue = !dpuContext.canceled();
 
-        VirtualPathHelper virtualPathHelperInput = VirtualPathHelpers.create(filesInput);
-        VirtualPathHelper virtualPathHelperOutput = VirtualPathHelpers.create(filesOutput);
+        // create renaming engine, set config and initialize it
+        RenamerEngine renamerEngine = new RenamerEngine();
+        renamerEngine.setConfig(config);
+        renamerEngine.initialize();
+
+        VirtualPathHelper virtualPathHelperInput = VirtualPathHelpers.create(inFilesData);
+        VirtualPathHelper virtualPathHelperOutput = VirtualPathHelpers.create(outFilesData);
         try {
 
-            while (shouldContinue && filesIteration.hasNext()) {
+            while (!context.canceled() && filesIteration.hasNext()) {
                 FilesDataUnit.Entry entry;
                 try {
                     entry = filesIteration.next();
-                    index++;
 
-                    final String newSymbolicName = entry.getSymbolicName() + ".ttl";
-                    final String newVirtualPath = virtualPathHelperInput.getVirtualPath(entry.getSymbolicName()) + ".ttl";
+                    final String oldVirtualPath = virtualPathHelperInput.getVirtualPath(entry.getSymbolicName());
+                    final String newVirtualPath = renamerEngine.renameNext(oldVirtualPath);
 
-                    filesOutput.addExistingFile(newSymbolicName, entry.getFileURIString());
-                    virtualPathHelperOutput.setVirtualPath(newSymbolicName, newVirtualPath);
+                    // rename and copy metadata
+                    CopyHelpers.copyMetadata(entry.getSymbolicName(), inFilesData, outFilesData);
+                    virtualPathHelperOutput.setVirtualPath(entry.getSymbolicName(), newVirtualPath);
+                    Resource resource = ResourceHelpers.getResource(outFilesData, entry.getSymbolicName());
+                    // adjust modification date
+                    Date now = new Date();
+                    resource.setLast_modified(now);
+                    ResourceHelpers.setResource(outFilesData, entry.getSymbolicName(), resource);
 
-                    filesSuccessfulCount++;
                 } catch (DataUnitException ex) {
-                    dpuContext.sendMessage(
-                            DPUContext.MessageType.ERROR,
-                            "DataUnit exception.",
-                            "",
-                            ex);
+                    context.sendMessage(DPUContext.MessageType.ERROR,
+                            messages.getString("errors.dpu.generalfailed"), "", ex);
                 }
-
-                shouldContinue = !dpuContext.canceled();
             }
         } finally {
-            try {
-                virtualPathHelperInput.close();
-                virtualPathHelperOutput.close();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error closing filesInput", ex);
-            }
-        }
-        String message = String.format("Processed %d/%d", filesSuccessfulCount, index);
-        dpuContext.sendMessage(filesSuccessfulCount < index ? DPUContext.MessageType.WARNING : DPUContext.MessageType.INFO, message);
-    }
-
-    public static String appendNumber(long number) {
-        String value = String.valueOf(number);
-        if (value.length() > 1) {
-            // Check for special case: 11 - 13 are all "th".
-            // So if the second to last digit is 1, it is "th".
-            char secondToLastDigit = value.charAt(value.length() - 2);
-            if (secondToLastDigit == '1') {
-                return value + "th";
-            }
-        }
-        char lastDigit = value.charAt(value.length() - 1);
-        switch (lastDigit) {
-            case '1':
-                return value + "st";
-            case '2':
-                return value + "nd";
-            case '3':
-                return value + "rd";
-            default:
-                return value + "th";
+            virtualPathHelperInput.close();
+            virtualPathHelperOutput.close();
         }
     }
 }

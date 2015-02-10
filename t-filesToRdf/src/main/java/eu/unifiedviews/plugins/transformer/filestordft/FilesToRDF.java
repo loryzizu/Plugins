@@ -2,8 +2,10 @@ package eu.unifiedviews.plugins.transformer.filestordft;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Iterator;
 
+import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.util.RDFInserter;
@@ -12,7 +14,6 @@ import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.ParseErrorLogger;
-import org.openrdf.model.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,13 +24,15 @@ import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
-import java.util.Date;
 
 @DPU.AsTransformer
 public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig_V1> implements ConfigDialogProvider<FilesToRDFConfig_V1> {
@@ -103,6 +106,11 @@ public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig_V1> implements
                 // Set output graph name.
                 if (outputGraphUri == null) {
                     rdfInserter.enforceContext(rdfOutput.addNewDataGraph(entry.getSymbolicName()));
+                    CopyHelpers.copyMetadata(entry.getSymbolicName(), filesInput, rdfOutput);
+                    Resource resource = ResourceHelpers.getResource(rdfOutput, entry.getSymbolicName());
+                    Date now = new Date();
+                    resource.setLast_modified(now);
+                    ResourceHelpers.setResource(rdfOutput, entry.getSymbolicName(), resource);
                 } else {
                     rdfInserter.enforceContext(outputGraphUri);
                 }
@@ -155,11 +163,7 @@ public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig_V1> implements
                     dpuContext.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
                 }
             }
-            try {
-                inputVirtualPathHelper.close();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error in close", ex);
-            }
+            inputVirtualPathHelper.close();
         }
         // Publish messsage.
         if (fileSkipped) {

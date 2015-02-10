@@ -4,10 +4,13 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
-public class FilesFilterVaadinDialog extends BaseConfigDialog<FilesFilterConfig_V1> {
+public class FilesFilterVaadinDialog extends BaseConfigDialog<FilesFilterConfig_V1> implements InitializableConfigDialog {
 
     private static final int OPTION_SYMBOLIC_NAME = 1;
 
@@ -21,12 +24,15 @@ public class FilesFilterVaadinDialog extends BaseConfigDialog<FilesFilterConfig_
 
     private CheckBox checkUseRegExp;
 
+    private Messages messages;
+
     public FilesFilterVaadinDialog() {
         super(FilesFilterConfig_V1.class);
-        buildMainLayout();
     }
 
-    private void buildMainLayout() {
+    @Override
+    public void initialize() {
+        this.messages = new Messages(getContext().getLocale(), this.getClass().getClassLoader());
         setWidth("100%");
         setHeight("100%");
 
@@ -36,21 +42,21 @@ public class FilesFilterVaadinDialog extends BaseConfigDialog<FilesFilterConfig_
         mainLayout.setHeight("-1px");
         mainLayout.setSpacing(true);
 
-        optType = new OptionGroup("Used filter:");
+        optType = new OptionGroup(messages.getString("FilesFilterVaadinDialog.filter.used"));
         optType.addItem(OPTION_SYMBOLIC_NAME);
-        optType.setItemCaption(OPTION_SYMBOLIC_NAME, "symbolic name");
+        optType.setItemCaption(OPTION_SYMBOLIC_NAME, messages.getString("FilesFilterVaadinDialog.name.symbolic"));
 
         optType.addItem(OPTION_VIRTUAL_PATH);
-        optType.setItemCaption(OPTION_VIRTUAL_PATH, "virtual path");
+        optType.setItemCaption(OPTION_VIRTUAL_PATH, messages.getString("FilesFilterVaadinDialog.path.virtual"));
 
         mainLayout.addComponent(optType);
 
-        txtObject = new TextField("Custom predicate:");
+        txtObject = new TextField(messages.getString("FilesFilterVaadinDialog.predicate.custom"));
         txtObject.setWidth("100%");
         txtObject.setRequired(true);
         mainLayout.addComponent(txtObject);
 
-        checkUseRegExp = new CheckBox("Use regular expression:");
+        checkUseRegExp = new CheckBox(messages.getString("FilesFilterVaadinDialog.regex.use"));
         mainLayout.addComponent(checkUseRegExp);
 
         setCompositionRoot(mainLayout);
@@ -73,7 +79,7 @@ public class FilesFilterVaadinDialog extends BaseConfigDialog<FilesFilterConfig_
     @Override
     protected FilesFilterConfig_V1 getConfiguration() throws DPUConfigException {
         if (!txtObject.isValid()) {
-            throw new DPUConfigException("All fields must be filled.");
+            throw new DPUConfigException(messages.getString("FilesFilterVaadinDialog.constrain.fields.all"));
         }
 
         final FilesFilterConfig_V1 cnf = new FilesFilterConfig_V1();
@@ -86,7 +92,7 @@ public class FilesFilterVaadinDialog extends BaseConfigDialog<FilesFilterConfig_
                 cnf.setPredicate(FilesFilterConfig_V1.VIRTUAL_PATH);
                 break;
             default:
-                throw new DPUConfigException("The dialog is broken - unknown selection.");
+                throw new DPUConfigException(messages.getString("FilesFilterVaadinDialog.dialog.broken"));
         }
         cnf.setObject(txtObject.getValue());
         cnf.setUseRegExp(checkUseRegExp.getValue());
@@ -97,19 +103,19 @@ public class FilesFilterVaadinDialog extends BaseConfigDialog<FilesFilterConfig_
     public String getDescription() {
         StringBuilder desc = new StringBuilder();
 
-        desc.append("Filter by : ");
+        desc.append(messages.getString("FilesFilterVaadinDialog.filterBy"));
 
         final Integer selected = (Integer) optType.getValue();
         switch (selected) {
             case OPTION_SYMBOLIC_NAME:
-                desc.append("symbolic name");
+                desc.append(messages.getString("FilesFilterVaadinDialog.desc.name.symbolic"));
                 break;
             case OPTION_VIRTUAL_PATH:
-                desc.append("virtual path");
+                desc.append(messages.getString("FilesFilterVaadinDialog.desc.path.virtual"));
                 break;
         }
 
-        desc.append(" for ");
+        desc.append(" " + messages.getString("FilesFilterVaadinDialog.desc.for") + " ");
         desc.append(txtObject.getValue());
 
         return desc.toString();

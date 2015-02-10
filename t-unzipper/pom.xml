@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>eu.unifiedviews.plugins</groupId>
 		<artifactId>dpu-base-pom</artifactId>
-		<version>1.0.1</version>
+		<version>1.2.0</version>
 		<relativePath />
 	</parent>
 
@@ -13,7 +13,7 @@
 	<artifactId>uv-t-unzipper</artifactId>
 	<name>T-UnZipper</name>
 	<description>UnZip input file into files based on zip content.</description>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 	<packaging>bundle</packaging>
 	<repositories>
 		<repository>
@@ -26,6 +26,9 @@
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.transformer.unzipper</dpu.package>
 		<dpu.mainClass>UnZipper</dpu.mainClass>
+		<mockito.version>1.10.8</mockito.version>
+		<powermock.version>1.6.1</powermock.version>
+		<junit.version>4.12</junit.version>
 	</properties>
 
 	<dependencies>
@@ -40,6 +43,36 @@
 			<artifactId>zip4j</artifactId>
 			<version>1.2.3</version>
 		</dependency>
+		<!-- UNIT Test dependencies -->
+		<dependency>
+			<groupId>cz.cuni.mff.xrg.odcs</groupId>
+			<artifactId>module-test</artifactId>
+			<version>${module-test.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>		
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
-
 </project>

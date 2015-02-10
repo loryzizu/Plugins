@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -17,6 +18,9 @@ import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelper;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
@@ -55,6 +59,7 @@ public class HttpDownload extends ConfigurableBase<HttpDownloadConfig_V1> implem
 
         boolean shouldContinue = !dpuContext.canceled();
         VirtualPathHelper virtualPathHelper = VirtualPathHelpers.create(filesOutput);
+        ResourceHelper resourceHelper = ResourceHelpers.create(filesOutput);
         try {
             for (String symbolicName : symbolicNameToURIMap.keySet()) {
                 if (!shouldContinue) {
@@ -78,17 +83,20 @@ public class HttpDownload extends ConfigurableBase<HttpDownloadConfig_V1> implem
                     } else {
                         virtualPathHelper.setVirtualPath(symbolicName, downloadFromLocationURL.getPath());
                     }
+                    Resource resource = resourceHelper.getResource(symbolicName);
+                    Date now = new Date();
+                    resource.setCreated(now);
+                    resource.setLast_modified(now);
+                    resource.getExtras().setSource(URI.create(downloadFromLocationURL.toString()).toASCIIString());
+                    resourceHelper.setResource(symbolicName, resource);
                 } catch (IOException | DataUnitException ex) {
                     throw new DPUException("Error when downloading. Symbolic name " + symbolicName + " from location " + downloadFromLocation + " could not be saved to " + downloadedFilename, ex);
                 }
                 shouldContinue = !dpuContext.canceled();
             }
         } finally {
-            try {
-                virtualPathHelper.close();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error in close", ex);
-            }
+            virtualPathHelper.close();
+            resourceHelper.close();
         }
     }
 

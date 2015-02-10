@@ -4,21 +4,28 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
-public class ZipperVaadinDialog extends BaseConfigDialog<ZipperConfig_V1> {
+public class ZipperVaadinDialog extends BaseConfigDialog<ZipperConfig_V1> implements InitializableConfigDialog {
 
     private VerticalLayout mainLayout;
 
     private TextField txtZipFile;
+    
+    private Messages messages;
 
     public ZipperVaadinDialog() {
         super(ZipperConfig_V1.class);
-        buildMainLayout();
     }
-
-    private void buildMainLayout() {
+    
+    @Override
+    public void initialize() {
+        this.messages = new Messages(getContext().getLocale(), this.getClass().getClassLoader());
+        
         setWidth("100%");
         setHeight("100%");
 
@@ -27,16 +34,12 @@ public class ZipperVaadinDialog extends BaseConfigDialog<ZipperConfig_V1> {
         mainLayout.setWidth("100%");
         mainLayout.setHeight("-1px");
 
-        txtZipFile = new TextField("Zip file path/name (with extension):");
+        txtZipFile = new TextField(messages.getString("dialog.zip.filename"));
         txtZipFile.setWidth("100%");
         txtZipFile.setRequired(true);
         mainLayout.addComponent(txtZipFile);
 
-        mainLayout.addComponent(new Label(
-                "Given path/name must be relative ie. /data.zip, /data/out.zip. "
-                        + "<br/> Absolute path like c:/ must not be used. "
-                        + "In case unix system /dir/data.zip is interpreted"
-                        + "as a relative path.", ContentMode.HTML));
+        mainLayout.addComponent(new Label(messages.getString("dialog.zip.filename.specification"), ContentMode.HTML));
 
         setCompositionRoot(mainLayout);
     }
@@ -49,7 +52,7 @@ public class ZipperVaadinDialog extends BaseConfigDialog<ZipperConfig_V1> {
     @Override
     protected ZipperConfig_V1 getConfiguration() throws DPUConfigException {
         if (!txtZipFile.isValid()) {
-            throw new DPUConfigException("Destination must be filled.");
+            throw new DPUConfigException(messages.getString("dialog.zip.valid.input.filename"));
         }
         ZipperConfig_V1 cnf = new ZipperConfig_V1();
         cnf.setZipFile(txtZipFile.getValue());
@@ -60,7 +63,7 @@ public class ZipperVaadinDialog extends BaseConfigDialog<ZipperConfig_V1> {
     public String getDescription() {
         final StringBuilder desc = new StringBuilder();
 
-        desc.append("Load data into ");
+        desc.append(messages.getString("dialog.zip.description"));
         desc.append(txtZipFile.getValue());
 
         return desc.toString();

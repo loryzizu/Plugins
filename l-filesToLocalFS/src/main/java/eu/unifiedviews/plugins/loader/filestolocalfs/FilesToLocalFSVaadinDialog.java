@@ -7,22 +7,16 @@ import com.vaadin.ui.TextField;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class FilesToLocalFSVaadinDialog extends BaseConfigDialog<FilesToLocalFSConfig_V1> {
+public class FilesToLocalFSVaadinDialog extends BaseConfigDialog<FilesToLocalFSConfig_V1> implements InitializableConfigDialog {
 
     private static final long serialVersionUID = -5668436075836909428L;
-
-    private static final String DESTINATION_LABEL = "Destination directory absolute path";
-
-    private static final String MOVE_FILES_LABEL = "Move files instead of copy";
-
-    private static final String REPLACE_EXISTING_LABEL = "Replace existing files";
-
-    private static final String SKIP_ON_ERROR_LABEL = "Skip file on error";
 
     private ObjectProperty<String> destination = new ObjectProperty<String>("");
 
@@ -32,25 +26,29 @@ public class FilesToLocalFSVaadinDialog extends BaseConfigDialog<FilesToLocalFSC
 
     private ObjectProperty<Boolean> skipOnError = new ObjectProperty<Boolean>(false);
 
+    private Messages messages;
+
     public FilesToLocalFSVaadinDialog() {
         super(FilesToLocalFSConfig_V1.class);
-        initialize();
     }
 
-    private void initialize() {
+    @Override
+    public void initialize() {
+        messages = new Messages(getContext().getLocale(), this.getClass().getClassLoader());
+
         FormLayout mainLayout = new FormLayout();
 
         // top-level component properties
         setWidth("100%");
         setHeight("100%");
 
-        TextField txtPath = new TextField(DESTINATION_LABEL, destination);
+        TextField txtPath = new TextField(messages.getString("dialog.tlfs.destination"), destination);
         txtPath.setWidth("100%");
 
         mainLayout.addComponent(txtPath);
-        mainLayout.addComponent(new CheckBox(MOVE_FILES_LABEL, moveFiles));
-        mainLayout.addComponent(new CheckBox(REPLACE_EXISTING_LABEL, replaceExisting));
-        mainLayout.addComponent(new CheckBox(SKIP_ON_ERROR_LABEL, skipOnError));
+        mainLayout.addComponent(new CheckBox(messages.getString("dialog.tlfs.move"), moveFiles));
+        mainLayout.addComponent(new CheckBox(messages.getString("dialog.tlfs.replace"), replaceExisting));
+        mainLayout.addComponent(new CheckBox(messages.getString("dialog.tlfs.skip"), skipOnError));
 
         setCompositionRoot(mainLayout);
     }
@@ -58,6 +56,7 @@ public class FilesToLocalFSVaadinDialog extends BaseConfigDialog<FilesToLocalFSC
     @Override
     public void setConfiguration(FilesToLocalFSConfig_V1 conf)
             throws DPUConfigException {
+
         destination.setValue(conf.getDestination());
         moveFiles.setValue(conf.isMoveFiles());
         replaceExisting.setValue(conf.isReplaceExisting());

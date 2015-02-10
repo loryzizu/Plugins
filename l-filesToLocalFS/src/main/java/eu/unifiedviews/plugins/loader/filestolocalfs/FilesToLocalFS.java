@@ -14,8 +14,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.nio.file.ExtendedCopyOption;
-
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
@@ -32,6 +30,7 @@ import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 @DPU.AsLoader
 public class FilesToLocalFS extends
@@ -56,7 +55,8 @@ public class FilesToLocalFS extends
     @Override
     public void execute(DPUContext dpuContext) throws DPUException,
             InterruptedException {
-        String shortMessage = this.getClass().getSimpleName() + " starting.";
+        Messages messages = new Messages(dpuContext.getLocale(), this.getClass().getClassLoader());
+        String shortMessage = this.getClass().getSimpleName() + " " + messages.getString("status.tlfs.starting");
         String longMessage = String.valueOf(config);
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
 
@@ -64,7 +64,7 @@ public class FilesToLocalFS extends
         try {
             filesIteration = filesInput.getIteration();
         } catch (DataUnitException ex) {
-            throw new DPUException("Could not obtain filesInput", ex);
+            throw new DPUException(messages.getString("error.tlfs.fileinput"), ex);
         }
         File destinationDirFile = new File(config.getDestination());
         destinationDirFile.mkdirs();
@@ -74,7 +74,6 @@ public class FilesToLocalFS extends
         ArrayList<CopyOption> copyOptions = new ArrayList<>(1);
         if (config.isReplaceExisting()) {
             copyOptions.add(StandardCopyOption.REPLACE_EXISTING);
-            copyOptions.add(ExtendedCopyOption.INTERRUPTIBLE);
         }
         CopyOption[] copyOptionsArray = copyOptions.toArray(new CopyOption[copyOptions.size()]);
 
@@ -94,9 +93,9 @@ public class FilesToLocalFS extends
                     String outputRelativePath = inputVirtualPathHelper.getVirtualPath(entry.getSymbolicName());
                     if (outputRelativePath == null || outputRelativePath.isEmpty()) {
                         outputRelativePath = entry.getSymbolicName();
+                        VirtualPathHelpers.setVirtualPath(filesOutput, entry.getSymbolicName(), outputRelativePath);
                     }
-                    File outputFile = new File(destinationAbsolutePath + File.separator
-                            + outputRelativePath);
+                    File outputFile = new File(destinationAbsolutePath + File.separator + outputRelativePath);
                     new File(FilenameUtils.getFullPath(outputFile.getAbsolutePath())).mkdirs();
 
                     Path outputPath = outputFile.toPath();
@@ -110,12 +109,17 @@ public class FilesToLocalFS extends
                     } else {
                         java.nio.file.Files.copy(inputPath, outputPath, copyOptionsArray);
                     }
-                    java.nio.file.Files.setPosixFilePermissions(outputPath, PosixFilePermissions.fromString("rw-r--r--"));
+                    try {
+                        java.nio.file.Files.setPosixFilePermissions(outputPath, PosixFilePermissions.fromString("rw-r--r--"));
+                    } catch (UnsupportedOperationException ex) {
+
+                    }
 
                     copyHelper.copyMetadata(entry.getSymbolicName());
                     Resource resource = ResourceHelpers.getResource(filesOutput, entry.getSymbolicName());
                     resource.setLast_modified(new Date());
                     ResourceHelpers.setResource(filesOutput, entry.getSymbolicName(), resource);
+                    filesOutput.updateExistingFileURI(entry.getSymbolicName(), outputRelativePath);
 
                     if (dpuContext.isDebugging()) {
                         LOG.debug("Processed {} file in {}s", appendNumber(index), (System.currentTimeMillis() - start.getTime()) / 1000);
@@ -124,14 +128,14 @@ public class FilesToLocalFS extends
                     if (config.isSkipOnError()) {
                         LOG.warn("Error processing {} file {}", appendNumber(index), String.valueOf(entry), ex);
                     } else {
-                        throw new DPUException("Error processing " + appendNumber(index) + " file " + String.valueOf(entry), ex);
+                        throw new DPUException(messages.getString("error.tlfs.processing") + " " + appendNumber(index) + " " + messages.getString("error.tlfs.file") + " " + String.valueOf(entry), ex);
                     }
                 }
 
                 shouldContinue = !dpuContext.canceled();
             }
         } catch (DataUnitException ex) {
-            throw new DPUException("Error iterating filesInput.", ex);
+            throw new DPUException(messages.getString("error.fileinput.iterator"), ex);
         } finally {
             try {
                 filesIteration.close();

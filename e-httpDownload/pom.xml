@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>eu.unifiedviews.plugins</groupId>
 		<artifactId>dpu-base-pom</artifactId>
-		<version>1.0.1</version>
+		<version>1.2.0</version>
 		<relativePath />
 	</parent>
 
@@ -14,7 +14,7 @@
 	<artifactId>uv-e-httpDownload</artifactId>
 	<name>E-HttpDownload</name>
 	<description>Downloads list of files (in form of URIs) given in a configuration and saves them to output.</description>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 	<packaging>bundle</packaging>
 	<repositories>
 		<repository>

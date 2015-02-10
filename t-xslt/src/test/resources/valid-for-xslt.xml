@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <modules>
+        <module><test>e-filesFromLocal</test></module>
+        <module><test>e-rdfFromSparql</test></module>
+        <module><test>e-httpDownload</test></module>
+        <module><test>e-uploadToFiles</test></module>
+    </modules>
+</project>

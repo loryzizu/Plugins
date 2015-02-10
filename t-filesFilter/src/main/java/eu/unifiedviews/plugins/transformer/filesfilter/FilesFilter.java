@@ -14,11 +14,13 @@ import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 @DPU.AsTransformer
 public class FilesFilter extends ConfigurableBase<FilesFilterConfig_V1> implements ConfigDialogProvider<FilesFilterConfig_V1> {
@@ -42,12 +44,13 @@ public class FilesFilter extends ConfigurableBase<FilesFilterConfig_V1> implemen
 
     @Override
     public void execute(DPUContext context) throws DPUException {
+        Messages messages = new Messages(context.getLocale(), this.getClass().getClassLoader());
         Pattern pattern = null;
         if (config.isUseRegExp()) {
             try {
                 pattern = Pattern.compile(config.getObject());
             } catch (PatternSyntaxException ex) {
-                context.sendMessage(DPUContext.MessageType.ERROR, "Configuration problem", "Error in object regexp.", ex);
+                context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("FilesFilter.problem.configuration"), messages.getString("FilesFilter.error.regexp"), ex);
                 return;
             }
         }
@@ -58,7 +61,7 @@ public class FilesFilter extends ConfigurableBase<FilesFilterConfig_V1> implemen
         try {
             filesIteration = FilesHelper.getFiles(inFilesData).iterator();
         } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "Can't get file iterator.", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("FilesFilter.dpu.failed"), messages.getString("FilesFilter.error.iterator"), ex);
             return;
         }
         //
@@ -99,24 +102,10 @@ public class FilesFilter extends ConfigurableBase<FilesFilterConfig_V1> implemen
                 }
                 LOG.debug("Entry '{}' pass the filter.", entry.getSymbolicName());
                 // if we are here, then file pass through our filters
-                // CopyHelpers.copyMetadata(entry.getSymbolicName(), inFilesData, outFilesData);
-
-                //
-                // TODO here we should rather somehow copy metadata from input
-                //  to output metadata graps, as otherwise we create new
-                //  triples
-                outFilesData.addExistingFile(entry.getSymbolicName(), entry.getFileURIString());
-                // TODO Remove this
-                // as a hack copy virtual path now
-                final String virtualPath = VirtualPathHelpers.getVirtualPath(inFilesData, entry.getSymbolicName());
-                if (virtualPath == null) {
-                    LOG.debug("Null virtualPath for {}", entry.getSymbolicName());
-                } else {
-                    VirtualPathHelpers.setVirtualPath(outFilesData, entry.getSymbolicName(), virtualPath);
-                }
+                CopyHelpers.copyMetadata(entry.getSymbolicName(), inFilesData, outFilesData);
             }
         } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Problem with DataUnit", "", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("FilesFilter.problem.dataunit"), "", ex);
         }
     }
 

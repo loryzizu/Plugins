@@ -9,7 +9,7 @@
 |**Description:**              |Renames files. |
 |                              |                                                               |
 |**DPU class name:**           |Renamer     | 
-|**Configuration class name:** |RenameConfig_V1                           |
+|**Configuration class name:** |RenameConfig_V2                           |
 |**Dialogue class name:**      |RenameVaadinDialog | 
 
 ***
@@ -19,7 +19,11 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|N/A |N/A  |
+|mask          |Mask used in renaming of filename.  |
+|extensionMask |Mask used in renaming of exatension.  |
+|counterStart  |Counter setting. Initial value of counter.  |
+|counterStep   |Counter setting. Difference between previous counter value and next.  |
+|counterDigits |Counter settings. Number of digits used in converting counter value to string.  |
 
 ***
 
@@ -27,8 +31,8 @@
 
 |Name                |Type       |DataUnit                         |Description                        |
 |--------------------|-----------|---------------------------------|-----------------------------------|
-|filesInput |i |FilesDataUnit  |File name to be modified.  |
-|filesOutput|o |FilesDataUnit  |File name after modification. | 
+|inFilesData  |i |FilesDataUnit  |File name to be modified.  |
+|outFilesData |o |FilesDataUnit  |File name after modification. | 
 
 ***
 
@@ -36,7 +40,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|1.3.1              |N/A                                             |                                
+|1.5.0-SNAPSHOT |Added support for renaming against the mask. |                                
 
 
 ***

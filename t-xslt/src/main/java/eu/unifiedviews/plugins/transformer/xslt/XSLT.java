@@ -1,6 +1,7 @@
 package eu.unifiedviews.plugins.transformer.xslt;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.Date;
@@ -29,14 +30,18 @@ import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
 import eu.unifiedviews.helpers.dataunit.maphelper.MapHelper;
 import eu.unifiedviews.helpers.dataunit.maphelper.MapHelpers;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 @DPU.AsTransformer
 public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialogProvider<XSLTConfig_V1> {
@@ -47,6 +52,8 @@ public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialo
 
     @DataUnit.AsOutput(name = "filesOutput")
     public WritableFilesDataUnit filesOutput;
+    
+    private Messages messages;
 
     public XSLT() {
         super(XSLTConfig_V1.class);
@@ -59,13 +66,16 @@ public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialo
 
     @Override
     public void execute(DPUContext dpuContext) throws DPUException {
+        this.messages = new Messages(dpuContext.getLocale(), this.getClass().getClassLoader());
         //check that XSLT is available
         if (config.getXslTemplate().isEmpty()) {
-            throw new DPUException("No XSLT template available, execution interrupted");
+            throw new DPUException(this.messages.getString("errors.xslt.template"));
         }
 
-        String shortMessage = this.getClass().getSimpleName() + " starting.";
-        String longMessage = String.valueOf(config);
+        String shortMessage = this.messages.getString("messages.xslt.start", this.getClass().getSimpleName());
+        String longMessage = this.messages.getString("messages.xslt.longstart", XSLTConfig_V1.class.getSimpleName(), 
+                this.config.getXslTemplateFileNameShownInDialog(),
+                this.config.isSkipOnError(), this.config.getXsltParametersMapName(), this.config.getOutputFileExtension());
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
 
         //try to compile XSLT
@@ -75,16 +85,16 @@ public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialo
         try {
             exp = comp.compile(new StreamSource(new StringReader(config.getXslTemplate())));
         } catch (SaxonApiException ex) {
-            throw new DPUException("Cannot compile XSLT", ex);
+            throw new DPUException(this.messages.getString("errors.xslt.compile"));
         }
 
-        dpuContext.sendMessage(DPUContext.MessageType.INFO, "Stylesheet was compiled successully");
+        dpuContext.sendMessage(DPUContext.MessageType.INFO, this.messages.getString("messages.xslt.compile"));
 
         final Iterator<FilesDataUnit.Entry> filesIteration;
         try {
             filesIteration = FilesHelper.getFiles(filesInput).iterator();
         } catch (DataUnitException ex) {
-            dpuContext.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "Can't get file iterator.", ex);
+            dpuContext.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.dpu.failed"), this.messages.getString("errors.xslt.iterator"), ex);
             return;
         }
         long filesSuccessfulCount = 0L;
@@ -96,22 +106,16 @@ public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialo
         VirtualPathHelper outputVirtualPathHelper = VirtualPathHelpers.create(filesOutput);
         String xsltParametersMapName = config.getXsltParametersMapName();
         try {
+            File baseOutputDirectory = new File(URI.create(filesOutput.getBaseFileURIString()));
             while (shouldContinue && filesIteration.hasNext()) {
                 FilesDataUnit.Entry entry;
                 entry = filesIteration.next();
 
                 String inSymbolicName = entry.getSymbolicName();
 
-                String outputFilename = filesOutput.addNewFile(inSymbolicName);
-                String inputVirtualPath = inputVirtualPathHelper.getVirtualPath(inSymbolicName);
-                if (inputVirtualPath != null && config.getOutputFileExtension() != null && !config.getOutputFileExtension().isEmpty()) {
-                    outputVirtualPathHelper.setVirtualPath(inSymbolicName, FilenameUtils.removeExtension(inputVirtualPath) + config.getOutputFileExtension());
-                } else if (config.getOutputFileExtension() != null && !config.getOutputFileExtension().isEmpty()) {
-                    outputVirtualPathHelper.setVirtualPath(inSymbolicName, inSymbolicName + config.getOutputFileExtension());
-                }
-                File outputFile = new File(URI.create(outputFilename));
-                File inputFile = new File(URI.create(entry.getFileURIString()));
                 try {
+                    File outputFile = File.createTempFile("t-xslt-dpu", "", baseOutputDirectory);
+                    File inputFile = new File(URI.create(entry.getFileURIString()));
                     index++;
 
                     Date start = new Date();
@@ -142,40 +146,40 @@ public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialo
                     trans.getUnderlyingController().clearDocumentPool();
 
                     filesSuccessfulCount++;
+                    CopyHelpers.copyMetadata(inSymbolicName, filesInput, filesOutput);
+                    filesOutput.updateExistingFileURI(inSymbolicName, outputFile.toURI().toASCIIString());
+                    String inputVirtualPath = inputVirtualPathHelper.getVirtualPath(inSymbolicName);
+                    if (inputVirtualPath != null && config.getOutputFileExtension() != null && !config.getOutputFileExtension().isEmpty()) {
+                        outputVirtualPathHelper.setVirtualPath(inSymbolicName, FilenameUtils.removeExtension(inputVirtualPath) + config.getOutputFileExtension());
+                    } else if (config.getOutputFileExtension() != null && !config.getOutputFileExtension().isEmpty()) {
+                        outputVirtualPathHelper.setVirtualPath(inSymbolicName, inSymbolicName + config.getOutputFileExtension());
+                    }
+                    Resource resource = ResourceHelpers.getResource(filesOutput, inSymbolicName);
+                    Date now = new Date();
+                    resource.setLast_modified(now);
+                    ResourceHelpers.setResource(filesOutput, inSymbolicName, resource);
 
                     if (dpuContext.isDebugging()) {
                         LOG.debug("Processed {} file in {}s", appendNumber(index), (System.currentTimeMillis() - start.getTime()) / 1000);
                         LOG.debug("Memory used: " + String.valueOf((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024) + "M");
                     }
-                } catch (SaxonApiException | DataUnitException ex) {
-                    dpuContext.sendMessage(
-                            config.isSkipOnError() ? DPUContext.MessageType.WARNING : DPUContext.MessageType.ERROR,
-                                    "Error processing " + appendNumber(index) + " file",
-                                    String.valueOf(entry),
-                                    ex);
+                } catch (SaxonApiException | IOException | DataUnitException ex) {
+                    if (config.isSkipOnError()) {
+                        LOG.warn("Error processing {} file {}", appendNumber(index), String.valueOf(entry), ex);
+                    } else {
+                        throw new DPUException(this.messages.getString("errors.xslt.process", index, String.valueOf(entry)), ex);
+                    }
                 }
                 shouldContinue = !dpuContext.canceled();
             }
         } catch (DataUnitException ex) {
-            throw new DPUException("Error iterating filesInput.", ex);
+            throw new DPUException(this.messages.getString("errors.xslt.iteration"), ex);
         } finally {
-            try {
-                mapHelper.close();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error in close", ex);
-            }
-            try {
-                inputVirtualPathHelper.close();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error in close", ex);
-            }
-            try {
-                outputVirtualPathHelper.close();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error in close", ex);
-            }
+            mapHelper.close();
+            inputVirtualPathHelper.close();
+            outputVirtualPathHelper.close();
         }
-        String message = String.format("Processed %d/%d", filesSuccessfulCount, index);
+        String message = this.messages.getString("messages.xslt.processed", filesSuccessfulCount, index);
         dpuContext.sendMessage(filesSuccessfulCount < index ? DPUContext.MessageType.WARNING : DPUContext.MessageType.INFO, message);
     }
 
