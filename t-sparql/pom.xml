@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>eu.unifiedviews.plugins</groupId>
 		<artifactId>dpu-base-pom</artifactId>
-		<version>1.0.1</version>
+		<version>1.2.0</version>
 		<relativePath />
 	</parent>
 
@@ -15,7 +15,7 @@
 	<name>T-SPARQL</name>
 	<description>Transforms data using SPARQL</description>
 	<packaging>bundle</packaging>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 	<repositories>
 		<repository>
 			<id>maven.eea.sk</id>
