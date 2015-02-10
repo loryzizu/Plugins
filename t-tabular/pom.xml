@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>eu.unifiedviews.plugins</groupId>
 		<artifactId>dpu-base-pom</artifactId>
-		<version>1.0.1</version>
+		<version>1.2.0</version>
 		<relativePath />
 	</parent>
 
@@ -13,7 +13,7 @@
 	<artifactId>uv-t-tabular</artifactId>
 	<name>T-Tabular</name>
 	<description>Based on https://github.com/mff-uk/DPUs/blob/master/dpu-domain-specific/tabular. Temporary solution.</description>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 	<packaging>bundle</packaging>
 	<repositories>
 		<repository>

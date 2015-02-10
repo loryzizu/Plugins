@@ -5,14 +5,14 @@
 	<parent>
 		<groupId>eu.unifiedviews.plugins</groupId>
 		<artifactId>dpu-base-pom</artifactId>
-		<version>1.0.1</version>
+		<version>1.2.0</version>
 		<relativePath />
 	</parent>
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-t-metadata</artifactId>
 	<name>T-Metadata</name>
 	<description>Generates metadata on output from input</description>
-	<version>1.4.1</version>
+	<version>1.5.0</version>
 	<packaging>bundle</packaging>
 	<repositories>
 		<repository>

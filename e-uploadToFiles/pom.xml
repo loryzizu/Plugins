@@ -6,14 +6,14 @@
 	<parent>
 		<groupId>eu.unifiedviews.plugins</groupId>
 		<artifactId>dpu-base-pom</artifactId>
-		<version>1.2.0-SNAPSHOT</version>
+		<version>1.2.0</version>
 		<relativePath />
 	</parent>
 
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-e-uploadToFiles</artifactId>
 	<name>E-UploadToFiles</name>
-	<version>1.5.0-SNAPSHOT</version>
+	<version>1.5.0</version>
 	<description>Downloads files from client during configuration. Then they are used during execution. Files are saved to directory specified in user.home system property.</description>
 	<packaging>bundle</packaging>
 	<repositories>
