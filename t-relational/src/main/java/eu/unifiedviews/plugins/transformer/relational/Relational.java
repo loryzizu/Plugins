@@ -72,7 +72,7 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
             conn = getDbConnectionInternal();
 
             if (DatabaseHelper.checkTableExists(conn, targetTableName)) {
-                this.context.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.db.tableunique.short"), this.messages.getString("errors.db.tableunique.long"));
+                this.context.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.db.tableunique.short", targetTableName), this.messages.getString("errors.db.tableunique.long"));
                 return;
             }
 

@@ -73,9 +73,6 @@ public class RelationalVaadinDialog extends BaseConfigDialog<RelationalConfig_V1
 
             @Override
             public void validate(Object value) throws InvalidValueException {
-                if (!(value instanceof String)) {
-                    throw new InvalidValueException(RelationalVaadinDialog.this.messages.getString("dialog.errors.validation.string"));
-                }
                 String query = ((String) value).trim();
                 if (!query.toLowerCase().startsWith("select")) {
                     throw new InvalidValueException(RelationalVaadinDialog.this.messages.getString("dialog.errors.validation.select"));

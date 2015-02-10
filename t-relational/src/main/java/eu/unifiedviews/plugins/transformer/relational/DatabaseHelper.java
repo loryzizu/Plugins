@@ -29,41 +29,6 @@ public class DatabaseHelper {
         return bTableExists;
     }
 
-//    public static String convertSelectQueryToSelectIntoQuery(String query, String targetTable) throws Exception {
-//        String queryUpperCase = query.toUpperCase().trim();
-//        String[] tokens = queryUpperCase.split(" ");
-//        int fromIndex = -1;
-//        int index = 0;
-//        for (String token : tokens) {
-//            if (token.equals("FROM")) {
-//                fromIndex = index;
-//                break;
-//            }
-//            index++;
-//        }
-//
-//        if (fromIndex == -1) {
-//            throw new Exception("FROM not found in SQL query, invalid query");
-//        }
-//
-//        StringBuilder insertIntoQuery = new StringBuilder();
-//        for (int i = 0; i < fromIndex; i++) {
-//            insertIntoQuery.append(tokens[i]);
-//            insertIntoQuery.append(" ");
-//        }
-//        insertIntoQuery.append("INTO ");
-//        insertIntoQuery.append(targetTable);
-//        insertIntoQuery.append(" ");
-//
-//        for (int i = fromIndex; i < tokens.length; i++) {
-//            insertIntoQuery.append(tokens[i]);
-//            insertIntoQuery.append(" ");
-//        }
-//        insertIntoQuery.setLength(insertIntoQuery.length() - 1);
-//
-//        return insertIntoQuery.toString();
-//    }
-
     public static String convertSelectQueryToSelectIntoQuery(String query, String targetTable) {
         StringBuilder createQuery = new StringBuilder();
         createQuery.append("CREATE TABLE ");
