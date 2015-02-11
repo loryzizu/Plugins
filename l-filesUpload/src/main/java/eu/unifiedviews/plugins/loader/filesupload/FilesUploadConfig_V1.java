@@ -8,6 +8,10 @@ public class FilesUploadConfig_V1 {
 
     private String password = "";
 
+    private boolean moveFiles = false;
+
+    private boolean skipOnError = false;
+
     public String getUri() {
         return uri;
     }
@@ -30,6 +34,22 @@ public class FilesUploadConfig_V1 {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isMoveFiles() {
+        return moveFiles;
+    }
+
+    public void setMoveFiles(boolean moveFiles) {
+        this.moveFiles = moveFiles;
+    }
+
+    public boolean isSkipOnError() {
+        return skipOnError;
+    }
+
+    public void setSkipOnError(boolean skipOnError) {
+        this.skipOnError = skipOnError;
     }
 
 }

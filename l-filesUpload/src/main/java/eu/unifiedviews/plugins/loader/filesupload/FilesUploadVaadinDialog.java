@@ -6,6 +6,8 @@ import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.util.CryptorFactory;
 
+import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -26,6 +28,10 @@ public class FilesUploadVaadinDialog extends BaseConfigDialog<FilesUploadConfig_
     private PasswordField password;
 
     private Messages messages;
+
+    private ObjectProperty<Boolean> moveFiles = new ObjectProperty<Boolean>(false);
+
+    private ObjectProperty<Boolean> skipOnError = new ObjectProperty<Boolean>(false);
 
     public FilesUploadVaadinDialog() {
         super(FilesUploadConfig_V1.class);
@@ -68,6 +74,8 @@ public class FilesUploadVaadinDialog extends BaseConfigDialog<FilesUploadConfig_
 
         mainLayout.addComponent(password);
 
+        mainLayout.addComponent(new CheckBox(messages.getString("FilesUploadVaadinDialog.move"), moveFiles));
+        mainLayout.addComponent(new CheckBox(messages.getString("FilesUploadVaadinDialog.skip"), skipOnError));
         return mainLayout;
     }
 
@@ -97,6 +105,8 @@ public class FilesUploadVaadinDialog extends BaseConfigDialog<FilesUploadConfig_
             if (StringUtils.isNotBlank(password.getValue())) {
                 result.setPassword(CryptorFactory.getCryptor().encrypt(password.getValue()));
             }
+            result.setMoveFiles(moveFiles.getValue());
+            result.setSkipOnError(skipOnError.getValue());
         } catch (DPUConfigException e) {
             throw e;
         } catch (Exception e) {
@@ -116,6 +126,8 @@ public class FilesUploadVaadinDialog extends BaseConfigDialog<FilesUploadConfig_
             if (StringUtils.isNotBlank(config.getPassword())) {
                 password.setValue(CryptorFactory.getCryptor().decrypt(config.getPassword()));
             }
+            moveFiles.setValue(config.isMoveFiles());
+            skipOnError.setValue(config.isSkipOnError());
         } catch (Exception e) {
             throw new DPUConfigException(messages.getString("FilesUploadVaadinDialog.setConfiguration.exception"), e);
         }

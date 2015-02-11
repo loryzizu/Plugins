@@ -38,6 +38,7 @@ public class FilesUploadTest {
 
         // Prepare data unit.
         WritableFilesDataUnit filesInput = environment.createFilesInput("filesInput");
+        environment.createFilesOutput("filesOutput");
         VirtualPathHelper virtualPathHelper = VirtualPathHelpers.create(filesInput);
 
         try {
