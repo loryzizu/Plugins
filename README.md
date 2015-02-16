@@ -7,4 +7,4 @@ code. Use install on this project to install all DPU projects.
 Contributing to Plugins development
 ===================================
 
-[Plugins naming conventiuon](NamingConvention)
+[Plugins naming convention](NamingConvention)
