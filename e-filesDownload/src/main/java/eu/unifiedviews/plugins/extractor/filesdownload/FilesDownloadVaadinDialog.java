@@ -84,7 +84,7 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
         table.setColumnHeader("password", messages.getString("FilesDownloadVaadinDialog.password"));
         table.setColumnHeader("fileName", messages.getString("FilesDownloadVaadinDialog.fileName"));
         table.setEditable(true);
-        table.setHeight("200");
+        table.setHeight("270");
         table.setTableFieldFactory(new TableFieldFactory() {
 
             @Override
@@ -107,6 +107,7 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
 
         });
         table.setVisibleColumns("remove", "uri", "username", "password", "fileName");
+        table.setWidth("100%");
 
         mainLayout.addComponent(table);
 
