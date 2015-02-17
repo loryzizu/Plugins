@@ -39,8 +39,8 @@
 ### Version history ###
 
 |Version            |Release notes                                   |
-|-------------------|------------------------------------------------|
-|1.5.0-SNAPSHOT |Added support for renaming against the mask. |                                
+|-----------|------------------------------------------------|
+|1.5.0      |Added support for renaming against the mask. |                                
 
 
 ***
