@@ -3,6 +3,7 @@ package eu.unifiedviews.plugins.transformer.relational;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.slf4j.Logger;
@@ -16,6 +17,8 @@ import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.relationalhelper.RelationalHelper;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
@@ -63,6 +66,7 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
 
         String targetTableName = this.config.getTargetTableName().toUpperCase();
         String userSqlQuery = this.config.getSqlQuery();
+        String symbolicName = targetTableName;
 
         Iterator<RelationalDataUnit.Entry> tablesIteration;
         try {
@@ -103,8 +107,15 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
             LOG.debug("Transformation of input tables into output table successful");
 
             LOG.debug("Saving output table into output relational data unit");
-            this.outputTable.addExistingDatabaseTable(targetTableName, targetTableName);
+            this.outputTable.addExistingDatabaseTable(symbolicName, targetTableName);
             LOG.debug("Output table successfully saved into output relational data unit");
+
+            Resource resource = ResourceHelpers.getResource(this.outputTable, symbolicName);
+            Date now = new Date();
+            resource.setCreated(now);
+            resource.setLast_modified(now);
+            ResourceHelpers.setResource(this.outputTable, symbolicName, resource);
+            LOG.debug("Resource parameters for table updated");
 
         } catch (SQLException se) {
             LOG.error("Database error occured during transforming database tables", se);

@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,8 @@ import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
@@ -79,6 +82,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
 
         try {
             String tableName = this.config.getTargetTableName().toUpperCase();
+            String symbolicName = tableName;
 
             try {
                 if (checkInternalTableExists(tableName)) {
@@ -115,12 +119,19 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
                 LOG.debug("Database table in internal database successfully created");
 
                 // For now, symbolic name and real table name are the same - user inserted
-                this.outputTables.addExistingDatabaseTable(tableName, tableName);
+                this.outputTables.addExistingDatabaseTable(symbolicName, tableName);
                 LOG.debug("New database table {} added to relational data unit", tableName);
 
                 LOG.debug("Inserting data from source table into internal table");
                 insertDataFromSelect(meta, rs, tableName);
                 LOG.debug("Inserting data from source table into internal table successful");
+
+                Resource resource = ResourceHelpers.getResource(this.outputTables, symbolicName);
+                Date now = new Date();
+                resource.setCreated(now);
+                resource.setLast_modified(now);
+                ResourceHelpers.setResource(this.outputTables, symbolicName, resource);
+                LOG.debug("Resource parameters for table updated");
             } catch (Exception e) {
                 throw new DPUException(this.messages.getString("errors.db.transformfailed"), e);
             }
