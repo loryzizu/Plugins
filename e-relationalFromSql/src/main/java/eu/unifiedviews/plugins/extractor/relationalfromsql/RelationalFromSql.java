@@ -22,6 +22,23 @@ import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
 import eu.unifiedviews.helpers.dpu.localization.Messages;
 
+/**
+ * {@link RelationalFromSql} extracts data from external source relational database (currently PostgreSQL supported)
+ * and stores the data in the internal database table so other relational DPU can access them.
+ * In current implementation, user typed SQL queries are used to extract data
+ * <p/>
+ * <b>WARNING:</b>This DPU is a part of optional UV relational functionality and relational DPUs currently do not fully follow UV philosophy as the user has
+ * control of physical database table names
+ * <p/>
+ * The general philosophy of UV so far is, that DPU developer cannot influence the physical location of the internal files, graphs -- UV manages its internal
+ * stores. As a result, such approach should be similar in relational data unit and DPU developer should NOT be able to set the target table name (currently,
+ * there is a configuration option for extractor and transformer, which allows to set up the target table name). Target table name is ok for loader, but not for
+ * extractor/transformer, where the target table is given by the data flow in the pipeline.
+ * <p/>
+ * Current implementation is a compromise to be able to provide a general, SQL query based transformer for users. If user did not know the real table name, he
+ * would not be able to write SQL queries. Not without complex parsing of SQL queries. Further discussion is needed to solve this issue and this will be aim of
+ * future releases.
+ */
 @DPU.AsExtractor
 public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_V1> implements ConfigDialogProvider<RelationalFromSqlConfig_V1> {
 
@@ -31,8 +48,8 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
 
     private DPUContext context;
 
-    @DataUnit.AsOutput(name = "internalDb")
-    public WritableRelationalDataUnit outInternalDb;
+    @DataUnit.AsOutput(name = "outputTables")
+    public WritableRelationalDataUnit outputTables;
 
     public RelationalFromSql() {
         super(RelationalFromSqlConfig_V1.class);
@@ -65,7 +82,8 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
 
             try {
                 if (checkInternalTableExists(tableName)) {
-                    this.context.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.db.tableunique.short", tableName), this.messages.getString("errors.db.tableunique.long"));
+                    this.context.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.db.tableunique.short", tableName),
+                            this.messages.getString("errors.db.tableunique.long"));
                     return;
                 }
             } catch (SQLException | DataUnitException e) {
@@ -97,7 +115,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
                 LOG.debug("Database table in internal database successfully created");
 
                 // For now, symbolic name and real table name are the same - user inserted
-                this.outInternalDb.addExistingDatabaseTable(tableName, tableName);
+                this.outputTables.addExistingDatabaseTable(tableName, tableName);
                 LOG.debug("New database table {} added to relational data unit", tableName);
 
                 LOG.debug("Inserting data from source table into internal table");
@@ -179,7 +197,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
     }
 
     private Connection getConnectionInternal() throws DataUnitException {
-        return this.outInternalDb.getDatabaseConnection();
+        return this.outputTables.getDatabaseConnection();
     }
 
     @Override

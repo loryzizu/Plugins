@@ -21,6 +21,22 @@ import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
 import eu.unifiedviews.helpers.dpu.localization.Messages;
 
+/**
+ * {@link Relational} transforms N input internal database tables into 1 output table using user typed SELECT SQL queries.
+ * Output table is also stored in internal database to be accessible by other relational DPUs
+ * <p/>
+ * <b>WARNING:</b>This DPU is a part of optional UV relational functionality and relational DPUs currently do not fully follow UV philosophy as the user has
+ * control of physical database table names
+ * <p/>
+ * The general philosophy of UV so far is, that DPU developer cannot influence the physical location of the internal files, graphs -- UV manages its internal
+ * stores. As a result, such approach should be similar in relational data unit and DPU developer should NOT be able to set the target table name (currently,
+ * there is a configuration option for extractor and transformer, which allows to set up the target table name). Target table name is ok for loader, but not for
+ * extractor/transformer, where the target table is given by the data flow in the pipeline.
+ * <p/>
+ * Current implementation is a compromise to be able to provide a general, SQL query based transformer for users. If user did not know the real table name, he
+ * would not be able to write SQL queries. Not without complex parsing of SQL queries. Further discussion is needed to solve this issue and this will be aim of
+ * future releases.
+ */
 @DPU.AsTransformer
 public class Relational extends ConfigurableBase<RelationalConfig_V1> implements ConfigDialogProvider<RelationalConfig_V1> {
 
