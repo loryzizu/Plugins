@@ -1,5 +1,8 @@
 package eu.unifiedviews.plugins.transformer.relational;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,10 +20,24 @@ public class DatabaseHelperTest {
 
     private static final String EXPECTED_CREATE_TABLE_QUERY_2 = "CREATE TABLE " + TABLE_NAME_2 + " AS " + SELECT_QUERY_2;
 
+    private static final String PRIMARY_KEY_1 = "user_id";
+
+    private static final String PRIMARY_KEY_2 = "order_id";
+
+    private static final String EXPECTED_ALTER_TABLE_QUERY = "ALTER TABLE " + TABLE_NAME_1 + " ADD PRIMARY KEY (" + PRIMARY_KEY_1 + "," + PRIMARY_KEY_2 + ")";
+
     @Test
     public void convertSelectQueryToSelectIntoQueryTest() {
         Assert.assertEquals(EXPECTED_CREATE_TABLE_QUERY_1, DatabaseHelper.convertSelectQueryToSelectIntoQuery(SELECT_QUERY_1, TABLE_NAME_1));
         Assert.assertEquals(EXPECTED_CREATE_TABLE_QUERY_2, DatabaseHelper.convertSelectQueryToSelectIntoQuery(SELECT_QUERY_2, TABLE_NAME_2));
+    }
+
+    @Test
+    public void createPrimaryKeysQueryTest() {
+        List<String> keys = new ArrayList<>();
+        keys.add(PRIMARY_KEY_1);
+        keys.add(PRIMARY_KEY_2);
+        Assert.assertEquals(EXPECTED_ALTER_TABLE_QUERY, DatabaseHelper.createPrimaryKeysQuery(TABLE_NAME_1, keys));
     }
 
 }

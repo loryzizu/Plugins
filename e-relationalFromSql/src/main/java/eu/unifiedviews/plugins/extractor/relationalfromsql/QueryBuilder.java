@@ -28,6 +28,7 @@ public class QueryBuilder {
         return query.toString();
     }
 
+    // TODO: maybe add some filtering of data types --> probably not all types are supported by H2 database
     public static String getCreateTableQueryFromMetaData(ResultSetMetaData meta, String tableName) throws SQLException {
         int columnsCount = meta.getColumnCount();
         StringBuilder query = new StringBuilder();
@@ -50,12 +51,17 @@ public class QueryBuilder {
             columns.add(columnLabel);
             query.append(columnLabel);
             query.append(" ");
-            query.append(meta.getColumnTypeName(i));
+            // convert some specific column data types to general type
+            query.append(convertColumnTypeIfNeeded(meta.getColumnTypeName(i)));
             // Add size modification to String data types
             if (shouldAppendSizeToColumnType(meta.getColumnClassName(i))) {
                 query.append("(");
                 query.append(meta.getPrecision(i));
                 query.append(")");
+            }
+            if (meta.isNullable(i) == ResultSetMetaData.columnNoNulls) {
+                query.append(" ");
+                query.append("NOT NULL");
             }
             query.append(", ");
         }
@@ -64,6 +70,15 @@ public class QueryBuilder {
         query.append(")");
 
         return query.toString();
+    }
+
+    private static String convertColumnTypeIfNeeded(String columnTypeName) {
+        switch (columnTypeName.toLowerCase()) {
+            case "serial":
+                return "integer";
+            default:
+                return columnTypeName;
+        }
     }
 
     private static boolean shouldAppendSizeToColumnType(String typeClass) {

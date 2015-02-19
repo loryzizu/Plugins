@@ -5,6 +5,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,19 @@ public class DatabaseHelper {
         createQuery.append(query);
 
         return createQuery.toString().toUpperCase();
+    }
+
+    public static String createAlterColumnSetNotNullQuery(String tableName, String keyColumn) {
+        StringBuilder query = new StringBuilder();
+        query.append("ALTER TABLE ");
+        query.append(tableName);
+        query.append(" ");
+        query.append("ALTER COLUMN ");
+        query.append(keyColumn);
+        query.append(" ");
+        query.append("SET NOT NULL");
+
+        return query.toString();
     }
 
     public static void tryCloseStatement(Statement stmnt) {
@@ -77,6 +91,20 @@ public class DatabaseHelper {
                 LOG.warn("Error occurred during rollback of connection", e);
             }
         }
+    }
+
+    public static String createPrimaryKeysQuery(String tableName, List<String> primaryKeys) {
+        StringBuilder query = new StringBuilder("ALTER TABLE ");
+        query.append(tableName);
+        query.append(" ADD PRIMARY KEY (");
+        for (String key : primaryKeys) {
+            query.append(key);
+            query.append(",");
+        }
+        query.setLength(query.length() - 1);
+        query.append(")");
+
+        return query.toString();
     }
 
     public static void tryCloseDbResources(Connection conn, Statement stmnt, ResultSet rs) {

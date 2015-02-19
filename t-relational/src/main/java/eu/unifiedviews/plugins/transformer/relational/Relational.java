@@ -110,6 +110,20 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
             this.outputTable.addExistingDatabaseTable(symbolicName, targetTableName);
             LOG.debug("Output table successfully saved into output relational data unit");
 
+            if (this.config.getPrimaryKeyColumns() == null || this.config.getPrimaryKeyColumns().isEmpty()) {
+                LOG.debug("No primary keys defined, nothing to do");
+            } else {
+                LOG.debug("Going to create primary keys for table {}", targetTableName);
+                // TODO: CREATE TABLE AS SELECT does not preserve not null
+                // quick and dirty solution: add NOT NULL for all primary keys
+                for (String key : this.config.getPrimaryKeyColumns()) {
+                    String alterQuery = DatabaseHelper.createAlterColumnSetNotNullQuery(targetTableName, key);
+                    stmnt.execute(alterQuery);
+                }
+                String alterTablesQuery = DatabaseHelper.createPrimaryKeysQuery(targetTableName, this.config.getPrimaryKeyColumns());
+                stmnt.execute(alterTablesQuery);
+            }
+
             Resource resource = ResourceHelpers.getResource(this.outputTable, symbolicName);
             Date now = new Date();
             resource.setCreated(now);
