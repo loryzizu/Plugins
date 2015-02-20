@@ -115,7 +115,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
                 String createTableQuery = QueryBuilder.getCreateTableQueryFromMetaData(meta, tableName);
 
                 LOG.debug("Creating internal db representation as " + createTableQuery);
-                createInternalTable(createTableQuery);
+                executeSqlQueryInInternalDatabase(createTableQuery);
                 LOG.debug("Database table in internal database successfully created");
 
                 // For now, symbolic name and real table name are the same - user inserted
@@ -125,6 +125,15 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
                 LOG.debug("Inserting data from source table into internal table");
                 insertDataFromSelect(meta, rs, tableName);
                 LOG.debug("Inserting data from source table into internal table successful");
+
+                if (this.config.getPrimaryKeyColumns() == null || this.config.getPrimaryKeyColumns().isEmpty()) {
+                    LOG.debug("No primary keys defined for table, nothing to do");
+                } else {
+                    LOG.debug("Going to add primary keys to the output database table");
+                    String alterQuery = QueryBuilder.getPrimaryKeysQuery(tableName, this.config.getPrimaryKeyColumns());
+                    executeSqlQueryInInternalDatabase(alterQuery);
+                    LOG.debug("Primary keys successfully added to the output table");
+                }
 
                 Resource resource = ResourceHelpers.getResource(this.outputTables, symbolicName);
                 Date now = new Date();
@@ -140,18 +149,17 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
         }
     }
 
-    private void createInternalTable(String createQuery) throws DataUnitException {
+    private void executeSqlQueryInInternalDatabase(String query) throws DataUnitException {
         Statement stmnt = null;
         Connection conn = null;
         try {
             conn = getConnectionInternal();
             stmnt = conn.createStatement();
-            stmnt.executeUpdate(createQuery);
+            stmnt.executeUpdate(query);
             conn.commit();
         } catch (SQLException e) {
-            LOG.error("Failed to create internal db table", e);
             RelationalFromSqlHelper.tryRollbackConnection(conn);
-            throw new DataUnitException("Error creating internal database table");
+            throw new DataUnitException("Error executing statement in internal dataunit database", e);
         } finally {
             RelationalFromSqlHelper.tryCloseStatement(stmnt);
             RelationalFromSqlHelper.tryCloseConnection(conn);

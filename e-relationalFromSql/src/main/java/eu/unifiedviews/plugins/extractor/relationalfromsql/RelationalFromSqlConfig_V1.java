@@ -1,5 +1,7 @@
 package eu.unifiedviews.plugins.extractor.relationalfromsql;
 
+import java.util.List;
+
 public class RelationalFromSqlConfig_V1 {
 
     private String databaseURL;
@@ -13,6 +15,8 @@ public class RelationalFromSqlConfig_V1 {
     private String sqlQuery;
 
     private String targetTableName;
+
+    private List<String> primaryKeyColumns;
 
     // TODO: This should be generic. Now for test purposes, only Postgres is used
     private String jdbcDriverName = "org.postgresql.Driver";
@@ -71,6 +75,14 @@ public class RelationalFromSqlConfig_V1 {
 
     public void setTargetTableName(String targetTableName) {
         this.targetTableName = targetTableName;
+    }
+
+    public List<String> getPrimaryKeyColumns() {
+        return this.primaryKeyColumns;
+    }
+
+    public void setPrimaryKeyColumns(List<String> primaryKeyColumns) {
+        this.primaryKeyColumns = primaryKeyColumns;
     }
 
 }

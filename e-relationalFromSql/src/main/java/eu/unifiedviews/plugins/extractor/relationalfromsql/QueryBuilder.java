@@ -3,6 +3,7 @@ package eu.unifiedviews.plugins.extractor.relationalfromsql;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class QueryBuilder {
@@ -67,6 +68,20 @@ public class QueryBuilder {
         }
 
         query.setLength(query.length() - 2);
+        query.append(")");
+
+        return query.toString();
+    }
+
+    public static String getPrimaryKeysQuery(String tableName, List<String> primaryKeys) {
+        StringBuilder query = new StringBuilder("ALTER TABLE ");
+        query.append(tableName);
+        query.append(" ADD PRIMARY KEY (");
+        for (String key : primaryKeys) {
+            query.append(key);
+            query.append(",");
+        }
+        query.setLength(query.length() - 1);
         query.append(")");
 
         return query.toString();

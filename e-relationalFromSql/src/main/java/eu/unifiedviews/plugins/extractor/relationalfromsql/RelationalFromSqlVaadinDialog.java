@@ -1,5 +1,8 @@
 package eu.unifiedviews.plugins.extractor.relationalfromsql;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -11,7 +14,7 @@ import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFromSqlConfig_V1> implements InitializableConfigDialog {
 
-    private static final long serialVersionUID = -9036413492017906666L;
+    private static final long serialVersionUID = 325928627730169135L;
 
     private Messages messages;
 
@@ -32,6 +35,8 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
     private Button btntestConnection;
 
     private Label lblTestConnection;
+
+    private TextField txtPrimaryKeys;
 
     public RelationalFromSqlVaadinDialog() {
         super(RelationalFromSqlConfig_V1.class);
@@ -100,8 +105,15 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         this.txtSqlQuery.setRequired(true);
         this.txtSqlQuery.setNullRepresentation("");
         this.txtSqlQuery.setWidth("100%");
-        this.txtSqlQuery.setHeight("150px");
+        this.txtSqlQuery.setHeight("125px");
         this.mainLayout.addComponent(this.txtSqlQuery);
+
+        this.txtPrimaryKeys = new TextField();
+        this.txtPrimaryKeys.setCaption(this.messages.getString("dialog.dbtransform.keys"));
+        this.txtPrimaryKeys.setDescription(this.messages.getString("dialog.dbtransform.keysdescr"));
+        this.txtPrimaryKeys.setNullRepresentation("");
+        this.txtPrimaryKeys.setWidth("100%");
+        this.mainLayout.addComponent(this.txtPrimaryKeys);
 
         Panel panel = new Panel();
         panel.setSizeFull();
@@ -151,7 +163,32 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         }
 
         return bResult;
+    }
 
+    private List<String> getPrimaryKeyColumns() {
+        List<String> keyColumns = new ArrayList<>();
+        if (this.txtPrimaryKeys.getValue() != null && !this.txtPrimaryKeys.getValue().equals("")) {
+            String[] keys = this.txtPrimaryKeys.getValue().trim().split(",");
+            for (String key : keys) {
+                keyColumns.add(key.trim().toUpperCase());
+            }
+        }
+
+        return keyColumns;
+    }
+
+    private static String getPrimaryKeysAsCommaSeparatedString(List<String> keys) {
+        if (keys == null || keys.isEmpty()) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String key : keys) {
+            sb.append(key);
+            sb.append(",");
+        }
+        sb.setLength(sb.length() - 1);
+
+        return sb.toString();
     }
 
     @Override
@@ -162,6 +199,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         this.chckUseSsl.setValue(config.isUseSSL());
         this.txtSqlQuery.setValue(config.getSqlQuery());
         this.txtTargetTableName.setValue(config.getTargetTableName());
+        this.txtPrimaryKeys.setValue(getPrimaryKeysAsCommaSeparatedString(config.getPrimaryKeyColumns()));
     }
 
     @Override
@@ -173,6 +211,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         config.setUseSSL(this.chckUseSsl.getValue());
         config.setSqlQuery(this.txtSqlQuery.getValue());
         config.setTargetTableName(this.txtTargetTableName.getValue());
+        config.setPrimaryKeyColumns(getPrimaryKeyColumns());
 
         return config;
     }
