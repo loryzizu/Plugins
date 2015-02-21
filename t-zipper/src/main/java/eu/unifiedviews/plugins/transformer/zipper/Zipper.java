@@ -5,34 +5,34 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.helpers.cuni.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.cuni.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.cuni.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.cuni.dpu.exec.AutoInitializer;
+import eu.unifiedviews.helpers.cuni.extensions.FaultTolerance;
+import eu.unifiedviews.helpers.cuni.extensions.FaultToleranceUtils;
+import eu.unifiedviews.helpers.cuni.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dataunit.files.FilesDataUnitUtils;
+import eu.unifiedviews.helpers.dataunit.metadata.MetadataUtils;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
 import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
 import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
-import eu.unifiedviews.helpers.dpu.localization.Messages;
+import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
 
-/**
- * @author Škoda Petr
- */
 @DPU.AsTransformer
-public class Zipper extends ConfigurableBase<ZipperConfig_V1> implements ConfigDialogProvider<ZipperConfig_V1> {
+public class Zipper extends AbstractDpu<ZipperConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Zipper.class);
 
@@ -42,98 +42,77 @@ public class Zipper extends ConfigurableBase<ZipperConfig_V1> implements ConfigD
     @DataUnit.AsOutput(name = "output")
     public WritableFilesDataUnit outFilesData;
 
-    private DPUContext context;
-    
-    private Messages messages;
+    @AutoInitializer.Init
+    public FaultTolerance faultTolerance;
 
-    /**
-     * Is set to true if the symbolicName is used as a path/file name.
-     * The purpose is to secure that the warning log message will be logged
-     * only once.
-     */
-    private boolean symbolicNameUsed = false;
+    @AutoInitializer.Init(param = "eu.unifiedviews.plugins.transformer.zipper.ZipperConfig__V1")
+    public ConfigurationUpdate _ConfigurationUpdate;
 
     public Zipper() {
-        super(ZipperConfig_V1.class);
+        super(ZipperVaadinDialog.class, ConfigHistory.noHistory(ZipperConfig_V1.class));
     }
 
     @Override
-    public AbstractConfigDialog<ZipperConfig_V1> getConfigurationDialog() {
-        return new ZipperVaadinDialog();
-    }
+    protected void innerExecute() throws DPUException {
+        final List<FilesDataUnit.Entry> files = FaultToleranceUtils.getEntries(faultTolerance, inFilesData, FilesDataUnit.Entry.class);
+        // Prepare zip file.
+        final String zipSymbolicName = config.getZipFile();
+        final FilesDataUnit.Entry output = faultTolerance.execute(new FaultTolerance.ActionReturn<FilesDataUnit.Entry>() {
 
-    @Override
-    public void execute(DPUContext context) throws DPUException {
-        this.context = context;
-        this.messages = new Messages(context.getLocale(), this.getClass().getClassLoader());
-        final Iterator<FilesDataUnit.Entry> filesIteration;
-        try {
-            filesIteration = FilesHelper.getFiles(inFilesData).iterator();
-        } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.dpu.failed"), messages.getString("errors.file.iterator"), ex);
-            return;
-        }
-        //
-        // Prepare zip file
-        //
-        final String zipSymbolicName;
-        final String zipFileUri;
-        final File zipFile;
-        try {
-            zipSymbolicName = config.getZipFile();
-            zipFileUri = outFilesData.addNewFile(zipSymbolicName);
-            zipFile = new File(java.net.URI.create(zipFileUri));
-            // add metadata
-            VirtualPathHelpers.setVirtualPath(outFilesData, zipSymbolicName, config.getZipFile());
-            Resource resource = new Resource();
-            resource.setFormat("application/zip");
-            resource.setMimetype("application/zip");
-            resource.setCreated(new Date());
-            resource.setLast_modified(new Date());
-            ResourceHelpers.setResource(outFilesData, zipSymbolicName, resource);
-            //
-            // Create zip file
-            //
-            zipFiles(zipFile, zipSymbolicName, filesIteration);
-        } catch (DataUnitException ex) {
-            throw new DPUException(ex);
-        } finally {
-        }
+            @Override
+            public FilesDataUnit.Entry action() throws Exception {
+                return FilesDataUnitUtils.createFile(outFilesData, zipSymbolicName);
+            }
+        });
+        
+        final Resource resource = new Resource();
+        resource.setFormat("application/zip");
+        resource.setMimetype("application/zip");
+        resource.setCreated(new Date());
+        resource.setLast_modified(new Date());
+        // TODO Check if this works with fault tolerance wrap.
+        faultTolerance.execute(new FaultTolerance.Action() {
+
+            @Override
+            public void action() throws Exception {
+                ResourceHelpers.setResource(outFilesData, zipSymbolicName, resource);
+            }
+        });
+
+        // Create zip file - this does not
+        final File outputFile = FaultToleranceUtils.asFile(faultTolerance, output);
+        zipFiles(outputFile, files);
     }
 
     /**
      * Pack files in given iterator into zip file and add metadata.
      *
      * @param zipFile
-     * @param zipSymbolicName
      * @param filesIteration
      */
-    private void zipFiles(File zipFile, String zipSymbolicName, Iterator<FilesDataUnit.Entry> filesIteration) {
+    private void zipFiles(File zipFile, List<FilesDataUnit.Entry> filesIteration) throws DPUException {
         final byte[] buffer = new byte[8196];
-
-        // used to publish the error mesage only for the first time
+        // Used to publish the error mesage only for the first time.
         boolean firstFailure = true;
-
         try (FileOutputStream fos = new FileOutputStream(zipFile); ZipOutputStream zos = new ZipOutputStream(fos)) {
-            //
-            // Itarate over files and zip them
-            //
-            while (!context.canceled() && filesIteration.hasNext()) {
-                final FilesDataUnit.Entry entry = filesIteration.next();
-                LOG.debug("Adding file: {}", entry.getSymbolicName());
+            // Itarate over files and zip them.
+            int counter = 0;
+            for (FilesDataUnit.Entry entry : filesIteration) {
+                LOG.info("Processing: {}/{}", counter++, filesIteration.size());
+                if (ctx.canceled()) {
+                    break;
+                }
                 if (!addZipEntry(zos, buffer, entry)) {
                     if (firstFailure) {
-                        context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.zip.failed"));
+                        // TODO This needs rework, we fail but not instantly?
+                        ContextUtils.sendError(ctx, "zipper.errors.zip.failed", "");
                     }
                     firstFailure = false;
-                } else {
-                    // TODO add metadata
                 }
             }
-        } catch (IOException | DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.file.zip.failed"), "", ex);
+        } catch (IOException ex) {
+            throw new DPUException(ex);
         }
-
     }
 
     /**
@@ -145,35 +124,31 @@ public class Zipper extends ConfigurableBase<ZipperConfig_V1> implements ConfigD
      * @return True if file has been added.
      * @throws DataUnitException
      */
-    private boolean addZipEntry(ZipOutputStream zos, byte[] buffer, FilesDataUnit.Entry entry) throws DataUnitException {
+    private boolean addZipEntry(ZipOutputStream zos, byte[] buffer, final FilesDataUnit.Entry entry) throws DPUException {
+        // Get virtual path.
+        final String virtualPath = faultTolerance.execute(new FaultTolerance.ActionReturn<String>() {
 
-        String virtualPath = VirtualPathHelpers.getVirtualPath(inFilesData, entry.getSymbolicName());
-        if (virtualPath == null) {
-            // use symbolicv name
-            virtualPath = entry.getSymbolicName();
-            if (!symbolicNameUsed) {
-                // first usage
-                LOG.warn("Not all input files use VirtualPath, symbolic name is used instead.");
+            @Override
+            public String action() throws Exception {
+                return MetadataUtils.getFirst(inFilesData, entry, VirtualPathHelper.PREDICATE_VIRTUAL_PATH);
             }
-            symbolicNameUsed = true;
+        });
+        if (virtualPath == null) {
+            throw ContextUtils.dpuException(ctx, "zipper.error.missing.virtual.path", entry.toString());
         }
-
-        final File sourceFile = new File(java.net.URI.create(entry.getFileURIString()));
-        //
-        // Do the action ..
-        //
+        // Add to the zip file.
+        final File sourceFile = FaultToleranceUtils.asFile(faultTolerance, entry);
+        LOG.info("Adding file '{}' from source '{}'", virtualPath, sourceFile);
         try (FileInputStream in = new FileInputStream(sourceFile)) {
             final ZipEntry ze = new ZipEntry(virtualPath);
             zos.putNextEntry(ze);
-            //
-            // Copy data
-            //
+            // Copy data into zip file.
             int len;
             while ((len = in.read(buffer)) > 0) {
                 zos.write(buffer, 0, len);
             }
         } catch (Exception ex) {
-            LOG.error("Failed to add file: {}", entry.getSymbolicName(), ex);
+            LOG.error("Failed to add file: {}", entry.toString(), ex);
             return false;
         }
         return true;
