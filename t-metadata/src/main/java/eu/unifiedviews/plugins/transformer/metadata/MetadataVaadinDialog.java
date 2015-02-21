@@ -20,10 +20,11 @@ import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 import java.util.Arrays;
 
-public class MetadataVaadinDialog extends BaseConfigDialog<MetadataConfig_V1> {
+import eu.unifiedviews.helpers.cuni.dpu.vaadin.AbstractDialog;
+
+public class MetadataVaadinDialog extends AbstractDialog<MetadataConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MetadataVaadinDialog.class);
 
@@ -98,7 +99,7 @@ public class MetadataVaadinDialog extends BaseConfigDialog<MetadataConfig_V1> {
     private final String[] mimes = { "application/zip", "text/csv", "application/rdf+xml", "text/plain", "application/x-turtle" };
 
     public MetadataVaadinDialog() {
-        super(MetadataConfig_V1.class);
+        super(Metadata.class);
         try {
             periodicities.add(new URLandCaption(new URL("http://purl.org/linked-data/sdmx/2009/code#freq-A"), "Annual"));
             periodicities.add(new URLandCaption(new URL("http://purl.org/linked-data/sdmx/2009/code#freq-B"), "Daily - business week"));
@@ -111,16 +112,10 @@ public class MetadataVaadinDialog extends BaseConfigDialog<MetadataConfig_V1> {
         } catch (MalformedURLException ex) {
             LOG.warn("Error in ctor.", ex);
         }
-        buildMainLayout();
-
-        Panel p = new Panel();
-        p.setSizeFull();
-        p.setContent(mainLayout);
-
-        setCompositionRoot(p);
     }
 
-    private VerticalLayout buildMainLayout() {
+    @Override
+    protected void buildDialogLayout() {
         // common part: create layout
         mainLayout = new VerticalLayout();
         mainLayout.setImmediate(true);
@@ -291,7 +286,11 @@ public class MetadataVaadinDialog extends BaseConfigDialog<MetadataConfig_V1> {
         tcsPublishers.setRightColumnCaption("Selected publishers");
         mainLayout.addComponent(tcsPublishers);
 
-        return mainLayout;
+        Panel p = new Panel();
+        p.setSizeFull();
+        p.setContent(mainLayout);
+
+        setCompositionRoot(p);
     }
 
     @Override
