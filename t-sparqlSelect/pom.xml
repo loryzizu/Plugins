@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-t-sparqlSelect</artifactId>
-	<name>T-SPARQLSelect</name>
+	<name>T-SparqlSelect</name>
 	<description>SPARQL select transformer ~ RDF to csv. Does not validate query!</description>
 	<version>1.5.1-SNAPSHOT</version>
 	<packaging>bundle</packaging>
