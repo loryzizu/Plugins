@@ -11,6 +11,7 @@ import org.junit.Test;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.files.FilesDataUnit.Entry;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
+import eu.unifiedviews.helpers.cuni.test.ConfigurationBuilder;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
 import eu.unifiedviews.plugins.extractor.filesdownload.FilesDownload;
 import eu.unifiedviews.plugins.extractor.filesdownload.FilesDownloadConfig_V1;
@@ -25,13 +26,13 @@ public class FilesDownloadTest {
 
         // Prepare DPU.
         FilesDownload download = new FilesDownload();
-        download.configureDirectly(config);
+        download.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
 
         // Prepare test environment.
         TestEnvironment environment = new TestEnvironment();
 
         // Prepare data unit.
-        WritableFilesDataUnit filesOutput = environment.createFilesOutput("filesOutput");
+        WritableFilesDataUnit filesOutput = environment.createFilesOutput("output");
 
         try {
             // Run.
