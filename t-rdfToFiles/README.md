@@ -40,7 +40,7 @@
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
 |1.3.1              |N/A                                             |                                
-
+|1.5.1              |Update for new helpers, added statement-based progress log. |
 
 ***
 
