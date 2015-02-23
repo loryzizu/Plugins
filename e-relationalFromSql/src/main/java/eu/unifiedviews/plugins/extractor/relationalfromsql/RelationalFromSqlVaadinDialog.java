@@ -62,6 +62,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         this.txtDatabaseURL.setNullRepresentation("");
         this.txtDatabaseURL.setWidth("100%");
         this.txtDatabaseURL.setDescription(this.messages.getString("dialog.extractdb.urldescription"));
+        this.txtDatabaseURL.setInputPrompt(this.messages.getString("dialog.extractdb.urlprompt"));
         this.mainLayout.addComponent(this.txtDatabaseURL);
 
         this.txtUserName = new TextField();
@@ -106,6 +107,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         this.txtSqlQuery.setNullRepresentation("");
         this.txtSqlQuery.setWidth("100%");
         this.txtSqlQuery.setHeight("125px");
+        this.txtSqlQuery.setInputPrompt(this.messages.getString("dialog.extractdb.query.prompt"));
         this.mainLayout.addComponent(this.txtSqlQuery);
 
         this.txtPrimaryKeys = new TextField();
