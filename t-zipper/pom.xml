@@ -49,7 +49,7 @@
         <dependency>
             <groupId>eu.unifiedviews</groupId>
             <artifactId>uv-dpu-helpers</artifactId>
-            <version>[1.0.0-SNAPSHOT,2.0.0)</version>
+            <version>[1.3.0-SNAPSHOT,2.0.0)</version>
             <scope>compile</scope>
         </dependency>
         <!-- Core UnifiedViews testing support. -->
