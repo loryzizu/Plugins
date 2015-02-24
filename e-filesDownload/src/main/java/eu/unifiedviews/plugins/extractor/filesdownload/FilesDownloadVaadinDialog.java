@@ -176,6 +176,8 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
 
     @Override
     protected void setConfiguration(FilesDownloadConfig_V1 config) throws DPUConfigException {
+        container.removeAllItems();
+
         try {
             for (VfsFile vfsFile : config.getVfsFiles()) {
                 if (!vfsFile.isDisplayed()) {
