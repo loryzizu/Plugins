@@ -6,7 +6,7 @@
 |                              |                                                                             |
 |------------------------------|-----------------------------------------------------------------------------|
 |**Name:**                     |T-Tabular                                                               |
-|**Description:**              |Converts tabular data into rdf data. |
+|**Description:**              |Converts tabular data into RDF data. |
 |                              |                                                                             |
 |**DPU class name:**           |Tabular                                                                 | 
 |**Configuration class name:** |TabularConfig_V1                             |
@@ -18,7 +18,7 @@
 
 |Parameter                                       |Description                                                              |                                                        
 |------------------------------------------------|-------------------------------------------------------------------------|
-|**Choose the input type:**                      |Choose the file type of the input type:<BR>- CVS<BR>- DBF                |
+|**Choose the input type:**                      |Choose the file type of the input type:<BR>- CSV<BR>- DBF                |
 |**Resource URI base***                          |Specifies base URI of the resource.                                      |
 |**Key column**                                  |Column in the input file which is used when URI for the resource is created. If not specified, row number is used. |
 |**Encoding***                                   |Specify character encoding of the input file. | 
