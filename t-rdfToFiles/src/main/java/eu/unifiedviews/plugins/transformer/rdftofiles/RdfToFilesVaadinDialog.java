@@ -8,7 +8,7 @@ import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.helpers.cuni.dpu.vaadin.AbstractDialog;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 public class RdfToFilesVaadinDialog extends AbstractDialog<RdfToFilesConfig_V1> {
 

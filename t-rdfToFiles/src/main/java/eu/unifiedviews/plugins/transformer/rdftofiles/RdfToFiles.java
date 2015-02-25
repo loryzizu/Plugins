@@ -24,17 +24,17 @@ import java.util.List;
 
 
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import eu.unifiedviews.helpers.cuni.dpu.config.ConfigHistory;
-import eu.unifiedviews.helpers.cuni.dpu.context.ContextUtils;
-import eu.unifiedviews.helpers.cuni.dpu.exec.AbstractDpu;
-import eu.unifiedviews.helpers.cuni.dpu.exec.AutoInitializer;
-import eu.unifiedviews.helpers.cuni.extensions.FaultTolerance;
-import eu.unifiedviews.helpers.cuni.extensions.FaultToleranceUtils;
-import eu.unifiedviews.helpers.cuni.migration.ConfigurationUpdate;
 import eu.unifiedviews.helpers.dataunit.files.FilesDataUnitUtils;
 import eu.unifiedviews.helpers.dataunit.files.FilesVocabulary;
 import eu.unifiedviews.helpers.dataunit.metadata.MetadataUtils;
 import eu.unifiedviews.helpers.dataunit.rdf.RdfDataUnitUtils;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
 
 @DPU.AsTransformer
 public class RdfToFiles extends AbstractDpu<RdfToFilesConfig_V1> {
@@ -49,10 +49,10 @@ public class RdfToFiles extends AbstractDpu<RdfToFilesConfig_V1> {
     @DataUnit.AsOutput(name = "output")
     public WritableFilesDataUnit outFilesData;
 
-    @AutoInitializer.Init
+    @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
 
-    @AutoInitializer.Init(param = "eu.unifiedviews.plugins.transformer.rdftofiles.RdfToFilesConfig__V1")
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.rdftofiles.RdfToFilesConfig__V1")
     public ConfigurationUpdate _ConfigurationUpdate;
 
     private RDFFormat rdfFormat;
