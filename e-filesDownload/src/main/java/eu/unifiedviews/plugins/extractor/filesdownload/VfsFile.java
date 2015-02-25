@@ -2,8 +2,6 @@ package eu.unifiedviews.plugins.extractor.filesdownload;
 
 public class VfsFile {
 
-    private boolean displayed = true;
-
     private String uri = "http://www.zmluvy.gov.sk/data/att/117597_dokument.pdf";
 
     private String username = "";
@@ -12,12 +10,14 @@ public class VfsFile {
 
     private String fileName = "";
 
-    public boolean isDisplayed() {
-        return displayed;
+    public VfsFile() {
     }
 
-    public void setDisplayed(boolean displayed) {
-        this.displayed = displayed;
+    public VfsFile(VfsFile vfsFile) {
+        uri = vfsFile.getUri();
+        username = vfsFile.getUsername();
+        password = vfsFile.getPassword();
+        fileName = vfsFile.getFileName();
     }
 
     public String getUri() {
