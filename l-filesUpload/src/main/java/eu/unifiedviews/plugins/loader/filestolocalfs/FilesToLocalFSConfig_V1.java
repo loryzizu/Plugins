@@ -3,7 +3,7 @@ package eu.unifiedviews.plugins.loader.filestolocalfs;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import eu.unifiedviews.helpers.cuni.dpu.config.VersionedConfig;
+import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
 import eu.unifiedviews.plugins.loader.filesupload.FilesUploadConfig_V1;
 
 public class FilesToLocalFSConfig_V1 implements VersionedConfig<FilesUploadConfig_V1> {

@@ -12,10 +12,10 @@ import org.junit.Test;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.files.FilesDataUnit.Entry;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
-import eu.unifiedviews.helpers.cuni.test.ConfigurationBuilder;
-import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
+import eu.unifiedviews.helpers.dataunit.files.FilesHelper;
+import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelper;
+import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelpers;
+import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 import eu.unifiedviews.plugins.loader.filesupload.FilesUpload;
 import eu.unifiedviews.plugins.loader.filesupload.FilesUploadConfig_V1;
 

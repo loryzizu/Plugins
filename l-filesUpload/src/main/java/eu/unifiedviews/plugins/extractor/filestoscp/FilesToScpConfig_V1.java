@@ -3,7 +3,7 @@ package eu.unifiedviews.plugins.extractor.filestoscp;
 import org.apache.commons.vfs2.util.CryptorFactory;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.cuni.dpu.config.VersionedConfig;
+import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
 import eu.unifiedviews.plugins.loader.filesupload.FilesUploadConfig_V1;
 
 public class FilesToScpConfig_V1 implements VersionedConfig<FilesUploadConfig_V1> {

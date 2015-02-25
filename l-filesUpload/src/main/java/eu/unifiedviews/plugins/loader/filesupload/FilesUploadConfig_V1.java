@@ -1,7 +1,7 @@
 package eu.unifiedviews.plugins.loader.filesupload;
 
-import eu.unifiedviews.helpers.cuni.dpu.config.VersionedConfig;
-import eu.unifiedviews.helpers.cuni.ontology.EntityDescription;
+import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
+import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
 
 @EntityDescription.Entity(type = FilesUploadVocabulary.STR_CONFIG_CLASS)
 public class FilesUploadConfig_V1 implements VersionedConfig<FilesUploadConfig_V1> {

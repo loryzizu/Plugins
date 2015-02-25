@@ -1,8 +1,8 @@
 package eu.unifiedviews.plugins.loader.filesupload;
 
-import eu.unifiedviews.helpers.cuni.dpu.config.ConfigException;
-import eu.unifiedviews.helpers.cuni.dpu.config.MasterConfigObject;
-import eu.unifiedviews.helpers.cuni.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.config.ConfigException;
+import eu.unifiedviews.helpers.dpu.config.MasterConfigObject;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
 
 /**
  *
@@ -34,7 +34,5 @@ public class MultipleConfigurationUpdate extends ConfigurationUpdate {
         // ...
         return super.transformString(configName, config);
     }
-
-
 
 }

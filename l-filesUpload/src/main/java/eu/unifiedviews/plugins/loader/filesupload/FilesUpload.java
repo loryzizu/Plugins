@@ -25,16 +25,16 @@ import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.cuni.dpu.config.ConfigHistory;
-import eu.unifiedviews.helpers.cuni.dpu.context.ContextUtils;
-import eu.unifiedviews.helpers.cuni.dpu.exec.AbstractDpu;
-import eu.unifiedviews.helpers.cuni.dpu.exec.AutoInitializer;
-import eu.unifiedviews.helpers.cuni.extensions.FaultTolerance;
-import eu.unifiedviews.helpers.cuni.extensions.FaultToleranceUtils;
-import eu.unifiedviews.helpers.cuni.extensions.RdfConfiguration;
-import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
+import eu.unifiedviews.helpers.dataunit.copy.CopyHelpers;
+import eu.unifiedviews.helpers.dataunit.resource.Resource;
+import eu.unifiedviews.helpers.dataunit.resource.ResourceHelpers;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
+import eu.unifiedviews.helpers.dpu.extension.rdf.RdfConfiguration;
 import eu.unifiedviews.plugins.extractor.filestoscp.FilesToScpConfig_V1;
 import eu.unifiedviews.plugins.loader.filestolocalfs.FilesToLocalFSConfig_V1;
 
@@ -53,13 +53,13 @@ public class FilesUpload extends AbstractDpu<FilesUploadConfig_V1> {
     @DataUnit.AsOutput(name = "output")
     public WritableFilesDataUnit filesOutput;
 
-    @AutoInitializer.Init
+    @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
 
-    @AutoInitializer.Init
+    @ExtensionInitializer.Init
     public RdfConfiguration _rdfConfiguration;
 
-    @AutoInitializer.Init
+    @ExtensionInitializer.Init
     public MultipleConfigurationUpdate _configurationUpdate;
 
     public FilesUpload() {
