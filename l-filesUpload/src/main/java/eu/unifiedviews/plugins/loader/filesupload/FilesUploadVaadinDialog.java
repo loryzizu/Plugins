@@ -1,7 +1,9 @@
 package eu.unifiedviews.plugins.loader.filesupload;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.util.CryptorFactory;
@@ -109,8 +111,10 @@ public class FilesUploadVaadinDialog extends BaseConfigDialog<FilesUploadConfig_
             result.setSkipOnError(skipOnError.getValue());
         } catch (DPUConfigException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (NullPointerException | URISyntaxException | URIException e) {
             throw new DPUConfigException(messages.getString("FilesUploadVaadinDialog.getConfiguration.exception"), e);
+        } catch (Exception e) {
+            throw new DPUConfigException(messages.getString("FilesUploadVaadinDialog.getConfiguration.exception"));
         }
 
         return result;
@@ -128,8 +132,10 @@ public class FilesUploadVaadinDialog extends BaseConfigDialog<FilesUploadConfig_
             }
             moveFiles.setValue(config.isMoveFiles());
             skipOnError.setValue(config.isSkipOnError());
-        } catch (Exception e) {
+        } catch (URIException e) {
             throw new DPUConfigException(messages.getString("FilesUploadVaadinDialog.setConfiguration.exception"), e);
+        } catch (Exception e) {
+            throw new DPUConfigException(messages.getString("FilesUploadVaadinDialog.setConfiguration.exception"));
         }
     }
 
