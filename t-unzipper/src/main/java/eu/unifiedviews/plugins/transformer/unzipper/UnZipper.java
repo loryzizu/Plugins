@@ -12,12 +12,6 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.helpers.cuni.dpu.exec.AbstractDpu;
-import eu.unifiedviews.helpers.cuni.dpu.config.ConfigHistory;
-import eu.unifiedviews.helpers.cuni.dpu.exec.AutoInitializer;
-import eu.unifiedviews.helpers.cuni.extensions.FaultTolerance;
-import eu.unifiedviews.helpers.cuni.extensions.FaultToleranceUtils;
-import eu.unifiedviews.helpers.cuni.migration.ConfigurationUpdate;
 import eu.unifiedviews.helpers.dataunit.files.FilesDataUnitUtils;
 import eu.unifiedviews.helpers.dataunit.metadata.MetadataUtils;
 import eu.unifiedviews.dataunit.DataUnit;
@@ -25,8 +19,14 @@ import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.cuni.dpu.context.ContextUtils;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
+import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelper;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
 
 @DPU.AsTransformer
 public class UnZipper extends AbstractDpu<UnZipperConfig_V1> {
@@ -39,10 +39,10 @@ public class UnZipper extends AbstractDpu<UnZipperConfig_V1> {
     @DataUnit.AsOutput(name = "output")
     public WritableFilesDataUnit outFilesData;
 
-    @AutoInitializer.Init
+    @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
 
-    @AutoInitializer.Init(param = "eu.unifiedviews.plugins.transformer.unzipper.UnZipperConfig__V1")
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.unzipper.UnZipperConfig__V1")
     public ConfigurationUpdate _ConfigurationUpdate;
 
     public UnZipper() {

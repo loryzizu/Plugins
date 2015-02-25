@@ -20,9 +20,9 @@ import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.cuni.test.ConfigurationBuilder;
 import eu.unifiedviews.helpers.dataunit.files.FilesDataUnitUtils;
-import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
+import eu.unifiedviews.helpers.dataunit.files.FilesHelper;
+import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 
 /**
  * TODO Add fault tolerance tests!
