@@ -10,14 +10,14 @@ import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.cuni.dpu.config.ConfigHistory;
-import eu.unifiedviews.helpers.cuni.dpu.exec.AbstractDpu;
-import eu.unifiedviews.helpers.cuni.dpu.exec.AutoInitializer;
-import eu.unifiedviews.helpers.cuni.extensions.FaultTolerance;
-import eu.unifiedviews.helpers.cuni.migration.ConfigurationUpdate;
-import eu.unifiedviews.helpers.cuni.rdf.sparql.SparqlUtils;
 import eu.unifiedviews.helpers.dataunit.DataUnitUtils;
 import eu.unifiedviews.helpers.dataunit.metadata.MetadataVocabulary;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 
 @DPU.AsTransformer
 public class FilesFilter extends AbstractDpu<FilesFilterConfig_V1> {
@@ -79,10 +79,10 @@ public class FilesFilter extends AbstractDpu<FilesFilterConfig_V1> {
     @DataUnit.AsOutput(name = "output")
     public WritableFilesDataUnit outFilesData;
 
-    @AutoInitializer.Init
+    @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
 
-    @AutoInitializer.Init(param = "eu.unifiedviews.plugins.transformer.filesfilter.FilesFilterConfig__V1")
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.filesfilter.FilesFilterConfig__V1")
     public ConfigurationUpdate _ConfigurationUpdate;
 
     public FilesFilter() {
