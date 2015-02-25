@@ -28,15 +28,15 @@ import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.cuni.dpu.config.ConfigHistory;
-import eu.unifiedviews.helpers.cuni.dpu.context.ContextUtils;
-import eu.unifiedviews.helpers.cuni.dpu.exec.AbstractDpu;
-import eu.unifiedviews.helpers.cuni.dpu.exec.AutoInitializer;
-import eu.unifiedviews.helpers.cuni.extensions.FaultTolerance;
-import eu.unifiedviews.helpers.cuni.migration.ConfigurationUpdate;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
-import eu.unifiedviews.helpers.dataunit.virtualgraphhelper.VirtualGraphHelpers;
+import eu.unifiedviews.helpers.dataunit.resource.Resource;
+import eu.unifiedviews.helpers.dataunit.resource.ResourceHelpers;
+import eu.unifiedviews.helpers.dataunit.virtualgraph.VirtualGraphHelpers;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 
 @DPU.AsLoader
 public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
@@ -68,10 +68,10 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
 
     private static final String RUN = "rdf_loader_run()";
 
-    @AutoInitializer.Init
+    @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
 
-    @AutoInitializer.Init(param = "eu.unifiedviews.plugins.loader.filestovirtuoso.VirtuosoLoaderConfig__V1")
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.loader.filestovirtuoso.VirtuosoLoaderConfig__V1")
     public ConfigurationUpdate _ConfigurationUpdate;
 
     public VirtuosoLoader() {
@@ -233,13 +233,24 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
             resultSetErrorRows.close();
             statementsErrorRows.close();
 
-            String outputSymbolicName = config.getTargetContext();
+            final String outputSymbolicName = config.getTargetContext();
             rdfOutput.addExistingDataGraph(outputSymbolicName, new URIImpl(outputSymbolicName));
-            VirtualGraphHelpers.setVirtualGraph(rdfOutput, outputSymbolicName, config.getTargetContext());
+            faultTolerance.execute(new FaultTolerance.Action() {
 
-            Resource resource = ResourceHelpers.getResource(rdfOutput, outputSymbolicName);
-            resource.setLast_modified(new Date());
-            ResourceHelpers.setResource(rdfOutput, outputSymbolicName, resource);
+                @Override
+                public void action() throws Exception {
+                    VirtualGraphHelpers.setVirtualGraph(rdfOutput, outputSymbolicName, config.getTargetContext());
+                }
+            });
+            faultTolerance.execute(new FaultTolerance.Action() {
+
+                @Override
+                public void action() throws Exception {
+                    final Resource resource = ResourceHelpers.getResource(rdfOutput, outputSymbolicName);
+                    resource.setLast_modified(new Date());
+                    ResourceHelpers.setResource(rdfOutput, outputSymbolicName, resource);
+                }
+            });
 
             LOG.info("Done.");
         } catch (DataUnitException | SQLException ex) {
