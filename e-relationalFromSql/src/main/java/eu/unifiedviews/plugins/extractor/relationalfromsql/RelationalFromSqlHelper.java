@@ -6,7 +6,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -17,40 +20,60 @@ public class RelationalFromSqlHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(RelationalFromSqlHelper.class);
 
-    public static String getInternalTableName(ResultSetMetaData meta) throws SQLException {
+    public static List<ColumnDefinition> getTableColumnsFromMetaData(ResultSetMetaData meta) throws SQLException {
         int columnsCount = meta.getColumnCount();
-        StringBuilder tableName = new StringBuilder();
-        Set<String> tables = new HashSet<String>();
+        List<ColumnDefinition> columns = new ArrayList<>();
+        Set<String> uniqueColumns = new HashSet<String>();
+        // If result set contains multiple columns with the same name, add index
         for (int i = 1; i <= columnsCount; i++) {
-            tables.add(meta.getTableName(i));
-        }
-        for (String table : tables) {
-            tableName.append(table);
-            tableName.append("_");
-        }
-        tableName.setLength(tableName.length() - 1);
-
-        return tableName.toString();
-    }
-
-    public static String getSourceTableName(String selectQuery) throws SQLException {
-        String query = selectQuery.replaceAll(";", "");
-        String[] tokens = query.split("\\s");
-        StringBuilder tableName = new StringBuilder();
-        Set<String> tables = new HashSet<String>();
-        for (int i = 1; i < tokens.length; i++) {
-            if (tokens[i - 1].equalsIgnoreCase("FROM") || tokens[i - 1].equalsIgnoreCase("JOIN")) {
-                tables.add(tokens[i]);
+            int type = meta.getColumnType(i);
+            String columnLabel = meta.getColumnLabel(i);
+            String typeName = convertColumnTypeIfNeeded(meta.getColumnTypeName(i));
+            LOG.debug("Column name: {}, type name: {}, SQL type: {}", columnLabel, typeName, type);
+            if (isSupportedDataType(type, typeName)) {
+                int columnSize = (shouldAppendSizeToColumnType(meta.getColumnClassName(i))) ? meta.getPrecision(i) : -1;
+                boolean columnNotNull = (meta.isNullable(i) == ResultSetMetaData.columnNoNulls);
+                if (uniqueColumns.contains(columnLabel)) {
+                    int index = 1;
+                    String newLabel = columnLabel + "_" + index;
+                    while (uniqueColumns.contains(newLabel)) {
+                        index++;
+                        newLabel = columnLabel + "_" + index;
+                    }
+                    columnLabel = newLabel;
+                }
+                uniqueColumns.add(columnLabel);
+                ColumnDefinition column = new ColumnDefinition(columnLabel, typeName, columnSize, columnNotNull);
+                columns.add(column);
+            } else {
+                LOG.warn("Unsupported column skipped: Name: {}, Data type: {}", columnLabel, typeName);
             }
         }
 
-        for (String table : tables) {
-            tableName.append(table);
-            tableName.append("_");
-        }
-        tableName.setLength(tableName.length() - 1);
+        return columns;
+    }
 
-        return tableName.toString();
+    private static boolean isSupportedDataType(int type, String typeName) {
+        switch (type) {
+            case Types.CLOB:
+            case Types.BLOB:
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.STRUCT:
+            case Types.DISTINCT:
+            case Types.REF:
+            case Types.JAVA_OBJECT:
+            case Types.OTHER:
+                return false;
+            case Types.VARCHAR:
+                if (typeName.toLowerCase().contains("char") || typeName.toLowerCase().contains("text")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            default:
+                return true;
+        }
     }
 
     public static void tryCloseDbResources(Connection conn, Statement stmnt, ResultSet rs) {
@@ -137,6 +160,28 @@ public class RelationalFromSqlHelper {
         connection.setAutoCommit(false);
 
         return connection;
+    }
+
+    private static String convertColumnTypeIfNeeded(String columnTypeName) {
+        switch (columnTypeName.toLowerCase()) {
+            case "serial":
+                return "integer";
+            default:
+                return columnTypeName;
+        }
+    }
+
+    private static boolean shouldAppendSizeToColumnType(String typeClass) {
+        boolean bResult = false;
+        try {
+            if (Class.forName(typeClass).isAssignableFrom(String.class)) {
+                bResult = true;
+            }
+        } catch (ClassNotFoundException e) {
+            // just ignore
+        }
+
+        return bResult;
     }
 
 }

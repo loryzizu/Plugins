@@ -8,6 +8,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,7 +113,8 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
             }
 
             try {
-                String createTableQuery = QueryBuilder.getCreateTableQueryFromMetaData(meta, tableName);
+                List<ColumnDefinition> tableColumns = RelationalFromSqlHelper.getTableColumnsFromMetaData(meta);
+                String createTableQuery = QueryBuilder.getCreateTableQueryFromMetaData(tableColumns, tableName);
 
                 LOG.debug("Creating internal db representation as " + createTableQuery);
                 executeSqlQueryInInternalDatabase(createTableQuery);
@@ -123,7 +125,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
                 LOG.debug("New database table {} added to relational data unit", tableName);
 
                 LOG.debug("Inserting data from source table into internal table");
-                insertDataFromSelect(meta, rs, tableName);
+                insertDataFromSelect(tableColumns, rs, tableName);
                 LOG.debug("Inserting data from source table into internal table successful");
 
                 if (this.config.getPrimaryKeyColumns() == null || this.config.getPrimaryKeyColumns().isEmpty()) {
@@ -166,17 +168,17 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
         }
     }
 
-    private void insertDataFromSelect(ResultSetMetaData meta, ResultSet rs, String tableName) throws DataUnitException {
+    private void insertDataFromSelect(List<ColumnDefinition> tableColumns, ResultSet rs, String tableName) throws DataUnitException {
         PreparedStatement ps = null;
         Connection conn = null;
         try {
             conn = getConnectionInternal();
-            String insertQuery = QueryBuilder.getInsertQueryForPreparedStatement(meta, tableName);
+            String insertQuery = QueryBuilder.getInsertQueryForPreparedStatement(tableColumns, tableName);
             LOG.debug("Insert query for inserting into internal DB table: {}", insertQuery);
             ps = conn.prepareStatement(insertQuery);
             LOG.debug("Prepared statement for inserting data created");
             while (rs.next()) {
-                fillInsertData(ps, meta, rs);
+                fillInsertData(ps, tableColumns, rs);
                 ps.execute();
             }
             conn.commit();
@@ -209,9 +211,12 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
         return bTableExists;
     }
 
-    private void fillInsertData(PreparedStatement ps, ResultSetMetaData meta, ResultSet rs) throws SQLException {
-        for (int i = 1; i <= meta.getColumnCount(); i++) {
-            ps.setObject(i, rs.getObject(i));
+    private void fillInsertData(PreparedStatement ps, List<ColumnDefinition> columns, ResultSet rs) throws SQLException {
+        int index = 1;
+        for (ColumnDefinition column : columns) {
+            ps.setObject(index, rs.getObject(column.getColumnName()));
+            index++;
+
         }
     }
 
