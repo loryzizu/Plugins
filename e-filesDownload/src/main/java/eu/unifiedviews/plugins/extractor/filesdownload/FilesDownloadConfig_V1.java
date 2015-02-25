@@ -3,8 +3,8 @@ package eu.unifiedviews.plugins.extractor.filesdownload;
 import java.util.Arrays;
 import java.util.List;
 
-import eu.unifiedviews.helpers.cuni.dpu.config.VersionedConfig;
-import eu.unifiedviews.helpers.cuni.ontology.EntityDescription;
+import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
+import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
 
 @EntityDescription.Entity(type = FilesDownloadVocabulary.STR_CONFIG_CLASS)
 public class FilesDownloadConfig_V1 implements VersionedConfig<FilesDownloadConfig_V1>{

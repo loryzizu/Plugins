@@ -1,8 +1,8 @@
 package eu.unifiedviews.plugins.extractor.filesdownload;
 
-import eu.unifiedviews.helpers.cuni.dpu.config.ConfigException;
-import eu.unifiedviews.helpers.cuni.dpu.config.MasterConfigObject;
-import eu.unifiedviews.helpers.cuni.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.config.ConfigException;
+import eu.unifiedviews.helpers.dpu.config.MasterConfigObject;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
 
 /**
  *

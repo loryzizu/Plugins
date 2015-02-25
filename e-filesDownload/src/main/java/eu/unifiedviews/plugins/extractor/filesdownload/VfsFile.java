@@ -1,6 +1,6 @@
 package eu.unifiedviews.plugins.extractor.filesdownload;
 
-import eu.unifiedviews.helpers.cuni.ontology.EntityDescription;
+import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
 
 @EntityDescription.Entity(type = FilesDownloadVocabulary.STR_FILE_CLASS)
 public class VfsFile {

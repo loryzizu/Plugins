@@ -3,7 +3,7 @@ package eu.unifiedviews.plugins.extractor.httpdownload;
 import java.net.URL;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.cuni.dpu.config.VersionedConfig;
+import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
 import eu.unifiedviews.plugins.extractor.filesdownload.FilesDownloadConfig_V1;
 import eu.unifiedviews.plugins.extractor.filesdownload.VfsFile;
 

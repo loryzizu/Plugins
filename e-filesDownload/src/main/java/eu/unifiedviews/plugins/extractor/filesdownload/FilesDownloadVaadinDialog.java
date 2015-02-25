@@ -17,8 +17,8 @@ import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.Table.ColumnHeaderMode;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.cuni.dpu.vaadin.AbstractDialog;
 import eu.unifiedviews.helpers.dpu.localization.Messages;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 @SuppressWarnings("serial")
 public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfig_V1> {
