@@ -21,17 +21,17 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.openrdf.model.vocabulary.FOAF;
 
-import eu.unifiedviews.helpers.cuni.dpu.config.ConfigHistory;
-import eu.unifiedviews.helpers.cuni.dpu.context.ContextUtils;
-import eu.unifiedviews.helpers.cuni.dpu.exec.AbstractDpu;
-import eu.unifiedviews.helpers.cuni.dpu.exec.AutoInitializer;
-import eu.unifiedviews.helpers.cuni.extensions.FaultTolerance;
-import eu.unifiedviews.helpers.cuni.migration.ConfigurationUpdate;
-import eu.unifiedviews.helpers.cuni.rdf.EntityBuilder;
-import eu.unifiedviews.helpers.cuni.rdf.simple.WritableSimpleRdf;
-import eu.unifiedviews.helpers.cuni.rdf.sparql.SparqlUtils;
 import eu.unifiedviews.helpers.dataunit.DataUnitUtils;
 import eu.unifiedviews.helpers.dataunit.rdf.RdfDataUnitUtils;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.rdf.simple.WritableSimpleRdf;
+import eu.unifiedviews.helpers.dpu.rdf.EntityBuilder;
+import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 
 @DPU.AsTransformer
 public class Metadata extends AbstractDpu<MetadataConfig_V1> {
@@ -44,13 +44,13 @@ public class Metadata extends AbstractDpu<MetadataConfig_V1> {
     @DataUnit.AsOutput(name = "metadata")
     public WritableRDFDataUnit outRdfData;
 
-    @AutoInitializer.Init(param = "outRdfData")
+    @ExtensionInitializer.Init(param = "outRdfData")
     public WritableSimpleRdf rdfData;
 
-    @AutoInitializer.Init
+    @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
 
-    @AutoInitializer.Init(param = "eu.unifiedviews.plugins.transformer.metadata.MetadataConfig__V1")
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.metadata.MetadataConfig__V1")
     public ConfigurationUpdate _ConfigurationUpdate;
 
     public Metadata() {

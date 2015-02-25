@@ -22,7 +22,7 @@ import com.vaadin.ui.VerticalLayout;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import java.util.Arrays;
 
-import eu.unifiedviews.helpers.cuni.dpu.vaadin.AbstractDialog;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 public class MetadataVaadinDialog extends AbstractDialog<MetadataConfig_V1> {
 
