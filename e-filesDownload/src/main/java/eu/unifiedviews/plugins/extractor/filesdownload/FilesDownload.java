@@ -75,7 +75,9 @@ public class FilesDownload extends ConfigurableBase<FilesDownloadConfig_V1> impl
                 }
 
                 FileObject[] fileObjects = standardFileSystemManager.resolveFile(vfsFile.getUri(), fileSystemOptions).findFiles(new AllFileSelector());
-
+                if (fileObjects == null) {
+                    continue;
+                }
                 for (FileObject fileObject : fileObjects) {
                     if (FileType.FILE.equals(fileObject.getType())) {
                         String fileName = fileObject.getName().getPathDecoded();
