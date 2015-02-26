@@ -32,10 +32,10 @@ public class FilesMerger extends AbstractDpu<FilesMergerConfig_V1> {
 
     private static final String QUERY_COPY = "INSERT { ?s ?p ?o } WHERE { ?s ?p ?o }";
 
-    @DataUnit.AsInput(name = "input")
+    @DataUnit.AsInput(name = "filesInput")
     public FilesDataUnit input;
     
-    @DataUnit.AsInput(name = "output")
+    @DataUnit.AsInput(name = "filesOutput")
     public WritableFilesDataUnit output;
 
     @ExtensionInitializer.Init
