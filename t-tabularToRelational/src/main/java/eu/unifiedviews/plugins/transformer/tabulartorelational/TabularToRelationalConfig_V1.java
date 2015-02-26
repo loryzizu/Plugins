@@ -1,22 +1,30 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TabularToRelationalConfig_V1 {
 
-    private String tableName = ""; // DEFAULT VALUE
+    private String tableName;
 
-    private String encoding = "UTF-8"; // DEFAULT VALUE
+    private String encoding;
 
-    private Integer rowsLimit = 10000; // DEFAULT VALUE
+    private Integer rowsLimit;
 
-    private String fieldDelimiter = "\""; // DEFAULT VALUE
+    private String fieldDelimiter;
 
-    private String fieldSeparator = ","; // DEFAULT VALUE
+    private String fieldSeparator;
 
     private List<ColumnMappingEntry> columnMapping;
 
     public TabularToRelationalConfig_V1() {
+        // default values
+        this.tableName = "";
+        this.encoding = "UTF-8";
+        this.rowsLimit = 10000;
+        this.fieldDelimiter = "\"";
+        this.fieldSeparator = ",";
+        this.columnMapping = new ArrayList<>();
     }
 
     public String getTableName() {

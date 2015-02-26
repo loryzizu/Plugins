@@ -10,6 +10,8 @@ import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
+import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,6 +44,11 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
     }
 
     @Override
+    public AbstractConfigDialog<TabularToRelationalConfig_V1> getConfigurationDialog() {
+        return new TabularToRelationalVaadinDialog();
+    }
+
+    @Override
     public void execute(DPUContext context) throws DPUException, InterruptedException {
         this.messages = new Messages(context.getLocale(), this.getClass().getClassLoader());
         final Iterator<FilesDataUnit.Entry> filesIteration;
@@ -52,25 +60,30 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
         }
 
         try {
-            String createTableQuery = prepareCreateTableQuery();
-            LOG.debug("Table create query: {}", createTableQuery);
-            context.sendMessage(DPUContext.MessageType.INFO, "Creating new table", createTableQuery);
             // create table from user config
+            String createTableQuery = prepareCreateTableQuery(config);
+            LOG.debug("Table create query: {}", createTableQuery);
+            context.sendMessage(DPUContext.MessageType.DEBUG, "Creating new table", createTableQuery);
             executeQuery(createTableQuery);
 
+            // add metadata
             String tableName = processString(config.getTableName());
-            this.outRelationalData.addExistingDatabaseTable(tableName, tableName);
+            outRelationalData.addExistingDatabaseTable(tableName, tableName);
+            Resource resource = ResourceHelpers.getResource(outRelationalData, tableName);
+            Date now = new Date();
+            resource.setCreated(now);
+            resource.setLast_modified(now);
+            ResourceHelpers.setResource(outRelationalData, tableName, resource);
 
             while (!context.canceled() && filesIteration.hasNext()) {
                 final FilesDataUnit.Entry entry = filesIteration.next();
                 LOG.debug("Adding file: {}", entry.getSymbolicName());
-                String csvPath = entry.getFileURIString();
                 // remove file prefix
-                csvPath = csvPath.replaceFirst("file:/", "");
+                final String csvPath = entry.getFileURIString().replaceFirst("file:/", "");
 
-                String insertIntoQuery = prepareInsertIntoQuery(csvPath);
+                String insertIntoQuery = prepareInsertIntoQuery(csvPath, config);
                 LOG.debug("Insert into query: {}", insertIntoQuery);
-                context.sendMessage(DPUContext.MessageType.INFO, String.format("Inserting file %s into table", entry.getSymbolicName()), insertIntoQuery);
+                context.sendMessage(DPUContext.MessageType.DEBUG, String.format("Inserting file %s into table", entry.getSymbolicName()), insertIntoQuery);
                 executeQuery(insertIntoQuery);
             }
         } catch (DataUnitException e) {
@@ -98,7 +111,7 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
         }
     }
 
-    private String prepareInsertIntoQuery(String csvPath) {
+    protected static String prepareInsertIntoQuery(String csvFilePath, TabularToRelationalConfig_V1 config) {
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO ");
 
@@ -118,7 +131,7 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
 
         // add filename
         sb.append("'");
-        sb.append(csvPath);
+        sb.append(csvFilePath);
         sb.append("'");
         // column mapping
         sb.append(", '");
@@ -133,7 +146,7 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
         return sb.toString();
     }
 
-    private String prepareCreateTableQuery() {
+    protected static String prepareCreateTableQuery(TabularToRelationalConfig_V1 config) {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE ");
 
@@ -168,19 +181,14 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
         return sb.toString();
     }
 
-    @Override
-    public AbstractConfigDialog<TabularToRelationalConfig_V1> getConfigurationDialog() {
-        return new TabularToRelationalVaadinDialog();
-    }
-
-    public static String processString(String input) {
+    protected static String processString(String input) {
         String output = (input == null) ? "" : input;
         output = output.trim();
         output = output.toUpperCase();
         return output;
     }
 
-    public static String joinColumnNames(List<ColumnMappingEntry> list, String joiner){
+    protected static String joinColumnNames(List<ColumnMappingEntry> list, String joiner){
         StringBuilder sb = new StringBuilder();
         for(int i=0; i < list.size(); i++) {
             if(i > 0) {
@@ -191,7 +199,7 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
         return sb.toString();
     }
 
-    public static String processCsvOptions(TabularToRelationalConfig_V1 config) {
+    protected static String processCsvOptions(TabularToRelationalConfig_V1 config) {
         StringBuilder sb = new StringBuilder();
         sb.append("'");
 

@@ -12,12 +12,6 @@ public class DatabaseHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(TabularToRelational.class);
 
-    public static void tryCloseDbResources(Connection conn, Statement stmnt, ResultSet rs) {
-        tryCloseResultSet(rs);
-        tryCloseStatement(stmnt);
-        tryCloseConnection(conn);
-    }
-
     public static void tryRollbackConnection(Connection conn) {
         if (conn != null) {
             try {
@@ -38,22 +32,12 @@ public class DatabaseHelper {
         }
     }
 
-    public static void tryCloseResultSet(ResultSet rs) {
-        try {
-            if (rs != null) {
-                rs.close();
-            }
-        } catch (SQLException e) {
-            LOG.warn("Error occurred during closing result set", e);
-        }
-    }
-
     public static void tryCloseConnection(Connection conn) {
         if (conn != null) {
             try {
                 conn.close();
             } catch (SQLException e) {
-                LOG.warn("Error occurred during closing result set", e);
+                LOG.warn("Error occurred during rollback of connection", e);
             }
         }
     }

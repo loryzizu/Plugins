@@ -1,6 +1,7 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,9 +13,10 @@ import java.util.List;
 @RunWith(MockitoJUnitRunner.class)
 public class TabularToRelationalTest {
 
+
+
     @Test
     public void joinColumnNamesTest() {
-        // prepare test data
         List<ColumnMappingEntry> list = new ArrayList<>();
         list.add(new ColumnMappingEntry("col1", "", false));
         list.add(new ColumnMappingEntry("col2", "", false));
@@ -56,5 +58,25 @@ public class TabularToRelationalTest {
         config.setFieldDelimiter(null);
         assertEquals("''", TabularToRelational.processCsvOptions(config));
     }
+
+    @Test
+    public void prepareCreateTableQueryTest() {
+        TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
+        assertNotNull(TabularToRelational.prepareCreateTableQuery(config));
+
+        config.setTableName("test_table");
+        config.setFieldSeparator("\"");
+        config.setFieldDelimiter(",");
+        config.setEncoding("UTF-8");
+        List<ColumnMappingEntry> list = new ArrayList<>();
+        list.add(new ColumnMappingEntry("id", "INT", true));
+        list.add(new ColumnMappingEntry("name", "VARCHAR(255)", true));
+        list.add(new ColumnMappingEntry("surname", "VARCHAR(255)", false));
+        config.setColumnMapping(list);
+
+        assertEquals("CREATE TABLE TEST_TABLE(ID INT, NAME VARCHAR(255), SURNAME VARCHAR(255),  PRIMARY KEY (ID, NAME))", TabularToRelational.prepareCreateTableQuery(config));
+    }
+
+
 
 }

@@ -1,7 +1,10 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
+import com.vaadin.data.Validator;
+import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.ui.*;
+import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
@@ -22,6 +25,8 @@ public class TabularToRelationalVaadinDialog extends BaseConfigDialog<TabularToR
     private TextField tableNameField;
 
     private TextField encodingField;
+
+    private ObjectProperty<Integer> rowLimitProperty;
 
     private TextField rowLimitField;
 
@@ -70,15 +75,23 @@ public class TabularToRelationalVaadinDialog extends BaseConfigDialog<TabularToR
 
         tableNameField = new TextField(messages.getString("dialog.tablename"));
         tableNameField.setRequired(true);
+        tableNameField.addValidator(new Validator() {
+            @Override public void validate(Object value) throws InvalidValueException {
+                if(!(value instanceof String && isTableNameValid((String) value))) throw new InvalidValueException(messages.getString("dialog.tablename.restriction"));
+            }
+        });
         tableNameField.setRequiredError(messages.getString("dialog.tablename.required"));
-        tableNameField.setDescription(messages.getString("dialog.tablename.description"));
+        tableNameField.setDescription(messages.getString("dialog.tablename.description") + " " + messages.getString("dialog.tablename.restriction"));
         layout.addComponent(tableNameField);
 
         encodingField = new TextField(messages.getString("dialog.encoding"));
         encodingField.setDescription(messages.getString("dialog.encoding.description"));
         layout.addComponent(encodingField);
 
-        rowLimitField = new TextField(messages.getString("dialog.rowsLimit"));
+        rowLimitProperty = new ObjectProperty<>(0);
+        rowLimitField = new TextField(messages.getString("dialog.rowsLimit"), rowLimitProperty);
+        rowLimitField.setRequired(true);
+        rowLimitField.setRequiredError(messages.getString("dialog.rowsLimit.required"));
         rowLimitField.addValidator(new IntegerRangeValidator(messages.getString("dialog.rowsLimit.validator"), 1 , Integer.MAX_VALUE));
         rowLimitField.setDescription(messages.getString("dialog.rowsLimit.description"));
         layout.addComponent(rowLimitField);
@@ -102,7 +115,7 @@ public class TabularToRelationalVaadinDialog extends BaseConfigDialog<TabularToR
         table.addContainerProperty("type", String.class, null);
         table.addContainerProperty("primaryKey", CheckBox.class, null);
 
-        table.setColumnHeaders(messages.getString("table.name"), messages.getString("table.type"), messages.getString("primary.key"));
+        table.setColumnHeaders(messages.getString("table.name"), messages.getString("table.type"), messages.getString("table.primary.key"));
 
         table.setImmediate(true);
         table.setEditable(true);
@@ -135,11 +148,15 @@ public class TabularToRelationalVaadinDialog extends BaseConfigDialog<TabularToR
 
     @Override
     protected void setConfiguration(TabularToRelationalConfig_V1 config) throws DPUConfigException {
-        tableNameField.setValue(config.getTableName());
+        if(config.getTableName().isEmpty()) {
+            tableNameField.setValue(messages.getString("dialog.tableName.example"));
+        } else {
+            tableNameField.setValue(config.getTableName());
+        }
         encodingField.setValue(config.getEncoding());
         fieldDelimiterField.setValue(config.getFieldDelimiter());
         fieldSeparatorField.setValue(config.getFieldSeparator());
-        rowLimitField.setValue(config.getRowsLimit().toString());
+        rowLimitProperty.setValue(config.getRowsLimit());
 
         table.removeAllItems();
         if(config.getColumnMapping() == null || config.getColumnMapping().isEmpty()) { // if config does not contain any mapping, create empty one
@@ -158,12 +175,20 @@ public class TabularToRelationalVaadinDialog extends BaseConfigDialog<TabularToR
 
     @Override
     protected TabularToRelationalConfig_V1 getConfiguration() throws DPUConfigException {
+        // validation
+        try {
+            tableNameField.validate();
+            rowLimitField.validate();
+        } catch(Validator.InvalidValueException e) {
+            throw new DPUConfigException(e.getMessage());
+        }
+
         TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
         config.setTableName(tableNameField.getValue());
         config.setEncoding(encodingField.getValue());
         config.setFieldDelimiter(fieldDelimiterField.getValue());
         config.setFieldSeparator(fieldSeparatorField.getValue());
-        config.setRowsLimit(Integer.parseInt(rowLimitField.getValue()));
+        config.setRowsLimit(rowLimitProperty.getValue());
 
         List<ColumnMappingEntry> list = new ArrayList<>();
         for(Iterator i = table.getItemIds().iterator(); i.hasNext();){
@@ -178,5 +203,13 @@ public class TabularToRelationalVaadinDialog extends BaseConfigDialog<TabularToR
         }
         config.setColumnMapping(list);
         return config;
+    }
+
+    private boolean isTableNameValid(String value) {
+        String regex = "[A-Z_]+";
+        if(value == null || !value.matches(regex)) {
+            return false;
+        }
+        return true;
     }
 }
