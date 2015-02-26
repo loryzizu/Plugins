@@ -28,7 +28,8 @@ public class RelationalFromSqlHelper {
         for (int i = 1; i <= columnsCount; i++) {
             int type = meta.getColumnType(i);
             String columnLabel = meta.getColumnLabel(i);
-            String typeName = convertColumnTypeIfNeeded(meta.getColumnTypeName(i));
+            String typeName = meta.getColumnTypeName(i);
+            typeName = convertColumnTypeIfNeeded(typeName, type);
             LOG.debug("Column name: {}, type name: {}, SQL type: {}", columnLabel, typeName, type);
             if (isSupportedDataType(type, typeName)) {
                 int columnSize = (shouldAppendSizeToColumnType(meta.getColumnClassName(i))) ? meta.getPrecision(i) : -1;
@@ -162,10 +163,20 @@ public class RelationalFromSqlHelper {
         return connection;
     }
 
-    private static String convertColumnTypeIfNeeded(String columnTypeName) {
-        switch (columnTypeName.toLowerCase()) {
-            case "serial":
-                return "integer";
+    private static String convertColumnTypeIfNeeded(String columnTypeName, int columnSqlType) {
+        switch (columnSqlType) {
+            case Types.INTEGER:
+                if (!DataTypes.isDataTypeSupported(columnTypeName)) {
+                    return "INTEGER";
+                }
+            case Types.ARRAY:
+                if (!DataTypes.isDataTypeSupported(columnTypeName)) {
+                    return "ARRAY";
+                }
+            case Types.VARCHAR:
+                if (!DataTypes.isDataTypeSupported(columnTypeName)) {
+                    return "VARCHAR";
+                }
             default:
                 return columnTypeName;
         }
