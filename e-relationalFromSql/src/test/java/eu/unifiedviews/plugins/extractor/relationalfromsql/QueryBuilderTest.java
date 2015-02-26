@@ -14,13 +14,13 @@ public class QueryBuilderTest {
 
     private static final String TABLE_NAME = "db_table";
 
-    private static final String EXPECTED_CREATE_TABLE_QUERY = "CREATE TABLE " + TABLE_NAME + " (column1 integer NOT NULL, column2 varchar(255) NOT NULL, column3 varchar(255))";
+    private static final String EXPECTED_CREATE_TABLE_QUERY = "CREATE TABLE " + TABLE_NAME + " (column1 integer NOT NULL, column2 varchar NOT NULL, column3 varchar)";
 
     private static final String EXPECTED_INSERT_QUERY = "INSERT INTO " + TABLE_NAME + " (column1, column2, column3) VALUES (?, ?, ?)";
 
     private static final ColumnDefinition COLUMN_1 = new ColumnDefinition("column1", "integer", Types.INTEGER, true, -1);
 
-    private static final ColumnDefinition COLUMN_2 = new ColumnDefinition("column2", "varchar", Types.VARCHAR, false, 255);
+    private static final ColumnDefinition COLUMN_2 = new ColumnDefinition("column2", "varchar", Types.VARCHAR, true, 255);
 
     private static final ColumnDefinition COLUMN_3 = new ColumnDefinition("column3", "varchar", Types.VARCHAR, false, 255);
 

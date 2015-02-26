@@ -32,7 +32,6 @@ public class RelationalFromSqlHelper {
             typeName = convertColumnTypeIfNeeded(typeName, type);
             LOG.debug("Column name: {}, type name: {}, SQL type: {}", columnLabel, typeName, type);
             if (isSupportedDataType(type, typeName)) {
-                int columnSize = (shouldAppendSizeToColumnType(meta.getColumnClassName(i))) ? meta.getPrecision(i) : -1;
                 boolean columnNotNull = (meta.isNullable(i) == ResultSetMetaData.columnNoNulls);
                 if (uniqueColumns.contains(columnLabel)) {
                     int index = 1;
@@ -44,7 +43,7 @@ public class RelationalFromSqlHelper {
                     columnLabel = newLabel;
                 }
                 uniqueColumns.add(columnLabel);
-                ColumnDefinition column = new ColumnDefinition(columnLabel, typeName, columnSize, columnNotNull);
+                ColumnDefinition column = new ColumnDefinition(columnLabel, typeName, type, columnNotNull);
                 columns.add(column);
             } else {
                 LOG.warn("Unsupported column skipped: Name: {}, Data type: {}", columnLabel, typeName);
@@ -65,13 +64,8 @@ public class RelationalFromSqlHelper {
             case Types.REF:
             case Types.JAVA_OBJECT:
             case Types.OTHER:
+            case Types.ARRAY:
                 return false;
-            case Types.VARCHAR:
-                if (typeName.toLowerCase().contains("char") || typeName.toLowerCase().contains("text")) {
-                    return true;
-                } else {
-                    return false;
-                }
             default:
                 return true;
         }
@@ -180,19 +174,6 @@ public class RelationalFromSqlHelper {
             default:
                 return columnTypeName;
         }
-    }
-
-    private static boolean shouldAppendSizeToColumnType(String typeClass) {
-        boolean bResult = false;
-        try {
-            if (Class.forName(typeClass).isAssignableFrom(String.class)) {
-                bResult = true;
-            }
-        } catch (ClassNotFoundException e) {
-            // just ignore
-        }
-
-        return bResult;
     }
 
 }

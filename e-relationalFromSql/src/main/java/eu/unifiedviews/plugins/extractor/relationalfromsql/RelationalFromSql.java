@@ -1,6 +1,5 @@
 package eu.unifiedviews.plugins.extractor.relationalfromsql;
 
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -8,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.Date;
 import java.util.List;
 
@@ -217,15 +215,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
         int index = 1;
         for (ColumnDefinition column : columns) {
             Object sourceValue = rs.getObject(column.getColumnName());
-            if (column.getColumnType() == Types.ARRAY) {
-                Object[] values = (Object[]) ((Array) sourceValue).getArray();
-                String typeName = ((Array) sourceValue).getBaseTypeName();
-                Array targetArray = this.outputTables.getDatabaseConnection().createArrayOf(typeName, values);
-                ps.setArray(index, targetArray);
-            } else {
-                ps.setObject(index, sourceValue);
-            }
-
+            ps.setObject(index, sourceValue);
             index++;
         }
     }
