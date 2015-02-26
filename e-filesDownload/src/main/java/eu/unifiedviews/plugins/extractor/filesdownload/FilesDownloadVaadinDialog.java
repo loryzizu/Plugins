@@ -95,8 +95,6 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
 
                 if (propertyId.equals("uri")) {
                     result.setDescription(messages.getString("FilesDownloadVaadinDialog.uri.description"));
-                    result.setRequired(true);
-                    result.setRequiredError(messages.getString("FilesDownloadVaadinDialog.uri.required"));
                     result.setWidth("400");
                 } else if (propertyId.equals("password")) {
                     result = new PasswordField();
@@ -132,39 +130,26 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
     protected FilesDownloadConfig_V1 getConfiguration() throws DPUConfigException {
         List<VfsFile> vfsFiles = new ArrayList<>();
 
-        try {
-            for (Object itemId : container.getItemIds()) {
-                VfsFile vfsFileInContainer = (VfsFile) itemId;
+        if (isContainerValid(true)) {
+            try {
+                for (Object itemId : container.getItemIds()) {
+                    VfsFile vfsFile = new VfsFile((VfsFile) itemId);
+                    URI uri = new URI(URIUtil.encodePathQuery(vfsFile.getUri(), "utf8"));
 
-                if (StringUtils.isBlank(vfsFileInContainer.getUri())) {
-                    throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.uri.required"));
-                } else if (StringUtils.isBlank(vfsFileInContainer.getUsername()) && StringUtils.isNotBlank(vfsFileInContainer.getPassword())) {
-                    throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.username.required"));
-                } else if (StringUtils.isNotBlank(vfsFileInContainer.getUsername()) && StringUtils.isBlank(vfsFileInContainer.getPassword())) {
-                    throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.password.required"));
+                    vfsFile.setUri(uri.toString());
+
+                    if (StringUtils.isNotBlank(vfsFile.getPassword())) {
+                        vfsFile.setPassword(CryptorFactory.getCryptor().encrypt(vfsFile.getPassword()));
+                    }
+
+                    vfsFiles.add(vfsFile);
                 }
-
-                URI uri = new URI(URIUtil.encodePathQuery(vfsFileInContainer.getUri(), "utf8"));
-
-                if (StringUtils.isNotBlank(vfsFileInContainer.getUsername()) && StringUtils.isBlank(uri.getHost())) {
-                    throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.uri.invalid"));
-                }
-
-                VfsFile vfsFile = new VfsFile(vfsFileInContainer);
-                vfsFile.setUri(uri.toString());
-
-                if (StringUtils.isNotBlank(vfsFile.getPassword())) {
-                    vfsFile.setPassword(CryptorFactory.getCryptor().encrypt(vfsFile.getPassword()));
-                }
-
-                vfsFiles.add(vfsFile);
+            } catch (NullPointerException | URISyntaxException | URIException e) {
+                throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.uri.invalid"), e);
+            } catch (Exception e) {
+                // Method org.apache.commons.vfs2.util.Cryptor.encrypt(String) throws exception with plain text input in the message.
+                throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.getConfiguration.exception"));
             }
-        } catch (DPUConfigException e) {
-            throw e;
-        } catch (NullPointerException | URISyntaxException | URIException e) {
-            throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.getConfiguration.exception"), e);
-        } catch (Exception e) {
-            throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.getConfiguration.exception"));
         }
 
         FilesDownloadConfig_V1 result = new FilesDownloadConfig_V1();
@@ -173,26 +158,79 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
         return result;
     }
 
-    @Override
-    protected void setConfiguration(FilesDownloadConfig_V1 config) throws DPUConfigException {
+    private boolean isContainerValid(boolean throwException) throws DPUConfigException {
+        boolean result = true;
+        DPUConfigException resultException = null;
+
         try {
-            container.removeAllItems();
+            for (Object itemId : container.getItemIds()) {
+                VfsFile vfsFile = (VfsFile) itemId;
 
-            for (VfsFile vfsFile : config.getVfsFiles()) {
-                VfsFile vfsFileInContainer = new VfsFile(vfsFile);
+                if (StringUtils.isBlank(vfsFile.getUri())) {
+                    result = false;
 
-                vfsFileInContainer.setUri(URIUtil.decode(vfsFile.getUri(), "utf8"));
+                    resultException = new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.uri.required"));
 
-                if (StringUtils.isNotBlank(vfsFile.getPassword())) {
-                    vfsFileInContainer.setPassword(CryptorFactory.getCryptor().decrypt(vfsFile.getPassword()));
+                    break;
+                } else if (StringUtils.isBlank(vfsFile.getUsername()) && StringUtils.isNotBlank(vfsFile.getPassword())) {
+                    result = false;
+
+                    resultException = new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.username.required"));
+
+                    break;
+                } else if (StringUtils.isNotBlank(vfsFile.getUsername()) && StringUtils.isBlank(vfsFile.getPassword())) {
+                    result = false;
+
+                    resultException = new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.password.required"));
+
+                    break;
                 }
 
-                container.addItem(vfsFileInContainer);
+                URI uri = new URI(URIUtil.encodePathQuery(vfsFile.getUri(), "utf8"));
+
+                if (StringUtils.isNotBlank(vfsFile.getUsername()) && StringUtils.isBlank(uri.getHost())) {
+                    result = false;
+
+                    resultException = new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.uri.invalid"));
+
+                    break;
+                }
             }
-        } catch (UnsupportedOperationException | URIException e) {
-            throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.setConfiguration.exception"), e);
         } catch (Exception e) {
-            throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.setConfiguration.exception"));
+            result = false;
+
+            resultException = new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.uri.invalid"), e);
+        }
+
+        if (throwException && resultException != null) {
+            throw resultException;
+        }
+
+        return result;
+    }
+
+    @Override
+    protected void setConfiguration(FilesDownloadConfig_V1 config) throws DPUConfigException {
+        if (isContainerValid(false)) {
+            try {
+                container.removeAllItems();
+
+                for (VfsFile vfsFile : config.getVfsFiles()) {
+                    VfsFile vfsFileInContainer = new VfsFile(vfsFile);
+
+                    vfsFileInContainer.setUri(URIUtil.decode(vfsFile.getUri(), "utf8"));
+
+                    if (StringUtils.isNotBlank(vfsFile.getPassword())) {
+                        vfsFileInContainer.setPassword(CryptorFactory.getCryptor().decrypt(vfsFile.getPassword()));
+                    }
+
+                    container.addItem(vfsFileInContainer);
+                }
+            } catch (UnsupportedOperationException | URIException e) {
+                throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.setConfiguration.exception"), e);
+            } catch (Exception e) {
+                throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.setConfiguration.exception"));
+            }
         }
     }
 
