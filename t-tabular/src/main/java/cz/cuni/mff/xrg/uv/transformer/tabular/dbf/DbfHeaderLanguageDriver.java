@@ -1,12 +1,14 @@
-package eu.unifiedviews.plugins.transformer.tabular;
+package cz.cuni.mff.xrg.uv.transformer.tabular.dbf;
 
 import java.io.DataInput;
 import java.io.IOException;
+
 import org.jamel.dbf.exception.DbfException;
+import org.jamel.dbf.structure.DbfHeader;
 import org.jamel.dbf.utils.DbfUtils;
 
-class DbfHeaderLanguageDriver {
- 
+public class DbfHeaderLanguageDriver extends DbfHeader {
+
     private byte languageDriver;         /* 29    */
 
     public static DbfHeaderLanguageDriver read(DataInput dataInput) throws DbfException {
@@ -39,6 +41,6 @@ class DbfHeaderLanguageDriver {
     
     public byte getLanguageDriver()	{
     	return languageDriver;
-    }    
-    
+    }
+	
 }

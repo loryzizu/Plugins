@@ -1,6 +1,11 @@
-package eu.unifiedviews.plugins.transformer.tabular;
+package cz.cuni.mff.xrg.uv.transformer.tabular.dbf;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.DataInput;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+
 import org.jamel.dbf.exception.DbfException;
 
 public class DbfReaderLanguageDriver implements Closeable {
