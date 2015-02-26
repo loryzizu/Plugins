@@ -19,6 +19,16 @@ public class VfsFile {
     @EntityDescription.Property(uri = FilesDownloadVocabulary.STR_FILE_NAME)
     private String fileName = "";
 
+    public VfsFile() {
+    }
+
+    public VfsFile(VfsFile vfsFile) {
+        uri = vfsFile.getUri();
+        username = vfsFile.getUsername();
+        password = vfsFile.getPassword();
+        fileName = vfsFile.getFileName();
+    }
+
     public boolean isDisplayed() {
         return displayed;
     }

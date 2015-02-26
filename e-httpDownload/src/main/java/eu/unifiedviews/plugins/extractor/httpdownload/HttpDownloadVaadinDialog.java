@@ -54,7 +54,7 @@ public class HttpDownloadVaadinDialog extends BaseConfigDialog<HttpDownloadConfi
 		txtRetryCount = new TextField();
 		txtRetryCount.setWidth("100%");
 		txtRetryCount.setHeight("-1px");
-		txtRetryCount.setCaption("Max attemts at one download:");
+		txtRetryCount.setCaption("Max attempts at one download:");
 		txtRetryCount.setRequired(true);
 		mainLayout.addComponent(txtRetryCount);
 
