@@ -7,6 +7,7 @@ import static org.mockito.Matchers.anyString;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -64,7 +65,8 @@ public class UnzipperTest {
 
     @Test
     public void validArchivePass() throws Exception {
-        File inputFile = new File(this.getClass().getClassLoader().getResource(UNZIPPED_FILE).getFile());
+        URI resource = this.getClass().getClassLoader().getResource(UNZIPPED_FILE).toURI();
+        File inputFile = new File(resource);
         String fileContent = readFile(inputFile);
 
         addFileToInput(ZIPPED_FILE);
