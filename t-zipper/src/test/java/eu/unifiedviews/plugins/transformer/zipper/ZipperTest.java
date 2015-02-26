@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 
 import net.lingala.zip4j.core.ZipFile;
@@ -104,7 +105,8 @@ public class ZipperTest {
     }
 
     private void executeValidZipPasses() throws Exception {
-        File inputFile = new File(getClass().getClassLoader().getResource(TXT_FILE).toURI());
+        URI resource = this.getClass().getClassLoader().getResource(TXT_FILE).toURI();
+        File inputFile = new File(resource);
         String fileContent = readFile(inputFile);
 
         FilesDataUnitUtils.addFile(input, inputFile, TXT_FILE);
