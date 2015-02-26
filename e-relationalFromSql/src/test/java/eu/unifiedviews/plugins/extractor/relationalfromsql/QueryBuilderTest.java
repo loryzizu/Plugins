@@ -14,7 +14,7 @@ public class QueryBuilderTest {
 
     private static final String TABLE_NAME = "db_table";
 
-    private static final String EXPECTED_CREATE_TABLE_QUERY = "CREATE TABLE " + TABLE_NAME + " (column1 integer NOT NULL, column2 varchar(255), column3 varchar(255))";
+    private static final String EXPECTED_CREATE_TABLE_QUERY = "CREATE TABLE " + TABLE_NAME + " (column1 integer NOT NULL, column2 varchar(255) NOT NULL, column3 varchar(255))";
 
     private static final String EXPECTED_INSERT_QUERY = "INSERT INTO " + TABLE_NAME + " (column1, column2, column3) VALUES (?, ?, ?)";
 
@@ -46,16 +46,19 @@ public class QueryBuilderTest {
         Mockito.when(meta.getColumnLabel(1)).thenReturn("column1");
         Mockito.when(meta.getColumnTypeName(1)).thenReturn("integer");
         Mockito.when(meta.getColumnClassName(1)).thenReturn("java.lang.Integer");
+        Mockito.when(meta.isNullable(1)).thenReturn(ResultSetMetaData.columnNoNulls);
         Mockito.when(meta.getPrecision(1)).thenReturn(10);
 
         Mockito.when(meta.getColumnLabel(2)).thenReturn("column2");
         Mockito.when(meta.getColumnTypeName(2)).thenReturn("varchar");
         Mockito.when(meta.getColumnClassName(2)).thenReturn("java.lang.String");
+        Mockito.when(meta.isNullable(2)).thenReturn(ResultSetMetaData.columnNoNulls);
         Mockito.when(meta.getPrecision(2)).thenReturn(255);
 
         Mockito.when(meta.getColumnLabel(3)).thenReturn("column3");
         Mockito.when(meta.getColumnTypeName(3)).thenReturn("varchar");
         Mockito.when(meta.getColumnClassName(3)).thenReturn("java.lang.String");
+        Mockito.when(meta.isNullable(3)).thenReturn(ResultSetMetaData.columnNullable);
         Mockito.when(meta.getPrecision(3)).thenReturn(255);
 
         return meta;
