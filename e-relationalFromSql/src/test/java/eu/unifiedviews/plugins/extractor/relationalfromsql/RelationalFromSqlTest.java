@@ -66,7 +66,7 @@ public class RelationalFromSqlTest {
         this.dpu = new RelationalFromSql();
 
         this.testEnv = new TestEnvironment();
-        this.relationalOutput = this.testEnv.createRelationalOutput("internalDb");
+        this.relationalOutput = this.testEnv.createRelationalOutput("outputTables");
     }
 
     @After
@@ -176,7 +176,7 @@ public class RelationalFromSqlTest {
 
     @Test
     public void selectJoinTablesCheckTargetTableContent() throws Exception {
-        RelationalFromSqlConfig_V1 config = createConfig(SELECT_ONE_TABLE_QUERY);
+        RelationalFromSqlConfig_V1 config = createConfig(SELECT_JOIN_TABLES_QUERY);
         this.dpu.configureDirectly(config);
         Connection sourceConnection = null;
         Connection dataUnitConnection = null;
