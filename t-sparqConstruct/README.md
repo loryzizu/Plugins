@@ -6,7 +6,7 @@
 |                              |                                                                              |
 |------------------------------|------------------------------------------------------------------------------|
 |**Name:**                     |T-SparqlConstruct                                                             |
-|**Description:**              |Tnrasfrom input using SPARQL construct.                                       |
+|**Description:**              |Transform input using SPARQL construct.                                       |
 |                              |                                                                              |
 |**DPU class name:**           |SparqlConstruct                                                               | 
 |**Configuration class name:** |SparqlConstruct_V1                                                            |
