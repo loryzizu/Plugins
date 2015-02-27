@@ -52,6 +52,7 @@ public class HttpDownloadConfig_V2 implements VersionedConfig<FilesDownloadConfi
                     throw new DPUConfigException("UTF-8 is not supported!", ex);
                 }
             }
+            vfsFile.setUri(uriBuilder.toString());
             vfsFile.setFileName(virtualPath);
             config.getVfsFiles().add(vfsFile);
         }
