@@ -37,7 +37,7 @@ public class Tabular extends AbstractDpu<TabularConfig_V2> {
     @DataUnit.AsOutput(name = "triplifiedTable")
     public WritableRDFDataUnit outRdfTables;
 
-    @ExtensionInitializer.Init
+    @ExtensionInitializer.Init(param = "outRdfTables")
     public WritableSimpleRdf rdfTableWrap;
 
     @ExtensionInitializer.Init
