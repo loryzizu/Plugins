@@ -6,8 +6,6 @@ import org.openrdf.model.impl.ValueFactoryImpl;
 
 public class MetadataVocabulary {
 
-    public static final String STR_METADATA_GRAPH = "http://unifiedviews.eu/resources/dpu/transformer/metadata/";
-
     public static final String DCAT = "http://www.w3.org/ns/dcat#";
 
     public static final String VOID = "http://rdfs.org/ns/void#";
