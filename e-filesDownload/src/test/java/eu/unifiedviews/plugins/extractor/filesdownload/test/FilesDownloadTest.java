@@ -15,6 +15,7 @@ import eu.unifiedviews.helpers.dataunit.files.FilesHelper;
 import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 import eu.unifiedviews.plugins.extractor.filesdownload.FilesDownload;
 import eu.unifiedviews.plugins.extractor.filesdownload.FilesDownloadConfig_V1;
+import eu.unifiedviews.plugins.extractor.filesdownload.VfsFile;
 
 public class FilesDownloadTest {
 
@@ -22,6 +23,7 @@ public class FilesDownloadTest {
     public void execute() throws Exception {
         // Prepare config.
         FilesDownloadConfig_V1 config = new FilesDownloadConfig_V1();
+        config.getVfsFiles().add(new VfsFile());
         config.getVfsFiles().get(0).setUri(getClass().getClassLoader().getResource("test").toURI().toString());
 
         // Prepare DPU.

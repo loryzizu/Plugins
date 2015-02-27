@@ -1,6 +1,7 @@
 package eu.unifiedviews.plugins.extractor.filesdownload;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
@@ -10,7 +11,7 @@ import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
 public class FilesDownloadConfig_V1 implements VersionedConfig<FilesDownloadConfig_V1>{
 
     @EntityDescription.Property(uri = FilesDownloadVocabulary.STR_CONFIG_HAS_FILE)
-    private List<VfsFile> vfsFiles = Arrays.asList(new VfsFile());
+    private List<VfsFile> vfsFiles = new LinkedList<>();
 
     private boolean softFail = false;
 
