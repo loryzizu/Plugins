@@ -61,7 +61,7 @@ public class FilesUploadVaadinDialog extends AbstractDialog<FilesUploadConfig_V1
         softFail.setWidth("100%");
         mainLayout.addComponent(softFail);
 
-        moveFiles = new CheckBox(ctx.tr("FilesUploadVaadinDialog.mov"));
+        moveFiles = new CheckBox(ctx.tr("FilesUploadVaadinDialog.move"));
         moveFiles.setWidth("100%");
         mainLayout.addComponent(moveFiles);
 
