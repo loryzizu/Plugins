@@ -62,7 +62,11 @@ public class HttpDownloadConfig_V1 implements VersionedConfig<FilesDownloadConfi
         final VfsFile vfsFile = new VfsFile();
 
         // TODO Add support for fault tolerance.
-        vfsFile.setUri(URL.toString());
+        if (URL != null) {
+            vfsFile.setUri(URL.toString());
+        } else {
+            vfsFile.setUri("");
+        }
         vfsFile.setFileName(target);
 
         config.getVfsFiles().add(vfsFile);
