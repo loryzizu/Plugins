@@ -64,9 +64,7 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
 
                     @Override
                     public void buttonClick(ClickEvent event) {
-                        if (sourceFinal.size() > 1) {
-                            container.removeItem(itemIdFinal);
-                        }
+                        container.removeItem(itemIdFinal);
                     }
 
                 });
