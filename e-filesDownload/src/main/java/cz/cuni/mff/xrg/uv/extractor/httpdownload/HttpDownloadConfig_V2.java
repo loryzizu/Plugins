@@ -37,10 +37,6 @@ public class HttpDownloadConfig_V2 implements VersionedConfig<FilesDownloadConfi
 
         for (DownloadInfo_V1 item : toDownload) {
             final VfsFile vfsFile = new VfsFile();
-            // TODO Add support for fault tolerance.
-            final StringBuilder uriBuilder = new StringBuilder();
-            uriBuilder.append("file://");
-            uriBuilder.append(item.getUri());
             // Get VirtualPath or prepare it in same way as e-HttpDownload does.
             String virtualPath = item.getVirtualPath();
             if (virtualPath == null || virtualPath.isEmpty()) {
@@ -52,7 +48,7 @@ public class HttpDownloadConfig_V2 implements VersionedConfig<FilesDownloadConfi
                     throw new DPUConfigException("UTF-8 is not supported!", ex);
                 }
             }
-            vfsFile.setUri(uriBuilder.toString());
+            vfsFile.setUri(item.getUri());
             vfsFile.setFileName(virtualPath);
             config.getVfsFiles().add(vfsFile);
         }
