@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.mapper;
 
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException;
 import cz.cuni.mff.xrg.uv.transformer.tabular.TabularConfig_V2;
 import cz.cuni.mff.xrg.uv.transformer.tabular.TabularOntology;
 import cz.cuni.mff.xrg.uv.transformer.tabular.Utils;
@@ -13,6 +12,8 @@ import java.util.*;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import eu.unifiedviews.dpu.DPUException;
 
 /**
  * Configure {@link TableToRdf} class.
@@ -33,10 +34,10 @@ public class TableToRdfConfigurator {
      * @param header 
      * @param data Contains first data row, or ColumnType if type is already known.
      * @throws cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParseFailed
-     * @throws cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException
+     * @throws DPUException
      */
     public static void configure(TableToRdf tableToRdf, List<String> header,
-            List<Object> data) throws ParseFailed, OperationFailedException {
+            List<Object> data) throws ParseFailed, DPUException {
         // initial checks
         if (data == null) {
             throw new ParseFailed("First data row is null!");
@@ -135,15 +136,6 @@ public class TableToRdfConfigurator {
             valueGenerators.add(ValueGeneratorReplace.create(
                 tableToRdf.valueFactory.createURI(columnInfo.getURI()),
                 template));
-            //
-            // generate metadata about column - for now only labels
-            //
-            if (config.generateLabels) {
-                tableToRdf.outRdf.add(
-                    tableToRdf.valueFactory.createURI(columnInfo.getURI()),
-                    TabularOntology.URI_RDF_ROW_LABEL,
-                    tableToRdf.valueFactory.createLiteral(columnName));
-            }
         }
         //
         // key template

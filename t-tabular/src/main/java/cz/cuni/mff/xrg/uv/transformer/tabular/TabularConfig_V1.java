@@ -1,14 +1,14 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular;
 
-import cz.cuni.mff.xrg.uv.boost.dpu.config.VersionedConfig;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnInfo_V1;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ValueGeneratorReplace;
-import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserDbfConfig;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserType;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
 
 /**
  *
@@ -247,7 +247,6 @@ public class TabularConfig_V1 implements VersionedConfig<TabularConfig_V2> {
         v2.setColumnsInfo(columnsInfo);
         v2.setDelimiterChar(delimiterChar);
         v2.setEncoding(encoding);
-        v2.setGenerateLabels(generateLabels);
         v2.setGenerateNew(generateNew);
         v2.setGenerateRowTriple(generateRowTriple);
         v2.setHasHeader(hasHeader);

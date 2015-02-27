@@ -49,8 +49,6 @@ public class TableToRdfConfig {
 
     final boolean advancedKeyColumn;
 
-    final boolean generateLabels;
-
     final boolean generateRowTriple;
 
     final boolean autoAsStrings;
@@ -61,8 +59,7 @@ public class TableToRdfConfig {
             Map<String, ColumnInfo_V1> columnsInfo, boolean generateNew,
             String rowsClass, boolean ignoreBlankCells,
             List<TabularConfig_V2.AdvanceMapping> columnsInfoAdv,
-            boolean advancedKeyColumn, boolean generateLabels,
-            boolean generateRowTriple, boolean autoAsStrings,
+            boolean advancedKeyColumn, boolean generateRowTriple, boolean autoAsStrings,
             boolean generateTableRowClass) {
         this.keyColumn = keyColumnName;
         this.baseURI = baseURI;
@@ -74,7 +71,6 @@ public class TableToRdfConfig {
         this.columnsInfoAdv = columnsInfoAdv != null ? columnsInfoAdv :
                 Collections.EMPTY_LIST;
         this.advancedKeyColumn = advancedKeyColumn;
-        this.generateLabels = generateLabels;
         this.generateRowTriple = generateRowTriple;
         this.autoAsStrings = autoAsStrings;
         this.generateTableClass = generateTableRowClass;

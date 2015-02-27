@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.parser;
 
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException;
 import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdf;
 import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdfConfigurator;
 import eu.unifiedviews.dpu.DPUContext;
@@ -16,6 +15,9 @@ import org.jamel.dbf.structure.DbfHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
+
 /**
  *
  * @author Škoda Petr
@@ -28,19 +30,19 @@ public class ParserDbf implements Parser {
 
     private final TableToRdf tableToRdf;
 
-    private final DPUContext context;
+    private final UserExecContext context;
 
     private int rowNumber = 0;
 
     public ParserDbf(ParserDbfConfig config, TableToRdf tableToRdf,
-            DPUContext context) {
+            UserExecContext context) {
         this.config = config;
         this.tableToRdf = tableToRdf;
         this.context = context;
     }
 
     @Override
-    public void parse(File inFile) throws OperationFailedException, ParseFailed {
+    public void parse(File inFile) throws DPUException, ParseFailed {
         final String encoding;
         if (config.encoding == null || config.encoding.isEmpty()) {
             // parse from DBF file

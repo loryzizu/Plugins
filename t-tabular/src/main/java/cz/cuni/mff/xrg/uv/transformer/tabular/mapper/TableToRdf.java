@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.mapper;
 
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfWrite;
 import cz.cuni.mff.xrg.uv.transformer.tabular.TabularOntology;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ValueGenerator;
 import java.util.List;
@@ -9,8 +7,12 @@ import java.util.Map;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dpu.extension.rdf.simple.WritableSimpleRdf;
 
 /**
  * Parse table data into rdf. Before usage this class must be configured by
@@ -25,7 +27,7 @@ public class TableToRdf {
     /**
      * Data output.
      */
-    final SimpleRdfWrite outRdf;
+    final WritableSimpleRdf outRdf;
 
     final ValueFactory valueFactory;
 
@@ -47,7 +49,7 @@ public class TableToRdf {
 
     boolean tableInfoGenerated = false;
 
-    public TableToRdf(TableToRdfConfig config, SimpleRdfWrite outRdf,
+    public TableToRdf(TableToRdfConfig config, WritableSimpleRdf outRdf,
             ValueFactory valueFactory) {
         this.config = config;
         this.outRdf = outRdf;
@@ -55,7 +57,7 @@ public class TableToRdf {
         this.typeUri = valueFactory.createURI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
     }
 
-    public void paserRow(List<Object> row, int rowNumber) throws OperationFailedException {
+    public void paserRow(List<Object> row, int rowNumber) throws DPUException {
         if (row.size() < nameToIndex.size()) {
             LOG.warn("Row is smaller ({} instead of {}) - ignore.",
                     row.size(), nameToIndex.size());
@@ -80,7 +82,7 @@ public class TableToRdf {
                     // ignore
                 } else {
                     // insert blank cell URI
-                    outRdf.add(subj, predicate, TabularOntology.URI_BLANK_CELL);
+                    outRdf.add(subj, predicate, TabularOntology.BLANK_CELL);
                 }
             } else {
                 // insert value
@@ -89,19 +91,19 @@ public class TableToRdf {
         }
         // add row data - number, class, connection to table
         if (config.generateRowTriple) {
-            outRdf.add(subj, TabularOntology.URI_ROW_NUMBER, valueFactory.createLiteral(rowNumber));
+            outRdf.add(subj, TabularOntology.ROW_NUMBER, valueFactory.createLiteral(rowNumber));
         }
         if (rowClass != null) {
             outRdf.add(subj, typeUri, rowClass);
         }
         if (tableSubject != null) {
-            outRdf.add(tableSubject, TabularOntology.URI_TABLE_HAS_ROW, subj);
+            outRdf.add(tableSubject, TabularOntology.TABLE_HAS_ROW, subj);
         }
         // Add table statistict only for the first time.
         if (!tableInfoGenerated && tableSubject != null) {
             tableInfoGenerated = true;
             if (config.generateTableClass) {
-                outRdf.add(tableSubject, TabularOntology.URI_RDF_A_PREDICATE, TabularOntology.URI_TABLE_CLASS);
+                outRdf.add(tableSubject, RDF.TYPE, TabularOntology.TABLE_CLASS);
             }
         }
     }

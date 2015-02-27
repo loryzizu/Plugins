@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.parser;
 
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnType;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdf;
@@ -15,6 +14,9 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
 
 /**
  *
@@ -34,19 +36,18 @@ public class ParserXls implements Parser {
 
     private final TableToRdf tableToRdf;
 
-    private final DPUContext context;
+    private final UserExecContext context;
 
     private int rowNumber = 0;
 
-    public ParserXls(ParserXlsConfig config, TableToRdf tableToRdf,
-            DPUContext context) {
+    public ParserXls(ParserXlsConfig config, TableToRdf tableToRdf, UserExecContext context) {
         this.config = config;
         this.tableToRdf = tableToRdf;
         this.context = context;
     }
 
     @Override
-    public void parse(File inFile) throws OperationFailedException, ParseFailed {
+    public void parse(File inFile) throws DPUException, ParseFailed {
         final Workbook wb;
         try {
             wb = WorkbookFactory.create(inFile);
@@ -78,9 +79,9 @@ public class ParserXls implements Parser {
      * @param wb
      * @param sheetIndex
      * @throws cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParseFailed
-     * @throws cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException
+     * @throws DPUException
      */
-    public void parseSheet(Workbook wb, Integer sheetIndex) throws ParseFailed, OperationFailedException {
+    public void parseSheet(Workbook wb, Integer sheetIndex) throws ParseFailed, DPUException {
 
         LOG.debug("parseSheet({}, {})", wb.getSheetName(sheetIndex), sheetIndex);
 
@@ -284,7 +285,7 @@ public class ParserXls implements Parser {
                     String value = (new Double(cell.getNumericCellValue())).toString();
                     try	{
                         Integer.parseInt(value);
-                    } catch (NumberFormatException e)	{
+                    } catch (NumberFormatException ex)	{
                         return ColumnType.Double;
                     }
                     return ColumnType.Integer;

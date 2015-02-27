@@ -12,16 +12,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Škoda Petr
  */
 public class TabularConfig_V2 {
-
-    private static final Logger LOG = LoggerFactory.getLogger(TabularConfig_V2.class);
 
     public static class AdvanceMapping {
         
@@ -119,7 +115,7 @@ public class TabularConfig_V2 {
     /**
      * If null no class is set.
      */
-    private String rowsClass = TabularOntology.ROW_CLASS;
+    private String rowsClass = TabularOntology.ROW_CLASS.toString();
 
     /**
      * Sheet name.
@@ -130,11 +126,6 @@ public class TabularConfig_V2 {
      * If checked same row counter is used for all files. 
      */
     private boolean staticRowCounter = false;
-
-    /**
-     * If true then generate labels for properties (basic)
-     */
-    private boolean generateLabels = true;
 
     /**
      * If true then triple with row number is generated for each line.
@@ -300,14 +291,6 @@ public class TabularConfig_V2 {
         this.staticRowCounter = staticRowCounter;
     }
 
-    public boolean isGenerateLabels() {
-        return generateLabels;
-    }
-
-    public void setGenerateLabels(boolean generateLabels) {
-        this.generateLabels = generateLabels;
-    }
-
     public boolean isGenerateRowTriple() {
         return generateRowTriple;
     }
@@ -343,7 +326,7 @@ public class TabularConfig_V2 {
     public TableToRdfConfig getTableToRdfConfig() {
         return new TableToRdfConfig(keyColumn, baseURI, columnsInfo,
                 generateNew, rowsClass, ignoreBlankCells, columnsInfoAdv,
-                advancedKeyColumn, generateLabels, generateRowTriple, autoAsStrings, generateTableClass);
+                advancedKeyColumn, generateRowTriple, autoAsStrings, generateTableClass);
     }
 
     public ParserCsvConfig getParserCsvConfig() {

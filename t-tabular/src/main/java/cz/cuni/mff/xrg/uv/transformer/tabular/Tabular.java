@@ -1,40 +1,33 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular;
 
-import cz.cuni.mff.xrg.uv.boost.dpu.addon.AddonInitializer;
-import cz.cuni.mff.xrg.uv.boost.dpu.addon.impl.CloseCloseable;
-import cz.cuni.mff.xrg.uv.boost.dpu.addon.impl.SimpleRdfConfigurator;
-import cz.cuni.mff.xrg.uv.boost.dpu.advanced.DpuAdvancedBase;
-import cz.cuni.mff.xrg.uv.boost.dpu.config.ConfigHistory;
-import cz.cuni.mff.xrg.uv.boost.dpu.config.MasterConfigObject;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.AddPolicy;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfFactory;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfWrite;
 import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdf;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.*;
 import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import eu.unifiedviews.dataunit.files.FilesDataUnit.Entry;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import java.io.File;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 import org.openrdf.model.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.helpers.dataunit.rdf.RdfDataUnitUtils;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
+import eu.unifiedviews.helpers.dpu.extension.rdf.simple.WritableSimpleRdf;
 
 /**
  *
  * @author Škoda Petr
  */
 @DPU.AsTransformer
-public class Tabular extends DpuAdvancedBase<TabularConfig_V2> {
+public class Tabular extends AbstractDpu<TabularConfig_V2> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Tabular.class);
 
@@ -44,112 +37,88 @@ public class Tabular extends DpuAdvancedBase<TabularConfig_V2> {
     @DataUnit.AsOutput(name = "triplifiedTable")
     public WritableRDFDataUnit outRdfTables;
 
-    @SimpleRdfConfigurator.Configure(dataUnitFieldName = "outRdfTables")
-    public SimpleRdfWrite rdfTableWrap = null;
+    @ExtensionInitializer.Init
+    public WritableSimpleRdf rdfTableWrap;
+
+    @ExtensionInitializer.Init
+    public FaultTolerance faultTolerance;
 
     public Tabular() {
-        super(ConfigHistory.create(TabularConfig_V1.class).addCurrent(TabularConfig_V2.class),
-                AddonInitializer.create(new CloseCloseable(), new SimpleRdfConfigurator(Tabular.class)));
+        super(TabularVaadinDialog.class,
+                ConfigHistory.history(TabularConfig_V1.class).addCurrent(TabularConfig_V2.class));
     }
 
     @Override
-    public AbstractConfigDialog<MasterConfigObject> getConfigurationDialog() {
-        return new TabularVaadinDialog();
-    }
-
-    @Override
-    protected void innerInit() throws DataUnitException {
-        
-        rdfTableWrap = SimpleRdfFactory.create(outRdfTables, context);
-        rdfTableWrap.setPolicy(AddPolicy.BUFFERED);
-        TabularOntology.init(rdfTableWrap.getValueFactory());
-    }
-
-    @Override
-    protected void innerExecute() throws DPUException, OperationFailedException, DataUnitException {
-        //
-        // prepare tabular convertor
-        //
+    protected void innerExecute() throws DPUException {
+        // Prepare tabular convertor.
         final TableToRdf tableToRdf = new TableToRdf(
                 config.getTableToRdfConfig(),
                 rdfTableWrap,
                 rdfTableWrap.getValueFactory());
-        //
-        // prepare parser based on type
-        //
+        // Prepare parser based on type.
         final Parser parser;
         switch(config.getTableType()) {
             case CSV:
-                parser = new ParserCsv(config.getParserCsvConfig(),
-                    tableToRdf, context);
+                parser = new ParserCsv(config.getParserCsvConfig(), tableToRdf, ctx);
                 break;
             case DBF:
-                parser = new ParserDbf(config.getParserDbfConfig(),
-                    tableToRdf, context);
+                parser = new ParserDbf(config.getParserDbfConfig(), tableToRdf, ctx);
                 break;
             case XLS:
-                parser = new ParserXls(config.getParserXlsConfig(),
-                    tableToRdf, context);
+                parser = new ParserXls(config.getParserXlsConfig(), tableToRdf, ctx);
                 break;
             default:
-                context.sendMessage(DPUContext.MessageType.ERROR,
-                    "Unknown table file: " + config.getTableType());
-                return;
+                throw ContextUtils.dpuException(ctx, "Unknown table type: {0}", config.getXlsSheetName());
         }
-        //
-        // execute ever files
-        //
-//        final FilesDataUnit.Iteration iteration = inFilesTable.getIteration();
-//        getAddon(CloseCloseable.class).add(iteration);
+        // Get files to process.
+        final List<FilesDataUnit.Entry> files = FaultToleranceUtils.getEntries(faultTolerance, inFilesTable,
+                FilesDataUnit.Entry.class);
 
-//        if (!iteration.hasNext()) {
-//            context.sendMessage(DPUContext.MessageType.ERROR, "No input files!");
-//            return;
-//        }
+        for (final FilesDataUnit.Entry entry : files) {
+            if (ctx.canceled()) {
+                throw ContextUtils.dpuExceptionCancelled(ctx);
+            }
+            // Set output graph.
+            final RDFDataUnit.Entry entryOutput = faultTolerance.execute(new FaultTolerance.ActionReturn<RDFDataUnit.Entry>() {
 
-        // fix for problem with repository
-        Set<Entry> filesInputSet = FilesHelper.getFiles(inFilesTable);
-        Iterator<Entry> iteration = filesInputSet.iterator();
-
-        while(iteration.hasNext() && !context.canceled()) {
-            final FilesDataUnit.Entry entry = iteration.next();
-            // set output graph
-            rdfTableWrap.setOutputGraph(entry.getSymbolicName());
-            context.sendMessage(DPUContext.MessageType.INFO,
-                    "Processing file: '" + entry.getSymbolicName() + "'");
-            LOG.trace("entry: {}", entry);
-            // output data
-            try {
-                if (config.isUseTableSubject()) {
-                    URI tableURI = rdfTableWrap.getValueFactory().createURI(entry.getFileURIString());
-                    tableToRdf.setTableSubject(tableURI);
-                    // add info about symbolic name
-                    rdfTableWrap.add(tableURI,
-                            TabularOntology.URI_TABLE_SYMBOLIC_NAME,
-                            rdfTableWrap.getValueFactory().createLiteral(
-                                    entry.getSymbolicName()));
+                @Override
+                public RDFDataUnit.Entry action() throws Exception {
+                    return RdfDataUnitUtils.addGraph(outRdfTables, entry.getSymbolicName());
                 }
-
-                parser.parse(new File(java.net.URI.create(
-                        entry.getFileURIString())));
-            } catch(ParseFailed ex) {
-                context.sendMessage(DPUContext.MessageType.ERROR,
-                        "Failed to convert file",
-                        "File:" + entry.getSymbolicName(), ex);
-                break;
-            }
-        }
-    }
-
-    @Override
-    protected void innerCleanUp() {
-        if (rdfTableWrap != null) {
+            });
+            rdfTableWrap.setOutput(entryOutput);
+            ContextUtils.sendShortInfo(ctx, "Processing file: '{0}'", entry);            
+            // Output data.
             try {
-                rdfTableWrap.flushBuffer();
-            } catch (OperationFailedException ex) {
-                context.sendMessage(DPUContext.MessageType.ERROR,
-                        "Can't save data into rdf.", "", ex);
+                // If set add subject for the whole table.
+                if (config.isUseTableSubject()) {
+                    // Prepare subject for table.
+                    // TODO: We can use better subject here!
+                    final URI tableURI = faultTolerance.execute(new FaultTolerance.ActionReturn<URI>() {
+
+                        @Override
+                        public URI action() throws Exception {
+                            return rdfTableWrap.getValueFactory().createURI(entry.getFileURIString());
+                        }
+                    });
+                    // Set as a table subject.
+                    tableToRdf.setTableSubject(tableURI);
+                    // Add metadata (symbolic name) to table subject.
+                    faultTolerance.execute(new FaultTolerance.Action() {
+
+                        @Override
+                        public void action() throws Exception {
+                            rdfTableWrap.add(tableURI, TabularOntology.TABLE_SYMBOLIC_NAME,
+                                    rdfTableWrap.getValueFactory().createLiteral(entry.getSymbolicName()));
+                        }
+                    });
+                }
+                // Parse file.
+                parser.parse(FaultToleranceUtils.asFile(faultTolerance, entry));
+            } catch(ParseFailed ex) {
+                throw ContextUtils.dpuException(ctx, ex, "Failed to convert file.", "File: {0}", entry);
             }
         }
     }
+
 }

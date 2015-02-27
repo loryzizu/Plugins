@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.parser;
 
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException;
 import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdf;
 import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdfConfigurator;
 import eu.unifiedviews.dpu.DPUContext;
@@ -15,6 +14,9 @@ import org.supercsv.prefs.CsvPreference;
 import org.supercsv.quote.QuoteMode;
 import org.supercsv.util.CsvContext;
 
+import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
+
 /**
  * Parse csv file.
  *
@@ -28,19 +30,19 @@ public class ParserCsv implements Parser {
 
     private final TableToRdf tableToRdf;
 
-    private final DPUContext context;
+    private final UserExecContext context;
 
     private int rowNumber = 0;
 
     public ParserCsv(ParserCsvConfig config, TableToRdf tableToRdf,
-            DPUContext context) {
+            UserExecContext context) {
         this.config = config;
         this.tableToRdf = tableToRdf;
         this.context = context;
     }
 
     @Override
-    public void parse(File inFile) throws OperationFailedException, ParseFailed {
+    public void parse(File inFile) throws DPUException, ParseFailed {
         final CsvPreference csvPreference;
         // We will use quates only if they are provided
         if (config.quoteChar == null || config.quoteChar.isEmpty()) {
