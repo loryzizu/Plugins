@@ -26,7 +26,7 @@
 
 |Name         |Type           |DataUnit      |Description             |
 |-------------|---------------|--------------|------------------------|
-|filesOutput  |o              |FilesDataUnit |Downloaded files.       |
+|output  |o              |FilesDataUnit |Downloaded files.       |
 
 ***
 
