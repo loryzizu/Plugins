@@ -33,7 +33,7 @@ public class RdfMerger extends AbstractDpu<RdfMergerConfig_V1> {
     @DataUnit.AsInput(name = "rdfInput")
     public RDFDataUnit input;
 
-    @DataUnit.AsInput(name = "rdfOutput")
+    @DataUnit.AsOutput(name = "rdfOutput")
     public WritableRDFDataUnit output;
 
     @ExtensionInitializer.Init
