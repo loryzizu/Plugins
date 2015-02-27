@@ -35,7 +35,7 @@ public class FilesMerger extends AbstractDpu<FilesMergerConfig_V1> {
     @DataUnit.AsInput(name = "filesInput")
     public FilesDataUnit input;
     
-    @DataUnit.AsInput(name = "filesOutput")
+    @DataUnit.AsOutput(name = "filesOutput")
     public WritableFilesDataUnit output;
 
     @ExtensionInitializer.Init
