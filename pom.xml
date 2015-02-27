@@ -30,6 +30,7 @@
 		<module>t-tabular</module>
 		<module>t-metadata</module>
 		<module>t-relational</module>
+        <module>t-sparqlUpdate</module>
 
 		<!-- LOADERS -->
 		<module>l-rdfToSparql</module>
