@@ -51,6 +51,10 @@ public class UnZipper extends AbstractDpu<UnZipperConfig_V1> {
 
     @Override
     protected void innerExecute() throws DPUException {
+        // Older version of unzipper does not have configuration at all.
+        if (config == null) {
+            config = new UnZipperConfig_V1();
+        }
         // Prepare root output directory.
         final File baseTargetDirectory = faultTolerance.execute(new FaultTolerance.ActionReturn<File>() {
 
