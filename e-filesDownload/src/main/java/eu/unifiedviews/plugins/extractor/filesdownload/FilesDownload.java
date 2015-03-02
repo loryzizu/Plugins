@@ -86,7 +86,7 @@ public class FilesDownload extends ConfigurableBase<FilesDownloadConfig_V1> impl
                             fileName = vfsFile.getFileName();
                         }
 
-                        FileUtils.copyInputStreamToFile(fileObject.getContent().getInputStream(), new File(new URI(filesOutput.addNewFile(fileName))));
+                        FileUtils.copyInputStreamToFile(fileObject.getContent().getInputStream(), new File(URI.create(filesOutput.addNewFile(fileName))));
 
                         Resource resource = resourceHelper.getResource(fileName);
                         Date now = new Date();
