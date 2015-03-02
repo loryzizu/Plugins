@@ -146,7 +146,9 @@ public class Xslt extends AbstractDpu<XsltConfig_V2> {
         // Add dead pill.
         while(true) {
             try {
-                while (!taskQueue.offer(new XsltExecutor.DeadPill(status), 5, TimeUnit.SECONDS));
+                while (!taskQueue.offer(new XsltExecutor.DeadPill(status), 5, TimeUnit.SECONDS) || status.terminateThreads) {
+                    // No-op here.
+                }
                 break;
             } catch (InterruptedException ex) {
                 // Ok .. some threads may be hanging there. This is too dangerous, we have to ignore this
@@ -166,7 +168,7 @@ public class Xslt extends AbstractDpu<XsltConfig_V2> {
         }
         for (XsltExecutor worker : workers ) {
             if (worker.isThreadFail()) {
-                // At least one thread fail, so whole DPU fail too.
+                // At least one thread fail, so whole DPU fail too. This is serious exception.
                 throw new DPUException("Execution failed, for error in executor thread.");
             }
         }
