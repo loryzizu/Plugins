@@ -87,7 +87,15 @@ public class Tabular extends AbstractDpu<TabularConfig_V2> {
                 }
             });
             rdfTableWrap.setOutput(entryOutput);
-            ContextUtils.sendShortInfo(ctx, "Processing file: '{0}'", entry);            
+            final String symbolicName = faultTolerance.execute(new FaultTolerance.ActionReturn<String>() {
+
+                @Override
+                public String action() throws Exception {
+                    return entry.getSymbolicName();
+                }
+            });
+
+            ContextUtils.sendShortInfo(ctx, "Processing file: ''{0}''", symbolicName);
             // Output data.
             try {
                 // If set add subject for the whole table.
