@@ -16,9 +16,14 @@
 
 ###Configuration parameters###
 
-|Parameter                                       |Description                                                              |                                                        
-|------------------------------------------------|-------------------------------------------------------------------------|
-
+|Parameter                                       |Description                                                                          |
+|------------------------------------------------|-------------------------------------------------------------------------------------|
+|**Tablename:                                    |Name of table that will hold the parsed data.                                        |
+|**Tablename:                                    |Encoding of input file.                                                              |
+|**Rows limit:                                   |Maximum number of processed lines from input file.                                   |
+|**Field delimiter:                              |Field delimiter to use during parsing od CSV file. e.g. '"'.                         |
+|**Fields sepatator:                             |Field separator to use during parsing of CSV file. e.g. ','.                         |
+|**Table of column mappings                      |Name and types of culumns in CSV files. Also marks if column is used as primary key. |
 
 ***
 

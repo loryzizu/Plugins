@@ -1,5 +1,8 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
+/**
+ * Class contains mapping of column from tabular file to relational dataunit.
+ */
 public class ColumnMappingEntry  {
 
     private String columnName;

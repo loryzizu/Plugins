@@ -3,6 +3,9 @@ package eu.unifiedviews.plugins.transformer.tabulartorelational;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class holds configuration of DPU.
+ */
 public class TabularToRelationalConfig_V1 {
 
     private String tableName;

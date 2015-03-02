@@ -1,7 +1,5 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
@@ -19,12 +17,11 @@ import eu.unifiedviews.helpers.dpu.localization.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @DPU.AsTransformer
 public class TabularToRelational extends ConfigurableBase<TabularToRelationalConfig_V1> implements ConfigDialogProvider<TabularToRelationalConfig_V1> {
@@ -63,8 +60,8 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
             // create table from user config
             String createTableQuery = prepareCreateTableQuery(config);
             LOG.debug("Table create query: {}", createTableQuery);
-            context.sendMessage(DPUContext.MessageType.DEBUG, "Creating new table", createTableQuery);
-            executeQuery(createTableQuery);
+            context.sendMessage(DPUContext.MessageType.DEBUG, messages.getString("create.new.table"), createTableQuery);
+            DatabaseHelper.executeUpdate(createTableQuery, outRelationalData);
 
             // add metadata
             String tableName = processString(config.getTableName());
@@ -75,6 +72,7 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
             resource.setLast_modified(now);
             ResourceHelpers.setResource(outRelationalData, tableName, resource);
 
+            // for each input file
             while (!context.canceled() && filesIteration.hasNext()) {
                 final FilesDataUnit.Entry entry = filesIteration.next();
                 LOG.debug("Adding file: {}", entry.getSymbolicName());
@@ -83,32 +81,15 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
 
                 String insertIntoQuery = prepareInsertIntoQuery(csvPath, config);
                 LOG.debug("Insert into query: {}", insertIntoQuery);
-                context.sendMessage(DPUContext.MessageType.DEBUG, String.format("Inserting file %s into table", entry.getSymbolicName()), insertIntoQuery);
-                executeQuery(insertIntoQuery);
+                context.sendMessage(DPUContext.MessageType.DEBUG, messages.getString("insert.file", entry.getSymbolicName()), insertIntoQuery);
+                // insert file into internal database
+                DatabaseHelper.executeUpdate(insertIntoQuery, outRelationalData);
             }
         } catch (DataUnitException e) {
             context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.dpu.parse.failed"), "", e);
         }
 
-        context.sendMessage(DPUContext.MessageType.INFO, "Parsing tabular data into relational database have been completed.", null);
-    }
-
-    private void executeQuery(String query) throws DataUnitException {
-        Statement stmnt = null;
-        Connection conn = null;
-        try {
-            conn = outRelationalData.getDatabaseConnection();
-            stmnt = conn.createStatement();
-            stmnt.executeUpdate(query);
-            conn.commit();
-        } catch (SQLException e) {
-            LOG.error("Failed to create internal db table", e);
-            DatabaseHelper.tryRollbackConnection(conn);
-            throw new DataUnitException("Error creating internal database table");
-        } finally {
-            DatabaseHelper.tryCloseStatement(stmnt);
-            DatabaseHelper.tryCloseConnection(conn);
-        }
+        context.sendMessage(DPUContext.MessageType.INFO, messages.getString("parsing.finished"), null);
     }
 
     protected static String prepareInsertIntoQuery(String csvFilePath, TabularToRelationalConfig_V1 config) {
@@ -155,8 +136,8 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
         sb.append(tableName);
 
         sb.append("(");
-        StringBuilder primaryKeys  = new StringBuilder("PRIMARY KEY (");
-        for(ColumnMappingEntry entry : config.getColumnMapping()) {
+        StringBuilder primaryKeys = new StringBuilder("PRIMARY KEY (");
+        for (ColumnMappingEntry entry : config.getColumnMapping()) {
             // add column name
             sb.append(processString(entry.getColumnName()));
 
@@ -164,13 +145,13 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
             // add data type
             sb.append(processString(entry.getDataType()));
             sb.append(", ");
-            if(entry.isPrimaryKey()) {
+            if (entry.isPrimaryKey()) {
                 primaryKeys.append(processString(entry.getColumnName()));
                 primaryKeys.append(", ");
             }
         }
         // remove last ", "
-        if(primaryKeys.length() > 1) {
+        if (primaryKeys.length() > 1) {
             primaryKeys.setLength(primaryKeys.length() - 2);
         }
         primaryKeys.append(")");
@@ -188,10 +169,10 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
         return output;
     }
 
-    protected static String joinColumnNames(List<ColumnMappingEntry> list, String joiner){
+    protected static String joinColumnNames(List<ColumnMappingEntry> list, String joiner) {
         StringBuilder sb = new StringBuilder();
-        for(int i=0; i < list.size(); i++) {
-            if(i > 0) {
+        for (int i = 0; i < list.size(); i++) {
+            if (i > 0) {
                 sb.append(joiner);
             }
             sb.append(processString(list.get(i).getColumnName()));
@@ -203,25 +184,25 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
         StringBuilder sb = new StringBuilder();
         sb.append("'");
 
-        if(isNotEmpty(config.getEncoding())) {
+        if (isNotEmpty(config.getEncoding())) {
             sb.append("charset=");
             sb.append(config.getEncoding());
             sb.append(" ");
         }
 
-        if(isNotEmpty(config.getFieldDelimiter())) {
+        if (isNotEmpty(config.getFieldDelimiter())) {
             sb.append("fieldDelimiter=");
             sb.append(config.getFieldDelimiter());
             sb.append(" ");
         }
 
-        if(isNotEmpty(config.getFieldSeparator())) {
+        if (isNotEmpty(config.getFieldSeparator())) {
             sb.append("fieldSeparator=");
             sb.append(config.getFieldSeparator());
             sb.append(" ");
         }
 
-        if(sb.charAt(sb.length() - 1) == ' ') { // if last char is space, remove it
+        if (sb.charAt(sb.length() - 1) == ' ') { // if last char is space, remove it
             sb.setLength(sb.length() - 1);
         }
         sb.append("'");

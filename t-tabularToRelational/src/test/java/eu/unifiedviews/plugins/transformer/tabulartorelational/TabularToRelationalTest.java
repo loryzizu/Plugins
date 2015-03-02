@@ -3,17 +3,93 @@ package eu.unifiedviews.plugins.transformer.tabulartorelational;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
+import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.runners.JUnit4;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(JUnit4.class)
 public class TabularToRelationalTest {
 
+    private TabularToRelational dpu;
 
+    private TestEnvironment env;
+
+    private WritableFilesDataUnit input;
+
+    private WritableRelationalDataUnit output;
+
+    public static final String CSV_FILE = "sample.csv";
+
+    public static final int CSV_FILE_ROW_COUNT = 11;
+
+    @Before
+    public void init() throws Exception {
+        // prepare DPU
+        TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
+
+        dpu = new TabularToRelational();
+        dpu.configureDirectly(config);
+
+        env = new TestEnvironment();
+        input = env.createFilesInput("input");
+        output = env.createRelationalOutput("output");
+    }
+
+    @After
+    public void after() throws Exception {
+        env.release();
+    }
+
+    @Test
+    public void sampleCsvFilePasses() throws Exception {
+        TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
+        config.setTableName("TEST_TABLE");
+        List<ColumnMappingEntry> list = new ArrayList<>();
+        list.add(new ColumnMappingEntry("id", "INT", true));
+        list.add(new ColumnMappingEntry("code", "VARCHAR(255)", false));
+        list.add(new ColumnMappingEntry("county", "VARCHAR(255)", false));
+        config.setColumnMapping(list);
+
+        Connection conn = null;
+        Statement stmnt = null;
+        ResultSet rs = null;
+        try {
+            dpu.configureDirectly(config);
+
+            addFileToInput(CSV_FILE);
+            env.run(dpu);
+
+            conn = output.getDatabaseConnection();
+            stmnt = conn.createStatement();
+            rs = stmnt.executeQuery("SELECT COUNT(*) FROM TEST_TABLE");
+            rs.next();
+            int rowCount = rs.getInt(1);
+            assertEquals("Sample CSV should contain 11 entries!", CSV_FILE_ROW_COUNT, rowCount);
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmnt != null) {
+                    stmnt.close();
+                }
+            } catch (SQLException ignore) {
+            }
+            DatabaseHelper.tryCloseConnection(conn);
+        }
+    }
 
     @Test
     public void joinColumnNamesTest() {
@@ -77,6 +153,7 @@ public class TabularToRelationalTest {
         assertEquals("CREATE TABLE TEST_TABLE(ID INT, NAME VARCHAR(255), SURNAME VARCHAR(255),  PRIMARY KEY (ID, NAME))", TabularToRelational.prepareCreateTableQuery(config));
     }
 
-
-
+    private void addFileToInput(final String filename) throws Exception {
+        input.addExistingFile(filename, this.getClass().getClassLoader().getResource(filename).toString());
+    }
 }
