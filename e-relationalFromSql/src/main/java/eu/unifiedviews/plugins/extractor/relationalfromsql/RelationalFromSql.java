@@ -44,7 +44,7 @@ import eu.unifiedviews.helpers.dpu.localization.Messages;
  * future releases.
  */
 @DPU.AsExtractor
-public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_V1> implements ConfigDialogProvider<RelationalFromSqlConfig_V1> {
+public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_V2> implements ConfigDialogProvider<RelationalFromSqlConfig_V2> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RelationalFromSql.class);
 
@@ -56,7 +56,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
     public WritableRelationalDataUnit outputTables;
 
     public RelationalFromSql() {
-        super(RelationalFromSqlConfig_V1.class);
+        super(RelationalFromSqlConfig_V2.class);
     }
 
     @Override
@@ -64,14 +64,14 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
         this.context = context;
         this.messages = new Messages(this.context.getLocale(), this.getClass().getClassLoader());
         String shortMessage = this.getClass().getSimpleName() + " starting.";
-        String longMessage = String.format("Configuration: DatabaseUrl: %s, username: %s, password: %s, "
+        String longMessage = String.format("Configuration: DatabaseHost: %s, username: %s, password: %s, "
                 + "useSSL: %s, SQL query: %s",
-                this.config.getDatabaseURL(), this.config.getUserName(), "***",
+                this.config.getDatabaseHost(), this.config.getUserName(), "***",
                 this.config.isUseSSL(), this.config.getSqlQuery());
         LOG.info(shortMessage + " " + longMessage);
 
         try {
-            Class.forName(this.config.getJdbcDriverName());
+            Class.forName(SqlDatabase.getJdbcDriverNameForDatabase(this.config.getDatabaseType()));
         } catch (ClassNotFoundException e) {
             throw new DPUException(this.messages.getString("errors.driver.loadfailed"), e);
         }
@@ -225,7 +225,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
     }
 
     @Override
-    public AbstractConfigDialog<RelationalFromSqlConfig_V1> getConfigurationDialog() {
+    public AbstractConfigDialog<RelationalFromSqlConfig_V2> getConfigurationDialog() {
         return new RelationalFromSqlVaadinDialog();
     }
 

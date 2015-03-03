@@ -1,6 +1,7 @@
 package eu.unifiedviews.plugins.extractor.relationalfromsql;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -15,6 +16,8 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import eu.unifiedviews.plugins.extractor.relationalfromsql.SqlDatabase.DatabaseType;
 
 public class RelationalFromSqlHelper {
 
@@ -117,10 +120,10 @@ public class RelationalFromSqlHelper {
         }
     }
 
-    public static boolean testDatabaseConnection(RelationalFromSqlConfig_V1 config) {
+    public static boolean testDatabaseConnection(RelationalFromSqlConfig_V2 config) {
         boolean bConnectResult = true;
         try {
-            Class.forName(config.getJdbcDriverName());
+            Class.forName(SqlDatabase.getJdbcDriverNameForDatabase(config.getDatabaseType()));
         } catch (ClassNotFoundException e) {
             LOG.error("Failed to load driver for the database", e);
             bConnectResult = false;
@@ -140,7 +143,7 @@ public class RelationalFromSqlHelper {
         return bConnectResult;
     }
 
-    public static Connection createConnection(RelationalFromSqlConfig_V1 config) throws SQLException {
+    public static Connection createConnection(RelationalFromSqlConfig_V2 config) throws SQLException {
         Connection connection = null;
         final Properties connectionProperties = new Properties();
         connectionProperties.setProperty("user", config.getUserName());
@@ -151,10 +154,84 @@ public class RelationalFromSqlHelper {
             // TODO: SSL support for other databases generically
             connectionProperties.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
         }
-        connection = DriverManager.getConnection(config.getDatabaseURL(), connectionProperties);
+        connection = DriverManager.getConnection(createDatabaseUrlFromConfig(config), connectionProperties);
         connection.setAutoCommit(false);
 
         return connection;
+    }
+
+    private static String createDatabaseUrlFromConfig(RelationalFromSqlConfig_V2 config) {
+        StringBuilder url = new StringBuilder();
+        url.append(SqlDatabase.getJdbcUrlPrefixForDatabase(config.getDatabaseType()));
+        url.append(config.getDatabaseHost());
+        if (config.getDatabasePort() != 0) {
+            url.append(":");
+            url.append(config.getDatabasePort());
+        }
+        if (config.getDatabaseType() == DatabaseType.H2_MEM || config.getDatabaseType() == DatabaseType.ORACLE) {
+            url.append(":");
+        } else if (config.getDatabaseType() == DatabaseType.MSSQL) {
+            url.append(";databaseName=");
+        } else {
+            url.append("/");
+        }
+        url.append(config.getDatabaseName());
+
+        return url.toString();
+    }
+
+    public static List<String> getColumnsForTable(RelationalFromSqlConfig_V2 config, String tableName) throws SQLException {
+        List<String> columns = new ArrayList<>();
+        try {
+            Class.forName(SqlDatabase.getJdbcDriverNameForDatabase(config.getDatabaseType()));
+        } catch (ClassNotFoundException e) {
+            LOG.error("Failed to load driver for the database", e);
+            throw new SQLException("Failed to load driver for the database", e);
+        }
+        Connection connection = null;
+        ResultSet tableColumns = null;
+        try {
+            connection = createConnection(config);
+            DatabaseMetaData meta = connection.getMetaData();
+            tableColumns = meta.getColumns(null, null, tableName, null);
+            while (tableColumns.next()) {
+                int type = tableColumns.getInt("DATA_TYPE");
+                String typeName = tableColumns.getString("TYPE_NAME");
+                if (isSupportedDataType(type, typeName)) {
+                    columns.add(tableColumns.getString("COLUMN_NAME"));
+                }
+            }
+        } finally {
+            tryCloseResultSet(tableColumns);
+            tryCloseConnection(connection);
+        }
+
+        return columns;
+    }
+
+    public static List<String> getTablesInSourceDatabase(RelationalFromSqlConfig_V2 config) throws SQLException {
+        List<String> tables = new ArrayList<>();
+        try {
+            Class.forName(SqlDatabase.getJdbcDriverNameForDatabase(config.getDatabaseType()));
+        } catch (ClassNotFoundException e) {
+            LOG.error("Failed to load driver for the database", e);
+            throw new SQLException("Failed to load driver for the database", e);
+        }
+        Connection connection = null;
+        ResultSet dbTables = null;
+        try {
+            connection = createConnection(config);
+            DatabaseMetaData meta = connection.getMetaData();
+            dbTables = meta.getTables(null, null, "%", new String[] { "TABLE", "VIEW" });
+            while (dbTables.next()) {
+                tables.add(dbTables.getString("TABLE_NAME"));
+            }
+        } finally {
+            tryCloseResultSet(dbTables);
+            tryCloseConnection(connection);
+        }
+
+        return tables;
     }
 
     private static String convertColumnTypeIfNeeded(String columnTypeName, int columnSqlType) {
