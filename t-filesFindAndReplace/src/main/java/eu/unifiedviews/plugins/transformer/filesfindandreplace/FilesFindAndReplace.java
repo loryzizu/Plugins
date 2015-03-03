@@ -94,7 +94,7 @@ public class FilesFindAndReplace extends ConfigurableBase<FilesFindAndReplaceCon
                     Resource resource = ResourceHelpers.getResource(filesOutput, entry.getSymbolicName());
                     resource.setLast_modified(new Date());
                     ResourceHelpers.setResource(filesOutput, entry.getSymbolicName(), resource);
-                    filesOutput.updateExistingFileURI(entry.getSymbolicName(), outputRelativePath);
+                    filesOutput.updateExistingFileURI(entry.getSymbolicName(), outputFile.toURI().toASCIIString());
 
                     String str = IOUtils.toString(outputFile.toURI(), Charset.forName(config.getCharset()));
                     for (Map.Entry<String, String> pattern : config.getPatterns().entrySet()) {
@@ -103,8 +103,14 @@ public class FilesFindAndReplace extends ConfigurableBase<FilesFindAndReplaceCon
                             break;
                         }
                     }
-                    try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+                    FileOutputStream outputStream = null;
+                    try {
+                        outputStream = new FileOutputStream(outputFile);
                         IOUtils.write(str, outputStream, Charset.forName(config.getCharset()));
+                    } finally {
+                        if (outputStream != null) {
+                            outputStream.close();
+                        }
                     }
                     if (dpuContext.isDebugging()) {
                         LOG.debug("Processed {} file in {}s", (index), (System.currentTimeMillis() - start.getTime()) / 1000);

@@ -3,6 +3,8 @@ package eu.unifiedviews.plugins.transformer.filesfindandreplace;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextField;
@@ -55,8 +57,8 @@ public class FilesFindAndReplaceVaadinDialog extends BaseConfigDialog<FilesFindA
     public void setConfiguration(FilesFindAndReplaceConfig_V1 conf)
             throws DPUConfigException {
         for (Map.Entry<String, String> entry : conf.getPatterns().entrySet()) {
-            search.setValue(entry.getKey());
-            replace.setValue(entry.getValue());
+            search.setValue(StringEscapeUtils.escapeJava(entry.getKey()));
+            replace.setValue(StringEscapeUtils.escapeJava(entry.getValue()));
         }
     }
 
@@ -65,7 +67,7 @@ public class FilesFindAndReplaceVaadinDialog extends BaseConfigDialog<FilesFindA
             throws DPUConfigException {
         FilesFindAndReplaceConfig_V1 conf = new FilesFindAndReplaceConfig_V1();
         Map<String, String> map = new HashMap<String, String>();
-        map.put(search.getValue(), replace.getValue());
+        map.put(StringEscapeUtils.unescapeJava(search.getValue()), StringEscapeUtils.unescapeJava(replace.getValue()));
         conf.setPatterns(map);
 
         return conf;
