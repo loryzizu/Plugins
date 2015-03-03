@@ -87,8 +87,7 @@ public class ParserXls implements Parser {
 
         // for every row
         final Sheet sheet = wb.getSheetAt(sheetIndex);
-        int dataEndAtRow = sheet.getLastRowNum();
-        if (config.numberOfStartLinesToIgnore > dataEndAtRow) {
+        if (config.numberOfStartLinesToIgnore > sheet.getLastRowNum()) {
             // no data to parse
             return;
         }
@@ -153,9 +152,14 @@ public class ParserXls implements Parser {
         // go
         boolean headerGenerated = false;
 
+
+        final int dataEndAtRow;
         if (config.rowLimit != null) {
             // limit number of lines
             dataEndAtRow = startRow + config.rowLimit;
+        } else {
+            // We increase by one, as we use less < dataEndAtRow, not <= dataEndAtRow
+            dataEndAtRow = sheet.getLastRowNum() + 1;
         }
 
         for (Integer rowNumPerFile = startRow; rowNumPerFile < dataEndAtRow; ++rowNumber, ++rowNumPerFile) {
