@@ -277,27 +277,4 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
     public AbstractConfigDialog<VirtuosoLoaderConfig_V1> getConfigurationDialog() {
         return new VirtuosoLoaderVaadinDialog();
     }
-
-    public static String appendNumber(long number) {
-        String value = String.valueOf(number);
-        if (value.length() > 1) {
-            // Check for special case: 11 - 13 are all "th".
-            // So if the second to last digit is 1, it is "th".
-            char secondToLastDigit = value.charAt(value.length() - 2);
-            if (secondToLastDigit == '1') {
-                return value + "th";
-            }
-        }
-        char lastDigit = value.charAt(value.length() - 1);
-        switch (lastDigit) {
-            case '1':
-                return value + "st";
-            case '2':
-                return value + "nd";
-            case '3':
-                return value + "rd";
-            default:
-                return value + "th";
-        }
-    }
 }

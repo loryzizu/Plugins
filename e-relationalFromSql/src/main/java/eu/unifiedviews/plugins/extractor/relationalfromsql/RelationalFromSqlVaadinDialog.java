@@ -132,7 +132,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
                 if (checkConnectionParametersInput()) {
                     boolean bTestResult = true;
                     try {
-                        bTestResult = RelationalFromSqlHelper.testDatabaseConnection(getConfiguration());
+                        bTestResult = RelationalFromSqlHelper.testDatabaseConnection(getDatabaseConfiguration());
                     } catch (DPUConfigException e) {
                         bTestResult = false;
                     }
@@ -148,6 +148,16 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         };
 
         return listener;
+    }
+
+    private RelationalFromSqlConfig_V1 getDatabaseConfiguration() throws DPUConfigException {
+        RelationalFromSqlConfig_V1 config = new RelationalFromSqlConfig_V1();
+        config.setDatabaseURL(this.txtDatabaseURL.getValue());
+        config.setUserName(this.txtUserName.getValue());
+        config.setUserPassword(this.txtPassword.getValue());
+        config.setUseSSL(this.chckUseSsl.getValue());
+
+        return config;
     }
 
     private boolean checkConnectionParametersInput() {
@@ -205,6 +215,13 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
     @Override
     protected RelationalFromSqlConfig_V1 getConfiguration() throws DPUConfigException {
         RelationalFromSqlConfig_V1 config = new RelationalFromSqlConfig_V1();
+
+        final boolean isValid = this.txtDatabaseURL.isValid() && this.txtUserName.isValid() && this.txtPassword.isValid()
+                && this.txtSqlQuery.isValid() && this.txtTargetTableName.isValid();
+        if (!isValid) {
+            throw new DPUConfigException(this.messages.getString("errors.dialog.missing"));
+        }
+
         config.setDatabaseURL(this.txtDatabaseURL.getValue());
         config.setUserName(this.txtUserName.getValue());
         config.setUserPassword(this.txtPassword.getValue());

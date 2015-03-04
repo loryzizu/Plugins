@@ -13,12 +13,15 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
+import org.apache.commons.vfs2.cache.NullFilesCache;
 import org.apache.commons.vfs2.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.ftps.FtpsFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.commons.vfs2.util.CryptorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.uv.extractor.filesfromlocal.FilesFromLocalConfig_V1;
 import cz.cuni.mff.xrg.uv.extractor.httpdownload.HttpDownloadConfig_V2;
@@ -48,6 +51,8 @@ import eu.unifiedviews.plugins.extractor.httpdownload.HttpDownloadConfig_V1;
  */
 @DPU.AsExtractor
 public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FilesDownload.class);
 
     @RdfConfiguration.ContainsConfiguration
     @DataUnit.AsInput(name = "config", optional = true)
@@ -86,6 +91,7 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
         SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
         
         try {
+            standardFileSystemManager.setFilesCache(new NullFilesCache());
             standardFileSystemManager.init();
         } catch (FileSystemException ex) {
             throw ContextUtils.dpuException(ctx, ex, "FilesDownload.execute.exception");
@@ -122,6 +128,12 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
                 throw ContextUtils.dpuException(ctx, ex, "FilesDownload.execute.exception");
             }
 
+            if (fileObjects == null) {
+                // Skip null files but add a log.                    
+                LOG.warn("Skipping file: '{}' as it resolves on null value.", vfsFile.getUri());
+                continue;
+            }
+            
             // We download each file.
             for (FileObject fileObject : fileObjects) {
                 final boolean isFile;

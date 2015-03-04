@@ -84,7 +84,7 @@ public class FilesUpload extends ConfigurableBase<FilesUploadConfig_V1> implemen
                     }
 
                     if (dpuContext.isDebugging()) {
-                        LOG.debug("Processing {} file {}", appendNumber(index), entry);
+                        LOG.debug("Processing {} file {}", index, entry);
                     }
                     String fileName = virtualPathHelper.getVirtualPath(entry.getSymbolicName());
 
@@ -105,17 +105,19 @@ public class FilesUpload extends ConfigurableBase<FilesUploadConfig_V1> implemen
                     resource.setLast_modified(new Date());
                     ResourceHelpers.setResource(filesOutput, entry.getSymbolicName(), resource);
                     if (dpuContext.isDebugging()) {
-                        LOG.debug("Processed {} file", appendNumber(index));
+                        LOG.debug("Processed {} file", index);
                     }
                     index++;
                 } catch (FileSystemException | DataUnitException ex) {
                     if (config.isSkipOnError()) {
-                        LOG.warn("Error processing {} file {}", appendNumber(index), String.valueOf(entry), ex);
+                        LOG.warn("Error processing {} file {}", index, String.valueOf(entry), ex);
                     } else {
-                        throw new DPUException(messages.getString("FilesUpload.execute.exception.skipFile", appendNumber(index), String.valueOf(entry)), ex);
+                        throw new DPUException(messages.getString("FilesUpload.execute.exception.skipFile", index, String.valueOf(entry)), ex);
                     }
                 }
             }
+        } catch (DPUException ex){
+            throw ex;
         } catch (Exception ex) {
             throw new DPUException(messages.getString("FilesUpload.execute.exception"), ex);
         } finally {
@@ -128,28 +130,5 @@ public class FilesUpload extends ConfigurableBase<FilesUploadConfig_V1> implemen
     @Override
     public AbstractConfigDialog<FilesUploadConfig_V1> getConfigurationDialog() {
         return new FilesUploadVaadinDialog();
-    }
-
-    public static String appendNumber(long number) {
-        String value = String.valueOf(number);
-        if (value.length() > 1) {
-            // Check for special case: 11 - 13 are all "th".
-            // So if the second to last digit is 1, it is "th".
-            char secondToLastDigit = value.charAt(value.length() - 2);
-            if (secondToLastDigit == '1') {
-                return value + "th";
-            }
-        }
-        char lastDigit = value.charAt(value.length() - 1);
-        switch (lastDigit) {
-            case '1':
-                return value + "st";
-            case '2':
-                return value + "nd";
-            case '3':
-                return value + "rd";
-            default:
-                return value + "th";
-        }
     }
 }

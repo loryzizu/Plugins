@@ -3,7 +3,6 @@ package eu.unifiedviews.plugins.loader.relationaltosql;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -52,11 +51,6 @@ public class QueryBuilder {
             query.append(column.getColumnName());
             query.append(" ");
             query.append(column.getColumnTypeName());
-            if (shouldLimitSize(column.getColumnType())) {
-                query.append("(");
-                query.append(column.getColumnSize());
-                query.append(")");
-            }
             query.append(", ");
         }
 
@@ -64,18 +58,6 @@ public class QueryBuilder {
         query.append(")");
 
         return query.toString();
-    }
-
-    private static boolean shouldLimitSize(int columnType) {
-        boolean bResult = false;
-
-        // character SQL types
-        if (columnType == Types.CHAR || columnType == Types.VARCHAR || columnType == Types.LONGVARCHAR || columnType == Types.NVARCHAR) {
-            bResult = true;
-        }
-        //TODO: what other types should be limited
-
-        return bResult;
     }
 
     public static String getQueryForTruncateTable(String tableName) {

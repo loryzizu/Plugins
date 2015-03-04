@@ -4,10 +4,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.openrdf.model.Literal;
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.URIImpl;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
@@ -19,12 +29,15 @@ import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
+import eu.unifiedviews.helpers.dataunit.dataset.DatasetBuilder;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
 import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
 import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
@@ -45,10 +58,31 @@ public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig_V1> implements
     @DataUnit.AsOutput(name = "rdfOutput")
     public WritableRDFDataUnit rdfOutput;
 
+    private static final String SYMBOLIC_NAME_BINDING = "symbolicName";
+
+    private static final String DATA_GRAPH_BINDING = "dataGraph";
+
+    private static final String UPDATE_EXISTING_GRAPH_FROM_FILE =
+            "DELETE "
+                    + "{ "
+                    + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o "
+                    + "} "
+                    + "INSERT "
+                    + "{ "
+                    + "?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?" + DATA_GRAPH_BINDING + " "
+                    + "} "
+                    + "WHERE "
+                    + "{"
+                    + "?s <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . "
+                    + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o "
+                    + "}";
+
     /**
      * True if at least one file has been skipped during conversion.
      */
     private boolean fileSkipped = false;
+
+    protected AtomicInteger atomicInteger = new AtomicInteger();
 
     public FilesToRDF() {
         super(FilesToRDFConfig_V1.class);
@@ -71,8 +105,8 @@ public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig_V1> implements
             return;
         }
 
-        final URI outputGraphUri;
-        if (config.getOutputNaming().equals(FilesToRDFConfig_V1.USE_FIXED_SYMBOLIC_NAME)) {
+        final URI globalOutputGraphUri;
+        if (FilesToRDFConfig_V1.USE_FIXED_SYMBOLIC_NAME.equals(config.getOutputNaming())) {
             // Use given value from config as output graph name.
             try {
                 String value = config.getOutputSymbolicName();
@@ -81,13 +115,18 @@ public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig_V1> implements
                     value = "FilesToRDF/generated_" + Long.toString(currentTime.getTime());
                 }
                 LOG.info("Output symbolic name: {}", value);
-                outputGraphUri = rdfOutput.addNewDataGraph(value);
+                globalOutputGraphUri = rdfOutput.addNewDataGraph(value);
+                Resource resource = ResourceHelpers.getResource(rdfOutput, value);
+                Date now = new Date();
+                resource.setLast_modified(now);
+                resource.setCreated(now);
+                ResourceHelpers.setResource(rdfOutput, value, resource);
             } catch (DataUnitException ex) {
                 dpuContext.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "Can't create output graph.", ex);
                 return;
             }
         } else {
-            outputGraphUri = null;
+            globalOutputGraphUri = null;
         }
 
         try {
@@ -104,15 +143,17 @@ public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig_V1> implements
 
                 RDFInserter rdfInserter = new CancellableCommitSizeInserter(connection, config.getCommitSize(), dpuContext);
                 // Set output graph name.
-                if (outputGraphUri == null) {
-                    rdfInserter.enforceContext(rdfOutput.addNewDataGraph(entry.getSymbolicName()));
+                if (globalOutputGraphUri == null) {
                     CopyHelpers.copyMetadata(entry.getSymbolicName(), filesInput, rdfOutput);
+                    URI localOutputGraphUri = new URIImpl(rdfOutput.getBaseDataGraphURI().stringValue() + "/" + String.valueOf(atomicInteger.getAndIncrement()));
+                    updateExistingDataGraphFromFile(entry.getSymbolicName(), localOutputGraphUri);
+                    rdfInserter.enforceContext(localOutputGraphUri);
                     Resource resource = ResourceHelpers.getResource(rdfOutput, entry.getSymbolicName());
                     Date now = new Date();
                     resource.setLast_modified(now);
                     ResourceHelpers.setResource(rdfOutput, entry.getSymbolicName(), resource);
                 } else {
-                    rdfInserter.enforceContext(outputGraphUri);
+                    rdfInserter.enforceContext(globalOutputGraphUri);
                 }
 
                 ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(connection.getParserConfig(), connection.getValueFactory());
@@ -174,5 +215,51 @@ public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig_V1> implements
     @Override
     public AbstractConfigDialog<FilesToRDFConfig_V1> getConfigurationDialog() {
         return new FilesToRDFVaadinDialog();
+    }
+
+    private void updateExistingDataGraphFromFile(String symbolicName, URI newDataGraphURI) throws DataUnitException {
+        RepositoryConnection connection = null;
+        RepositoryResult<Statement> result = null;
+        try {
+            connection = rdfOutput.getConnection();
+            connection.begin();
+            ValueFactory valueFactory = connection.getValueFactory();
+            Literal symbolicNameLiteral = valueFactory.createLiteral(symbolicName);
+            try {
+                Update update = connection.prepareUpdate(QueryLanguage.SPARQL, UPDATE_EXISTING_GRAPH_FROM_FILE);
+                update.setBinding(SYMBOLIC_NAME_BINDING, symbolicNameLiteral);
+                update.setBinding(DATA_GRAPH_BINDING, newDataGraphURI);
+
+                update.setDataset(new DatasetBuilder()
+                        .addDefaultGraph(rdfOutput.getMetadataWriteGraphname())
+                        .withInsertGraph(rdfOutput.getMetadataWriteGraphname())
+                        .addDefaultRemoveGraph(rdfOutput.getMetadataWriteGraphname())
+                        .build());
+                update.execute();
+            } catch (MalformedQueryException | UpdateExecutionException ex) {
+                // Not possible
+                throw new DataUnitException(ex);
+            }
+            connection.commit();
+        } catch (RepositoryException ex) {
+            throw new DataUnitException("Error when adding data graph.", ex);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error when closing connection", ex);
+                    // eat close exception, we cannot do anything clever here
+                }
+            }
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error in close", ex);
+                    // eat close exception, we cannot do anything clever here
+                }
+            }
+        }
     }
 }

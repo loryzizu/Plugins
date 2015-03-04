@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.data.Validator;
+import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
@@ -130,12 +131,19 @@ public class RelationalVaadinDialog extends BaseConfigDialog<RelationalConfig_V1
     @Override
     protected RelationalConfig_V1 getConfiguration() throws DPUConfigException {
         RelationalConfig_V1 config = new RelationalConfig_V1();
-        config.setTargetTableName(this.txtTargetTableName.getValue());
+        boolean isValid = this.txtTargetTableName.isValid();
+        if (!isValid) {
+            throw new DPUConfigException(this.messages.getString("errors.dialog.missing"));
+        }
         try {
             this.txtSqlQuery.validate();
+        } catch (EmptyValueException e) {
+            throw new DPUConfigException(this.messages.getString("errors.dialog.missing"));
         } catch (InvalidValueException e) {
             throw new DPUConfigException(e.getMessage());
         }
+        config.setTargetTableName(this.txtTargetTableName.getValue());
+
         config.setSqlQuery(this.txtSqlQuery.getValue());
         config.setPrimaryKeyColumns(getPrimaryKeyColumns());
 
