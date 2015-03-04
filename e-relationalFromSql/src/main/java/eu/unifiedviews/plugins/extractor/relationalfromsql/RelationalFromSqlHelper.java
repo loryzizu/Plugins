@@ -32,6 +32,7 @@ public class RelationalFromSqlHelper {
             int type = meta.getColumnType(i);
             String columnLabel = meta.getColumnLabel(i);
             String typeName = meta.getColumnTypeName(i);
+            String typeClass = meta.getColumnClassName(i);
             typeName = convertColumnTypeIfNeeded(typeName, type);
             LOG.debug("Column name: {}, type name: {}, SQL type: {}", columnLabel, typeName, type);
             if (isSupportedDataType(type, typeName)) {
@@ -46,7 +47,7 @@ public class RelationalFromSqlHelper {
                     columnLabel = newLabel;
                 }
                 uniqueColumns.add(columnLabel);
-                ColumnDefinition column = new ColumnDefinition(columnLabel, typeName, type, columnNotNull);
+                ColumnDefinition column = new ColumnDefinition(columnLabel, typeName, type, columnNotNull, typeClass);
                 columns.add(column);
             } else {
                 LOG.warn("Unsupported column skipped: Name: {}, Data type: {}", columnLabel, typeName);
@@ -122,14 +123,6 @@ public class RelationalFromSqlHelper {
 
     public static boolean testDatabaseConnection(RelationalFromSqlConfig_V2 config) {
         boolean bConnectResult = true;
-        try {
-            Class.forName(SqlDatabase.getJdbcDriverNameForDatabase(config.getDatabaseType()));
-        } catch (ClassNotFoundException e) {
-            LOG.error("Failed to load driver for the database", e);
-            bConnectResult = false;
-            return bConnectResult;
-        }
-
         Connection conn = null;
         try {
             conn = createConnection(config);
@@ -144,6 +137,13 @@ public class RelationalFromSqlHelper {
     }
 
     public static Connection createConnection(RelationalFromSqlConfig_V2 config) throws SQLException {
+
+        try {
+            Class.forName(SqlDatabase.getJdbcDriverNameForDatabase(config.getDatabaseType()));
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("Failed to load JDBC driver", e);
+        }
+
         Connection connection = null;
         final Properties connectionProperties = new Properties();
         connectionProperties.setProperty("user", config.getUserName());
@@ -182,12 +182,6 @@ public class RelationalFromSqlHelper {
 
     public static List<String> getColumnsForTable(RelationalFromSqlConfig_V2 config, String tableName) throws SQLException {
         List<String> columns = new ArrayList<>();
-        try {
-            Class.forName(SqlDatabase.getJdbcDriverNameForDatabase(config.getDatabaseType()));
-        } catch (ClassNotFoundException e) {
-            LOG.error("Failed to load driver for the database", e);
-            throw new SQLException("Failed to load driver for the database", e);
-        }
         Connection connection = null;
         ResultSet tableColumns = null;
         try {
@@ -201,6 +195,9 @@ public class RelationalFromSqlHelper {
                     columns.add(tableColumns.getString("COLUMN_NAME"));
                 }
             }
+        } catch (SQLException e) {
+            LOG.error("Error in getColumnsForTable()", e);
+            throw e;
         } finally {
             tryCloseResultSet(tableColumns);
             tryCloseConnection(connection);
@@ -211,12 +208,6 @@ public class RelationalFromSqlHelper {
 
     public static List<String> getTablesInSourceDatabase(RelationalFromSqlConfig_V2 config) throws SQLException {
         List<String> tables = new ArrayList<>();
-        try {
-            Class.forName(SqlDatabase.getJdbcDriverNameForDatabase(config.getDatabaseType()));
-        } catch (ClassNotFoundException e) {
-            LOG.error("Failed to load driver for the database", e);
-            throw new SQLException("Failed to load driver for the database", e);
-        }
         Connection connection = null;
         ResultSet dbTables = null;
         try {
@@ -226,6 +217,9 @@ public class RelationalFromSqlHelper {
             while (dbTables.next()) {
                 tables.add(dbTables.getString("TABLE_NAME"));
             }
+        } catch (SQLException e) {
+            LOG.error("Error in getTablesInSourceDatabase()", e);
+            throw e;
         } finally {
             tryCloseResultSet(dbTables);
             tryCloseConnection(connection);

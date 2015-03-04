@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This class provides list of supported SQL types
+ */
 public class DataTypes {
 
     private static Set<String> DATA_TYPE_NAMES = new HashSet<>();

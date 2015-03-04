@@ -1,9 +1,14 @@
 package eu.unifiedviews.plugins.extractor.relationalfromsql;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This class contains database engines specific configuration parameters
+ */
 public class SqlDatabase {
 
     // PostgreSQL parameters
@@ -61,12 +66,15 @@ public class SqlDatabase {
 
     private static Map<DatabaseType, Integer> defaultDatabasePorts;
 
+    private static List<String> supportedDatabaseNames;
+
     static {
         initNamesToType();
         initJdbcDriverNames();
         initJdbcUrlPrefixes();
         initDefaultDatabasePorts();
         initTypesToName();
+        initSupportedDatabaseNames();
     }
 
     private static void initNamesToType() {
@@ -109,6 +117,14 @@ public class SqlDatabase {
         defaultDatabasePorts.put(DatabaseType.MYSQL, MYSQL_DEFAULT_PORT);
         defaultDatabasePorts.put(DatabaseType.MSSQL, MSSQL_DEFAULT_PORT);
         defaultDatabasePorts.put(DatabaseType.ORACLE, ORACLE_DEFAULT_PORT);
+    }
+
+    private static void initSupportedDatabaseNames() {
+        supportedDatabaseNames = new ArrayList<>();
+        supportedDatabaseNames.add(POSTGRES_NAME);
+        supportedDatabaseNames.add(MYSQL_NAME);
+        supportedDatabaseNames.add(MSSQL_NAME);
+        supportedDatabaseNames.add(ORACLE_NAME);
     }
 
     public static DatabaseType getDatabaseTypeForDatabaseName(String dbName) {

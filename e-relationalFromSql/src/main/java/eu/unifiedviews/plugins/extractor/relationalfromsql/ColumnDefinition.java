@@ -12,16 +12,19 @@ public class ColumnDefinition {
 
     private int columnSize;
 
-    public ColumnDefinition(String columnName, String columnTypeName, int columnType, boolean columnNotNull, int columnSize) {
+    private String typeClassName;
+
+    public ColumnDefinition(String columnName, String columnTypeName, int columnType, boolean columnNotNull, String typeClass, int columnSize) {
         this.columnName = columnName;
         this.columnTypeName = columnTypeName;
         this.columnType = columnType;
         this.columnNotNull = columnNotNull;
         this.columnSize = columnSize;
+        this.typeClassName = typeClass;
     }
 
-    public ColumnDefinition(String columnName, String columnTypeName, int columnType, boolean columnNotNull) {
-        this(columnName, columnTypeName, columnType, columnNotNull, -1);
+    public ColumnDefinition(String columnName, String columnTypeName, int columnType, boolean columnNotNull, String typeClass) {
+        this(columnName, columnTypeName, columnType, columnNotNull, typeClass, -1);
     }
 
     public String getColumnName() {
@@ -42,6 +45,10 @@ public class ColumnDefinition {
 
     public int getColumnSize() {
         return this.columnSize;
+    }
+
+    public String getTypeClassName() {
+        return this.typeClassName;
     }
 
     @Override
