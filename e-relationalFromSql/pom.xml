@@ -20,7 +20,7 @@
 	<powermock.version>1.6.1</powermock.version>
 	<junit.version>4.12</junit.version>
 	<embed.transitive>true</embed.transitive>
-	<import.package>!com.sun.jdi,!com.sun.jdi.connect,!com.sun.jdi.event,!com.sun.jdi.request,!com.sun.msv.datatype,!com.sun.msv.datatype.xsd,!com.sun.org.apache.xerces.internal.parsers,!com.sun.org.apache.xerces.internal.util,!com.sun.org.apache.xerces.internal.xni.parser,!org.jboss.logmanager,!org.jboss.resource.adapter.jdbc,!org.jboss.resource.adapter.jdbc.vendor,!org.jdom,!org.jdom.input,!org.relaxng.datatype,!sun.io,!sun.misc,*</import.package>
+	<import.package>!com.sun.jdi.*,!com.sun.msv.*,!com.sun.org.apache.xerces.*,!org.jboss.*,!org.jdom,!org.jdom.input,!org.relaxng.datatype,!sun.io,!sun.misc,!com.sun.security.*,!oracle.i18n.*,!oracle.ons,!oracle.security.pki,!oracle.xdb,!oracle.xml.parser.v2,!org.apache.log4j,!org.objectweb.asm,!sun.security.*,*</import.package>
   </properties>
 
 	<dependencies>
@@ -35,6 +35,18 @@
 		<artifactId>mysql-connector-java</artifactId>
 		<version>5.1.34</version>
 	</dependency>
+	
+	<dependency>
+		<groupId>oracle.ojdbc</groupId>
+		<artifactId>ojdbc</artifactId>
+		<version>11.2.0.4.0</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>microsoft.sqljdbc</groupId>
+		<artifactId>sqljdbc</artifactId>
+		<version>4.1</version>
+	</dependency> 
 
 	<dependency>
 		<groupId>org.hibernate</groupId>
