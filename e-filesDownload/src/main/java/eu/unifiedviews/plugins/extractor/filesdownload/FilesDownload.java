@@ -12,6 +12,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
+import org.apache.commons.vfs2.cache.NullFilesCache;
 import org.apache.commons.vfs2.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder;
@@ -58,6 +59,7 @@ public class FilesDownload extends ConfigurableBase<FilesDownloadConfig_V1> impl
         Messages messages = new Messages(context.getLocale(), getClass().getClassLoader());
 
         try {
+            standardFileSystemManager.setFilesCache(new NullFilesCache());
             standardFileSystemManager.init();
 
             for (VfsFile vfsFile : config.getVfsFiles()) {
@@ -75,29 +77,29 @@ public class FilesDownload extends ConfigurableBase<FilesDownloadConfig_V1> impl
                 }
 
                 FileObject[] fileObjects = standardFileSystemManager.resolveFile(vfsFile.getUri(), fileSystemOptions).findFiles(new AllFileSelector());
-                if (fileObjects == null) {
-                    continue;
-                }
-                for (FileObject fileObject : fileObjects) {
-                    if (FileType.FILE.equals(fileObject.getType())) {
-                        String fileName = fileObject.getName().getPathDecoded();
 
-                        if (StringUtils.isNotBlank(vfsFile.getFileName())) {
-                            fileName = vfsFile.getFileName();
+                if (fileObjects != null) {
+                    for (FileObject fileObject : fileObjects) {
+                        if (FileType.FILE.equals(fileObject.getType())) {
+                            String fileName = fileObject.getName().getPathDecoded();
+
+                            if (StringUtils.isNotBlank(vfsFile.getFileName())) {
+                                fileName = vfsFile.getFileName();
+                            }
+
+                            FileUtils.copyInputStreamToFile(fileObject.getContent().getInputStream(), new File(URI.create(filesOutput.addNewFile(fileName))));
+
+                            Resource resource = resourceHelper.getResource(fileName);
+                            Date now = new Date();
+
+                            resource.setCreated(now);
+                            resource.setLast_modified(now);
+                            resource.getExtras().setSource(URIUtil.decode(vfsFile.getUri(), "utf8"));
+
+                            resourceHelper.setResource(fileName, resource);
+
+                            virtualPathHelper.setVirtualPath(fileName, fileName);
                         }
-
-                        FileUtils.copyInputStreamToFile(fileObject.getContent().getInputStream(), new File(URI.create(filesOutput.addNewFile(fileName))));
-
-                        Resource resource = resourceHelper.getResource(fileName);
-                        Date now = new Date();
-
-                        resource.setCreated(now);
-                        resource.setLast_modified(now);
-                        resource.getExtras().setSource(URIUtil.decode(vfsFile.getUri(), "utf8"));
-
-                        resourceHelper.setResource(fileName, resource);
-
-                        virtualPathHelper.setVirtualPath(fileName, fileName);
                     }
                 }
             }
