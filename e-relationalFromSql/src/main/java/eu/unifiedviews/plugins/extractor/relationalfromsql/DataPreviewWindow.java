@@ -7,10 +7,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Item;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import eu.unifiedviews.plugins.extractor.relationalfromsql.SqlDatabase.DatabaseType;
 
 /**
  * Data preview window for SQL data
@@ -21,6 +26,8 @@ public class DataPreviewWindow extends Window {
     private static final long serialVersionUID = 7315376034063375700L;
 
     private Table previewTable;
+
+    private static Logger LOG = LoggerFactory.getLogger(DataPreviewWindow.class);
 
     /**
      * Constructor for preview data window
@@ -35,6 +42,7 @@ public class DataPreviewWindow extends Window {
     public DataPreviewWindow(RelationalFromSqlConfig_V2 config, int limit) throws SQLException {
         setClosable(true);
         center();
+        setModal(true);
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
         layout.setSpacing(true);
@@ -55,7 +63,9 @@ public class DataPreviewWindow extends Window {
         try {
             conn = RelationalFromSqlHelper.createConnection(config);
             stmnt = conn.createStatement();
-            rs = stmnt.executeQuery(getLimitedQuery(config.getSqlQuery(), limit));
+            String limitedQuery = getLimitedQuery(config, limit);
+            LOG.debug("Executing query for preview: {}", limitedQuery);
+            rs = stmnt.executeQuery(limitedQuery);
             ResultSetMetaData meta = rs.getMetaData();
 
             List<ColumnDefinition> columns = RelationalFromSqlHelper.getTableColumnsFromMetaData(meta);
@@ -69,6 +79,9 @@ public class DataPreviewWindow extends Window {
                     item.getItemProperty(column.getColumnName()).setValue(rs.getObject(column.getColumnName()));
                 }
             }
+        } catch (SQLException e) {
+            LOG.error("Error occurred during creating data preview", e);
+            throw e;
         } finally {
             RelationalFromSqlHelper.tryCloseDbResources(conn, stmnt, rs);
         }
@@ -76,14 +89,18 @@ public class DataPreviewWindow extends Window {
         return table;
     }
 
-    private String getLimitedQuery(String query, int limit) {
+    private String getLimitedQuery(RelationalFromSqlConfig_V2 config, int limit) {
         StringBuilder limitedQuery = null;
-        if (query.endsWith(";")) {
-            limitedQuery = new StringBuilder(query.substring(0, query.length() - 1));
+        if (config.getSqlQuery().endsWith(";")) {
+            limitedQuery = new StringBuilder(config.getSqlQuery().substring(0, config.getSqlQuery().length() - 1));
         } else {
-            limitedQuery = new StringBuilder(query);
+            limitedQuery = new StringBuilder(config.getSqlQuery());
         }
-        limitedQuery.append(" LIMIT ");
+        if (config.getDatabaseType() == DatabaseType.ORACLE) {
+            limitedQuery.append(" WHERE ROWNUM <= ");
+        } else {
+            limitedQuery.append(" LIMIT ");
+        }
         limitedQuery.append(limit);
 
         return limitedQuery.toString();

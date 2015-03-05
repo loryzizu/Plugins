@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.Validator;
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -174,9 +175,15 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
             @SuppressWarnings("unqualified-field-access")
             @Override
             public void valueChange(ValueChangeEvent event) {
-                String databaseName = (String) ((databaseType.getValue() != null) ? databaseType.getValue() : databaseType.getNullSelectionItemId());
+                String databaseName = (String) databaseType.getValue();
                 int portForSelectedDbType = SqlDatabase.getDefaultDatabasePort(SqlDatabase.getDatabaseTypeForDatabaseName(databaseName));
+                DatabaseType dbType = SqlDatabase.getDatabaseTypeForDatabaseName(databaseName);
                 txtDatabasePort.setValue(String.valueOf(portForSelectedDbType));
+                if (dbType == DatabaseType.ORACLE) {
+                    txtDatabaseName.setCaption(messages.getString("dialog.extractdb.dbsid"));
+                } else {
+                    txtDatabaseName.setCaption(messages.getString("dialog.extractdb.dbname"));
+                }
             }
         };
         return listener;
@@ -252,8 +259,8 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
 
     private Window createSelectTableWindow() {
         final Window window = new Window();
-        window.setWidth(250.0f, Unit.PIXELS);
         window.center();
+        window.setModal(true);
         VerticalLayout layout = new VerticalLayout();
         window.setContent(layout);
         layout.setMargin(true);
@@ -296,13 +303,13 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
                 String tableName = (String) tableSelect.getValue();
                 try {
                     if (checkConnectionParametersInput()) {
-                        List<String> tableColumns = RelationalFromSqlHelper.getColumnsForTable(getConfiguration(), tableName);
-                        String query = generateSelectForTable(tableName, tableColumns);
+                        List<String> tableColumns = RelationalFromSqlHelper.getColumnsForTable(getConfigurationInternal(), tableName);
+                        String query = RelationalFromSqlHelper.generateSelectForTable(tableName, tableColumns);
                         RelationalFromSqlVaadinDialog.this.txtSqlQuery.setValue(query);
                     } else {
                         showMessage("dialog.messages.dbparams", Notification.Type.WARNING_MESSAGE);
                     }
-                } catch (SQLException | DPUConfigException e) {
+                } catch (SQLException e) {
                     showMessage("dialog.errors.select.query", Notification.Type.ERROR_MESSAGE);
                 }
                 window.close();
@@ -319,6 +326,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
     private Window createPreviewWindow() {
         final Window window = new Window();
         window.setWidth(250.0f, Unit.PIXELS);
+        window.setModal(true);
         window.center();
 
         VerticalLayout layout = new VerticalLayout();
@@ -332,6 +340,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         txtLimit.setCaption(this.messages.getString("dialog.preview.limit"));
         txtLimit.setWidth("100%");
         txtLimit.setValue("100");
+        txtLimit.addValidator(createSelectLimitValidator());
         layout.addComponent(txtLimit);
 
         Button btnPreview = new Button();
@@ -343,6 +352,10 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
+                    if (!txtLimit.isValid()) {
+                        showMessage("dialog.errors.limit", Notification.Type.ERROR_MESSAGE);
+                        return;
+                    }
                     window.close();
                     DataPreviewWindow dataPreview = new DataPreviewWindow(getConfigurationInternal(), Integer.parseInt(txtLimit.getValue()));
                     UI.getCurrent().addWindow(dataPreview);
@@ -356,26 +369,25 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         return window;
     }
 
-    private String generateSelectForTable(String tableName, List<String> columns) {
-        StringBuilder query = new StringBuilder("SELECT ");
-        for (String column : columns) {
-            query.append("\t");
-            if (column.contains(" ")) {
-                query.append("\"");
-                query.append(column);
-                query.append("\"");
-            } else {
-                query.append(column);
+    private Validator createSelectLimitValidator() {
+        Validator validator = new Validator() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void validate(Object value) throws InvalidValueException {
+                int limit = 0;
+                try {
+                    limit = Integer.parseInt((String) value);
+                } catch (NumberFormatException e) {
+                    throw new InvalidValueException(messages.getString("dialog.errors.limit"));
+                }
+                if (limit < 1 || limit > 10000) {
+                    throw new InvalidValueException(messages.getString("dialog.errors.limit"));
+                }
             }
-
-            query.append(",\n");
-        }
-        query.setLength(query.length() - 2);
-        query.append("\n");
-        query.append(" FROM ");
-        query.append(tableName);
-
-        return query.toString();
+        };
+        return validator;
     }
 
     private boolean checkConnectionParametersInput() {
@@ -395,20 +407,6 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         }
 
         return keyColumns;
-    }
-
-    private static String getPrimaryKeysAsCommaSeparatedString(List<String> keys) {
-        if (keys == null || keys.isEmpty()) {
-            return null;
-        }
-        StringBuilder sb = new StringBuilder();
-        for (String key : keys) {
-            sb.append(key);
-            sb.append(",");
-        }
-        sb.setLength(sb.length() - 1);
-
-        return sb.toString();
     }
 
     private RelationalFromSqlConfig_V2 getConfigurationInternal() {
@@ -447,7 +445,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         this.chckUseSsl.setValue(config.isUseSSL());
         this.txtSqlQuery.setValue(config.getSqlQuery());
         this.txtTargetTableName.setValue(config.getTargetTableName());
-        this.txtPrimaryKeys.setValue(getPrimaryKeysAsCommaSeparatedString(config.getPrimaryKeyColumns()));
+        this.txtPrimaryKeys.setValue(RelationalFromSqlHelper.getPrimaryKeysAsCommaSeparatedString(config.getPrimaryKeyColumns()));
     }
 
     @Override
@@ -466,7 +464,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         config.setUserName(this.txtUserName.getValue());
         config.setUserPassword(this.txtPassword.getValue());
         config.setUseSSL(this.chckUseSsl.getValue());
-        config.setSqlQuery(this.txtSqlQuery.getValue());
+        config.setSqlQuery(RelationalFromSqlHelper.getNormalizedQuery(this.txtSqlQuery.getValue()));
         config.setTargetTableName(this.txtTargetTableName.getValue());
         config.setPrimaryKeyColumns(getPrimaryKeyColumns());
         config.setDatabaseType(SqlDatabase.getDatabaseTypeForDatabaseName((String) this.databaseType.getValue()));

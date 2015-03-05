@@ -213,7 +213,11 @@ public class RelationalFromSqlHelper {
         try {
             connection = createConnection(config);
             DatabaseMetaData meta = connection.getMetaData();
-            dbTables = meta.getTables(null, null, "%", new String[] { "TABLE", "VIEW" });
+            if (config.getDatabaseType() == DatabaseType.ORACLE) {
+                dbTables = meta.getTables(null, config.getUserName().toUpperCase(), "%", new String[] { "TABLE", "VIEW" });
+            } else {
+                dbTables = meta.getTables(null, null, "%", new String[] { "TABLE", "VIEW" });
+            }
             while (dbTables.next()) {
                 tables.add(dbTables.getString("TABLE_NAME"));
             }
@@ -245,6 +249,54 @@ public class RelationalFromSqlHelper {
             default:
                 return columnTypeName;
         }
+    }
+
+    public static String getNormalizedQuery(String query) {
+        if (query == null) {
+            return null;
+        }
+        String normalizedQuery = query.trim();
+        if (normalizedQuery.endsWith(";")) {
+            normalizedQuery = normalizedQuery.substring(0, normalizedQuery.length() - 1);
+        }
+
+        return normalizedQuery;
+    }
+
+    public static String generateSelectForTable(String tableName, List<String> columns) {
+        StringBuilder query = new StringBuilder("SELECT ");
+        for (String column : columns) {
+            query.append("\t");
+            if (column.contains(" ")) {
+                query.append("\"");
+                query.append(column);
+                query.append("\"");
+            } else {
+                query.append(column);
+            }
+
+            query.append(",\n");
+        }
+        query.setLength(query.length() - 2);
+        query.append("\n");
+        query.append(" FROM ");
+        query.append(tableName);
+
+        return query.toString();
+    }
+
+    public static String getPrimaryKeysAsCommaSeparatedString(List<String> keys) {
+        if (keys == null || keys.isEmpty()) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String key : keys) {
+            sb.append(key);
+            sb.append(",");
+        }
+        sb.setLength(sb.length() - 1);
+
+        return sb.toString();
     }
 
 }
