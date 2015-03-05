@@ -14,6 +14,7 @@ import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
 import eu.unifiedviews.helpers.dpu.localization.Messages;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,8 +77,8 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
             while (!context.canceled() && filesIteration.hasNext()) {
                 final FilesDataUnit.Entry entry = filesIteration.next();
                 LOG.debug("Adding file: {}", entry.getSymbolicName());
-                // remove file prefix
-                final String csvPath = entry.getFileURIString().replaceFirst("file:/", "");
+                // remove URL prefixes
+                final String csvPath = StringUtils.substringAfterLast(entry.getFileURIString(), ":");
 
                 String insertIntoQuery = prepareInsertIntoQuery(csvPath, config);
                 LOG.debug("Insert into query: {}", insertIntoQuery);
