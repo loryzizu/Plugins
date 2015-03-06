@@ -599,12 +599,12 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             txtXlsSheetName.setValue(c.getXlsSheetName());
             txtXlsLinesToIgnore.setValue(c.getLinesToIgnore().toString());
             loadCellMapping(c.getNamedCells());
-            checkXlsHasHeader.setValue(c.isIgnoreBlankCells());
+            checkXlsHasHeader.setValue(c.isHasHeader());
         } else {
             txtXlsSheetName.setValue("");
             txtXlsLinesToIgnore.setValue("");
             loadCellMapping(Collections.EMPTY_LIST);
-            checkXlsHasHeader.setValue(false);
+            checkXlsHasHeader.setValue(true);
         }
         //
         // other data
