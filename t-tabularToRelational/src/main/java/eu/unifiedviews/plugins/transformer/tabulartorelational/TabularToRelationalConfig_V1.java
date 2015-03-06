@@ -18,6 +18,14 @@ public class TabularToRelationalConfig_V1 {
 
     private String fieldSeparator;
 
+    private String xlsSheetName;
+
+    private boolean hasHeader;
+
+    private boolean autogenerateId;
+
+    private ParserType parserType;
+
     private List<ColumnMappingEntry> columnMapping;
 
     public TabularToRelationalConfig_V1() {
@@ -28,6 +36,7 @@ public class TabularToRelationalConfig_V1 {
         this.fieldDelimiter = "\"";
         this.fieldSeparator = ",";
         this.columnMapping = new ArrayList<>();
+        this.parserType = ParserType.CSV;
     }
 
     public String getTableName() {
@@ -78,6 +87,38 @@ public class TabularToRelationalConfig_V1 {
         this.columnMapping = columnMapping;
     }
 
+    public String getXlsSheetName() {
+        return xlsSheetName;
+    }
+
+    public void setXlsSheetName(String xlsSheetName) {
+        this.xlsSheetName = xlsSheetName;
+    }
+
+    public boolean isHasHeader() {
+        return hasHeader;
+    }
+
+    public void setHasHeader(boolean hasHeader) {
+        this.hasHeader = hasHeader;
+    }
+
+    public boolean isAutogenerateId() {
+        return autogenerateId;
+    }
+
+    public void setAutogenerateId(boolean autogenerateId) {
+        this.autogenerateId = autogenerateId;
+    }
+
+    public ParserType getParserType() {
+        return parserType;
+    }
+
+    public void setParserType(ParserType parserType) {
+        this.parserType = parserType;
+    }
+
     @Override public String toString() {
         return "TabularToRelationalConfig_V1{" +
                 "tableName='" + tableName + '\'' +
@@ -85,6 +126,10 @@ public class TabularToRelationalConfig_V1 {
                 ", rowsLimit=" + rowsLimit +
                 ", fieldDelimiter='" + fieldDelimiter + '\'' +
                 ", fieldSeparator='" + fieldSeparator + '\'' +
+                ", xlsSheetName='" + xlsSheetName + '\'' +
+                ", hasHeader=" + hasHeader +
+                ", autogenerateId=" + autogenerateId +
+                ", parserType=" + parserType +
                 ", columnMapping=" + columnMapping +
                 '}';
     }
