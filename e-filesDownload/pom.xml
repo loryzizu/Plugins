@@ -6,13 +6,13 @@
 	<parent>
 		<groupId>eu.unifiedviews.plugins</groupId>
 		<artifactId>dpu-base-pom</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.3.0</version>
 		<relativePath/>
 	</parent>
 
 	<artifactId>uv-e-filesDownload</artifactId>
 	<name>E-FilesDownload</name>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<description>Downloads list of files. Replaces E-FilesFromLocal and E-HttpDownload.</description>
 	<packaging>bundle</packaging>
 

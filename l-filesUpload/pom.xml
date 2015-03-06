@@ -6,13 +6,13 @@
 	<parent>
 		<groupId>eu.unifiedviews.plugins</groupId>
 		<artifactId>dpu-base-pom</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.3.0</version>
 		<relativePath/>
 	</parent>
 
 	<artifactId>uv-l-filesUpload</artifactId>
 	<name>L-FilesUpload</name>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<description>Uploads list of files. Replaces L-FilesToLocalFS and L-FilesToScp.</description>
 	<packaging>bundle</packaging>
 
