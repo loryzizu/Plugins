@@ -34,6 +34,8 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
 
     private TextField txtDatabaseName;
 
+    private TextField txtInstanceName;
+
     private TextField txtUserName;
 
     private PasswordField txtPassword;
@@ -99,6 +101,13 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         this.txtDatabaseName.setNullRepresentation("");
         this.txtDatabaseName.setWidth("100%");
         this.mainLayout.addComponent(this.txtDatabaseName);
+
+        this.txtInstanceName = new TextField();
+        this.txtInstanceName.setCaption(this.messages.getString("dialog.extractdb.instance"));
+        this.txtInstanceName.setNullRepresentation("");
+        this.txtInstanceName.setWidth("100%");
+        this.txtInstanceName.setVisible(false);
+        this.mainLayout.addComponent(this.txtInstanceName);
 
         this.txtUserName = new TextField();
         this.txtUserName.setCaption(this.messages.getString("dialog.extractdb.username"));
@@ -184,6 +193,12 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
                 } else {
                     txtDatabaseName.setCaption(messages.getString("dialog.extractdb.dbname"));
                 }
+
+                if (dbType == DatabaseType.MSSQL) {
+                    txtInstanceName.setVisible(true);
+                } else {
+                    txtInstanceName.setVisible(false);
+                }
             }
         };
         return listener;
@@ -268,7 +283,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         layout.setWidth("100%");
         layout.setHeight("-1px");
 
-        List<String> tables = null;
+        List<DatabaseTable> tables = null;
         try {
             tables = RelationalFromSqlHelper.getTablesInSourceDatabase(getConfigurationInternal());
         } catch (SQLException e) {
@@ -300,11 +315,11 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
 
             @Override
             public void buttonClick(ClickEvent event) {
-                String tableName = (String) tableSelect.getValue();
+                DatabaseTable table = (DatabaseTable) tableSelect.getValue();
                 try {
                     if (checkConnectionParametersInput()) {
-                        List<String> tableColumns = RelationalFromSqlHelper.getColumnsForTable(getConfigurationInternal(), tableName);
-                        String query = RelationalFromSqlHelper.generateSelectForTable(tableName, tableColumns);
+                        List<String> tableColumns = RelationalFromSqlHelper.getColumnsForTable(getConfigurationInternal(), table.getTableName());
+                        String query = RelationalFromSqlHelper.generateSelectForTable(table, tableColumns);
                         RelationalFromSqlVaadinDialog.this.txtSqlQuery.setValue(query);
                     } else {
                         showMessage("dialog.messages.dbparams", Notification.Type.WARNING_MESSAGE);
@@ -374,6 +389,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
 
             private static final long serialVersionUID = 1L;
 
+            @SuppressWarnings("unqualified-field-access")
             @Override
             public void validate(Object value) throws InvalidValueException {
                 int limit = 0;
@@ -446,13 +462,18 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         this.txtSqlQuery.setValue(config.getSqlQuery());
         this.txtTargetTableName.setValue(config.getTargetTableName());
         this.txtPrimaryKeys.setValue(RelationalFromSqlHelper.getPrimaryKeysAsCommaSeparatedString(config.getPrimaryKeyColumns()));
+        this.txtInstanceName.setValue(config.getInstanceName());
     }
 
     @Override
     protected RelationalFromSqlConfig_V2 getConfiguration() throws DPUConfigException {
 
         boolean isValid = this.txtDatabaseHost.isValid() && this.txtDatabaseName.isValid() && this.txtDatabasePort.isValid()
-                && this.txtUserName.isValid() && this.txtPassword.isValid();
+                && this.txtUserName.isValid() && this.txtPassword.isValid() && this.txtTargetTableName.isValid();
+
+        if (SqlDatabase.getDatabaseTypeForDatabaseName((String) this.databaseType.getValue()) == DatabaseType.MSSQL) {
+            isValid = isValid && this.txtInstanceName.isValid();
+        }
         if (!isValid) {
             throw new DPUConfigException(this.messages.getString("dialog.errors.params"));
         }
@@ -468,6 +489,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         config.setTargetTableName(this.txtTargetTableName.getValue());
         config.setPrimaryKeyColumns(getPrimaryKeyColumns());
         config.setDatabaseType(SqlDatabase.getDatabaseTypeForDatabaseName((String) this.databaseType.getValue()));
+        config.setInstanceName(this.txtInstanceName.getValue());
 
         return config;
     }

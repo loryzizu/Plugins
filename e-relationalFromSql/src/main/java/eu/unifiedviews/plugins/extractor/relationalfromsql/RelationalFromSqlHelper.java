@@ -149,7 +149,7 @@ public class RelationalFromSqlHelper {
         connectionProperties.setProperty("user", config.getUserName());
         connectionProperties.setProperty("password", config.getUserPassword());
         // TODO: Do we need to validate client / server certificates?
-        if (config.isUseSSL()) {
+        if (config.getDatabaseType() == DatabaseType.POSTGRES && config.isUseSSL()) {
             connectionProperties.setProperty("ssl", "true");
             // TODO: SSL support for other databases generically
             connectionProperties.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
@@ -176,6 +176,11 @@ public class RelationalFromSqlHelper {
             url.append("/");
         }
         url.append(config.getDatabaseName());
+
+        if (config.getDatabaseType() == DatabaseType.MSSQL && config.getInstanceName() != null) {
+            url.append(";instanceName=");
+            url.append(config.getInstanceName());
+        }
 
         return url.toString();
     }
@@ -206,8 +211,8 @@ public class RelationalFromSqlHelper {
         return columns;
     }
 
-    public static List<String> getTablesInSourceDatabase(RelationalFromSqlConfig_V2 config) throws SQLException {
-        List<String> tables = new ArrayList<>();
+    public static List<DatabaseTable> getTablesInSourceDatabase(RelationalFromSqlConfig_V2 config) throws SQLException {
+        List<DatabaseTable> tables = new ArrayList<>();
         Connection connection = null;
         ResultSet dbTables = null;
         try {
@@ -219,7 +224,16 @@ public class RelationalFromSqlHelper {
                 dbTables = meta.getTables(null, null, "%", new String[] { "TABLE", "VIEW" });
             }
             while (dbTables.next()) {
-                tables.add(dbTables.getString("TABLE_NAME"));
+                String tableName = dbTables.getString("TABLE_NAME");
+                if (config.getDatabaseType() == DatabaseType.MSSQL) {
+                    String tableSchema = dbTables.getString("TABLE_SCHEM");
+                    if (!tableSchema.equals("sys")) {
+                        tables.add(new DatabaseTable(tableName, tableSchema));
+                    }
+                } else {
+                    tables.add(new DatabaseTable(dbTables.getString("TABLE_NAME")));
+                }
+
             }
         } catch (SQLException e) {
             LOG.error("Error in getTablesInSourceDatabase()", e);
@@ -263,7 +277,7 @@ public class RelationalFromSqlHelper {
         return normalizedQuery;
     }
 
-    public static String generateSelectForTable(String tableName, List<String> columns) {
+    public static String generateSelectForTable(DatabaseTable table, List<String> columns) {
         StringBuilder query = new StringBuilder("SELECT ");
         for (String column : columns) {
             query.append("\t");
@@ -280,7 +294,11 @@ public class RelationalFromSqlHelper {
         query.setLength(query.length() - 2);
         query.append("\n");
         query.append(" FROM ");
-        query.append(tableName);
+        if (table.getTableSchema() != null) {
+            query.append(table.getTableSchema());
+            query.append(".");
+        }
+        query.append(table.getTableName());
 
         return query.toString();
     }

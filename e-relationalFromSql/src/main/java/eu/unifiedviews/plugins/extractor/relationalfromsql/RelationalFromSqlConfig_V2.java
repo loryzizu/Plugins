@@ -26,6 +26,8 @@ public class RelationalFromSqlConfig_V2 {
 
     private List<String> primaryKeyColumns;
 
+    private String instanceName;
+
     public String getDatabaseHost() {
         return this.databaseHost;
     }
@@ -104,6 +106,14 @@ public class RelationalFromSqlConfig_V2 {
 
     public void setPrimaryKeyColumns(List<String> primaryKeyColumns) {
         this.primaryKeyColumns = primaryKeyColumns;
+    }
+
+    public String getInstanceName() {
+        return this.instanceName;
+    }
+
+    public void setInstanceName(String instanceName) {
+        this.instanceName = instanceName;
     }
 
 }

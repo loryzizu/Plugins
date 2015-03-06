@@ -98,13 +98,24 @@ public class DataPreviewWindow extends Window {
         }
         if (config.getDatabaseType() == DatabaseType.ORACLE) {
             limitedQuery.append(" WHERE ROWNUM <= ");
+            limitedQuery.append(limit);
+        } else if (config.getDatabaseType() == DatabaseType.MSSQL) {
+            limitedQuery = limitQueryForMsSQL(limitedQuery.toString(), limit);
         } else {
             limitedQuery.append(" LIMIT ");
+            limitedQuery.append(limit);
         }
-        limitedQuery.append(limit);
 
         return limitedQuery.toString();
 
+    }
+
+    private static StringBuilder limitQueryForMsSQL(String query, int limit) {
+        StringBuilder limited = new StringBuilder("SELECT TOP ");
+        limited.append(limit);
+        limited.append(query.substring("SELECT".length(), query.length()));
+
+        return limited;
     }
 
     private Class<?> getClassForColumn(ColumnDefinition column) {
