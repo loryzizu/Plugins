@@ -100,11 +100,13 @@ public class ParserXls implements Parser {
             if (row == null) {
                 throw new ParseFailed("Header row is null!");
             }
-            int columnEnd = row.getLastCellNum();
+            final int columnStart = row.getFirstCellNum();
+            final int columnEnd = row.getLastCellNum();
             columnNames = new ArrayList<>(columnEnd);
-            for (int columnIndex = 0; columnIndex <= columnEnd; columnIndex++) {
+            for (int columnIndex = columnStart; columnIndex < columnEnd; columnIndex++) {
                 final Cell cell = row.getCell(columnIndex);
                 if (cell == null) {
+                    LOG.error("Header cell is null! ({}, {})", startRow - 1, columnIndex);
                     throw new ParseFailed("Header cell is null!");
                 } else {
                     final String name = this.getCellValue(cell);
@@ -175,14 +177,15 @@ public class ParserXls implements Parser {
             if (row == null) {
                 continue;
             }
-            int columnEnd = row.getLastCellNum();
+            final int columnStart = row.getFirstCellNum();
+            final int columnEnd = row.getLastCellNum();
             // generate header
             if (!headerGenerated) {
                 headerGenerated = true;
                 // use row data to generate types
                 final List<ColumnType> types = new ArrayList<>(
-                        columnEnd + namedCells.size() + 1);
-                for (int columnIndex = 0; columnIndex <= columnEnd; columnIndex++) {
+                        columnEnd + namedCells.size());
+                for (int columnIndex = columnStart; columnIndex < columnEnd; columnIndex++) {
                     final Cell cell = row.getCell(columnIndex);
                     if (cell == null) {
                         types.add(null);
@@ -192,8 +195,11 @@ public class ParserXls implements Parser {
                 }
                 if (columnNames == null) {
                     columnNames = new ArrayList<>(columnEnd);
-                    // generate column names
-                    for (int columnIndex = 0; columnIndex <= columnEnd; columnIndex++) {
+                    // Generate column names, columns may not start from 0, so we use special
+                    // variable to count from 0.
+                    int columnIndex = 0;
+                    for (int i = columnStart; i < columnEnd; i++) {
+                        ++columnIndex;
                         columnNames.add("col" + Integer.toString(columnIndex + 1));
                     }
                 }
@@ -211,9 +217,9 @@ public class ParserXls implements Parser {
             }
             // prepare row
             final List<String> parsedRow = new ArrayList<>(
-                    columnEnd + namedCells.size() + 1);
+                    columnEnd + namedCells.size());
             // parse columns
-            for (int columnIndex = 0; columnIndex <= columnEnd; columnIndex++) {
+            for (int columnIndex = 0; columnIndex < columnEnd; columnIndex++) {
                 final Cell cell = row.getCell(columnIndex);
                 if (cell == null) {
                     parsedRow.add(null);
