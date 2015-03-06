@@ -27,6 +27,7 @@ import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 /**
  * SPARQL Transformer.
@@ -78,15 +79,17 @@ public class SPARQL extends ConfigurableBase<SPARQLConfig_V1> implements ConfigD
      */
     @Override
     public void execute(DPUContext context) throws DPUException {
+        Messages messages = new Messages(context.getLocale(), getClass().getClassLoader());
+        
         if (configInternal == null) {
-            configInternal = migrateConfig(config);
+            configInternal = migrateConfig(config, messages);
         }
         final List<SPARQLQueryPair> queryPairs = configInternal.getQueryPairs();
         if (queryPairs == null) {
-            throw new DPUException("All queries for SPARQL transformer are null values");
+            throw new DPUException(messages.getString("SPARQL.execute.missingQueries"));
         } else {
             if (queryPairs.isEmpty()) {
-                throw new DPUException("Queries for SPARQL transformer are empty, SPARQL transformer must constains at least one SPARQL query");
+                throw new DPUException(messages.getString("SPARQL.execute.emptyQueries"));
             }
         }
         int queryCount = 0;
@@ -98,9 +101,9 @@ public class SPARQL extends ConfigurableBase<SPARQLConfig_V1> implements ConfigD
                 boolean isConstructQuery = nextPair.isConstructType();
 
                 if (updateQuery == null) {
-                    throw new DPUException("Query number " + queryCount + " is not defined");
+                    throw new DPUException(messages.getString("SPARQL.execute.notDefinedQuery", queryCount));
                 } else if (updateQuery.trim().isEmpty()) {
-                    throw new DPUException("Query number " + queryCount + " is not defined, SPARQL transformer must constain at least one SPARQL (Update) query");
+                    throw new DPUException(messages.getString("SPARQL.execute.atLeastOneQuery", queryCount));
                 }
                 Dataset dataset = null;
                 if (isConstructQuery) {
@@ -127,7 +130,7 @@ public class SPARQL extends ConfigurableBase<SPARQLConfig_V1> implements ConfigD
                     update.setDataset(dataset);
                     update.execute();
                 } catch (DataUnitException | RepositoryException | MalformedQueryException | UpdateExecutionException ex) {
-                    throw new DPUException(ex);
+                    throw new DPUException(messages.getString("SPARQL.execute.exception.fail"), ex);
                 } finally {
                     if (connection != null) {
                         try {
@@ -166,7 +169,7 @@ public class SPARQL extends ConfigurableBase<SPARQLConfig_V1> implements ConfigD
         this.configInternal = sparqlConfig_V2;
     }
 
-    private SPARQLConfig_V2 migrateConfig(SPARQLConfig_V1 oldConfig) throws DPUException {
+    private SPARQLConfig_V2 migrateConfig(SPARQLConfig_V1 oldConfig, Messages messages) throws DPUException {
         SPARQLConfig_V2 resultConfig = new SPARQLConfig_V2();
         resultConfig.setOutputGraphSymbolicName(oldConfig.getOutputGraphSymbolicName());
         List<SPARQLQueryPair> queryPairs = new ArrayList<>();
@@ -189,7 +192,7 @@ public class SPARQL extends ConfigurableBase<SPARQLConfig_V1> implements ConfigD
         }
         resultConfig.setQueryPairs(queryPairs);
         if (!outputDirtied) {
-            throw new DPUException("Misconfiguration, no query will write anything to output.");
+            throw new DPUException(messages.getString("SPARQL.execute.exception.noOutput"));
         }
         return resultConfig;
     }
