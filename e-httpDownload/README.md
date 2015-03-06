@@ -37,6 +37,8 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
+|1.5.1            |small corrections in dialog |
+|1.5.0            |N/A                         |
 |1.3.1            |N/A                         |                                
 
 
