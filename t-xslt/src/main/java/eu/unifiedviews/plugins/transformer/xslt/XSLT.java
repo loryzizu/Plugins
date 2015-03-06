@@ -122,7 +122,7 @@ public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialo
                     if (dpuContext.isDebugging()) {
                         long inputSizeM = inputFile.length() / 1024 / 1024;
                         LOG.debug("Memory used: {}M", String.valueOf((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024));
-                        LOG.debug("Processing {} file {} length {}M", appendNumber(index), entry, inputSizeM);
+                        LOG.debug("Processing {} file {} length {}M", (index), entry, inputSizeM);
 
                     }
                     Serializer out = new Serializer(outputFile);
@@ -160,12 +160,12 @@ public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialo
                     ResourceHelpers.setResource(filesOutput, inSymbolicName, resource);
 
                     if (dpuContext.isDebugging()) {
-                        LOG.debug("Processed {} file in {}s", appendNumber(index), (System.currentTimeMillis() - start.getTime()) / 1000);
+                        LOG.debug("Processed {} file in {}s", (index), (System.currentTimeMillis() - start.getTime()) / 1000);
                         LOG.debug("Memory used: " + String.valueOf((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024) + "M");
                     }
                 } catch (SaxonApiException | IOException | DataUnitException ex) {
                     if (config.isSkipOnError()) {
-                        LOG.warn("Error processing {} file {}", appendNumber(index), String.valueOf(entry), ex);
+                        LOG.warn("Error processing {} file {}", (index), String.valueOf(entry), ex);
                     } else {
                         throw new DPUException(this.messages.getString("errors.xslt.process", index, String.valueOf(entry)), ex);
                     }
@@ -181,28 +181,5 @@ public class XSLT extends ConfigurableBase<XSLTConfig_V1> implements ConfigDialo
         }
         String message = this.messages.getString("messages.xslt.processed", filesSuccessfulCount, index);
         dpuContext.sendMessage(filesSuccessfulCount < index ? DPUContext.MessageType.WARNING : DPUContext.MessageType.INFO, message);
-    }
-
-    public static String appendNumber(long number) {
-        String value = String.valueOf(number);
-        if (value.length() > 1) {
-            // Check for special case: 11 - 13 are all "th".
-            // So if the second to last digit is 1, it is "th".
-            char secondToLastDigit = value.charAt(value.length() - 2);
-            if (secondToLastDigit == '1') {
-                return value + "th";
-            }
-        }
-        char lastDigit = value.charAt(value.length() - 1);
-        switch (lastDigit) {
-            case '1':
-                return value + "st";
-            case '2':
-                return value + "nd";
-            case '3':
-                return value + "rd";
-            default:
-                return value + "th";
-        }
     }
 }

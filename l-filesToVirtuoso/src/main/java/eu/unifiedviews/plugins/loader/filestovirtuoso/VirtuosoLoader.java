@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -66,6 +67,20 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
 
     private static final String RUN = "rdf_loader_run()";
 
+    private static final String SELECT_USER = "SELECT U_NAME, U_ID FROM DB.DBA.SYS_USERS WHERE U_NAME LIKE ?";
+
+    private static final String CREATE_USER = "DB.DBA.USER_CREATE (?, ?)";
+
+    private static final String GRANT_USER = "grant SPARQL_UPDATE to ?";
+
+    private static final String GRANT_USER_READ = "DB.DBA.RDF_DEFAULT_USER_PERMS_SET (?, 1)";
+
+    private static final String GRANT_USER_WRITE = "DB.DBA.RDF_GRAPH_USER_PERMS_SET (?, ?, 3)";
+
+    public static final String CONFIGURATION_VIRTUOSO_USERNAME = "filesToVirtuosoUsername";
+
+    public static final String CONFIGURATION_VIRTUOSO_PASSWORD = "filesToVirtuosoPassword";
+
     public VirtuosoLoader() {
         super(VirtuosoLoaderConfig_V1.class);
     }
@@ -79,6 +94,16 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
                 config.isIncludeSubdirectories(), config.getTargetContext(), config.getStatusUpdateInterval(),
                 config.getThreadCount());
         LOG.info(shortMessage + " " + longMessage);
+        Map<String, String> environment = dpuContext.getEnvironment();
+        String username = environment.get(CONFIGURATION_VIRTUOSO_USERNAME);
+        if (config.getUsername() == null || config.getUsername().isEmpty()) {
+            config.setUsername(username);
+        }
+        String password = environment.get(CONFIGURATION_VIRTUOSO_PASSWORD);
+        if (config.getPassword() == null || config.getPassword().isEmpty()) {
+            config.setPassword(password);
+        }
+        String organization = dpuContext.getOrganization();
 
         try {
             Class.forName("virtuoso.jdbc4.Driver");
@@ -216,6 +241,39 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
             resultSetErrorRows.close();
             statementsErrorRows.close();
 
+            boolean userExists = false;
+            try (PreparedStatement statementSelectUser = connection.prepareStatement(SELECT_USER)) {
+                statementSelectUser.setString(1, organization);
+                try (ResultSet resultSetUser = statementSelectUser.executeQuery()) {
+                    userExists = resultSetUser.next();
+                    LOG.info("Executed " + SELECT_USER);
+                }
+            }
+            if (!userExists) {
+                try (PreparedStatement statementCreateUser = connection.prepareStatement(CREATE_USER)) {
+                    statementCreateUser.setString(1, organization);
+                    statementCreateUser.setString(2, organization);
+                    statementCreateUser.executeQuery();
+                    LOG.info("Executed " + CREATE_USER);
+                }
+//                try (PreparedStatement statementGrantUser = connection.prepareStatement(GRANT_USER)) {
+//                    statementGrantUser.setString(1, organization);
+//                    statementGrantUser.executeQuery();
+//                    LOG.info("Executed " + GRANT_USER);
+//                }
+                try (PreparedStatement statementGrantUserRead = connection.prepareStatement(GRANT_USER_READ)) {
+                    statementGrantUserRead.setString(1, organization);
+                    statementGrantUserRead.executeQuery();
+                    LOG.info("Executed " + GRANT_USER_READ);
+                }
+            }
+            try (PreparedStatement statementGrantUserWrite = connection.prepareStatement(GRANT_USER_WRITE)) {
+                statementGrantUserWrite.setString(1, config.getTargetContext());
+                statementGrantUserWrite.setString(2, organization);
+                statementGrantUserWrite.executeQuery();
+                LOG.info("Executed " + GRANT_USER_WRITE);
+            }
+
             String outputSymbolicName = config.getTargetContext();
             rdfOutput.addExistingDataGraph(outputSymbolicName, new URIImpl(outputSymbolicName));
             VirtualGraphHelpers.setVirtualGraph(rdfOutput, outputSymbolicName, config.getTargetContext());
@@ -276,28 +334,5 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
     @Override
     public AbstractConfigDialog<VirtuosoLoaderConfig_V1> getConfigurationDialog() {
         return new VirtuosoLoaderVaadinDialog();
-    }
-
-    public static String appendNumber(long number) {
-        String value = String.valueOf(number);
-        if (value.length() > 1) {
-            // Check for special case: 11 - 13 are all "th".
-            // So if the second to last digit is 1, it is "th".
-            char secondToLastDigit = value.charAt(value.length() - 2);
-            if (secondToLastDigit == '1') {
-                return value + "th";
-            }
-        }
-        char lastDigit = value.charAt(value.length() - 1);
-        switch (lastDigit) {
-            case '1':
-                return value + "st";
-            case '2':
-                return value + "nd";
-            case '3':
-                return value + "rd";
-            default:
-                return value + "th";
-        }
     }
 }

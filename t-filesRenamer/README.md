@@ -38,9 +38,11 @@
 
 ### Version history ###
 
-|Version            |Release notes                                   |
-|-------------------|------------------------------------------------|
-|1.5.0-SNAPSHOT |Added support for renaming against the mask. |                                
+|Version    |Release notes                                   |
+|-----------|------------------------------------------------|
+|1.5.0      |Added support for renaming against the mask.    |                                
+|1.4.0      |Small bug fixes.                                |                                
+|1.5.0      |Initial version, appends .ttl extension.        |                                
 
 
 ***
