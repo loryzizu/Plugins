@@ -103,7 +103,7 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
         if (config.getPassword() == null || config.getPassword().isEmpty()) {
             config.setPassword(password);
         }
-        String organization = "organization2";
+        String organization = dpuContext.getOrganization();
 
         try {
             Class.forName("virtuoso.jdbc4.Driver");
