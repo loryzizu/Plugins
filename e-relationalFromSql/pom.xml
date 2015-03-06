@@ -8,7 +8,7 @@
   </parent>
   
   <artifactId>uv-e-relationalFromSql</artifactId>
-  <version>0.9.0-SNAPSHOT</version>
+  <version>0.9.0</version>
   <packaging>bundle</packaging>
   <name>E-RelationalFromSql</name>
   <description>Extracts data from relational database using SQL queries and stores them into internal data unit relational database</description>
