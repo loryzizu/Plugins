@@ -10,7 +10,7 @@
     <artifactId>t-tabular</artifactId>
     <version>2.0.0</version>
     <packaging>bundle</packaging>
-    <name>t-Tabular</name>
+    <name>T-Tabular</name>
     <description>Convert tabular data into rdf data.</description>
 	
     <properties>
