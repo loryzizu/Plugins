@@ -39,7 +39,7 @@
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
 |1.3.2              |N/A                                             |                                
-
+|2.0.0              |Update for new helpers. SPARQL used to filter based on VirtualPath. |
 
 ***
 
@@ -48,4 +48,5 @@
 |Author            |Notes                 |
 |------------------|----------------------|
 |N/A               |N/A                   | 
+|Petr Škoda        |VirtualPath required! |
 
