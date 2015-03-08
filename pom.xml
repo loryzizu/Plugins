@@ -32,6 +32,7 @@
 		<module>t-relational</module>
         <module>t-tabularToRelational</module>
         <module>t-sparqlUpdate</module>
+        <module>t-sparqlConstruct</module>
 
 		<!-- LOADERS -->
 		<module>l-rdfToSparql</module>
