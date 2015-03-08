@@ -31,6 +31,7 @@
 		<module>t-metadata</module>
 		<module>t-relational</module>
         <module>t-tabularToRelational</module>
+        <module>t-sparqlUpdate</module>
 
 		<!-- LOADERS -->
 		<module>l-rdfToSparql</module>
