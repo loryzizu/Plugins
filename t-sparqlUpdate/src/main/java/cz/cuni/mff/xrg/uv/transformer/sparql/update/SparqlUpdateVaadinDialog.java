@@ -31,7 +31,7 @@ public class SparqlUpdateVaadinDialog extends AbstractDialog<SparqlUpdateConfig_
     public SparqlUpdateConfig_V1 getConfiguration() throws DPUConfigException {
         final SparqlUpdateConfig_V1 c = new SparqlUpdateConfig_V1();
         if (txtQuery.getValue().isEmpty()) {
-            throw new DPUConfigException("Query must not be empty.");
+            throw new DPUConfigException(ctx.tr("sparqlUpdate.dialog.error.emptyQuery"));
         }
         c.setQuery(txtQuery.getValue());
         c.setPerGraph(checkPerGraph.getValue());
@@ -45,12 +45,12 @@ public class SparqlUpdateVaadinDialog extends AbstractDialog<SparqlUpdateConfig_
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
 
-        checkPerGraph = new CheckBox("Per-graph execution");
+        checkPerGraph = new CheckBox(ctx.tr("sparqlUpdate.dialog.perGraph"));
         checkPerGraph.setWidth("100%");
         mainLayout.addComponent(checkPerGraph);
         mainLayout.setExpandRatio(checkPerGraph, 0.0f);
 
-        txtQuery = new TextArea("SPARQL update query");
+        txtQuery = new TextArea(ctx.tr("sparqlUpdate.dialog.query"));
         txtQuery.setSizeFull();
         txtQuery.setRequired(true);
         mainLayout.addComponent(txtQuery);

@@ -72,21 +72,21 @@ public class SparqlUpdate extends AbstractDpu<SparqlUpdateConfig_V1> {
     @Override
     protected void innerExecute() throws DPUException {
         if (useDataset()) {
-            ContextUtils.sendShortInfo(ctx, "OpenRdf mode.");
+            ContextUtils.sendShortInfo(ctx, "sparqlUpdate.dpu.mode.openRdf");
         } else {
-            ContextUtils.sendShortInfo(ctx, "Virtuoso mode.");
+            ContextUtils.sendShortInfo(ctx, "sparqlUpdate.dpu.mode.virtuoso");
         }
         // Get update query.
         final String query = config.getQuery();
         if (query == null || query.isEmpty()) {
-            throw new DPUException("Query string is null or empty");
+            throw ContextUtils.dpuException(ctx, "sparqlUpdate.dpu.error.emptyQuery");
         }
         // Get graphs.
         final List<RDFDataUnit.Entry> sourceEntries = getInputEntries(rdfInput);
         // Copy data into a new graph.
         if (config.isPerGraph()) {
-            ContextUtils.sendMessage(ctx, DPUContext.MessageType.INFO, "Per-graph query execution",
-                    "Number of graphs: %d", sourceEntries.size());
+            ContextUtils.sendMessage(ctx, DPUContext.MessageType.INFO, "sparqlUpdate.dpu.info.perGraph",
+                    "sparqlUpdate.dpu.info.perGraph.body", sourceEntries.size());
             // Execute on per-graph basis.
             int counter = 1;
             for (final RDFDataUnit.Entry sourceEntry : sourceEntries) {
@@ -105,16 +105,14 @@ public class SparqlUpdate extends AbstractDpu<SparqlUpdateConfig_V1> {
                 // Execute query 1 -> 1.
                 updateEntries(query, Arrays.asList(sourceEntry), targetGraph);
                 if (ctx.canceled()) {
-                    ContextUtils.sendMessage(ctx, DPUContext.MessageType.INFO, "DPU cancelled ..", "");
-                    // Cancel.
-                    break;
+                    throw ContextUtils.dpuExceptionCancelled(ctx);
                 }
             }
         } else {
             // All graph at once, just check size.
             if (sourceEntries.size() > MAX_GRAPH_COUNT) {
-                throw new DPUException("Too many graphs .. (limit: " + MAX_GRAPH_COUNT + ", given: "
-                        + sourceEntries.size() + ")");
+                throw ContextUtils.dpuException(ctx, "sparqlUpdate.dpu.error.tooManyGraphs",
+                        MAX_GRAPH_COUNT, sourceEntries.size());
             }
             // Prepare single output graph.
             final URI targetGraph = faultTolerance.execute(new FaultTolerance.ActionReturn<URI>() {
@@ -125,8 +123,7 @@ public class SparqlUpdate extends AbstractDpu<SparqlUpdateConfig_V1> {
                 }
             });
             // Execute over all intpu graph ie. m -> 1
-            ContextUtils.sendMessage(ctx, DPUContext.MessageType.INFO,
-                    "Executing user query with single output.", "");
+            ContextUtils.sendShortInfo(ctx, "sparqlUpdate.dpu.info.singleOutput");
             updateEntries(query, sourceEntries, targetGraph);
         }
     }
@@ -197,9 +194,9 @@ public class SparqlUpdate extends AbstractDpu<SparqlUpdateConfig_V1> {
             }
             update.execute();
         } catch (MalformedQueryException | UpdateExecutionException ex) {
-            throw new DPUException("Problem with query", ex);
+            throw ContextUtils.dpuException(ctx, "sparqlUpdate.dpu.error.query", ex);
         } catch (RepositoryException ex) {
-            throw new DPUException("Problem with repository.", ex);
+            throw ContextUtils.dpuException(ctx, "sparqlUpdate.dpu.error.repository", ex);
         }
     }
 
@@ -215,7 +212,7 @@ public class SparqlUpdate extends AbstractDpu<SparqlUpdateConfig_V1> {
         try {
             return rdfOutput.addNewDataGraph(symbolicName);
         } catch (DataUnitException ex) {
-            throw new DPUException("DPU failed to add a new graph.", ex);
+            throw ContextUtils.dpuException(ctx, "sparqlUpdate.dpu.error.cantAddGraph", ex);
         }
     }
 
@@ -229,7 +226,7 @@ public class SparqlUpdate extends AbstractDpu<SparqlUpdateConfig_V1> {
         try {
             return rdfOutput.addNewDataGraph(entry.getSymbolicName());
         } catch (DataUnitException ex) {
-            throw new DPUException("DPU failed to add a new graph.", ex);
+            throw ContextUtils.dpuException(ctx, "sparqlUpdate.dpu.error.cantAddGraph", ex);
         }
     }
 
@@ -264,7 +261,7 @@ public class SparqlUpdate extends AbstractDpu<SparqlUpdateConfig_V1> {
                     try {
                         result.add(entry.getDataGraphURI());
                     } catch (DataUnitException ex) {
-                        throw new DPUException("Problem with DataUnit.", ex);
+                        throw ContextUtils.dpuException(ctx, "sparqlUpdate.dpu.error.dataUnit", ex);
                     }
                 }
             }
