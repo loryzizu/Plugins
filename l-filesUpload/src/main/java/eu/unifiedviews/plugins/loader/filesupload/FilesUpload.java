@@ -2,6 +2,7 @@ package eu.unifiedviews.plugins.loader.filesupload;
 
 import java.net.URI;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -19,116 +20,170 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import eu.unifiedviews.dataunit.files.FilesDataUnit.Entry;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelper;
-import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
-import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
-import eu.unifiedviews.helpers.dpu.localization.Messages;
+import eu.unifiedviews.helpers.dataunit.copy.CopyHelpers;
+import eu.unifiedviews.helpers.dataunit.resource.Resource;
+import eu.unifiedviews.helpers.dataunit.resource.ResourceHelpers;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
+import eu.unifiedviews.helpers.dpu.extension.rdf.RdfConfiguration;
+import eu.unifiedviews.plugins.extractor.filestoscp.FilesToScpConfig_V1;
+import eu.unifiedviews.plugins.loader.filestolocalfs.FilesToLocalFSConfig_V1;
 
 @DPU.AsLoader
-public class FilesUpload extends ConfigurableBase<FilesUploadConfig_V1> implements ConfigDialogProvider<FilesUploadConfig_V1> {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(FilesUpload.class);
+public class FilesUpload extends AbstractDpu<FilesUploadConfig_V1> {
 
-    @DataUnit.AsInput(name = "filesInput")
+    private static final Logger LOG = LoggerFactory.getLogger(FilesUpload.class);
+
+    @RdfConfiguration.ContainsConfiguration
+    @DataUnit.AsInput(name = "config", optional = true)
+    public RDFDataUnit rdfConfiguration;
+
+    @DataUnit.AsInput(name = "input")
     public FilesDataUnit filesInput;
 
-    @DataUnit.AsOutput(name = "filesOutput")
+    @DataUnit.AsOutput(name = "output")
     public WritableFilesDataUnit filesOutput;
 
+    @ExtensionInitializer.Init
+    public FaultTolerance faultTolerance;
+
+    @ExtensionInitializer.Init
+    public RdfConfiguration _rdfConfiguration;
+
+    @ExtensionInitializer.Init
+    public MultipleConfigurationUpdate _configurationUpdate;
+
     public FilesUpload() {
-        super(FilesUploadConfig_V1.class);
+        super(FilesUploadVaadinDialog.class,
+                ConfigHistory.history(FilesUploadConfig_V1.class)
+                .alternative(FilesToScpConfig_V1.class)
+                .alternative(FilesToLocalFSConfig_V1.class)
+                .addCurrent(FilesUploadConfig_V1.class));
     }
 
     @Override
-    public void execute(DPUContext dpuContext) throws DPUException, InterruptedException {
-        StandardFileSystemManager standardFileSystemManager = new StandardFileSystemManager();
+    protected void innerExecute() throws DPUException {
+        // Prepare VFS2.
+        final StandardFileSystemManager standardFileSystemManager = new StandardFileSystemManager();
         standardFileSystemManager.setClassLoader(standardFileSystemManager.getClass().getClassLoader());
 
-        FileSystemOptions fileSystemOptions = new FileSystemOptions();
+        final FileSystemOptions fileSystemOptions = new FileSystemOptions();
         FtpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
         FtpsFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
         SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
-        VirtualPathHelper virtualPathHelper = VirtualPathHelpers.create(filesInput);
-        Messages messages = new Messages(dpuContext.getLocale(), getClass().getClassLoader());
-        CopyHelper copyHelper = CopyHelpers.create(filesInput, filesOutput);
+
         try {
             standardFileSystemManager.init();
+        } catch (FileSystemException ex) {
+            throw ContextUtils.dpuException(ctx, ex, "FilesUpload.execute.exception");
+        }
+        // Configure authenticator.
+        if (StringUtils.isNotBlank(config.getUsername())) {
 
-            if (StringUtils.isNotBlank(config.getUsername())) {
-                DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(
-                        fileSystemOptions,
-                        new StaticUserAuthenticator(
-                                URI.create(config.getUri()).getHost(),
-                                config.getUsername(),
-                                CryptorFactory.getCryptor().decrypt(config.getPassword())));
+            final StaticUserAuthenticator userAuthenticator;
+
+            try {
+                userAuthenticator = new StaticUserAuthenticator(URI.create(config.getUri()).getHost(),
+                        config.getUsername(), CryptorFactory.getCryptor().decrypt(config.getPassword()));
+            } catch (Exception ex) {
+                throw ContextUtils.dpuException(ctx, ex, "FilesUpload.execute.exception");
             }
-            long index = 0L;
-            for (Entry entry : FilesHelper.getFiles(filesInput)) {
+            try {
+                DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(fileSystemOptions,
+                        userAuthenticator);
+            } catch (FileSystemException ex) {
+                throw ContextUtils.dpuException(ctx, ex, "FilesUpload.execute.exception");
+            }
+        }
+        // Get files to upload.
+        final List<FilesDataUnit.Entry> files = FaultToleranceUtils.getEntries(faultTolerance, filesInput,
+                FilesDataUnit.Entry.class);
+        final String baseUri;
+        if (config.getUri().endsWith("/")) {
+            baseUri = config.getUri();
+        } else {
+            baseUri = config.getUri() + "/";
+        }
+        ContextUtils.sendShortInfo(ctx, baseUri);
+        // Iterate and upload files.
+        int counter = 0;
+        for (final FilesDataUnit.Entry entry : files) {
+            if (ctx.canceled()) {
+                throw ContextUtils.dpuExceptionCancelled(ctx);
+            }
+            LOG.info("Processing {}/{} ...", ++counter, files.size());
+            final String fileName = FaultToleranceUtils.getVirtualPath(faultTolerance, filesInput, entry);
+            if (fileName == null) {
+                // Use symbolic name
+                throw ContextUtils.dpuException(ctx, "FilesUpload.execute.missingVirtualPath", entry);
+            }
+            try {
+                // Upload file.
+                final FileObject fileObject;
                 try {
-                    if (dpuContext.canceled()) {
-                        break;
-                    }
+                    fileObject = standardFileSystemManager.resolveFile(baseUri + fileName, fileSystemOptions);
+                } catch (FileSystemException ex) {
+                    throw ContextUtils.dpuException(ctx, ex, "FilesUpload.execute.exception");
+                }
+                faultTolerance.execute(new FaultTolerance.Action() {
 
-                    if (dpuContext.isDebugging()) {
-                        LOG.debug("Processing {} file {}", index, entry);
+                    @Override
+                    public void action() throws Exception {
+                        final FileObject sourceFileObject = standardFileSystemManager.resolveFile(
+                                entry.getFileURIString());
+                        // Copy or move based on setting. WARN: Move can be dangerous!
+                        if (config.isMoveFiles()) {
+                            sourceFileObject.moveTo(fileObject);
+                        } else {
+                            fileObject.copyFrom(sourceFileObject, Selectors.SELECT_SELF);
+                        }
                     }
-                    String fileName = virtualPathHelper.getVirtualPath(entry.getSymbolicName());
+                });
+                // Some metadata copy to output work.
+                faultTolerance.execute(new FaultTolerance.Action() {
 
-                    if (StringUtils.isBlank(fileName)) {
-                        fileName = entry.getSymbolicName();
+                    @Override
+                    public void action() throws Exception {
+                        CopyHelpers.copyMetadata(entry.getSymbolicName(), filesInput, filesOutput);
                     }
+                });
+                final Resource resource = faultTolerance.execute(new FaultTolerance.ActionReturn<Resource>() {
 
-                    FileObject destinationFileObject = standardFileSystemManager.resolveFile(config.getUri() + fileName, fileSystemOptions);
-                    FileObject sourceFileObject = standardFileSystemManager.resolveFile(entry.getFileURIString());
-                    if (config.isMoveFiles()) {
-                        sourceFileObject.moveTo(destinationFileObject);
-                    } else {
-                        destinationFileObject.copyFrom(sourceFileObject, Selectors.SELECT_SELF);
+                    @Override
+                    public Resource action() throws Exception {
+                        return ResourceHelpers.getResource(filesOutput, entry.getSymbolicName());
                     }
+                });
+                resource.setLast_modified(new Date());
+                faultTolerance.execute(new FaultTolerance.Action() {
 
-                    copyHelper.copyMetadata(entry.getSymbolicName());
-                    Resource resource = ResourceHelpers.getResource(filesOutput, entry.getSymbolicName());
-                    resource.setLast_modified(new Date());
-                    ResourceHelpers.setResource(filesOutput, entry.getSymbolicName(), resource);
-                    if (dpuContext.isDebugging()) {
-                        LOG.debug("Processed {} file", index);
+                    @Override
+                    public void action() throws Exception {
+                        CopyHelpers.copyMetadata(entry.getSymbolicName(), filesInput, filesOutput);
+                        Resource resource = ResourceHelpers.getResource(filesOutput, entry.getSymbolicName());
+                        resource.setLast_modified(new Date());
+
+                        ResourceHelpers.setResource(filesOutput, entry.getSymbolicName(), resource);
                     }
-                    index++;
-                } catch (FileSystemException | DataUnitException ex) {
-                    if (config.isSkipOnError()) {
-                        LOG.warn("Error processing {} file {}", index, String.valueOf(entry), ex);
-                    } else {
-                        throw new DPUException(messages.getString("FilesUpload.execute.exception.skipFile", index, String.valueOf(entry)), ex);
-                    }
+                });
+            } catch (DPUException ex) {
+                if (config.isSoftFail()) {
+                    ContextUtils.sendWarn(ctx, "FilesUpload.execute.uploadFail", ex, entry.toString());
+                } else {
+                    throw ex;
                 }
             }
-        } catch (DPUException ex){
-            throw ex;
-        } catch (Exception ex) {
-            throw new DPUException(messages.getString("FilesUpload.execute.exception"), ex);
-        } finally {
-            standardFileSystemManager.close();
-            virtualPathHelper.close();
-            copyHelper.close();
+            LOG.info("Processing {}/{} ... done", counter, files.size());
         }
     }
 
-    @Override
-    public AbstractConfigDialog<FilesUploadConfig_V1> getConfigurationDialog() {
-        return new FilesUploadVaadinDialog();
-    }
 }
