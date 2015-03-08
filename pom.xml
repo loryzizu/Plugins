@@ -41,7 +41,8 @@
 		<module>l-filesToVirtuoso</module>
 		<module>l-filesUpload</module>
 		<module>l-relationalToSql</module>
-	</modules>
+        <module>t-rdfMerger</module>
+  </modules>
 
 	<repositories>
 		<repository>
