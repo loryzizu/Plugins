@@ -4,40 +4,33 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import org.openrdf.model.URI;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
-import org.openrdf.query.TupleQueryResultHandlerException;
-import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.query.resultio.TupleQueryResultWriter;
 import org.openrdf.query.resultio.text.csv.SPARQLResultsCSVWriterFactory;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dataunit.DataUnitUtils;
+import eu.unifiedviews.helpers.dataunit.files.FilesDataUnitUtils;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 
-/**
- * @author Škoda Petr
- */
 @DPU.AsTransformer
-public class SparqlSelect extends ConfigurableBase<SparqlSelectConfig> implements ConfigDialogProvider<SparqlSelectConfig> {
+public class SparqlSelect extends AbstractDpu<SparqlSelectConfig> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SparqlSelect.class);
 
@@ -47,105 +40,53 @@ public class SparqlSelect extends ConfigurableBase<SparqlSelectConfig> implement
     @DataUnit.AsOutput(name = "output")
     public WritableFilesDataUnit outFilesData;
 
+    @ExtensionInitializer.Init
+    public FaultTolerance faultTolerance;
+
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.trandformer.sparqlselect.SparqlSelectConfig")
+    public ConfigurationUpdate _ConfigurationUpdate;
+
     public SparqlSelect() {
-        super(SparqlSelectConfig.class);
+        super(SparqlSelectVaadinDialog.class, ConfigHistory.noHistory(SparqlSelectConfig.class));
     }
 
     @Override
-    public AbstractConfigDialog<SparqlSelectConfig> getConfigurationDialog() {
-        return new SparqlSelectVaadinDialog();
-    }
+    protected void innerExecute() throws DPUException {
+        // Prepare output path.
+        final FilesDataUnit.Entry output = faultTolerance.execute(new FaultTolerance.ActionReturn<FilesDataUnit.Entry>() {
 
-    @Override
-    public void execute(DPUContext context) throws DPUException {
-        //
-        // Prepare output
-        //
-        final String outSymbolicName;
-        final String outFileUri;
-        try {
-            outSymbolicName = config.getTargetPath();
-            outFileUri = outFilesData.addNewFile(outSymbolicName);
-        } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Problem with DataUnit", "Can't add new file.", ex);
-            return;
-        }
-        try {
-            // add metadata
-            VirtualPathHelpers.setVirtualPath(outFilesData, outSymbolicName, config.getTargetPath());
-            // iterata over imput files
-        } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "Failed to add metadata.", ex);
-            return;
-        }
-        final File outFile = new File(java.net.URI.create(outFileUri));
-        //
-        // get input graphs, prepara dataset and metasata
-        //
-        final Map<String, URI> graphs;
-        try {
-            graphs = getGraphs();
-        } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Problem with DataUnit.", "", ex);
-            return;
-        }
-        //
-        // prepare dataset
-        //
-        final DatasetImpl dataset = new DatasetImpl();
-        for (URI graph : graphs.values()) {
-            dataset.addDefaultGraph(graph);
-        }
-        //
-        // transform
-        //
-        RepositoryConnection connection = null;
-        try (OutputStream outputStream = new FileOutputStream(outFile)) {
-            connection = inRdfData.getConnection();
-            // prepare resultwriter
-            final SPARQLResultsCSVWriterFactory writerFactory = new SPARQLResultsCSVWriterFactory();
-            final TupleQueryResultWriter resultWriter = writerFactory.getWriter(outputStream);
-            // write result
-            TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, config.getQuery());
+            @Override
+            public FilesDataUnit.Entry action() throws Exception {
+                return FilesDataUnitUtils.createFile(outFilesData, config.getTargetPath());
+            }
+        });
+        // Prepare query.
+        final String queryAsString = faultTolerance.execute(new FaultTolerance.ActionReturn<String>() {
 
-            // TODO add support for placeholders ?
+            @Override
+            public String action() throws Exception {
+                final List<RDFDataUnit.Entry> sources = DataUnitUtils.getEntries(inRdfData, RDFDataUnit.Entry.class);
+                return config.getQuery().replaceFirst("(?i)WHERE", 
+                        SparqlUtils.prepareClause("FROM", sources) + "WHERE ");
+            }
+        });
+        // Execute query and import into csv.
+        faultTolerance.execute(inRdfData, new FaultTolerance.ConnectionAction() {
 
-            query.setDataset(dataset);
-            query.evaluate(resultWriter);
-        } catch (IOException | RepositoryException | QueryEvaluationException | TupleQueryResultHandlerException ex) {
-            LOG.warn("IOException", ex);
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU failed", "", ex);
-        } catch (MalformedQueryException ex) {
-            LOG.warn("MalformedQueryException", ex);
-            context.sendMessage(DPUContext.MessageType.ERROR, "Invalid query.", "", ex);
-        } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed.", "Problem with DataUnit.", ex);
-        } finally {
-            // in every case close conneciton
-            try {
-                if (connection != null) {
-                    connection.close();
+            @Override
+            public void action(RepositoryConnection connection) throws Exception {
+                final File outFile = FilesDataUnitUtils.asFile(output);
+                final SPARQLResultsCSVWriterFactory writerFactory = new SPARQLResultsCSVWriterFactory();
+                // Create output file and write the result.
+                try (OutputStream outputStream = new FileOutputStream(outFile)) {
+                    final TupleQueryResultWriter resultWriter = writerFactory.getWriter(outputStream);
+                    final TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryAsString);
+                    query.evaluate(resultWriter);
+                } catch (IOException ex) {
+                    throw new DPUException(ex);
                 }
-            } catch (RepositoryException ex) {
-                LOG.warn("Close on connection has failed.", ex);
             }
-        }
-    }
-
-    /**
-     * Return map of all input graphs.
-     *
-     * @return
-     */
-    private Map<String, URI> getGraphs() throws DataUnitException {
-        final Map<String, URI> graphUris = new HashMap<>();
-        try (RDFDataUnit.Iteration iter = inRdfData.getIteration()) {
-            while (iter.hasNext()) {
-                final RDFDataUnit.Entry entry = iter.next();
-                graphUris.put(entry.getSymbolicName(), entry.getDataGraphURI());
-            }
-        }
-        return graphUris;
+        });
     }
 
 }

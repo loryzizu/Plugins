@@ -4,7 +4,7 @@ public class SparqlSelectConfig {
 
     private String targetPath = "/out.csv";
 
-    private String query = "SELECT ?s ?p ?o WHERE {?s ?p ?o }";
+    private String query = "SELECT ?s ?p ?o WHERE { ?s ?p ?o }";
 
     public String getTargetPath() {
         return targetPath;
