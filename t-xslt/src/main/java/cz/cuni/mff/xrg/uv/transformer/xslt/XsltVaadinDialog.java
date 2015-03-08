@@ -51,7 +51,7 @@ public class XsltVaadinDialog extends AbstractDialog<XsltConfig_V2> {
         }
         // Check file extension.
         if (!c.getOutputFileExtension().isEmpty() && !c.getOutputFileExtension().startsWith(".")) {
-            throw new DPUConfigException(ctx.tr("xslt.dialog.template.output.extension.formatExeption"));
+            throw new DPUConfigException(ctx.tr("xslt.dialog.template.output.extension.formatException"));
         }
         return c;
     }

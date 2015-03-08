@@ -61,10 +61,9 @@ public class Xslt extends AbstractDpu<XsltConfig_V2> {
 
     @Override
     protected void innerExecute() throws DPUException {
-        ContextUtils.sendShortInfo(ctx, "Planned workers count: {0}",  config.getNumberOfExtraThreads() + 1);
         // Some check for template.
         if (config.getXsltTemplate() == null || config.getXsltTemplate().isEmpty()) {
-            throw new DPUException("No XSLT template available.");
+            throw ContextUtils.dpuException(ctx, "xslt.dpu.error.noTemplate");
         }
         // Get files to iterate.
         final List<FilesDataUnit.Entry> files
@@ -122,7 +121,7 @@ public class Xslt extends AbstractDpu<XsltConfig_V2> {
             // Add to lists.
             allTaskList.add(task);
             try {
-                LOG.debug("New tastk: {}", task.getSymbolicName());
+                LOG.debug("New task: {}", task.getSymbolicName());
                 // We have to succes.
                 while (!taskQueue.offer(task, 2, TimeUnit.SECONDS) && !ctx.canceled()) {
                     // No-op.
@@ -153,7 +152,7 @@ public class Xslt extends AbstractDpu<XsltConfig_V2> {
             } catch (InterruptedException ex) {
                 // Ok .. some threads may be hanging there. This is too dangerous, we have to ignore this
                 // add wait until we can add a DeadPill.
-                ContextUtils.sendShortInfo(ctx, "InterruptedException is ignored by main thread.");
+                ContextUtils.sendShortInfo(ctx, "xslt.dpu.info.interrupted");
             }
         }
         // Wait for everyone.
@@ -169,7 +168,7 @@ public class Xslt extends AbstractDpu<XsltConfig_V2> {
         for (XsltExecutor worker : workers ) {
             if (worker.isThreadFail()) {
                 // At least one thread fail, so whole DPU fail too. This is serious exception.
-                throw new DPUException("Execution failed, for error in executor thread.");
+                throw ContextUtils.dpuException(ctx, "xslt.dpu.error.executorFailed");
             }
         }
 
@@ -206,7 +205,7 @@ public class Xslt extends AbstractDpu<XsltConfig_V2> {
                             VirtualPathHelper.PREDICATE_VIRTUAL_PATH);
                     if (virtualPath == null) {
                         // Use symbolic name
-                        throw ContextUtils.dpuException(ctx, "Virtual path is not set for: {0}",
+                        throw ContextUtils.dpuException(ctx, "xslt.dpu.error.virtualPathNotSet",
                                 task.getSymbolicName());
                     }
                     // Update VirtualPath.
@@ -229,13 +228,12 @@ public class Xslt extends AbstractDpu<XsltConfig_V2> {
 
         // Print final messages.
         if (processed == allTaskList.size() && !status.terminateThreads) {
-            ContextUtils.sendShortInfo(ctx, "Processed {0}/{1}", processed, allTaskList.size());
+            ContextUtils.sendShortInfo(ctx, "xslt.dpu.info.processed", processed, allTaskList.size());
         } else {
+            ContextUtils.sendShortWarn(ctx, "xslt.dpu.info.processed", processed, allTaskList.size());
             // Sotmehing failed.
             if (config.isFailOnError()) {
-                throw ContextUtils.dpuException(ctx, "Not all files have been transformed!");
-            } else {
-                ContextUtils.sendShortWarn(ctx, "Processed {0}/{1}", processed, allTaskList.size());
+                throw ContextUtils.dpuException(ctx, "xslt.dpu.error.notAllTransformer");
             }
         }
     }

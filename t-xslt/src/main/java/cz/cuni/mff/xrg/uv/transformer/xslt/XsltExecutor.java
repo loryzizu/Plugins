@@ -133,7 +133,7 @@ public class XsltExecutor extends Thread {
             this.executable = compiler.compile(
                     new StreamSource(new StringReader(config.getXsltTemplate())));
         } catch (SaxonApiException ex) {
-            throw new DPUException("Cannot compile XSLT template.", ex);
+            throw ContextUtils.dpuException(ctx, ex, "xslt.dpu.executor.errors.xsltCompile");
         }
         this.config = config;
         this.taskQueue = taskQueue;
@@ -158,11 +158,11 @@ public class XsltExecutor extends Thread {
         } catch (InterruptedException ex) {
             LOG.error("InterruptedException executor terminated!", ex);
         } catch (Exception ex) {
-            ContextUtils.sendError(ctx, "Executor failed!", ex, "");
+            ContextUtils.sendError(ctx, "xslt.dpu.executor.fail", ex, "");
             return;
         } catch (Throwable ex) {
             LOG.error("Full throwable error.", ex);
-            ContextUtils.sendError(ctx, "Executor failed!", "See logs for more details.", ex.getMessage());
+            ContextUtils.sendError(ctx, "xslt.dpu.executor.fail", "", ex.getMessage());
             return;
         }
         // We finished peacefully.
@@ -195,13 +195,15 @@ public class XsltExecutor extends Thread {
             task.addToOutput = true;
         } catch (SaxonApiException ex) {
             if (config.isFailOnError()) {
-                ContextUtils.sendError(ctx, "Error processing file number: " + Integer.toString(task.order), ex,
-                        "File: {0}</br>File location: {1}", task.symbolicName, task.sourceFile);
+                ContextUtils.sendError(ctx,
+                        ctx.tr("xslt.dpu.executor.fileFail.caption", task.order), ex,
+                        "xslt.dpu.executor.fileFail.body", task.symbolicName, task.sourceFile);
                 task.status.terminateThreads = true;    // Should kill all threads.
                 return;
             } else {
-                ContextUtils.sendWarn(ctx, "Error processig file number: " + Integer.toString(task.order), ex,
-                        "File: {0}</br>File location: {1}", task.symbolicName, task.sourceFile);
+                ContextUtils.sendWarn(ctx,
+                        ctx.tr("xslt.dpu.executor.fileFail.caption", task.order), ex,
+                        "xslt.dpu.executor.fileFail.body", task.symbolicName, task.sourceFile);
             }
         } finally {
             // In every case close opened resources.
