@@ -10,7 +10,7 @@
     <artifactId>t-xslt</artifactId>
     <version>2.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>t-Xslt</name>
+    <name>T-Xslt</name>
     <description>Description of XSLT.</description>
 	
     <properties>

@@ -10,7 +10,7 @@
     <artifactId>t-filesMerger</artifactId>
     <version>1.6.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>t-FilesMerger</name>
+    <name>T-FilesMerger</name>
     <description></description>
 
     <properties>

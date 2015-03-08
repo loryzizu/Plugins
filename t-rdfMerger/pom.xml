@@ -10,7 +10,7 @@
     <artifactId>t-rdfMerger</artifactId>
     <version>1.6.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>t-RdfMerger</name>
+    <name>T-RdfMerger</name>
     <description></description>
 
     <properties>
