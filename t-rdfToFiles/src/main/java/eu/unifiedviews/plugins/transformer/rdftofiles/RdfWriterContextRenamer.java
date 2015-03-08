@@ -6,6 +6,8 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.rio.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Škoda Petr
@@ -42,6 +44,10 @@ public class RdfWriterContextRenamer implements RDFWriter {
 
     }
 
+    private static final Logger LOG = LoggerFactory.getLogger(RdfWriterContextRenamer.class);
+    
+    private static final int LOG_EACH_STATEMENTS = 10000;
+
     /**
      * Underlying rdf writer.
      */
@@ -56,6 +62,10 @@ public class RdfWriterContextRenamer implements RDFWriter {
      * Wrap used to change context in statements.
      */
     private final StatementWrap statementWrap = new StatementWrap();
+
+    private int counter = 0;
+    
+    private int counterNext = 0;
 
     public RdfWriterContextRenamer(RDFWriter writer) {
         this.writer = writer;
@@ -107,10 +117,16 @@ public class RdfWriterContextRenamer implements RDFWriter {
 
     @Override
     public void handleStatement(Statement stmnt) throws RDFHandlerException {
-        // replace context = use our statement wrap
+        // Replace context = use our statement wrap.
         statementWrap.statement = stmnt;
-        // call original function
+        // Call original function.
         writer.handleStatement(statementWrap);
+        // Logging.
+        counter++;
+        if (counter > counterNext) {
+            counterNext += LOG_EACH_STATEMENTS;
+            LOG.info("Statement processed: {}", counter);
+        }
     }
 
     @Override
