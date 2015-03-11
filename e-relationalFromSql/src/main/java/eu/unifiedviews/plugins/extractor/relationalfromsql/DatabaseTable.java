@@ -1,5 +1,9 @@
 package eu.unifiedviews.plugins.extractor.relationalfromsql;
 
+/**
+ * Represents a database table
+ * Contains basic information about database table
+ */
 public class DatabaseTable {
 
     private String tableName;

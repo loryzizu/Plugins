@@ -1,5 +1,9 @@
 package eu.unifiedviews.plugins.extractor.relationalfromsql;
 
+/**
+ * Represents database table column.
+ * Contains information about column type, name, size, etc.
+ */
 public class ColumnDefinition {
 
     private String columnName;

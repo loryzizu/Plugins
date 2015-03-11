@@ -19,10 +19,21 @@ import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.plugins.extractor.relationalfromsql.SqlDatabase.DatabaseType;
 
+/**
+ * This class provides database helper methods
+ */
 public class RelationalFromSqlHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(RelationalFromSqlHelper.class);
 
+    /**
+     * Get list of table columns from {@link ResultSetMetaData} result set meta data
+     * 
+     * @param meta
+     *            ResultSet meta data
+     * @return List of columns
+     * @throws SQLException
+     */
     public static List<ColumnDefinition> getTableColumnsFromMetaData(ResultSetMetaData meta) throws SQLException {
         int columnsCount = meta.getColumnCount();
         List<ColumnDefinition> columns = new ArrayList<>();
@@ -121,6 +132,13 @@ public class RelationalFromSqlHelper {
         }
     }
 
+    /**
+     * Test database connection based on {@link RelationalFromSqlConfig_V2} config
+     * 
+     * @param config
+     *            Database configuration
+     * @return true if connection successful, false if connection fails
+     */
     public static boolean testDatabaseConnection(RelationalFromSqlConfig_V2 config) {
         boolean bConnectResult = true;
         Connection conn = null;
@@ -136,6 +154,14 @@ public class RelationalFromSqlHelper {
         return bConnectResult;
     }
 
+    /**
+     * Create JDBC database connection to database based on {@link RelationalFromSqlConfig_V2} configuration
+     * 
+     * @param config
+     *            Database configuration
+     * @return SQL connection to database
+     * @throws SQLException
+     */
     public static Connection createConnection(RelationalFromSqlConfig_V2 config) throws SQLException {
 
         try {
@@ -145,46 +171,114 @@ public class RelationalFromSqlHelper {
         }
 
         Connection connection = null;
+        String jdbcURL = createDatabaseUrlFromConfig(config);
         final Properties connectionProperties = new Properties();
         connectionProperties.setProperty("user", config.getUserName());
         connectionProperties.setProperty("password", config.getUserPassword());
-        // TODO: Do we need to validate client / server certificates?
-        if (config.getDatabaseType() == DatabaseType.POSTGRES && config.isUseSSL()) {
-            connectionProperties.setProperty("ssl", "true");
-            // TODO: SSL support for other databases generically
-            connectionProperties.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
+        boolean bConfigSslTrustStore = false;
+        if (config.isUseSSL()) {
+            bConfigSslTrustStore = checkTrustStoreConfigExists(config);
+            if (bConfigSslTrustStore) {
+                LOG.debug("Using custom truststore {} to verify trusted servers", config.getTruststoreLocation());
+                System.setProperty("javax.net.ssl.trustStore", config.getTruststoreLocation());
+                System.setProperty("javax.net.ssl.trustStorePassword", config.getTruststorePassword());
+            } else {
+                LOG.warn("Using default JAVA truststore to verify trusted servers. This can cause problems with servers certificates signed by unknown CAs");
+            }
+
+            if (config.getDatabaseType() == DatabaseType.MYSQL) {
+                connectionProperties.setProperty("useSSL", "true");
+                connectionProperties.setProperty("requireSSL", "true");
+            } else if (config.getDatabaseType() == DatabaseType.ORACLE) {
+                connectionProperties.setProperty("javax.net.ssl.trustStoreType", "JKS");
+                connectionProperties.setProperty("oracle.net.authentication_services", "(TCPS)");
+                if (bConfigSslTrustStore) {
+                    connectionProperties.setProperty("javax.net.ssl.trustStore", "resources/trusted");
+                    connectionProperties.setProperty("javax.net.ssl.trustStorePassword", "changeit");
+                }
+            } else if (config.getDatabaseType() == DatabaseType.MSSQL) {
+                connectionProperties.setProperty("integratedSecurity", "true");
+                connectionProperties.setProperty("encrypt", "true");
+                connectionProperties.setProperty("trustServerCertificate", "false");
+                if (bConfigSslTrustStore) {
+                    connectionProperties.setProperty("trustStore", "resources/trusted");
+                    connectionProperties.setProperty("trustStorePassword", "changeit");
+                }
+            } else if (config.getDatabaseType() == DatabaseType.POSTGRES && bConfigSslTrustStore) {
+                connectionProperties.setProperty("sslfactory", "eu.unifiedviews.plugins.extractor.relationalfromsql.SSLPostgresValidationFactory");
+            }
         }
-        connection = DriverManager.getConnection(createDatabaseUrlFromConfig(config), connectionProperties);
+        connection = DriverManager.getConnection(jdbcURL, connectionProperties);
         connection.setAutoCommit(false);
 
         return connection;
     }
 
-    private static String createDatabaseUrlFromConfig(RelationalFromSqlConfig_V2 config) {
-        StringBuilder url = new StringBuilder();
-        url.append(SqlDatabase.getJdbcUrlPrefixForDatabase(config.getDatabaseType()));
-        url.append(config.getDatabaseHost());
-        if (config.getDatabasePort() != 0) {
-            url.append(":");
-            url.append(config.getDatabasePort());
+    private static boolean checkTrustStoreConfigExists(RelationalFromSqlConfig_V2 config) {
+        boolean bExists = true;
+        if (config.getTruststoreLocation() == null || config.getTruststoreLocation().isEmpty()) {
+            bExists = false;
         }
-        if (config.getDatabaseType() == DatabaseType.H2_MEM || config.getDatabaseType() == DatabaseType.ORACLE) {
-            url.append(":");
-        } else if (config.getDatabaseType() == DatabaseType.MSSQL) {
-            url.append(";databaseName=");
-        } else {
-            url.append("/");
+        if (config.getTruststorePassword() == null || config.getTruststorePassword().isEmpty()) {
+            bExists = false;
         }
-        url.append(config.getDatabaseName());
-
-        if (config.getDatabaseType() == DatabaseType.MSSQL && config.getInstanceName() != null) {
-            url.append(";instanceName=");
-            url.append(config.getInstanceName());
-        }
-
-        return url.toString();
+        return bExists;
     }
 
+    /**
+     * Creates JDBC connection URL based on {@link RelationalFromSqlConfig_V2} configuration
+     * 
+     * @param config
+     *            Database configuration
+     * @return JDBC connection URL
+     */
+    private static String createDatabaseUrlFromConfig(RelationalFromSqlConfig_V2 config) {
+        if (config.getDatabaseType() == DatabaseType.ORACLE) {
+            String protocol = "tcp";
+            if (config.isUseSSL()) {
+                protocol = "tcps";
+            }
+            String url = String.format(SqlDatabase.ORACLE_URL, protocol, config.getDatabaseHost(), config.getDatabasePort(), config.getDatabaseName());
+            return url;
+        } else {
+            StringBuilder url = new StringBuilder();
+            url.append(SqlDatabase.getJdbcUrlPrefixForDatabase(config.getDatabaseType()));
+            url.append(config.getDatabaseHost());
+            if (config.getDatabasePort() != 0) {
+                url.append(":");
+                url.append(config.getDatabasePort());
+            }
+            if (config.getDatabaseType() == DatabaseType.H2_MEM) {
+                url.append(":");
+            } else if (config.getDatabaseType() == DatabaseType.MSSQL) {
+                url.append(";databaseName=");
+            } else {
+                url.append("/");
+            }
+            url.append(config.getDatabaseName());
+
+            if (config.getDatabaseType() == DatabaseType.MSSQL && config.getInstanceName() != null) {
+                url.append(";instanceName=");
+                url.append(config.getInstanceName());
+            }
+            if (config.isUseSSL() && config.getDatabaseType() == DatabaseType.POSTGRES) {
+                url.append("?ssl=true");
+            }
+
+            return url.toString();
+        }
+    }
+
+    /**
+     * Get columns for table from source table
+     * 
+     * @param config
+     *            Database configuration
+     * @param tableName
+     *            Table to obtain columns for
+     * @return List of columns for table
+     * @throws SQLException
+     */
     public static List<String> getColumnsForTable(RelationalFromSqlConfig_V2 config, String tableName) throws SQLException {
         List<String> columns = new ArrayList<>();
         Connection connection = null;
@@ -211,6 +305,14 @@ public class RelationalFromSqlHelper {
         return columns;
     }
 
+    /**
+     * Get list of all database tables and views from the source database
+     * 
+     * @param config
+     *            Database config parameters
+     * @return List of tables in source database
+     * @throws SQLException
+     */
     public static List<DatabaseTable> getTablesInSourceDatabase(RelationalFromSqlConfig_V2 config) throws SQLException {
         List<DatabaseTable> tables = new ArrayList<>();
         Connection connection = null;
@@ -277,6 +379,15 @@ public class RelationalFromSqlHelper {
         return normalizedQuery;
     }
 
+    /**
+     * Generates SQL select with all (supported) columns
+     * 
+     * @param table
+     *            Database table to generate select for
+     * @param columns
+     *            List of columns to select
+     * @return Select query for table (String)
+     */
     public static String generateSelectForTable(DatabaseTable table, List<String> columns) {
         StringBuilder query = new StringBuilder("SELECT ");
         for (String column : columns) {

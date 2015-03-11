@@ -5,6 +5,16 @@ import java.util.List;
 
 public class QueryBuilder {
 
+    /**
+     * Generates INSERT query for prepared statement (values as ?) with given column names and for given table
+     * 
+     * @param columns
+     *            Columns to insert into
+     * @param tableName
+     *            Table to insert into
+     * @return INSERT query for prepared statement
+     * @throws SQLException
+     */
     public static String getInsertQueryForPreparedStatement(List<ColumnDefinition> columns, String tableName) throws SQLException {
         StringBuilder query = new StringBuilder("INSERT INTO ");
         query.append(tableName);
@@ -26,6 +36,16 @@ public class QueryBuilder {
         return query.toString();
     }
 
+    /**
+     * Generates CREATE table query with given column definitions
+     * 
+     * @param columns
+     *            List of column definitions
+     * @param tableName
+     *            Name of created table
+     * @return CREATE TABLE query
+     * @throws SQLException
+     */
     public static String getCreateTableQueryFromMetaData(List<ColumnDefinition> columns, String tableName) throws SQLException {
         StringBuilder query = new StringBuilder();
         query.append("CREATE TABLE ");

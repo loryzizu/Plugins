@@ -39,6 +39,8 @@ public class SqlDatabase {
     private static final int MSSQL_DEFAULT_PORT = 1433;
 
     // Oracle parameters
+    public static final String ORACLE_URL = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=%s)(HOST=%s)(PORT=%s))(CONNECT_DATA=(SERVICE_NAME=%s)))";
+
     private static final String ORACLE_NAME = "ORACLE";
 
     private static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.OracleDriver";

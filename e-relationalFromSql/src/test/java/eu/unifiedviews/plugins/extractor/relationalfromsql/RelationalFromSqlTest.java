@@ -21,6 +21,7 @@ import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
 import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
 import eu.unifiedviews.helpers.dataunit.relationalhelper.RelationalHelper;
+import eu.unifiedviews.plugins.extractor.relationalfromsql.SqlDatabase.DatabaseType;
 
 public class RelationalFromSqlTest {
 
@@ -236,6 +237,7 @@ public class RelationalFromSqlTest {
         config.setUseSSL(false);
         config.setTargetTableName(TARGET_TABLE_NAME);
         config.setSqlQuery(sqlQuery);
+        config.setDatabaseType(DatabaseType.H2_MEM);
 
         return config;
     }

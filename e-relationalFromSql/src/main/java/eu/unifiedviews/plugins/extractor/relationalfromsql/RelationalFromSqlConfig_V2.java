@@ -28,6 +28,10 @@ public class RelationalFromSqlConfig_V2 {
 
     private String instanceName;
 
+    private String truststoreLocation;
+
+    private String truststorePassword;
+
     public String getDatabaseHost() {
         return this.databaseHost;
     }
@@ -114,6 +118,22 @@ public class RelationalFromSqlConfig_V2 {
 
     public void setInstanceName(String instanceName) {
         this.instanceName = instanceName;
+    }
+
+    public String getTruststoreLocation() {
+        return this.truststoreLocation;
+    }
+
+    public void setTruststoreLocation(String truststoreLocation) {
+        this.truststoreLocation = truststoreLocation;
+    }
+
+    public String getTruststorePassword() {
+        return this.truststorePassword;
+    }
+
+    public void setTruststorePassword(String truststorePassword) {
+        this.truststorePassword = truststorePassword;
     }
 
 }

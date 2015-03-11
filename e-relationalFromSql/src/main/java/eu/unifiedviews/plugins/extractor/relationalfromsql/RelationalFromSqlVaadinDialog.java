@@ -42,6 +42,10 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
 
     private CheckBox chckUseSsl;
 
+    private TextField txtTruststoreLocation;
+
+    private PasswordField txtTruststorePassword;
+
     private TextField txtTargetTableName;
 
     private TextArea txtSqlQuery;
@@ -125,7 +129,23 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
 
         this.chckUseSsl = new CheckBox();
         this.chckUseSsl.setCaption(this.messages.getString("dialog.extractdb.usessl"));
+        this.chckUseSsl.addValueChangeListener(createSslValueChangeListener());
         this.mainLayout.addComponent(this.chckUseSsl);
+
+        this.txtTruststoreLocation = new TextField();
+        this.txtTruststoreLocation.setCaption(this.messages.getString("dialog.extractdb.truststore.location"));
+        this.txtTruststoreLocation.setDescription(this.messages.getString("dialog.extractdb.truststore"));
+        this.txtTruststoreLocation.setVisible(false);
+        this.txtTruststoreLocation.setNullRepresentation("");
+        this.txtTruststoreLocation.setWidth("100%");
+        this.mainLayout.addComponent(this.txtTruststoreLocation);
+
+        this.txtTruststorePassword = new PasswordField();
+        this.txtTruststorePassword.setCaption(this.messages.getString("dialog.extractdb.truststore.password"));
+        this.txtTruststorePassword.setNullRepresentation("");
+        this.txtTruststorePassword.setWidth("100%");
+        this.txtTruststorePassword.setVisible(false);
+        this.mainLayout.addComponent(this.txtTruststorePassword);
 
         this.btntestConnection = new Button();
         this.btntestConnection.setCaption(this.messages.getString("dialog.extractdb.testdb"));
@@ -201,6 +221,22 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
                 }
             }
         };
+        return listener;
+    }
+
+    private ValueChangeListener createSslValueChangeListener() {
+        ValueChangeListener listener = new ValueChangeListener() {
+
+            private static final long serialVersionUID = 1L;
+
+            @SuppressWarnings("unqualified-field-access")
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                txtTruststoreLocation.setVisible(chckUseSsl.getValue());
+                txtTruststorePassword.setVisible(chckUseSsl.getValue());
+            }
+        };
+
         return listener;
     }
 
@@ -437,6 +473,8 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         config.setTargetTableName(this.txtTargetTableName.getValue());
         config.setPrimaryKeyColumns(getPrimaryKeyColumns());
         config.setDatabaseType(SqlDatabase.getDatabaseTypeForDatabaseName((String) this.databaseType.getValue()));
+        config.setTruststoreLocation(this.txtTruststoreLocation.getValue());
+        config.setTruststorePassword(this.txtTruststorePassword.getValue());
 
         return config;
     }
@@ -463,6 +501,8 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         this.txtTargetTableName.setValue(config.getTargetTableName());
         this.txtPrimaryKeys.setValue(RelationalFromSqlHelper.getPrimaryKeysAsCommaSeparatedString(config.getPrimaryKeyColumns()));
         this.txtInstanceName.setValue(config.getInstanceName());
+        this.txtTruststoreLocation.setValue(config.getTruststoreLocation());
+        this.txtTruststorePassword.setValue(config.getTruststorePassword());
     }
 
     @Override
@@ -490,6 +530,8 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         config.setPrimaryKeyColumns(getPrimaryKeyColumns());
         config.setDatabaseType(SqlDatabase.getDatabaseTypeForDatabaseName((String) this.databaseType.getValue()));
         config.setInstanceName(this.txtInstanceName.getValue());
+        config.setTruststoreLocation(this.txtTruststoreLocation.getValue());
+        config.setTruststorePassword(this.txtTruststorePassword.getValue());
 
         return config;
     }
