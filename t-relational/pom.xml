@@ -3,12 +3,12 @@
   <parent>
     <groupId>eu.unifiedviews.plugins</groupId>
     <artifactId>dpu-base-pom</artifactId>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.3.0</version>
     <relativePath />
   </parent>
   
   <artifactId>uv-t-relational</artifactId>
-  <version>0.9.0-SNAPSHOT</version>
+  <version>0.9.0</version>
   <packaging>bundle</packaging>
   <name>T-Relational</name>
   <description>Transforms input database tables using SQL into one output table</description>

@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>eu.unifiedviews.plugins</groupId>
 		<artifactId>dpu-base-pom</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.3.0</version>
 		<relativePath />
 	</parent>
 
 	<artifactId>uv-l-relationalToSql</artifactId>
-	<version>0.9.0-SNAPSHOT</version>
+	<version>0.9.0</version>
 	<packaging>bundle</packaging>
 	<name>L-RelationalToSql</name>
 	<description>Loads data from internal data unit relational database into external SQL database</description>

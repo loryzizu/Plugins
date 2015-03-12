@@ -39,8 +39,10 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
+|1.6.0              |fixed per graph select                          |                           
+|1.5.0              |N/A                                             |
 |1.3.1              |N/A                                             |                                
-
+|1.5.1              |Update for new helpers, added statement-based progress log. |
 
 ***
 

@@ -37,7 +37,7 @@
 |Version          |Release notes               |
 |-----------------|----------------------------|
 |1.0.0-SNAPSHOT   |N/A                         |
-
+|1.0.1            |Update for new helpers. Input/output dataUnits names updated. |
 
 ***
 
@@ -46,3 +46,4 @@
 |Author           |Notes                           |
 |-----------------|--------------------------------|
 |N/A              |N/A                             | 
+|Petr Škoda       |VirtualPath is required.        |
