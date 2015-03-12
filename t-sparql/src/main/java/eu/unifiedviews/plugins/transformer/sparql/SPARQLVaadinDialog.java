@@ -18,6 +18,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 /**
  * Configuration dialog for DPU SPARQL Transformer.
@@ -25,11 +26,8 @@ import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
  * @authod Petr Škoda
  */
 public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
-    private static final String OUTPUT_GRAPH_SYMBOLIC_NAME = "Output graph symbolic name";
 
     private ObjectProperty<String> outputGraphSymbolicName = new ObjectProperty<String>("");
-
-    private static final String REWRITE_CONSTRUCT_TO_INSERT_LABEL = "Rewrite construct query type to insert (always done, cannot change)";
 
     private enum QueryType {
         INVALID,
@@ -39,8 +37,6 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
 
     private TabSheet tabsheet;
 
-    
-
     private final LinkedList<TextArea> queries = new LinkedList<>();
 
     /**
@@ -48,12 +44,15 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
      */
     private final HashMap<TextArea, QueryType> queryTypes = new HashMap<>();
 
+    private Messages messages;
+
     public SPARQLVaadinDialog() {
         super(SPARQLConfig_V1.class);
         init();
     }
 
     private void init() {
+        messages = new Messages(getContext().getLocale(), this.getClass().getClassLoader());
         this.setSizeFull();
 
         VerticalLayout mainLayout = new VerticalLayout();
@@ -76,7 +75,6 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
         });
         topLineLayout.addComponent(btnAddQuery);
 
-        
         mainLayout.addComponent(topLineLayout);
         mainLayout.setExpandRatio(topLineLayout, 0);
 
@@ -85,8 +83,8 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
         mainLayout.addComponent(tabsheet);
         mainLayout.setExpandRatio(tabsheet, 1);
 
-        mainLayout.addComponent(new TextField(OUTPUT_GRAPH_SYMBOLIC_NAME, outputGraphSymbolicName));
-        CheckBox rewriteConstructToInsertCheckbox = new CheckBox(REWRITE_CONSTRUCT_TO_INSERT_LABEL, true);
+        mainLayout.addComponent(new TextField(messages.getString("SPARQLVaadinDialog.outputGraph"), outputGraphSymbolicName));
+        CheckBox rewriteConstructToInsertCheckbox = new CheckBox(messages.getString("SPARQLVaadinDialog.rewrite"), true);
         rewriteConstructToInsertCheckbox.setEnabled(false);
         mainLayout.addComponent(rewriteConstructToInsertCheckbox);
 
@@ -119,7 +117,7 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
 
                 if (query.isEmpty()) {
                     throw new InvalidValueException(
-                            "SPARQL query is empty it must be filled");
+                            messages.getString("SPARQLVaadinDialog.empty"));
                 }
 
                 QueryValidator updateValidator =
@@ -175,7 +173,6 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
             addGraph(pair.getSPARQLQuery());
         }
 
-     
         outputGraphSymbolicName.setValue(conf.getOutputGraphSymbolicName());
     }
 
@@ -199,7 +196,7 @@ public class SPARQLVaadinDialog extends BaseConfigDialog<SPARQLConfig_V1> {
         for (int i = 0; i < queries.size(); i++) {
             TextArea txtQuery = queries.get(i);
             if (!txtQuery.isValid()) {
-                throw new DPUConfigException("All queries must be valid!");
+                throw new DPUConfigException(messages.getString("SPARQLVaadinDialog.invalidQuery"));
             }
             // add to conf
             final boolean isConstruct = queryTypes.get(txtQuery) == QueryType.CONSTRUCT;

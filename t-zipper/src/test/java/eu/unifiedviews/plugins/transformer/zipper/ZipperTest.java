@@ -7,6 +7,7 @@ import static org.mockito.Matchers.anyString;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 
 import net.lingala.zip4j.core.ZipFile;
@@ -63,7 +64,7 @@ public class ZipperTest {
 
     @Test
     public void validZipPasses() throws Exception {
-        String resource = this.getClass().getClassLoader().getResource(TXT_FILE).getFile();
+        URI resource = this.getClass().getClassLoader().getResource(TXT_FILE).toURI();
         File inputFile = new File(resource);
         String fileContent = readFile(inputFile);
 

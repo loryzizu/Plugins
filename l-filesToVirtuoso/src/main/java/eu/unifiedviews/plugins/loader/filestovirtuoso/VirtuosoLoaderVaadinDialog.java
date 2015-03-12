@@ -3,6 +3,7 @@ package eu.unifiedviews.plugins.loader.filestovirtuoso;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
@@ -79,9 +80,12 @@ public class VirtuosoLoaderVaadinDialog extends BaseConfigDialog<VirtuosoLoaderC
         setWidth("100%");
         setHeight("100%");
 
+        final PasswordField passwordField = new PasswordField(PASSWORD_LABEL, password);
+        passwordField.setWidth("100%");
+
         mainLayout.addComponent(createTextField(VIRTUOSO_URL_LABEL, virtuosoUrl));
         mainLayout.addComponent(createTextField(USERNAME_LABEL, username));
-        mainLayout.addComponent(createTextField(PASSWORD_LABEL, password));
+        mainLayout.addComponent(passwordField);
         mainLayout.addComponent(new CheckBox(CLEAR_DESTINATION_GRAPH_LABEL, clearDestinationGraph));
         mainLayout.addComponent(createTextField(LOAD_DIRECTORY_PATH_LABEL, loadDirectoryPath));
         mainLayout.addComponent(createTextField(INCLUDE_SUBDIRECTORIES_LABEL, includeSubdirectories));

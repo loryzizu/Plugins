@@ -27,7 +27,7 @@ public class QueryBuilderTest {
 
     private static final String EXPECTED_TRUNCATE_TABLE_QUERY_1 = "TRUNCATE TABLE " + TABLE_NAME_1;
 
-    private static final String EXPECTED_CREATE_TABLE_QUERY_1 = "CREATE TABLE " + TABLE_NAME_1 + " (column1 INTEGER, column2 VARCHAR(255), column3 VARCHAR(255))";
+    private static final String EXPECTED_CREATE_TABLE_QUERY_1 = "CREATE TABLE " + TABLE_NAME_1 + " (column1 INTEGER, column2 VARCHAR, column3 VARCHAR)";
 
     private static final String EXPECTED_SELECT_FROM_SOURCE_TABLE_QUERY = "SELECT column1, column2, column3 FROM " + SOURCE_TABLE_NAME;
 

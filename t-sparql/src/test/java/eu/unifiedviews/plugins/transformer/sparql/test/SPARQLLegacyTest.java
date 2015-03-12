@@ -35,8 +35,9 @@ public class SPARQLLegacyTest {
         String SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
         boolean isConstructType = true;
 
-        SPARQLConfig_V1 config = new SPARQLConfig_V1(
-                SPARQL_Update_Query, isConstructType);
+        SPARQLConfig_V1 config = new SPARQLConfig_V1();
+        config.getQueryPairs().add(new SPARQLQueryPair(SPARQL_Update_Query, isConstructType));
+        
 
         trans.configureDirectly(config);
 
