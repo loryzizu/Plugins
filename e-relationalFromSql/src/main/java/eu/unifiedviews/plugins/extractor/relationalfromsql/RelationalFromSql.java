@@ -8,6 +8,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,7 @@ import eu.unifiedviews.helpers.dpu.localization.Messages;
  * future releases.
  */
 @DPU.AsExtractor
-public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_V1> implements ConfigDialogProvider<RelationalFromSqlConfig_V1> {
+public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_V2> implements ConfigDialogProvider<RelationalFromSqlConfig_V2> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RelationalFromSql.class);
 
@@ -55,7 +56,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
     public WritableRelationalDataUnit outputTables;
 
     public RelationalFromSql() {
-        super(RelationalFromSqlConfig_V1.class);
+        super(RelationalFromSqlConfig_V2.class);
     }
 
     @Override
@@ -63,14 +64,14 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
         this.context = context;
         this.messages = new Messages(this.context.getLocale(), this.getClass().getClassLoader());
         String shortMessage = this.getClass().getSimpleName() + " starting.";
-        String longMessage = String.format("Configuration: DatabaseUrl: %s, username: %s, password: %s, "
+        String longMessage = String.format("Configuration: DatabaseHost: %s, username: %s, password: %s, "
                 + "useSSL: %s, SQL query: %s",
-                this.config.getDatabaseURL(), this.config.getUserName(), "***",
+                this.config.getDatabaseHost(), this.config.getUserName(), "***",
                 this.config.isUseSSL(), this.config.getSqlQuery());
         LOG.info(shortMessage + " " + longMessage);
 
         try {
-            Class.forName(this.config.getJdbcDriverName());
+            Class.forName(SqlDatabase.getJdbcDriverNameForDatabase(this.config.getDatabaseType()));
         } catch (ClassNotFoundException e) {
             throw new DPUException(this.messages.getString("errors.driver.loadfailed"), e);
         }
@@ -112,7 +113,8 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
             }
 
             try {
-                String createTableQuery = QueryBuilder.getCreateTableQueryFromMetaData(meta, tableName);
+                List<ColumnDefinition> tableColumns = RelationalFromSqlHelper.getTableColumnsFromMetaData(meta);
+                String createTableQuery = QueryBuilder.getCreateTableQueryFromMetaData(tableColumns, tableName);
 
                 LOG.debug("Creating internal db representation as " + createTableQuery);
                 executeSqlQueryInInternalDatabase(createTableQuery);
@@ -123,7 +125,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
                 LOG.debug("New database table {} added to relational data unit", tableName);
 
                 LOG.debug("Inserting data from source table into internal table");
-                insertDataFromSelect(meta, rs, tableName);
+                insertDataFromSelect(tableColumns, rs, tableName);
                 LOG.debug("Inserting data from source table into internal table successful");
 
                 if (this.config.getPrimaryKeyColumns() == null || this.config.getPrimaryKeyColumns().isEmpty()) {
@@ -133,6 +135,16 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
                     String alterQuery = QueryBuilder.getPrimaryKeysQuery(tableName, this.config.getPrimaryKeyColumns());
                     executeSqlQueryInInternalDatabase(alterQuery);
                     LOG.debug("Primary keys successfully added to the output table");
+                }
+                if (this.config.getIndexedColumns() == null || this.config.getIndexedColumns().isEmpty()) {
+                    LOG.debug("No indexed columns defined for target table, nothing to do");
+                } else {
+                    LOG.debug("Going to create indexes in internal database table");
+                    for (String indexColumn : this.config.getIndexedColumns()) {
+                        String indexQuery = QueryBuilder.getCreateIndexQuery(tableName, indexColumn);
+                        executeSqlQueryInInternalDatabase(indexQuery);
+                    }
+                    LOG.debug("Indexes created successfully");
                 }
 
                 Resource resource = ResourceHelpers.getResource(this.outputTables, symbolicName);
@@ -166,17 +178,17 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
         }
     }
 
-    private void insertDataFromSelect(ResultSetMetaData meta, ResultSet rs, String tableName) throws DataUnitException {
+    private void insertDataFromSelect(List<ColumnDefinition> tableColumns, ResultSet rs, String tableName) throws DataUnitException {
         PreparedStatement ps = null;
         Connection conn = null;
         try {
             conn = getConnectionInternal();
-            String insertQuery = QueryBuilder.getInsertQueryForPreparedStatement(meta, tableName);
+            String insertQuery = QueryBuilder.getInsertQueryForPreparedStatement(tableColumns, tableName);
             LOG.debug("Insert query for inserting into internal DB table: {}", insertQuery);
             ps = conn.prepareStatement(insertQuery);
             LOG.debug("Prepared statement for inserting data created");
             while (rs.next()) {
-                fillInsertData(ps, meta, rs);
+                fillInsertData(ps, tableColumns, rs);
                 ps.execute();
             }
             conn.commit();
@@ -209,9 +221,12 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
         return bTableExists;
     }
 
-    private void fillInsertData(PreparedStatement ps, ResultSetMetaData meta, ResultSet rs) throws SQLException {
-        for (int i = 1; i <= meta.getColumnCount(); i++) {
-            ps.setObject(i, rs.getObject(i));
+    private void fillInsertData(PreparedStatement ps, List<ColumnDefinition> columns, ResultSet rs) throws SQLException, DataUnitException {
+        int index = 1;
+        for (ColumnDefinition column : columns) {
+            Object sourceValue = rs.getObject(column.getColumnName());
+            ps.setObject(index, sourceValue);
+            index++;
         }
     }
 
@@ -220,7 +235,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
     }
 
     @Override
-    public AbstractConfigDialog<RelationalFromSqlConfig_V1> getConfigurationDialog() {
+    public AbstractConfigDialog<RelationalFromSqlConfig_V2> getConfigurationDialog() {
         return new RelationalFromSqlVaadinDialog();
     }
 
