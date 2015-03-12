@@ -136,6 +136,16 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
                     executeSqlQueryInInternalDatabase(alterQuery);
                     LOG.debug("Primary keys successfully added to the output table");
                 }
+                if (this.config.getIndexedColumns() == null || this.config.getIndexedColumns().isEmpty()) {
+                    LOG.debug("No indexed columns defined for target table, nothing to do");
+                } else {
+                    LOG.debug("Going to create indexes in internal database table");
+                    for (String indexColumn : this.config.getIndexedColumns()) {
+                        String indexQuery = QueryBuilder.getCreateIndexQuery(tableName, indexColumn);
+                        executeSqlQueryInInternalDatabase(indexQuery);
+                    }
+                    LOG.debug("Indexes created successfully");
+                }
 
                 Resource resource = ResourceHelpers.getResource(this.outputTables, symbolicName);
                 Date now = new Date();

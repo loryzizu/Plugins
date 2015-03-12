@@ -54,6 +54,8 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
 
     private TextField txtPrimaryKeys;
 
+    private TextField txtIndexes;
+
     private Button btnPreview;
 
     private Button btnCreateQuery;
@@ -190,12 +192,24 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         this.txtPrimaryKeys.setWidth("100%");
         this.mainLayout.addComponent(this.txtPrimaryKeys);
 
+        this.txtIndexes = new TextField();
+        this.txtIndexes.setCaption(this.messages.getString("dialog.extractdb.indexes"));
+        this.txtIndexes.setDescription(this.messages.getString("dialog.extractdb.indexdescr"));
+        this.txtIndexes.setNullRepresentation("");
+        this.txtIndexes.setWidth("100%");
+        this.mainLayout.addComponent(this.txtIndexes);
+
         Panel panel = new Panel();
         panel.setSizeFull();
         panel.setContent(this.mainLayout);
         setCompositionRoot(panel);
     }
 
+    /**
+     * Change listener for database value type
+     * If database type changes, some optional specific fields can be shown / hidden
+     * Default database port is automatically filled in when database type changes
+     */
     private ValueChangeListener createDatabaseTypeChangeListener() {
         ValueChangeListener listener = new ValueChangeListener() {
 
@@ -224,6 +238,9 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         return listener;
     }
 
+    /**
+     * Change listener for SSL checkbox. If checked, optional truststore configuration fields are shown
+     */
     private ValueChangeListener createSslValueChangeListener() {
         ValueChangeListener listener = new ValueChangeListener() {
 
@@ -240,6 +257,10 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         return listener;
     }
 
+    /**
+     * Test connection button listener
+     * When button is clicked, connection is tested and corresponding message is shown
+     */
     private ClickListener createTestClickListener() {
         ClickListener listener = new ClickListener() {
 
@@ -269,6 +290,10 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         notification.show(Page.getCurrent());
     }
 
+    /**
+     * Generate select button click listener
+     * When clicked, table with all tables from source database are shown
+     */
     private ClickListener createSelectQueryListener() {
         ClickListener listener = new ClickListener() {
 
@@ -289,6 +314,10 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         return listener;
     }
 
+    /**
+     * Preview data button click listener
+     * When clicked, data preview windows is shown based on filled query
+     */
     private ClickListener createPreviewInitListener() {
         ClickListener listener = new ClickListener() {
 
@@ -308,6 +337,10 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         return listener;
     }
 
+    /**
+     * Creates window with list of available tables from source database
+     * When clicked on table, SQL select query is generated and shown in SQL query text area
+     */
     private Window createSelectTableWindow() {
         final Window window = new Window();
         window.center();
@@ -374,6 +407,10 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         return window;
     }
 
+    /**
+     * Creates preview window with text field with limit for select
+     * After clicking Preview button, preview table window is displayed
+     */
     private Window createPreviewWindow() {
         final Window window = new Window();
         window.setWidth(250.0f, Unit.PIXELS);
@@ -420,6 +457,9 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         return window;
     }
 
+    /**
+     * Validator for preview data limit
+     */
     private Validator createSelectLimitValidator() {
         Validator validator = new Validator() {
 
@@ -442,6 +482,9 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         return validator;
     }
 
+    /**
+     * Check required parameters for GUI database operations, e.g. connection check
+     */
     private boolean checkConnectionParametersInput() {
         boolean bResult = this.txtDatabaseHost.isValid() && this.txtDatabaseName.isValid() && this.txtUserName.isValid()
                 && this.txtPassword.isValid();
@@ -461,6 +504,23 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         return keyColumns;
     }
 
+    private List<String> getIndexedColumns() {
+        List<String> keyColumns = new ArrayList<>();
+        if (this.txtIndexes.getValue() != null && !this.txtIndexes.getValue().equals("")) {
+            String[] keys = this.txtIndexes.getValue().trim().split(",");
+            for (String key : keys) {
+                keyColumns.add(key.trim().toUpperCase());
+            }
+        }
+
+        return keyColumns;
+    }
+
+    /**
+     * This configuration is used for GUI methods and they no always need all required parameters to be set
+     * 
+     * @return Database configuration without checking
+     */
     private RelationalFromSqlConfig_V2 getConfigurationInternal() {
         RelationalFromSqlConfig_V2 config = new RelationalFromSqlConfig_V2();
         config.setDatabaseHost(this.txtDatabaseHost.getValue());
@@ -499,7 +559,8 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         this.chckUseSsl.setValue(config.isUseSSL());
         this.txtSqlQuery.setValue(config.getSqlQuery());
         this.txtTargetTableName.setValue(config.getTargetTableName());
-        this.txtPrimaryKeys.setValue(RelationalFromSqlHelper.getPrimaryKeysAsCommaSeparatedString(config.getPrimaryKeyColumns()));
+        this.txtPrimaryKeys.setValue(RelationalFromSqlHelper.getListAsCommaSeparatedString(config.getPrimaryKeyColumns()));
+        this.txtIndexes.setValue(RelationalFromSqlHelper.getListAsCommaSeparatedString(config.getIndexedColumns()));
         this.txtInstanceName.setValue(config.getInstanceName());
         this.txtTruststoreLocation.setValue(config.getTruststoreLocation());
         this.txtTruststorePassword.setValue(config.getTruststorePassword());
@@ -528,6 +589,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         config.setSqlQuery(RelationalFromSqlHelper.getNormalizedQuery(this.txtSqlQuery.getValue()));
         config.setTargetTableName(this.txtTargetTableName.getValue());
         config.setPrimaryKeyColumns(getPrimaryKeyColumns());
+        config.setIndexedColumns(getIndexedColumns());
         config.setDatabaseType(SqlDatabase.getDatabaseTypeForDatabaseName((String) this.databaseType.getValue()));
         config.setInstanceName(this.txtInstanceName.getValue());
         config.setTruststoreLocation(this.txtTruststoreLocation.getValue());

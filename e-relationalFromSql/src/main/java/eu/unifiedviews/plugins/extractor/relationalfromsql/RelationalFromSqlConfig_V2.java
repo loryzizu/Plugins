@@ -32,6 +32,8 @@ public class RelationalFromSqlConfig_V2 {
 
     private String truststorePassword;
 
+    private List<String> indexedColumns;
+
     public String getDatabaseHost() {
         return this.databaseHost;
     }
@@ -134,6 +136,14 @@ public class RelationalFromSqlConfig_V2 {
 
     public void setTruststorePassword(String truststorePassword) {
         this.truststorePassword = truststorePassword;
+    }
+
+    public List<String> getIndexedColumns() {
+        return this.indexedColumns;
+    }
+
+    public void setIndexedColumns(List<String> indexedColumns) {
+        this.indexedColumns = indexedColumns;
     }
 
 }

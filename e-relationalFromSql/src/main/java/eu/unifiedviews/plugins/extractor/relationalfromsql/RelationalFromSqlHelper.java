@@ -414,12 +414,12 @@ public class RelationalFromSqlHelper {
         return query.toString();
     }
 
-    public static String getPrimaryKeysAsCommaSeparatedString(List<String> keys) {
-        if (keys == null || keys.isEmpty()) {
+    public static String getListAsCommaSeparatedString(List<String> list) {
+        if (list == null || list.isEmpty()) {
             return null;
         }
         StringBuilder sb = new StringBuilder();
-        for (String key : keys) {
+        for (String key : list) {
             sb.append(key);
             sb.append(",");
         }

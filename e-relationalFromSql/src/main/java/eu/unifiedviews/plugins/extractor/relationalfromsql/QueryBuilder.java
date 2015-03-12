@@ -87,4 +87,16 @@ public class QueryBuilder {
         return query.toString();
     }
 
+    public static String getCreateIndexQuery(String tableName, String columnName) {
+        StringBuilder query = new StringBuilder("CREATE INDEX ");
+        query.append(columnName + "_idx ");
+        query.append("ON ");
+        query.append(tableName);
+        query.append("(");
+        query.append(columnName);
+        query.append(")");
+
+        return query.toString();
+    }
+
 }
