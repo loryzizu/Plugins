@@ -79,9 +79,13 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
 
     private static final String GRANT_USER_WRITE = "DB.DBA.RDF_GRAPH_USER_PERMS_SET (?, ?, 3)";
 
-    public static final String CONFIGURATION_VIRTUOSO_USERNAME = "filesToVirtuosoUsername";
+    public static final String CONFIGURATION_VIRTUOSO_USERNAME = "dpu.l-filesToVirtuoso.username";
 
-    public static final String CONFIGURATION_VIRTUOSO_PASSWORD = "filesToVirtuosoPassword";
+    public static final String CONFIGURATION_VIRTUOSO_PASSWORD = "dpu.l-filesToVirtuoso.password";
+
+    public static final String CONFIGURATION_VIRTUOSO_JDBC_URL = "dpu.l-filesToVirtuoso.jdbc.url";
+
+    public static final String CONFIGURATION_VIRTUOSO_LOAD_DIRECTORY_PATH = "dpu.l-filesToVirtuoso.load.directory.path";
 
     @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
@@ -95,13 +99,6 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
 
     @Override
     protected void innerExecute() throws DPUException {
-        String shortMessage = this.getClass().getSimpleName() + " starting.";
-        String longMessage = String.format("Configuration: VirtuosoUrl: %s, username: %s, password: %s, loadDirectoryPath: %s, "
-                + "includeSubdirectories: %s, targetContext: %s, statusUpdateInterval: %s, threadCount: %s",
-                config.getVirtuosoUrl(), config.getUsername(), "***", config.getLoadDirectoryPath(),
-                config.isIncludeSubdirectories(), config.getTargetContext(), config.getStatusUpdateInterval(),
-                config.getThreadCount());
-        LOG.info(shortMessage + " " + longMessage);
         Map<String, String> environment = ctx.getExecMasterContext().getDpuContext().getEnvironment();
         String username = environment.get(CONFIGURATION_VIRTUOSO_USERNAME);
         if (config.getUsername() == null || config.getUsername().isEmpty()) {
@@ -111,8 +108,22 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
         if (config.getPassword() == null || config.getPassword().isEmpty()) {
             config.setPassword(password);
         }
+        String virtuosoJdbcUrl = environment.get(CONFIGURATION_VIRTUOSO_JDBC_URL);
+        if (config.getVirtuosoUrl() == null || config.getVirtuosoUrl().isEmpty()) {
+            config.setVirtuosoUrl(virtuosoJdbcUrl);
+        }
+        String virtuosoLoadDirectoryPath = environment.get(CONFIGURATION_VIRTUOSO_LOAD_DIRECTORY_PATH);
+        if (config.getLoadDirectoryPath() == null || config.getLoadDirectoryPath().isEmpty()) {
+            config.setLoadDirectoryPath(virtuosoLoadDirectoryPath);
+        }
         String organization = ctx.getExecMasterContext().getDpuContext().getOrganization();
-
+        String shortMessage = this.getClass().getSimpleName() + " starting.";
+        String longMessage = String.format("Configuration: VirtuosoUrl: %s, username: %s, password: %s, loadDirectoryPath: %s, "
+                + "includeSubdirectories: %s, targetContext: %s, statusUpdateInterval: %s, threadCount: %s",
+                config.getVirtuosoUrl(), config.getUsername(), "***", config.getLoadDirectoryPath(),
+                config.isIncludeSubdirectories(), config.getTargetContext(), config.getStatusUpdateInterval(),
+                config.getThreadCount());
+        LOG.info(shortMessage + " " + longMessage);
         try {
             Class.forName("virtuoso.jdbc4.Driver");
         } catch (ClassNotFoundException ex) {
