@@ -122,6 +122,18 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
                 }
                 String alterTablesQuery = DatabaseHelper.createPrimaryKeysQuery(targetTableName, this.config.getPrimaryKeyColumns());
                 stmnt.execute(alterTablesQuery);
+                conn.commit();
+            }
+
+            if (this.config.getIndexedColumns() == null || this.config.getIndexedColumns().isEmpty()) {
+                LOG.debug("No indexed columns defined for target table, nothing to do");
+            } else {
+                LOG.debug("Going to create indexes for table {}", targetTableName);
+                for (String indexedColumn : this.config.getIndexedColumns()) {
+                    String indexQuery = DatabaseHelper.getCreateIndexQuery(targetTableName, indexedColumn);
+                    stmnt.execute(indexQuery);
+                }
+                conn.commit();
             }
 
             Resource resource = ResourceHelpers.getResource(this.outputTable, symbolicName);

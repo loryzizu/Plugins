@@ -113,4 +113,30 @@ public class DatabaseHelper {
         tryCloseConnection(conn);
     }
 
+    public static String getCreateIndexQuery(String tableName, String columnName) {
+        StringBuilder query = new StringBuilder("CREATE INDEX ");
+        query.append(columnName + "_idx ");
+        query.append("ON ");
+        query.append(tableName);
+        query.append("(");
+        query.append(columnName);
+        query.append(")");
+
+        return query.toString();
+    }
+
+    public static String getListAsCommaSeparatedString(List<String> list) {
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String key : list) {
+            sb.append(key);
+            sb.append(",");
+        }
+        sb.setLength(sb.length() - 1);
+
+        return sb.toString();
+    }
+
 }
