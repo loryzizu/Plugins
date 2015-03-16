@@ -1,10 +1,14 @@
 package eu.unifiedviews.plugins.transformer.relational;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +69,6 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
         this.messages = new Messages(this.context.getLocale(), this.getClass().getClassLoader());
 
         String targetTableName = this.config.getTargetTableName().toUpperCase();
-        String userSqlQuery = this.config.getSqlQuery();
         String symbolicName = targetTableName;
 
         Iterator<RelationalDataUnit.Entry> tablesIteration;
@@ -88,6 +91,8 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
 
         Connection conn = null;
         Statement stmnt = null;
+        ResultSet rs = null;
+        ResultSetMetaData meta = null;
         try {
             conn = getDbConnectionInternal();
 
@@ -96,42 +101,46 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
                 return;
             }
 
-            LOG.debug("Going to convert user select SQL query {} to Select into query", userSqlQuery);
-            String selectIntoQuery = DatabaseHelper.convertSelectQueryToSelectIntoQuery(userSqlQuery, targetTableName);
-            LOG.debug("Query converted to: {}", selectIntoQuery);
-
-            // TODO: maybe here should be validated if the given tables are in the input data unit, but it requires SQL query parsing
-            LOG.debug("Executing SQL transformation of input tables into output table");
+            LOG.debug("Executing SQL query in internal database");
             stmnt = conn.createStatement();
-            stmnt.execute(selectIntoQuery);
-            LOG.debug("Transformation of input tables into output table successful");
+            LOG.info("Executing query " + this.config.getSqlQuery());
+            rs = stmnt.executeQuery(this.config.getSqlQuery());
+            meta = rs.getMetaData();
+            LOG.debug("SQL query executed successfully");
 
-            LOG.debug("Saving output table into output relational data unit");
+            List<ColumnDefinition> tableColumns = DatabaseHelper.getTableColumnsFromMetaData(meta);
+            String createTableQuery = DatabaseHelper.getCreateTableQueryFromMetaData(tableColumns, targetTableName);
+
+            LOG.debug("Creating internal db representation as " + createTableQuery);
+            executeSqlQueryInInternalDatabase(createTableQuery);
+            LOG.debug("Database table in internal database successfully created");
+
+            // For now, symbolic name and real table name are the same - user inserted
             this.outputTable.addExistingDatabaseTable(symbolicName, targetTableName);
-            LOG.debug("Output table successfully saved into output relational data unit");
+            LOG.debug("New database table {} added to relational data unit", targetTableName);
 
+            LOG.debug("Inserting data from source table into internal table");
+            insertDataFromSelect(conn, tableColumns, rs, targetTableName);
+            LOG.debug("Inserting data from source table into internal table successful");
+
+            // Create primary keys
             if (this.config.getPrimaryKeyColumns() == null || this.config.getPrimaryKeyColumns().isEmpty()) {
                 LOG.debug("No primary keys defined, nothing to do");
             } else {
                 LOG.debug("Going to create primary keys for table {}", targetTableName);
-                // TODO: CREATE TABLE AS SELECT does not preserve not null
-                // quick and dirty solution: add NOT NULL for all primary keys
-                for (String key : this.config.getPrimaryKeyColumns()) {
-                    String alterQuery = DatabaseHelper.createAlterColumnSetNotNullQuery(targetTableName, key);
-                    stmnt.execute(alterQuery);
-                }
                 String alterTablesQuery = DatabaseHelper.createPrimaryKeysQuery(targetTableName, this.config.getPrimaryKeyColumns());
-                stmnt.execute(alterTablesQuery);
+                executeSqlQueryInInternalDatabase(alterTablesQuery);
                 conn.commit();
             }
 
+            // Create indexes
             if (this.config.getIndexedColumns() == null || this.config.getIndexedColumns().isEmpty()) {
                 LOG.debug("No indexed columns defined for target table, nothing to do");
             } else {
                 LOG.debug("Going to create indexes for table {}", targetTableName);
                 for (String indexedColumn : this.config.getIndexedColumns()) {
                     String indexQuery = DatabaseHelper.getCreateIndexQuery(targetTableName, indexedColumn);
-                    stmnt.execute(indexQuery);
+                    executeSqlQueryInInternalDatabase(indexQuery);
                 }
                 conn.commit();
             }
@@ -155,6 +164,52 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
             DatabaseHelper.tryCloseConnection(conn);
         }
 
+    }
+
+    private void insertDataFromSelect(Connection conn, List<ColumnDefinition> tableColumns, ResultSet rs, String tableName) throws SQLException {
+        PreparedStatement ps = null;
+        try {
+            String insertQuery = DatabaseHelper.getInsertQueryForPreparedStatement(tableColumns, tableName);
+            LOG.debug("Insert query for inserting into internal DB table: {}", insertQuery);
+            ps = conn.prepareStatement(insertQuery);
+            LOG.debug("Prepared statement for inserting data created");
+            while (rs.next()) {
+                fillInsertData(ps, tableColumns, rs);
+                ps.execute();
+            }
+            conn.commit();
+        } catch (SQLException e) {
+            LOG.error("Failed to load data into internal table", e);
+            throw e;
+        } finally {
+            DatabaseHelper.tryCloseStatement(ps);
+        }
+    }
+
+    private void executeSqlQueryInInternalDatabase(String query) throws DataUnitException {
+        Statement stmnt = null;
+        Connection conn = null;
+        try {
+            conn = getDbConnectionInternal();
+            stmnt = conn.createStatement();
+            stmnt.executeUpdate(query);
+            conn.commit();
+        } catch (SQLException e) {
+            DatabaseHelper.tryRollbackConnection(conn);
+            throw new DataUnitException("Error executing statement in internal dataunit database", e);
+        } finally {
+            DatabaseHelper.tryCloseStatement(stmnt);
+            DatabaseHelper.tryCloseConnection(conn);
+        }
+    }
+
+    private void fillInsertData(PreparedStatement ps, List<ColumnDefinition> columns, ResultSet rs) throws SQLException {
+        int index = 1;
+        for (ColumnDefinition column : columns) {
+            Object sourceValue = rs.getObject(column.getColumnName());
+            ps.setObject(index, sourceValue);
+            index++;
+        }
     }
 
     @Override
