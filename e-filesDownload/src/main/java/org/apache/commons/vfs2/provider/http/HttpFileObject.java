@@ -25,7 +25,6 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.vfs2.FileContentInfoFactory;
@@ -49,7 +48,7 @@ public class HttpFileObject extends AbstractFileObject
 {
     private final HttpFileSystem fileSystem;
     private final String urlCharset;
-    private HeadMethod method;
+    private HttpMethod method;
 
     protected HttpFileObject(final AbstractFileName name, final HttpFileSystem fileSystem)
     {
@@ -74,8 +73,8 @@ public class HttpFileObject extends AbstractFileObject
     @Override
     protected FileType doGetType() throws Exception
     {
-        // Use the HEAD method to probe the file.
-        method = new HeadMethod();
+        // Use the GET method to probe the file.
+        method = new GetMethod();
         setupMethod(method);
         final HttpClient client = fileSystem.getClient();
         final int status = client.executeMethod(method);
@@ -217,7 +216,7 @@ public class HttpFileObject extends AbstractFileObject
         return new HttpFileContentInfoFactory();
     }
 
-    HeadMethod getHeadMethod()
+    HttpMethod getHeadMethod()
     {
         return method;
     }
