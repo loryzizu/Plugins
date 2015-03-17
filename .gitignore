@@ -32,3 +32,4 @@ bin/
 *.war
 *.jar
 *.ear
+*.orig
