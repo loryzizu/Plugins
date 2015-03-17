@@ -113,7 +113,7 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
             try {
                 for (Object itemId : container.getItemIds()) {
                     VfsFile vfsFile = new VfsFile((VfsFile) itemId);
-                    URI uri = new URI(URIUtil.encodePathQuery(vfsFile.getUri(), "utf8"));
+                    URI uri = new URI(URIUtil.encodePathQuery(URIUtil.decode(vfsFile.getUri(), "utf8"), "utf8"));
 
                     vfsFile.setUri(uri.toString());
 
@@ -187,7 +187,6 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
 
                 for (VfsFile vfsFile : config.getVfsFiles()) {
                     VfsFile vfsFileInContainer = new VfsFile(vfsFile);
-
                     vfsFileInContainer.setUri(URIUtil.decode(vfsFile.getUri(), "utf8"));
 
                     if (StringUtils.isNotBlank(vfsFile.getPassword())) {

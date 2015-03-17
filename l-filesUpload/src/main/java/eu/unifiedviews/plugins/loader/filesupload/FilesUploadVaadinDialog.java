@@ -81,7 +81,7 @@ public class FilesUploadVaadinDialog extends AbstractDialog<FilesUploadConfig_V1
                 throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.password.required"));
             }
 
-            final URI encodedUri = new URI(URIUtil.encodePathQuery(uri.getValue(), "utf8"));
+            URI encodedUri = new URI(URIUtil.encodePathQuery(URIUtil.decode(uri.getValue(), "utf8"), "utf8"));
 
             if (StringUtils.isNotBlank(username.getValue()) && StringUtils.isBlank(encodedUri.getHost())) {
                 throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.uri.invalid"));
