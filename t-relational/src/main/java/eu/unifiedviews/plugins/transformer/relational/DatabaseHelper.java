@@ -248,4 +248,31 @@ public class DatabaseHelper {
         return sb.toString();
     }
 
+    public static String createDatabaseUserQuery(String userName, String password) {
+        StringBuilder query = new StringBuilder("CREATE USER ");
+        query.append(userName);
+        query.append(" PASSWORD '");
+        query.append(password);
+        query.append("'");
+
+        return query.toString();
+    }
+
+    public static String createGrantSelectOnTableQuery(String tableName, String userName) {
+        StringBuilder query = new StringBuilder("GRANT SELECT ON ");
+        query.append(tableName);
+        query.append(" TO ");
+        query.append(userName);
+
+        return query.toString();
+    }
+
+    public static String createDropUserQuery(String dbUserName) {
+        StringBuilder query = new StringBuilder("DROP USER ");
+        query.append(dbUserName);
+        query.append(" IF EXISTS");
+
+        return query.toString();
+    }
+
 }

@@ -7,8 +7,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +16,11 @@ import org.slf4j.LoggerFactory;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
+import eu.unifiedviews.dataunit.relational.RelationalDataUnit.Entry;
 import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUContext.MessageType;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.relationalhelper.RelationalHelper;
 import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
@@ -49,6 +51,10 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
 
     private static final Logger LOG = LoggerFactory.getLogger(Relational.class);
 
+    private static final String DB_USER_BASE_NAME = "tRelational_";
+
+    private static final String DB_PASSWORD = "dummy123";
+
     private Messages messages;
 
     private DPUContext context;
@@ -70,21 +76,16 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
 
         String targetTableName = this.config.getTargetTableName().toUpperCase();
         String symbolicName = targetTableName;
+        Set<RelationalDataUnit.Entry> tables = null;
 
-        Iterator<RelationalDataUnit.Entry> tablesIteration;
         try {
-            tablesIteration = RelationalHelper.getTables(this.inputTables).iterator();
+            tables = RelationalHelper.getTables(this.inputTables);
         } catch (DataUnitException ex) {
             this.context.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.dpu.failed"), this.messages.getString("errors.tables.iterator"), ex);
             return;
         }
 
-        int tablesCount = 0;
-        while (tablesIteration.hasNext()) {
-            tablesIteration.next();
-            tablesCount++;
-        }
-        if (tablesCount < 1) {
+        if (tables.isEmpty()) {
             this.context.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.dpu.failed"), this.messages.getString("errors.tables.input"));
             return;
         }
@@ -93,26 +94,40 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
         Statement stmnt = null;
         ResultSet rs = null;
         ResultSetMetaData meta = null;
+        String dbUserName = DB_USER_BASE_NAME + this.context.getDpuInstanceId();
         try {
-            conn = getDbConnectionInternal();
-
-            if (DatabaseHelper.checkTableExists(conn, targetTableName)) {
+            if (checkTableExists(targetTableName)) {
                 this.context.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.db.tableunique.short", targetTableName), this.messages.getString("errors.db.tableunique.long"));
                 return;
             }
 
+            LOG.debug("Going to create database user {} who will execute SELECT queries in internal DB", dbUserName);
+            executeSqlQueryInInternalDatabaseAsAdmin(DatabaseHelper.createDropUserQuery(dbUserName));
+            executeSqlQueryInInternalDatabaseAsAdmin(DatabaseHelper.createDatabaseUserQuery(dbUserName, DB_PASSWORD));
+            LOG.debug("Database user {} successfully created", dbUserName);
+            grantSelectOnAllInputTables(tables, dbUserName);
+
+            LOG.debug("Going to create SQL connection to internal database for user {}", dbUserName);
+            conn = this.inputTables.getDatabaseConnectionForUser(dbUserName, DB_PASSWORD);
+            LOG.debug("SQL connection to internal database for user {} successfully created", dbUserName);
             LOG.debug("Executing SQL query in internal database");
             stmnt = conn.createStatement();
-            LOG.info("Executing query " + this.config.getSqlQuery());
-            rs = stmnt.executeQuery(this.config.getSqlQuery());
-            meta = rs.getMetaData();
-            LOG.debug("SQL query executed successfully");
+
+            try {
+                LOG.info("Executing query " + this.config.getSqlQuery());
+                rs = stmnt.executeQuery(this.config.getSqlQuery());
+                meta = rs.getMetaData();
+                LOG.debug("SQL query executed successfully");
+            } catch (SQLException e) {
+                this.context.sendMessage(MessageType.ERROR, this.messages.getString("errors.db.query"));
+                throw e;
+            }
 
             List<ColumnDefinition> tableColumns = DatabaseHelper.getTableColumnsFromMetaData(meta);
             String createTableQuery = DatabaseHelper.getCreateTableQueryFromMetaData(tableColumns, targetTableName);
 
             LOG.debug("Creating internal db representation as " + createTableQuery);
-            executeSqlQueryInInternalDatabase(createTableQuery);
+            executeSqlQueryInInternalDatabaseAsAdmin(createTableQuery);
             LOG.debug("Database table in internal database successfully created");
 
             // For now, symbolic name and real table name are the same - user inserted
@@ -120,7 +135,7 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
             LOG.debug("New database table {} added to relational data unit", targetTableName);
 
             LOG.debug("Inserting data from source table into internal table");
-            insertDataFromSelect(conn, tableColumns, rs, targetTableName);
+            insertDataFromSelect(tableColumns, rs, targetTableName);
             LOG.debug("Inserting data from source table into internal table successful");
 
             // Create primary keys
@@ -129,8 +144,7 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
             } else {
                 LOG.debug("Going to create primary keys for table {}", targetTableName);
                 String alterTablesQuery = DatabaseHelper.createPrimaryKeysQuery(targetTableName, this.config.getPrimaryKeyColumns());
-                executeSqlQueryInInternalDatabase(alterTablesQuery);
-                conn.commit();
+                executeSqlQueryInInternalDatabaseAsAdmin(alterTablesQuery);
             }
 
             // Create indexes
@@ -140,9 +154,8 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
                 LOG.debug("Going to create indexes for table {}", targetTableName);
                 for (String indexedColumn : this.config.getIndexedColumns()) {
                     String indexQuery = DatabaseHelper.getCreateIndexQuery(targetTableName, indexedColumn);
-                    executeSqlQueryInInternalDatabase(indexQuery);
+                    executeSqlQueryInInternalDatabaseAsAdmin(indexQuery);
                 }
-                conn.commit();
             }
 
             Resource resource = ResourceHelpers.getResource(this.outputTable, symbolicName);
@@ -160,15 +173,47 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
             LOG.error("Error occured during transforming database tables", e);
             throw new DPUException(this.messages.getString("errors.transformfailed"), e);
         } finally {
+            DatabaseHelper.tryCloseResultSet(rs);
             DatabaseHelper.tryCloseStatement(stmnt);
+            DatabaseHelper.tryCloseConnection(conn);
+            try {
+                executeSqlQueryInInternalDatabaseAsAdmin(DatabaseHelper.createDropUserQuery(dbUserName));
+            } catch (DataUnitException e) {
+                LOG.warn("Failed to drop DPU database user");
+            }
+        }
+    }
+
+    private void grantSelectOnAllInputTables(Set<Entry> tables, String dbUserName) throws DataUnitException {
+        LOG.debug("Going to GRANT SELECT on all input tables to user {}", dbUserName);
+        for (RelationalDataUnit.Entry table : tables) {
+            String grantSelectQuery = DatabaseHelper.createGrantSelectOnTableQuery(table.getTableName(), dbUserName);
+            executeSqlQueryInInternalDatabaseAsAdmin(grantSelectQuery);
+        }
+        LOG.debug("GRANT SELECT on input tables successful");
+    }
+
+    private boolean checkTableExists(String tableName) throws DataUnitException {
+        boolean result = false;
+        Connection conn = null;
+        try {
+            conn = getAdminConnectionInternal();
+            result = DatabaseHelper.checkTableExists(conn, tableName);
+        } catch (SQLException e) {
+            DatabaseHelper.tryRollbackConnection(conn);
+            throw new DataUnitException("Error executing statement in internal dataunit database", e);
+        } finally {
             DatabaseHelper.tryCloseConnection(conn);
         }
 
+        return result;
     }
 
-    private void insertDataFromSelect(Connection conn, List<ColumnDefinition> tableColumns, ResultSet rs, String tableName) throws SQLException {
+    private void insertDataFromSelect(List<ColumnDefinition> tableColumns, ResultSet rs, String tableName) throws SQLException, DataUnitException {
         PreparedStatement ps = null;
+        Connection conn = null;
         try {
+            conn = getAdminConnectionInternal();
             String insertQuery = DatabaseHelper.getInsertQueryForPreparedStatement(tableColumns, tableName);
             LOG.debug("Insert query for inserting into internal DB table: {}", insertQuery);
             ps = conn.prepareStatement(insertQuery);
@@ -178,19 +223,20 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
                 ps.execute();
             }
             conn.commit();
-        } catch (SQLException e) {
+        } catch (SQLException | DataUnitException e) {
             LOG.error("Failed to load data into internal table", e);
             throw e;
         } finally {
+            DatabaseHelper.tryCloseConnection(conn);
             DatabaseHelper.tryCloseStatement(ps);
         }
     }
 
-    private void executeSqlQueryInInternalDatabase(String query) throws DataUnitException {
+    private void executeSqlQueryInInternalDatabaseAsAdmin(String query) throws DataUnitException {
         Statement stmnt = null;
         Connection conn = null;
         try {
-            conn = getDbConnectionInternal();
+            conn = getAdminConnectionInternal();
             stmnt = conn.createStatement();
             stmnt.executeUpdate(query);
             conn.commit();
@@ -217,7 +263,7 @@ public class Relational extends ConfigurableBase<RelationalConfig_V1> implements
         return new RelationalVaadinDialog();
     }
 
-    private Connection getDbConnectionInternal() throws DataUnitException {
+    private Connection getAdminConnectionInternal() throws DataUnitException {
         return this.inputTables.getDatabaseConnection();
     }
 
