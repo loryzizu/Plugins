@@ -7,7 +7,7 @@ import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
 public class FilesUploadConfig_V1 implements VersionedConfig<FilesUploadConfig_V1> {
 
     @EntityDescription.Property(uri = FilesUploadVocabulary.STR_CONFIG_URI)
-    private String uri = "ftps://server:port/path/";
+    private String uri = "ftps://server:/path/";
 
     @EntityDescription.Property(uri = FilesUploadVocabulary.STR_CONFIG_USERNAME)
     private String username = "";

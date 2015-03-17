@@ -82,6 +82,7 @@ public class FilesUploadVaadinDialog extends AbstractDialog<FilesUploadConfig_V1
             }
 
             final URI encodedUri = new URI(URIUtil.encodePathQuery(uri.getValue(), "utf8"));
+
             if (StringUtils.isNotBlank(username.getValue()) && StringUtils.isBlank(encodedUri.getHost())) {
                 throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.uri.invalid"));
             }
@@ -94,12 +95,13 @@ public class FilesUploadVaadinDialog extends AbstractDialog<FilesUploadConfig_V1
             }
         } catch (DPUConfigException e) {
             throw e;
-
         } catch (Exception e) {
-            throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.getConfiguration.exception"), e);
+            throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.getConfiguration.exception"));
         }
+
         result.setMoveFiles(moveFiles.getValue());
         result.setSoftFail(softFail.getValue());
+
         return result;
     }
 
@@ -108,12 +110,14 @@ public class FilesUploadVaadinDialog extends AbstractDialog<FilesUploadConfig_V1
         try {
             uri.setValue(URIUtil.decode(config.getUri(), "utf8"));
             username.setValue(config.getUsername());
+
             if (StringUtils.isNotBlank(config.getPassword())) {
                 password.setValue(CryptorFactory.getCryptor().decrypt(config.getPassword()));
             }
         } catch (Exception e) {
             throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.setConfiguration.exception"), e);
         }
+
         moveFiles.setValue(config.isMoveFiles());
         softFail.setValue(config.isSoftFail());
     }

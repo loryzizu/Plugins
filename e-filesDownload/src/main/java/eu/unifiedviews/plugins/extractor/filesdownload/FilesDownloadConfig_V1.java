@@ -1,6 +1,5 @@
 package eu.unifiedviews.plugins.extractor.filesdownload;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,7 +7,7 @@ import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
 import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
 
 @EntityDescription.Entity(type = FilesDownloadVocabulary.STR_CONFIG_CLASS)
-public class FilesDownloadConfig_V1 implements VersionedConfig<FilesDownloadConfig_V1>{
+public class FilesDownloadConfig_V1 implements VersionedConfig<FilesDownloadConfig_V1> {
 
     @EntityDescription.Property(uri = FilesDownloadVocabulary.STR_CONFIG_HAS_FILE)
     private List<VfsFile> vfsFiles = new LinkedList<>();

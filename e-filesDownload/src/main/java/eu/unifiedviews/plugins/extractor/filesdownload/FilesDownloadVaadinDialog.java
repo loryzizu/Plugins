@@ -57,7 +57,6 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 Button result = new Button("-");
-                final Table sourceFinal = source;
                 final Object itemIdFinal = itemId;
 
                 result.addClickListener(new ClickListener() {
@@ -128,7 +127,7 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
                 throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.uri.invalid"), e);
             } catch (Exception e) {
                 // Method org.apache.commons.vfs2.util.Cryptor.encrypt(String) throws exception with plain text input in the message.
-                throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.getConfiguration.exception"), e);
+                throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.getConfiguration.exception"));
             }
         }
 
@@ -176,6 +175,7 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
         if (throwException && resultException != null) {
             throw resultException;
         }
+
         return result;
     }
 
