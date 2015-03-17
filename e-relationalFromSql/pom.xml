@@ -38,15 +38,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>oracle.ojdbc</groupId>
-			<artifactId>ojdbc</artifactId>
-			<version>11.2.0.4.0</version>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc7</artifactId>
+			<version>12.1.0.2.0</version>
 		</dependency>
 
 		<dependency>
-			<groupId>microsoft.sqljdbc</groupId>
-			<artifactId>sqljdbc</artifactId>
-			<version>4.1</version>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>sqljdbc4</artifactId>
+			<version>4.0</version>
 		</dependency>
 
 		<dependency>
