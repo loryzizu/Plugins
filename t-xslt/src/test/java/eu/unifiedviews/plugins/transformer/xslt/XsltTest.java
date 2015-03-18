@@ -31,7 +31,6 @@ import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 import eu.unifiedviews.helpers.dpu.test.rdf.InputOutputUtils;
-import eu.unifiedviews.helpers.dpu.test.resources.ResourceUtils;
 
 public class XsltTest {
 
@@ -157,7 +156,7 @@ public class XsltTest {
 
         // Prepare configuration.
         final WritableRDFDataUnit configRdf = env.createRdfInput("config", false);
-        InputOutputUtils.extractFromFile(ResourceUtils.getFile("config.ttl"), RDFFormat.TURTLE, configRdf,
+        InputOutputUtils.extractFromFile(new File(getClass().getClassLoader().getResource("config.ttl").toURI()), RDFFormat.TURTLE, configRdf,
                 RdfDataUnitUtils.addGraph(configRdf, "main-config"));
 
         // configure DPU
