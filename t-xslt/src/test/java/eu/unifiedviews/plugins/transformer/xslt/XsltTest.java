@@ -1,10 +1,10 @@
 package eu.unifiedviews.plugins.transformer.xslt;
 
-import java.io.File;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -196,7 +196,7 @@ public class XsltTest {
     }
 
     private void addFileToInput(final String filename) throws Exception {
-        final File file = ResourceUtils.getFile(filename);
+        final File file = new File(getClass().getClassLoader().getResource(filename).toURI());
         FilesDataUnitUtils.addFile(input, file, "symbolicName-test");
     }
 
