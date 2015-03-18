@@ -195,6 +195,7 @@ public class XsltTest {
     }
 
     private void addFileToInput(final String filename) throws Exception {
+        System.out.println(getClass().getClassLoader().getResource(filename).toURI().toASCIIString());
         final File file = new File(getClass().getClassLoader().getResource(filename).toURI());
         FilesDataUnitUtils.addFile(input, file, "symbolicName-test");
     }
