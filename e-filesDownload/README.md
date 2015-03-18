@@ -26,7 +26,7 @@
 
 |Name         |Type           |DataUnit      |Description             |
 |-------------|---------------|--------------|------------------------|
-|filesOutput  |o              |FilesDataUnit |Downloaded files.       |
+|output  |o              |FilesDataUnit |Downloaded files.       |
 
 ***
 
@@ -35,6 +35,7 @@
 |Version          |Release notes               |
 |-----------------|----------------------------|
 |1.0.0-SNAPSHOT   |N/A                         |
+|1.0.1            |Update to new helpers.      |
 
 
 ***

@@ -1,6 +1,12 @@
 package eu.unifiedviews.plugins.transformer.xslt;
 
-public class XSLTConfig_V1 {
+import cz.cuni.mff.xrg.uv.transformer.xslt.XsltConfig_V2;
+import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
+
+/**
+ * Original configuration from XSLT.
+ */
+public class XSLTConfig_V1 implements VersionedConfig<XsltConfig_V2> {
 
     private String xslTemplate = "";
 
@@ -57,7 +63,15 @@ public class XSLTConfig_V1 {
     }
 
     @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "[templateFile=" + xslTemplateFileNameShownInDialog + ",skipOnError=" + String.valueOf(skipOnError) + ",xsltParametersMapName=" + xsltParametersMapName + ",outputFileExtension=" + outputFileExtension + "]";
+    public XsltConfig_V2 toNextVersion() {
+        final XsltConfig_V2 config = new XsltConfig_V2();
+
+        config.setFailOnError(!this.skipOnError);
+        config.setXsltTemplate(this.xslTemplate);
+        config.setXsltTemplateName(this.xslTemplateFileNameShownInDialog);
+        config.setOutputFileExtension(this.outputFileExtension);
+
+        return config;
     }
+
 }

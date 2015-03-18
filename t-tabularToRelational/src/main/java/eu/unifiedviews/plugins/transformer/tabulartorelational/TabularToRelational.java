@@ -10,6 +10,7 @@ import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
 import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
 import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
+import eu.unifiedviews.helpers.dpu.NonConfigurableBase;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
@@ -18,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -48,6 +51,7 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
 
     @Override
     public void execute(DPUContext context) throws DPUException, InterruptedException {
+
         this.messages = new Messages(context.getLocale(), this.getClass().getClassLoader());
         final Iterator<FilesDataUnit.Entry> filesIteration;
         try {
@@ -78,7 +82,7 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
                 final FilesDataUnit.Entry entry = filesIteration.next();
                 LOG.debug("Adding file: {}", entry.getSymbolicName());
                 // remove URL prefixes
-                final String csvPath = StringUtils.substringAfterLast(entry.getFileURIString(), ":");
+                final String csvPath = StringUtils.substringAfterLast(URLDecoder.decode(entry.getFileURIString(), "UTF8"), ":");
 
                 String insertIntoQuery = prepareInsertIntoQuery(csvPath, config);
                 LOG.debug("Insert into query: {}", insertIntoQuery);
@@ -86,7 +90,7 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
                 // insert file into internal database
                 DatabaseHelper.executeUpdate(insertIntoQuery, outRelationalData);
             }
-        } catch (DataUnitException e) {
+        } catch (DataUnitException | UnsupportedEncodingException e) {
             context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.dpu.parse.failed"), "", e);
         }
 

@@ -1,8 +1,5 @@
 package eu.unifiedviews.plugins.transformer.unzipper;
 
-/**
- * @author Škoda Petr
- */
 public class UnZipperConfig_V1 {
 
     /**

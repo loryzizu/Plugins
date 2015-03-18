@@ -19,99 +19,26 @@ import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.Table.ColumnHeaderMode;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
-import eu.unifiedviews.helpers.dpu.localization.Messages;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 @SuppressWarnings("serial")
-public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadConfig_V1> implements InitializableConfigDialog {
+public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfig_V1> {
 
-    private final Container container = new BeanItemContainer<VfsFile>(VfsFile.class);
-
-    private Messages messages;
+    private final Container container = new BeanItemContainer<>(VfsFile.class);
 
     public FilesDownloadVaadinDialog() {
-        super(FilesDownloadConfig_V1.class);
+        super(FilesDownload.class);
     }
 
     @Override
-    public void initialize() {
-        messages = new Messages(getContext().getLocale(), getClass().getClassLoader());
-
-        Panel panel = new Panel();
-        panel.setContent(buildMainLayout());
-        panel.setSizeFull();
-
-        setCompositionRoot(panel);
-        setHeight("100%");
-        setWidth("100%");
-    }
-
-    private VerticalLayout buildMainLayout() {
-        VerticalLayout mainLayout = new VerticalLayout();
-        mainLayout.setHeight("-1px");
+    protected void buildDialogLayout() {
+        final VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setSizeFull();
         mainLayout.setImmediate(false);
-        mainLayout.setMargin(false);
+        mainLayout.setMargin(true);
         mainLayout.setSpacing(true);
-        mainLayout.setWidth("100%");
 
-        Table table = new Table();
-        table.addGeneratedColumn("remove", new ColumnGenerator() {
-
-            @Override
-            public Object generateCell(Table source, Object itemId, Object columnId) {
-                Button result = new Button("-");
-                final Table sourceFinal = source;
-                final Object itemIdFinal = itemId;
-
-                result.addClickListener(new ClickListener() {
-
-                    @Override
-                    public void buttonClick(ClickEvent event) {
-                        if (sourceFinal.size() > 1) {
-                            container.removeItem(itemIdFinal);
-                        }
-                    }
-
-                });
-
-                return result;
-            }
-
-        });
-        table.setContainerDataSource(container);
-        table.setColumnHeaderMode(ColumnHeaderMode.EXPLICIT);
-        table.setColumnHeader("uri", messages.getString("FilesDownloadVaadinDialog.uri"));
-        table.setColumnHeader("username", messages.getString("FilesDownloadVaadinDialog.username"));
-        table.setColumnHeader("password", messages.getString("FilesDownloadVaadinDialog.password"));
-        table.setColumnHeader("fileName", messages.getString("FilesDownloadVaadinDialog.fileName"));
-        table.setEditable(true);
-        table.setHeight("270");
-        table.setTableFieldFactory(new TableFieldFactory() {
-
-            @Override
-            public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-                AbstractTextField result = new TextField();
-
-                if (propertyId.equals("uri")) {
-                    result.setDescription(messages.getString("FilesDownloadVaadinDialog.uri.description"));
-                    result.setWidth("400");
-                } else if (propertyId.equals("password")) {
-                    result = new PasswordField();
-                } else if (propertyId.equals("fileName")) {
-                    result.setDescription(messages.getString("FilesDownloadVaadinDialog.fileName.description"));
-                }
-
-                return result;
-            }
-
-        });
-        table.setVisibleColumns("remove", "uri", "username", "password", "fileName");
-        table.setWidth("100%");
-
-        mainLayout.addComponent(table);
-
-        Button addVfsFile = new Button("+");
+        final Button addVfsFile = new Button("+");
         addVfsFile.addClickListener(new ClickListener() {
 
             @Override
@@ -122,8 +49,60 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
         });
 
         mainLayout.addComponent(addVfsFile);
+        mainLayout.setExpandRatio(addVfsFile, 0.0f);
 
-        return mainLayout;
+        final Table table = new Table();
+        table.addGeneratedColumn("remove", new ColumnGenerator() {
+
+            @Override
+            public Object generateCell(Table source, Object itemId, Object columnId) {
+                Button result = new Button("-");
+                final Object itemIdFinal = itemId;
+
+                result.addClickListener(new ClickListener() {
+
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        container.removeItem(itemIdFinal);
+                    }
+
+                });
+
+                return result;
+            }
+
+        });
+        table.setContainerDataSource(container);
+        table.setColumnHeaderMode(ColumnHeaderMode.EXPLICIT);
+        table.setColumnHeader("uri", ctx.tr("FilesDownloadVaadinDialog.uri"));
+        table.setColumnHeader("username", ctx.tr("FilesDownloadVaadinDialog.username"));
+        table.setColumnHeader("password", ctx.tr("FilesDownloadVaadinDialog.password"));
+        table.setColumnHeader("fileName", ctx.tr("FilesDownloadVaadinDialog.fileName"));
+        table.setEditable(true);
+        table.setSizeFull();
+        table.setTableFieldFactory(new TableFieldFactory() {
+
+            @Override
+            public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+                AbstractTextField result = new TextField();
+
+                if (propertyId.equals("uri")) {
+                    result.setDescription(ctx.tr("FilesDownloadVaadinDialog.uri.description"));
+                    result.setWidth("400");
+                } else if (propertyId.equals("password")) {
+                    result = new PasswordField();
+                } else if (propertyId.equals("fileName")) {
+                    result.setDescription(ctx.tr("FilesDownloadVaadinDialog.fileName.description"));
+                }
+
+                return result;
+            }
+
+        });
+        table.setVisibleColumns("remove", "uri", "username", "password", "fileName");
+        mainLayout.addComponent(table);
+        mainLayout.setExpandRatio(table, 1.0f);
+        setCompositionRoot(mainLayout);
     }
 
     @Override
@@ -134,7 +113,7 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
             try {
                 for (Object itemId : container.getItemIds()) {
                     VfsFile vfsFile = new VfsFile((VfsFile) itemId);
-                    URI uri = new URI(URIUtil.encodePathQuery(vfsFile.getUri(), "utf8"));
+                    URI uri = new URI(URIUtil.encodePathQuery(URIUtil.decode(vfsFile.getUri(), "utf8"), "utf8"));
 
                     vfsFile.setUri(uri.toString());
 
@@ -145,10 +124,10 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
                     vfsFiles.add(vfsFile);
                 }
             } catch (NullPointerException | URISyntaxException | URIException e) {
-                throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.uri.invalid"), e);
+                throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.uri.invalid"), e);
             } catch (Exception e) {
                 // Method org.apache.commons.vfs2.util.Cryptor.encrypt(String) throws exception with plain text input in the message.
-                throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.getConfiguration.exception"));
+                throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.getConfiguration.exception"));
             }
         }
 
@@ -168,21 +147,15 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
 
                 if (StringUtils.isBlank(vfsFile.getUri())) {
                     result = false;
-
-                    resultException = new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.uri.required"));
-
+                    resultException = new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.uri.required"));
                     break;
                 } else if (StringUtils.isBlank(vfsFile.getUsername()) && StringUtils.isNotBlank(vfsFile.getPassword())) {
                     result = false;
-
-                    resultException = new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.username.required"));
-
+                    resultException = new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.username.required"));
                     break;
                 } else if (StringUtils.isNotBlank(vfsFile.getUsername()) && StringUtils.isBlank(vfsFile.getPassword())) {
                     result = false;
-
-                    resultException = new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.password.required"));
-
+                    resultException = new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.password.required"));
                     break;
                 }
 
@@ -190,16 +163,13 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
 
                 if (StringUtils.isNotBlank(vfsFile.getUsername()) && StringUtils.isBlank(uri.getHost())) {
                     result = false;
-
-                    resultException = new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.uri.invalid"));
-
+                    resultException = new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.uri.invalid"));
                     break;
                 }
             }
         } catch (Exception e) {
             result = false;
-
-            resultException = new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.uri.invalid"), e);
+            resultException = new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.uri.invalid"), e);
         }
 
         if (throwException && resultException != null) {
@@ -217,7 +187,6 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
 
                 for (VfsFile vfsFile : config.getVfsFiles()) {
                     VfsFile vfsFileInContainer = new VfsFile(vfsFile);
-
                     vfsFileInContainer.setUri(URIUtil.decode(vfsFile.getUri(), "utf8"));
 
                     if (StringUtils.isNotBlank(vfsFile.getPassword())) {
@@ -227,16 +196,16 @@ public class FilesDownloadVaadinDialog extends BaseConfigDialog<FilesDownloadCon
                     container.addItem(vfsFileInContainer);
                 }
             } catch (UnsupportedOperationException | URIException e) {
-                throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.setConfiguration.exception"), e);
+                throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.setConfiguration.exception"), e);
             } catch (Exception e) {
-                throw new DPUConfigException(messages.getString("FilesDownloadVaadinDialog.setConfiguration.exception"));
+                throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.setConfiguration.exception"));
             }
         }
     }
 
     @Override
     public String getDescription() {
-        return messages.getString("FilesDownloadVaadinDialog.getDescription", new Object[] { container.getItemIds().size() });
+        return ctx.tr("FilesDownloadVaadinDialog.getDescription", new Object[] { container.getItemIds().size() });
     }
 
 }

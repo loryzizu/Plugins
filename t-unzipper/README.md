@@ -35,7 +35,8 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|1.3.2            |N/A                         |                                
+|1.3.2            |N/A                         |
+|1.5.1            |Update for new helpers.     |
 
 ***
 
@@ -43,4 +44,5 @@
 
 |Author           |Notes                           |
 |-----------------|--------------------------------|
-|N/A              |N/A                             | 
+|N/A              |N/A                             |
+|Petr Škoda       |VirtualPath is required.        |

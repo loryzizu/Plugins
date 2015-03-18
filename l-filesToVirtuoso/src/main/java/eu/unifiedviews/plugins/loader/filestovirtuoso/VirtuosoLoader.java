@@ -28,17 +28,19 @@ import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
-import eu.unifiedviews.helpers.dataunit.virtualgraphhelper.VirtualGraphHelpers;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dataunit.resource.Resource;
+import eu.unifiedviews.helpers.dataunit.resource.ResourceHelpers;
+import eu.unifiedviews.helpers.dataunit.virtualgraph.VirtualGraphHelpers;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 
 @DPU.AsLoader
-public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> implements ConfigDialogProvider<VirtuosoLoaderConfig_V1> {
+public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(VirtuosoLoader.class);
 
@@ -77,24 +79,27 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
 
     private static final String GRANT_USER_WRITE = "DB.DBA.RDF_GRAPH_USER_PERMS_SET (?, ?, 3)";
 
-    public static final String CONFIGURATION_VIRTUOSO_USERNAME = "filesToVirtuosoUsername";
+    public static final String CONFIGURATION_VIRTUOSO_USERNAME = "dpu.l-filesToVirtuoso.username";
 
-    public static final String CONFIGURATION_VIRTUOSO_PASSWORD = "filesToVirtuosoPassword";
+    public static final String CONFIGURATION_VIRTUOSO_PASSWORD = "dpu.l-filesToVirtuoso.password";
+
+    public static final String CONFIGURATION_VIRTUOSO_JDBC_URL = "dpu.l-filesToVirtuoso.jdbc.url";
+
+    public static final String CONFIGURATION_VIRTUOSO_LOAD_DIRECTORY_PATH = "dpu.l-filesToVirtuoso.load.directory.path";
+
+    @ExtensionInitializer.Init
+    public FaultTolerance faultTolerance;
+
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.loader.filestovirtuoso.VirtuosoLoaderConfig__V1")
+    public ConfigurationUpdate _ConfigurationUpdate;
 
     public VirtuosoLoader() {
-        super(VirtuosoLoaderConfig_V1.class);
+        super(VirtuosoLoaderVaadinDialog.class, ConfigHistory.noHistory(VirtuosoLoaderConfig_V1.class));
     }
 
     @Override
-    public void execute(DPUContext dpuContext) throws DPUException, InterruptedException {
-        String shortMessage = this.getClass().getSimpleName() + " starting.";
-        String longMessage = String.format("Configuration: VirtuosoUrl: %s, username: %s, password: %s, loadDirectoryPath: %s, "
-                + "includeSubdirectories: %s, targetContext: %s, statusUpdateInterval: %s, threadCount: %s",
-                config.getVirtuosoUrl(), config.getUsername(), "***", config.getLoadDirectoryPath(),
-                config.isIncludeSubdirectories(), config.getTargetContext(), config.getStatusUpdateInterval(),
-                config.getThreadCount());
-        LOG.info(shortMessage + " " + longMessage);
-        Map<String, String> environment = dpuContext.getEnvironment();
+    protected void innerExecute() throws DPUException {
+        Map<String, String> environment = ctx.getExecMasterContext().getDpuContext().getEnvironment();
         String username = environment.get(CONFIGURATION_VIRTUOSO_USERNAME);
         if (config.getUsername() == null || config.getUsername().isEmpty()) {
             config.setUsername(username);
@@ -103,8 +108,22 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
         if (config.getPassword() == null || config.getPassword().isEmpty()) {
             config.setPassword(password);
         }
-        String organization = dpuContext.getOrganization();
-
+        String virtuosoJdbcUrl = environment.get(CONFIGURATION_VIRTUOSO_JDBC_URL);
+        if (config.getVirtuosoUrl() == null || config.getVirtuosoUrl().isEmpty()) {
+            config.setVirtuosoUrl(virtuosoJdbcUrl);
+        }
+        String virtuosoLoadDirectoryPath = environment.get(CONFIGURATION_VIRTUOSO_LOAD_DIRECTORY_PATH);
+        if (config.getLoadDirectoryPath() == null || config.getLoadDirectoryPath().isEmpty()) {
+            config.setLoadDirectoryPath(virtuosoLoadDirectoryPath);
+        }
+        String organization = ctx.getExecMasterContext().getDpuContext().getOrganization();
+        String shortMessage = this.getClass().getSimpleName() + " starting.";
+        String longMessage = String.format("Configuration: VirtuosoUrl: %s, username: %s, password: %s, loadDirectoryPath: %s, "
+                + "includeSubdirectories: %s, targetContext: %s, statusUpdateInterval: %s, threadCount: %s",
+                config.getVirtuosoUrl(), config.getUsername(), "***", config.getLoadDirectoryPath(),
+                config.isIncludeSubdirectories(), config.getTargetContext(), config.getStatusUpdateInterval(),
+                config.getThreadCount());
+        LOG.info(shortMessage + " " + longMessage);
         try {
             Class.forName("virtuoso.jdbc4.Driver");
         } catch (ClassNotFoundException ex) {
@@ -212,15 +231,19 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
             LOG.info("Started {} load threads", config.getThreadCount());
 
             int done = 0;
-            boolean shouldContinue = !dpuContext.canceled();
-            while ((shouldContinue) && (!executor.awaitTermination(config.getStatusUpdateInterval(), TimeUnit.SECONDS))) {
-                ResultSet resultSetDoneLoop = statementStatusCountDone.executeQuery();
-                resultSetDoneLoop.next();
-                done = resultSetDoneLoop.getInt(1);
-                resultSetDoneLoop.close();
+            boolean shouldContinue = !ctx.canceled();
+            try {
+                while ((shouldContinue) && (!executor.awaitTermination(config.getStatusUpdateInterval(), TimeUnit.SECONDS))) {
+                    ResultSet resultSetDoneLoop = statementStatusCountDone.executeQuery();
+                    resultSetDoneLoop.next();
+                    done = resultSetDoneLoop.getInt(1);
+                    resultSetDoneLoop.close();
 
-                LOG.info("Processing {}/{} files", done, all);
-                shouldContinue = !dpuContext.canceled();
+                    LOG.info("Processing {}/{} files", done, all);
+                    shouldContinue = !ctx.canceled();
+                }
+            } catch (InterruptedException ex) {
+                throw ContextUtils.dpuExceptionCancelled(ctx);
             }
             LOG.info("Finished all threads");
 
@@ -234,9 +257,14 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
             statementsErrorRows.setString(1, config.getLoadDirectoryPath() + "%");
             ResultSet resultSetErrorRows = statementsErrorRows.executeQuery();
             while (resultSetErrorRows.next()) {
-                dpuContext.sendMessage(
-                        config.isSkipOnError() ? DPUContext.MessageType.WARNING : DPUContext.MessageType.ERROR,
-                        "Error processing file " + resultSetErrorRows.getString(1) + ", error " + resultSetErrorRows.getString(8));
+                if (config.isSkipOnError()) {
+                    ContextUtils.sendShortWarn(ctx, longMessage, "Error processing file %s,error %s",
+                            resultSetErrorRows.getString(1), resultSetErrorRows.getString(8));
+                } else {
+                    ContextUtils.sendError(ctx, longMessage, "Error processing file %s,error %s",
+                            resultSetErrorRows.getString(1), resultSetErrorRows.getString(8), "");
+
+                }
             }
             resultSetErrorRows.close();
             statementsErrorRows.close();
@@ -274,13 +302,25 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
                 LOG.info("Executed " + GRANT_USER_WRITE);
             }
 
-            String outputSymbolicName = config.getTargetContext();
-            rdfOutput.addExistingDataGraph(outputSymbolicName, new URIImpl(outputSymbolicName));
-            VirtualGraphHelpers.setVirtualGraph(rdfOutput, outputSymbolicName, config.getTargetContext());
+            final String outputSymbolicName = config.getTargetContext();
 
-            Resource resource = ResourceHelpers.getResource(rdfOutput, outputSymbolicName);
-            resource.setLast_modified(new Date());
-            ResourceHelpers.setResource(rdfOutput, outputSymbolicName, resource);
+            rdfOutput.addExistingDataGraph(outputSymbolicName, new URIImpl(outputSymbolicName));
+            faultTolerance.execute(new FaultTolerance.Action() {
+
+                @Override
+                public void action() throws Exception {
+                    VirtualGraphHelpers.setVirtualGraph(rdfOutput, outputSymbolicName, config.getTargetContext());
+                }
+            });
+            faultTolerance.execute(new FaultTolerance.Action() {
+
+                @Override
+                public void action() throws Exception {
+                    final Resource resource = ResourceHelpers.getResource(rdfOutput, outputSymbolicName);
+                    resource.setLast_modified(new Date());
+                    ResourceHelpers.setResource(rdfOutput, outputSymbolicName, resource);
+                }
+            });
 
             LOG.info("Done.");
         } catch (DataUnitException | SQLException ex) {
@@ -297,12 +337,16 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
                 }
             }
             if (executor != null && started) {
-                if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                    executor.shutdownNow(); // Cancel currently executing tasks
-                    // Wait a while for tasks to respond to being cancelled
+                try {
                     if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                        LOG.error("Pool did not terminate");
+                        executor.shutdownNow(); // Cancel currently executing tasks
+                        // Wait a while for tasks to respond to being cancelled
+                        if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                            LOG.error("Pool did not terminate");
+                        }
                     }
+                } catch (InterruptedException ex) {
+                    throw new DPUException("Interrupted.", ex);
                 }
             }
             try {
@@ -329,10 +373,5 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
                 }
             }
         }
-    }
-
-    @Override
-    public AbstractConfigDialog<VirtuosoLoaderConfig_V1> getConfigurationDialog() {
-        return new VirtuosoLoaderVaadinDialog();
     }
 }

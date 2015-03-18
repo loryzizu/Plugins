@@ -1,16 +1,23 @@
 package eu.unifiedviews.plugins.loader.filesupload;
 
-public class FilesUploadConfig_V1 {
+import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
+import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
 
-    private String uri = "/tmp";
+@EntityDescription.Entity(type = FilesUploadVocabulary.STR_CONFIG_CLASS)
+public class FilesUploadConfig_V1 implements VersionedConfig<FilesUploadConfig_V1> {
 
+    @EntityDescription.Property(uri = FilesUploadVocabulary.STR_CONFIG_URI)
+    private String uri = "ftps://server:21/path/";
+
+    @EntityDescription.Property(uri = FilesUploadVocabulary.STR_CONFIG_USERNAME)
     private String username = "";
 
+    @EntityDescription.Property(uri = FilesUploadVocabulary.STR_CONFIG_PASSWORD)
     private String password = "";
 
-    private boolean moveFiles = false;
+    private boolean softFail = false;
 
-    private boolean skipOnError = false;
+    private boolean moveFiles = false;
 
     public String getUri() {
         return uri;
@@ -36,6 +43,14 @@ public class FilesUploadConfig_V1 {
         this.password = password;
     }
 
+    public boolean isSoftFail() {
+        return softFail;
+    }
+
+    public void setSoftFail(boolean softFail) {
+        this.softFail = softFail;
+    }
+
     public boolean isMoveFiles() {
         return moveFiles;
     }
@@ -44,12 +59,10 @@ public class FilesUploadConfig_V1 {
         this.moveFiles = moveFiles;
     }
 
-    public boolean isSkipOnError() {
-        return skipOnError;
-    }
-
-    public void setSkipOnError(boolean skipOnError) {
-        this.skipOnError = skipOnError;
+    @Override
+    public FilesUploadConfig_V1 toNextVersion() {
+        // This is just a small trick to force history of configuration.
+        return this;
     }
 
 }

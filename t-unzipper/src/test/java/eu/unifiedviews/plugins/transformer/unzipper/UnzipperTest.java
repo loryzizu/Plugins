@@ -1,8 +1,6 @@
 package eu.unifiedviews.plugins.transformer.unzipper;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,20 +12,26 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
-import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
+import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.files.FilesDataUnitUtils;
+import eu.unifiedviews.helpers.dataunit.files.FilesHelper;
+import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 
+/**
+ * TODO Add fault tolerance tests!
+ */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ FilesHelper.class, VirtualPathHelpers.class })
 public class UnzipperTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UnzipperTest.class);
 
     private UnZipper dpu;
 
@@ -47,11 +51,10 @@ public class UnzipperTest {
 
     @Before
     public void before() throws Exception {
-        // prepare DPU
         UnZipperConfig_V1 config = new UnZipperConfig_V1();
 
         dpu = new UnZipper();
-        dpu.configureDirectly(config);
+        dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
 
         env = new TestEnvironment();
         input = env.createFilesInput("input");
@@ -70,57 +73,29 @@ public class UnzipperTest {
         String fileContent = readFile(inputFile);
 
         addFileToInput(ZIPPED_FILE);
+
         env.run(dpu);
         String unzippedFileContent = readFileFromOutput();
 
         assertEquals("Content of unzipped file by DPU and resource file should match!", fileContent, unzippedFileContent);
     }
 
-    @Test
+    @Test(expected = DPUException.class)
     public void encryptedArchiveFail() throws Exception {
         addFileToInput(ZIPPED_ENCRYPTED_FILE);
         env.run(dpu);
+  }
 
-        assertEquals("Execution should have ended with error, because archive was encrypted!", true, env.getContext().isPublishedError());
-    }
-
-    @Test
-    public void corruptedFileFail() {
-        try {
-            addFileToInput(ZIPPED_CORRUPTED_FILE);
-            env.run(dpu);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        assertEquals("Execution should have ended with error, because archive was corrupted!", true, env.getContext().isPublishedError());
-    }
-
-    @Test
-    public void dataUnitIteratorFails() {
-        PowerMockito.mockStatic(FilesHelper.class);
-        try {
-            PowerMockito.doThrow(new DataUnitException("")).when(FilesHelper.class, "getFiles", any());
-            env.run(dpu);
-            assertEquals("Error shoud have been published!", true, env.getContext().isPublishedError());
-        } catch (Exception ex) {
-        }
-    }
-
-    @Test
-    public void virtualPathHelperFails() {
-        PowerMockito.mockStatic(VirtualPathHelpers.class);
-        try {
-            PowerMockito.doThrow(new DataUnitException("")).when(VirtualPathHelpers.class, "getVirtualPath", any(), anyString());
-            addFileToInput(ZIPPED_FILE);
-            env.run(dpu);
-            assertEquals("Error shoud have been published!", true, env.getContext().isPublishedError());
-        } catch (Exception ex) {
-        }
+    @Test(expected = DPUException.class)
+    public void corruptedFileFail() throws Exception {
+        addFileToInput(ZIPPED_CORRUPTED_FILE);
+        env.run(dpu);
     }
 
     private void addFileToInput(final String filename) throws Exception {
-        input.addExistingFile(filename, this.getClass().getClassLoader().getResource(filename).toString());
+        FilesDataUnitUtils.addFile(input,
+                new File(this.getClass().getClassLoader().getResource(filename).toURI()),
+                ZIPPED_FILE);
     }
 
     /**
@@ -135,10 +110,9 @@ public class UnzipperTest {
                 File file = new File(java.net.URI.create(entry.getFileURIString()));
                 sb.append(readFile(file));
             }
-        } catch (DataUnitException e) {
-            e.printStackTrace();
+        } catch (DataUnitException ex) {
+            LOG.error("Can't read file from output.", ex);
         }
-
         return sb.toString();
     }
 
@@ -146,14 +120,14 @@ public class UnzipperTest {
      * Reads content form resource file.
      * 
      * @param input
-     *            Name of resourcer file.
+     *            Name of resource file.
      * @return Contents of file.
      */
     private String readFile(File input) {
         try (FileInputStream inputStream = new FileInputStream(input)) {
             return IOUtils.toString(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            LOG.error("Can't read file.", ex);
         }
         return null;
     }

@@ -2,10 +2,13 @@ package eu.unifiedviews.plugins.transformer.filesfilter;
 
 public class FilesFilterConfig_V1 {
 
+    // TODO Remove as it's not used anymore.
     public static final String SYMBOLIC_NAME = "FIXED_SYMBOLIC_NAME";
 
+    // TODO Remove as it's not used anymore.
     public static final String VIRTUAL_PATH = "VIRTUAL_PATH";
 
+    // TODO Remove as it's not used anymore.
     private String predicate = SYMBOLIC_NAME;
 
     private String object = ".*";
