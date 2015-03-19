@@ -43,6 +43,7 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
+|0.9.1-SNAPSHOT   |Update for helpers 2.0.0    |
 |0.9.0            |N/A                         |
 
 
