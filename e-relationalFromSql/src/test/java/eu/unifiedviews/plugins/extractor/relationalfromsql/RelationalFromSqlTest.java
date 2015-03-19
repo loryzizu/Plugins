@@ -20,7 +20,8 @@ import org.junit.Test;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
 import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
-import eu.unifiedviews.helpers.dataunit.relationalhelper.RelationalHelper;
+import eu.unifiedviews.helpers.dataunit.relational.RelationalHelper;
+import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 import eu.unifiedviews.plugins.extractor.relationalfromsql.SqlDatabase.DatabaseType;
 
 public class RelationalFromSqlTest {
@@ -78,7 +79,7 @@ public class RelationalFromSqlTest {
     @Test
     public void selectSingleTableCheckTargetTableTest() throws Exception {
         RelationalFromSqlConfig_V2 config = createConfig(SELECT_ONE_TABLE_QUERY);
-        this.dpu.configureDirectly(config);
+        this.dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
         Connection sourceConnection = null;
         Connection dataUnitConnection = null;
         try {
@@ -106,7 +107,7 @@ public class RelationalFromSqlTest {
     @Test
     public void selectSingleTableCheckTargetTableContent() throws Exception {
         RelationalFromSqlConfig_V2 config = createConfig(SELECT_ONE_TABLE_QUERY);
-        this.dpu.configureDirectly(config);
+        this.dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
         Connection sourceConnection = null;
         Connection dataUnitConnection = null;
         ResultSet rs = null;
@@ -149,7 +150,7 @@ public class RelationalFromSqlTest {
     @Test
     public void selectJoinTablesCheckTargetTableTest() throws Exception {
         RelationalFromSqlConfig_V2 config = createConfig(SELECT_JOIN_TABLES_QUERY);
-        this.dpu.configureDirectly(config);
+        this.dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
         Connection sourceConnection = null;
         Connection dataUnitConnection = null;
         try {
@@ -178,7 +179,7 @@ public class RelationalFromSqlTest {
     @Test
     public void selectJoinTablesCheckTargetTableContent() throws Exception {
         RelationalFromSqlConfig_V2 config = createConfig(SELECT_JOIN_TABLES_QUERY);
-        this.dpu.configureDirectly(config);
+        this.dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
         Connection sourceConnection = null;
         Connection dataUnitConnection = null;
         ResultSet rs = null;

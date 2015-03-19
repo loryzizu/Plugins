@@ -13,16 +13,12 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
-import eu.unifiedviews.helpers.dpu.localization.Messages;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 import eu.unifiedviews.plugins.extractor.relationalfromsql.SqlDatabase.DatabaseType;
 
-public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFromSqlConfig_V2> implements InitializableConfigDialog {
+public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFromSqlConfig_V2> {
 
     private static final long serialVersionUID = -6978431151165728797L;
-
-    private Messages messages;
 
     private VerticalLayout mainLayout;
 
@@ -61,13 +57,11 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
     private Button btnCreateQuery;
 
     public RelationalFromSqlVaadinDialog() {
-        super(RelationalFromSqlConfig_V2.class);
+        super(RelationalFromSql.class);
     }
 
     @Override
-    public void initialize() {
-        this.messages = new Messages(getContext().getLocale(), this.getClass().getClassLoader());
-
+    protected void buildDialogLayout() {
         setWidth("100%");
         setHeight("100%");
 
@@ -79,7 +73,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         this.mainLayout.setMargin(false);
 
         this.databaseType = new NativeSelect();
-        this.databaseType.setCaption(this.messages.getString("dialog.extractdb.dbtype"));
+        this.databaseType.setCaption(ctx.tr("dialog.extractdb.dbtype"));
         this.databaseType.addItems(SqlDatabase.getDatabaseTypeNames());
         this.databaseType.setNullSelectionAllowed(false);
         this.databaseType.setImmediate(true);
@@ -89,94 +83,94 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         this.mainLayout.addComponent(this.databaseType);
 
         this.txtDatabaseHost = new TextField();
-        this.txtDatabaseHost.setCaption(this.messages.getString("dialog.extractdb.dbhost"));
+        this.txtDatabaseHost.setCaption(ctx.tr("dialog.extractdb.dbhost"));
         this.txtDatabaseHost.setRequired(true);
         this.txtDatabaseHost.setNullRepresentation("");
         this.txtDatabaseHost.setWidth("100%");
         this.mainLayout.addComponent(this.txtDatabaseHost);
 
         this.txtDatabasePort = new TextField();
-        this.txtDatabasePort.setCaption(this.messages.getString("dialog.extractdb.dbport"));
+        this.txtDatabasePort.setCaption(ctx.tr("dialog.extractdb.dbport"));
         this.txtDatabasePort.setRequired(true);
         this.txtDatabasePort.setWidth("100%");
         this.mainLayout.addComponent(this.txtDatabasePort);
 
         this.txtDatabaseName = new TextField();
-        this.txtDatabaseName.setCaption(this.messages.getString("dialog.extractdb.dbname"));
+        this.txtDatabaseName.setCaption(ctx.tr("dialog.extractdb.dbname"));
         this.txtDatabaseName.setRequired(true);
         this.txtDatabaseName.setNullRepresentation("");
         this.txtDatabaseName.setWidth("100%");
         this.mainLayout.addComponent(this.txtDatabaseName);
 
         this.txtInstanceName = new TextField();
-        this.txtInstanceName.setCaption(this.messages.getString("dialog.extractdb.instance"));
+        this.txtInstanceName.setCaption(ctx.tr("dialog.extractdb.instance"));
         this.txtInstanceName.setNullRepresentation("");
         this.txtInstanceName.setWidth("100%");
         this.txtInstanceName.setVisible(false);
         this.mainLayout.addComponent(this.txtInstanceName);
 
         this.txtUserName = new TextField();
-        this.txtUserName.setCaption(this.messages.getString("dialog.extractdb.username"));
+        this.txtUserName.setCaption(ctx.tr("dialog.extractdb.username"));
         this.txtUserName.setRequired(true);
         this.txtUserName.setNullRepresentation("");
         this.txtUserName.setWidth("100%");
         this.mainLayout.addComponent(this.txtUserName);
 
         this.txtPassword = new PasswordField();
-        this.txtPassword.setCaption(this.messages.getString("dialog.extractdb.password"));
+        this.txtPassword.setCaption(ctx.tr("dialog.extractdb.password"));
         this.txtPassword.setRequired(true);
         this.txtPassword.setNullRepresentation("");
         this.txtPassword.setWidth("100%");
         this.mainLayout.addComponent(this.txtPassword);
 
         this.chckUseSsl = new CheckBox();
-        this.chckUseSsl.setCaption(this.messages.getString("dialog.extractdb.usessl"));
+        this.chckUseSsl.setCaption(ctx.tr("dialog.extractdb.usessl"));
         this.chckUseSsl.addValueChangeListener(createSslValueChangeListener());
         this.mainLayout.addComponent(this.chckUseSsl);
 
         this.txtTruststoreLocation = new TextField();
-        this.txtTruststoreLocation.setCaption(this.messages.getString("dialog.extractdb.truststore.location"));
-        this.txtTruststoreLocation.setDescription(this.messages.getString("dialog.extractdb.truststore"));
+        this.txtTruststoreLocation.setCaption(ctx.tr("dialog.extractdb.truststore.location"));
+        this.txtTruststoreLocation.setDescription(ctx.tr("dialog.extractdb.truststore"));
         this.txtTruststoreLocation.setVisible(false);
         this.txtTruststoreLocation.setNullRepresentation("");
         this.txtTruststoreLocation.setWidth("100%");
         this.mainLayout.addComponent(this.txtTruststoreLocation);
 
         this.txtTruststorePassword = new PasswordField();
-        this.txtTruststorePassword.setCaption(this.messages.getString("dialog.extractdb.truststore.password"));
+        this.txtTruststorePassword.setCaption(ctx.tr("dialog.extractdb.truststore.password"));
         this.txtTruststorePassword.setNullRepresentation("");
         this.txtTruststorePassword.setWidth("100%");
         this.txtTruststorePassword.setVisible(false);
         this.mainLayout.addComponent(this.txtTruststorePassword);
 
         this.btntestConnection = new Button();
-        this.btntestConnection.setCaption(this.messages.getString("dialog.extractdb.testdb"));
+        this.btntestConnection.setCaption(ctx.tr("dialog.extractdb.testdb"));
         this.btntestConnection.addClickListener(createTestClickListener());
         this.mainLayout.addComponent(this.btntestConnection);
 
         this.txtTargetTableName = new TextField();
-        this.txtTargetTableName.setCaption(this.messages.getString("dialog.extractdb.targettable"));
-        this.txtTargetTableName.setDescription(this.messages.getString("dialog.extractdb.tabledescr"));
+        this.txtTargetTableName.setCaption(ctx.tr("dialog.extractdb.targettable"));
+        this.txtTargetTableName.setDescription(ctx.tr("dialog.extractdb.tabledescr"));
         this.txtTargetTableName.setRequired(true);
         this.txtTargetTableName.setNullRepresentation("");
         this.txtTargetTableName.setWidth("100%");
         this.mainLayout.addComponent(this.txtTargetTableName);
 
         this.txtSqlQuery = new TextArea();
-        this.txtSqlQuery.setCaption(this.messages.getString("dialog.extractdb.query"));
+        this.txtSqlQuery.setCaption(ctx.tr("dialog.extractdb.query"));
         this.txtSqlQuery.setRequired(true);
         this.txtSqlQuery.setNullRepresentation("");
         this.txtSqlQuery.setWidth("100%");
         this.txtSqlQuery.setHeight("125px");
-        this.txtSqlQuery.setInputPrompt(this.messages.getString("dialog.extractdb.query.prompt"));
+        this.txtSqlQuery.setInputPrompt(ctx.tr("dialog.extractdb.query.prompt"));
         this.mainLayout.addComponent(this.txtSqlQuery);
 
         this.btnPreview = new Button();
-        this.btnPreview.setCaption(this.messages.getString("dialog.extractdb.preview"));
+        this.btnPreview.setCaption(ctx.tr("dialog.extractdb.preview"));
         this.btnPreview.addClickListener(createPreviewInitListener());
 
         this.btnCreateQuery = new Button();
-        this.btnCreateQuery.setCaption(this.messages.getString("dialog.extractdb.createquery"));
+        this.btnCreateQuery.setCaption(ctx.tr("dialog.extractdb.createquery"));
         this.btnCreateQuery.addClickListener(createSelectQueryListener());
 
         HorizontalLayout queryButtons = new HorizontalLayout();
@@ -186,15 +180,15 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         this.mainLayout.addComponent(queryButtons);
 
         this.txtPrimaryKeys = new TextField();
-        this.txtPrimaryKeys.setCaption(this.messages.getString("dialog.extractdb.keys"));
-        this.txtPrimaryKeys.setDescription(this.messages.getString("dialog.extractdb.keysdescr"));
+        this.txtPrimaryKeys.setCaption(ctx.tr("dialog.extractdb.keys"));
+        this.txtPrimaryKeys.setDescription(ctx.tr("dialog.extractdb.keysdescr"));
         this.txtPrimaryKeys.setNullRepresentation("");
         this.txtPrimaryKeys.setWidth("100%");
         this.mainLayout.addComponent(this.txtPrimaryKeys);
 
         this.txtIndexes = new TextField();
-        this.txtIndexes.setCaption(this.messages.getString("dialog.extractdb.indexes"));
-        this.txtIndexes.setDescription(this.messages.getString("dialog.extractdb.indexdescr"));
+        this.txtIndexes.setCaption(ctx.tr("dialog.extractdb.indexes"));
+        this.txtIndexes.setDescription(ctx.tr("dialog.extractdb.indexdescr"));
         this.txtIndexes.setNullRepresentation("");
         this.txtIndexes.setWidth("100%");
         this.mainLayout.addComponent(this.txtIndexes);
@@ -223,9 +217,9 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
                 DatabaseType dbType = SqlDatabase.getDatabaseTypeForDatabaseName(databaseName);
                 txtDatabasePort.setValue(String.valueOf(portForSelectedDbType));
                 if (dbType == DatabaseType.ORACLE) {
-                    txtDatabaseName.setCaption(messages.getString("dialog.extractdb.dbsid"));
+                    txtDatabaseName.setCaption(ctx.tr("dialog.extractdb.dbsid"));
                 } else {
-                    txtDatabaseName.setCaption(messages.getString("dialog.extractdb.dbname"));
+                    txtDatabaseName.setCaption(ctx.tr("dialog.extractdb.dbname"));
                 }
 
                 if (dbType == DatabaseType.MSSQL) {
@@ -272,12 +266,12 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
                     boolean bTestResult = true;
                     bTestResult = RelationalFromSqlHelper.testDatabaseConnection(getConfigurationInternal());
                     if (bTestResult) {
-                        showMessage("dialog.messages.testsuccess", Notification.Type.HUMANIZED_MESSAGE);
+                        showMessage("dialog.ctx.testsuccess", Notification.Type.HUMANIZED_MESSAGE);
                     } else {
-                        showMessage("dialog.messages.testfail", Notification.Type.ERROR_MESSAGE);
+                        showMessage("dialog.ctx.testfail", Notification.Type.ERROR_MESSAGE);
                     }
                 } else {
-                    showMessage("dialog.messages.dbparams", Notification.Type.WARNING_MESSAGE);
+                    showMessage("dialog.ctx.dbparams", Notification.Type.WARNING_MESSAGE);
                 }
             }
         };
@@ -286,7 +280,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
     }
 
     private void showMessage(String messageResource, Notification.Type type) {
-        Notification notification = new Notification(this.messages.getString(messageResource), type);
+        Notification notification = new Notification(ctx.tr(messageResource), type);
         notification.show(Page.getCurrent());
     }
 
@@ -307,7 +301,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
                         UI.getCurrent().addWindow(tablesWindow);
                     }
                 } else {
-                    showMessage("dialog.messages.dbparams", Notification.Type.WARNING_MESSAGE);
+                    showMessage("dialog.ctx.dbparams", Notification.Type.WARNING_MESSAGE);
                 }
             }
         };
@@ -329,7 +323,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
                     Window previewInit = createPreviewWindow();
                     UI.getCurrent().addWindow(previewInit);
                 } else {
-                    showMessage("dialog.messages.dbparams", Notification.Type.WARNING_MESSAGE);
+                    showMessage("dialog.ctx.dbparams", Notification.Type.WARNING_MESSAGE);
                 }
             }
         };
@@ -359,13 +353,13 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
             showMessage("dialog.errors.select.tables", Notification.Type.ERROR_MESSAGE);
             return null;
         }
-        final ListSelect tableSelect = new ListSelect(this.messages.getString("dialog.extractdb.tables"), tables);
+        final ListSelect tableSelect = new ListSelect(ctx.tr("dialog.extractdb.tables"), tables);
         tableSelect.setRows(7);
         tableSelect.setNullSelectionAllowed(false);
         layout.addComponent(tableSelect);
 
         Button btnClose = new Button();
-        btnClose.setCaption(this.messages.getString("dialog.extractdb.close"));
+        btnClose.setCaption(ctx.tr("dialog.extractdb.close"));
         btnClose.addClickListener(new ClickListener() {
 
             private static final long serialVersionUID = 1L;
@@ -377,7 +371,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         });
 
         Button btnCreate = new Button();
-        btnCreate.setCaption(this.messages.getString("dialog.extractdb.createsql"));
+        btnCreate.setCaption(ctx.tr("dialog.extractdb.createsql"));
         btnCreate.addClickListener(new ClickListener() {
 
             private static final long serialVersionUID = 1L;
@@ -391,7 +385,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
                         String query = RelationalFromSqlHelper.generateSelectForTable(table, tableColumns);
                         RelationalFromSqlVaadinDialog.this.txtSqlQuery.setValue(query);
                     } else {
-                        showMessage("dialog.messages.dbparams", Notification.Type.WARNING_MESSAGE);
+                        showMessage("dialog.ctx.dbparams", Notification.Type.WARNING_MESSAGE);
                     }
                 } catch (SQLException e) {
                     showMessage("dialog.errors.select.query", Notification.Type.ERROR_MESSAGE);
@@ -425,14 +419,14 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
         layout.setHeight("-1px");
 
         final TextField txtLimit = new TextField();
-        txtLimit.setCaption(this.messages.getString("dialog.preview.limit"));
+        txtLimit.setCaption(ctx.tr("dialog.preview.limit"));
         txtLimit.setWidth("100%");
         txtLimit.setValue("100");
         txtLimit.addValidator(createSelectLimitValidator());
         layout.addComponent(txtLimit);
 
         Button btnPreview = new Button();
-        btnPreview.setCaption(this.messages.getString("dialog.extractdb.preview"));
+        btnPreview.setCaption(ctx.tr("dialog.extractdb.preview"));
         btnPreview.addClickListener(new ClickListener() {
 
             private static final long serialVersionUID = 1L;
@@ -472,10 +466,10 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
                 try {
                     limit = Integer.parseInt((String) value);
                 } catch (NumberFormatException e) {
-                    throw new InvalidValueException(messages.getString("dialog.errors.limit"));
+                    throw new InvalidValueException(ctx.tr("dialog.errors.limit"));
                 }
                 if (limit < 1 || limit > 10000) {
-                    throw new InvalidValueException(messages.getString("dialog.errors.limit"));
+                    throw new InvalidValueException(ctx.tr("dialog.errors.limit"));
                 }
             }
         };
@@ -576,7 +570,7 @@ public class RelationalFromSqlVaadinDialog extends BaseConfigDialog<RelationalFr
             isValid = isValid && this.txtInstanceName.isValid();
         }
         if (!isValid) {
-            throw new DPUConfigException(this.messages.getString("dialog.errors.params"));
+            throw new DPUConfigException(ctx.tr("dialog.errors.params"));
         }
 
         RelationalFromSqlConfig_V2 config = new RelationalFromSqlConfig_V2();

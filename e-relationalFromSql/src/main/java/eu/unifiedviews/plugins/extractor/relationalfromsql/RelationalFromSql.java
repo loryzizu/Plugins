@@ -19,12 +19,14 @@ import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
-import eu.unifiedviews.helpers.dpu.localization.Messages;
+import eu.unifiedviews.helpers.dataunit.resource.Resource;
+import eu.unifiedviews.helpers.dataunit.resource.ResourceHelpers;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 
 /**
  * {@link RelationalFromSql} extracts data from external source relational database (currently PostgreSQL supported)
@@ -44,25 +46,27 @@ import eu.unifiedviews.helpers.dpu.localization.Messages;
  * future releases.
  */
 @DPU.AsExtractor
-public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_V2> implements ConfigDialogProvider<RelationalFromSqlConfig_V2> {
+public class RelationalFromSql extends AbstractDpu<RelationalFromSqlConfig_V2> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RelationalFromSql.class);
-
-    private Messages messages;
 
     private DPUContext context;
 
     @DataUnit.AsOutput(name = "outputTables")
     public WritableRelationalDataUnit outputTables;
 
+    @ExtensionInitializer.Init
+    public FaultTolerance faultTolerance;
+
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.extractor.relationalfromsql.RelationalFromSqlConfig__V2")
+    public ConfigurationUpdate _ConfigurationUpdate;
+
     public RelationalFromSql() {
-        super(RelationalFromSqlConfig_V2.class);
+        super(RelationalFromSqlVaadinDialog.class, ConfigHistory.noHistory(RelationalFromSqlConfig_V2.class));
     }
 
     @Override
-    public void execute(DPUContext context) throws DPUException, InterruptedException {
-        this.context = context;
-        this.messages = new Messages(this.context.getLocale(), this.getClass().getClassLoader());
+    protected void innerExecute() throws DPUException {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.format("Configuration: DatabaseHost: %s, username: %s, password: %s, "
                 + "useSSL: %s, SQL query: %s",
@@ -73,7 +77,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
         try {
             Class.forName(SqlDatabase.getJdbcDriverNameForDatabase(this.config.getDatabaseType()));
         } catch (ClassNotFoundException e) {
-            throw new DPUException(this.messages.getString("errors.driver.loadfailed"), e);
+            throw ContextUtils.dpuException(ctx, e, "errors.driver.loadfailed");
         }
 
         Connection conn = null;
@@ -83,16 +87,16 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
 
         try {
             String tableName = this.config.getTargetTableName().toUpperCase();
-            String symbolicName = tableName;
+            final String symbolicName = tableName;
 
             try {
                 if (checkInternalTableExists(tableName)) {
-                    this.context.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.db.tableunique.short", tableName),
-                            this.messages.getString("errors.db.tableunique.long"));
+                    this.context.sendMessage(DPUContext.MessageType.ERROR, ctx.tr("errors.db.tableunique.short", tableName),
+                            ctx.tr("errors.db.tableunique.long"));
                     return;
                 }
             } catch (SQLException | DataUnitException e) {
-                throw new DPUException(this.messages.getString("errors.db.internaltable"));
+                throw ContextUtils.dpuException(ctx, "errors.db.internaltable");
             }
 
             try {
@@ -100,7 +104,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
                 conn = RelationalFromSqlHelper.createConnection(this.config);
                 LOG.debug("Connected to the source database");
             } catch (SQLException e) {
-                throw new DPUException(this.messages.getString("errors.db.connectionfailed"), e);
+                throw ContextUtils.dpuException(ctx, e, "errors.db.connectionfailed");
             }
 
             try {
@@ -109,7 +113,7 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
                 rs = stmnt.executeQuery(this.config.getSqlQuery());
                 meta = rs.getMetaData();
             } catch (SQLException e) {
-                throw new DPUException(this.messages.getString("errors.db.queryfailed"), e);
+                throw ContextUtils.dpuException(ctx, e, "errors.db.queryfailed");
             }
 
             try {
@@ -147,14 +151,20 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
                     LOG.debug("Indexes created successfully");
                 }
 
-                Resource resource = ResourceHelpers.getResource(this.outputTables, symbolicName);
-                Date now = new Date();
-                resource.setCreated(now);
-                resource.setLast_modified(now);
-                ResourceHelpers.setResource(this.outputTables, symbolicName, resource);
+                faultTolerance.execute(new FaultTolerance.Action() {
+
+                    @Override
+                    public void action() throws Exception {
+                        Resource resource = ResourceHelpers.getResource(outputTables, symbolicName);
+                        Date now = new Date();
+                        resource.setCreated(now);
+                        resource.setLast_modified(now);
+                        ResourceHelpers.setResource(outputTables, symbolicName, resource);
+                    }
+                });
                 LOG.debug("Resource parameters for table updated");
             } catch (Exception e) {
-                throw new DPUException(this.messages.getString("errors.db.transformfailed"), e);
+                throw ContextUtils.dpuException(ctx, e, "errors.db.transformfailed");
             }
         } finally {
             RelationalFromSqlHelper.tryCloseDbResources(conn, stmnt, rs);
@@ -232,11 +242,6 @@ public class RelationalFromSql extends ConfigurableBase<RelationalFromSqlConfig_
 
     private Connection getConnectionInternal() throws DataUnitException {
         return this.outputTables.getDatabaseConnection();
-    }
-
-    @Override
-    public AbstractConfigDialog<RelationalFromSqlConfig_V2> getConfigurationDialog() {
-        return new RelationalFromSqlVaadinDialog();
     }
 
 }

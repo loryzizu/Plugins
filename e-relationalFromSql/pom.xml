@@ -1,15 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>eu.unifiedviews.plugins</groupId>
-		<artifactId>dpu-base-pom</artifactId>
-		<version>1.3.0</version>
+        <groupId>eu.unifiedviews</groupId>
+        <artifactId>uv-pom-dpu</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
 		<relativePath />
 	</parent>
 
 	<artifactId>uv-e-relationalFromSql</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	<name>E-RelationalFromSql</name>
 	<description>Extracts data from relational database using SQL queries and stores them into internal data unit relational database</description>
@@ -17,9 +17,11 @@
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.extractor.relationalfromsql</dpu.package>
 		<dpu.mainClass>RelationalFromSql</dpu.mainClass>
+        <uv.helpers.version>[2.0.0-SNAPSHOT,3.0.0)</uv.helpers.version>
 		<mockito.version>1.10.8</mockito.version>
 		<powermock.version>1.6.1</powermock.version>
 		<junit.version>4.12</junit.version>
+        <module-test.version>2.0.0-SNAPSHOT</module-test.version>
 		<embed.transitive>true</embed.transitive>
 		<import.package>!com.sun.jdi.*,!com.sun.msv.*,!com.sun.org.apache.xerces.*,!org.jboss.*,!org.jdom,!org.jdom.input,!org.relaxng.datatype,!sun.io,!sun.misc,!com.sun.security.*,!oracle.i18n.*,!oracle.ons,!oracle.security.pki,!oracle.xdb,!oracle.xml.parser.v2,!org.apache.log4j,!org.objectweb.asm,!sun.security.*,*</import.package>
 	</properties>
@@ -127,15 +129,31 @@
 			<version>1.2</version>
 		</dependency>
 
+        <!-- UnifiedViews helpers. -->
 
-		<!-- JUnit tests dependencies -->
-		<dependency>
-			<groupId>cz.cuni.mff.xrg.odcs</groupId>
-			<artifactId>module-test</artifactId>
-			<version>${module-test.version}</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dataunit-helpers</artifactId>
+            <version>${uv.helpers.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dpu-helpers</artifactId>
+            <version>${uv.helpers.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
+		<!-- Core UnifiedViews testing support. -->
+        <dependency>
+            <groupId>cz.cuni.mff.xrg.odcs</groupId>
+            <artifactId>module-test</artifactId>
+            <version>${module-test.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JUnit tests dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

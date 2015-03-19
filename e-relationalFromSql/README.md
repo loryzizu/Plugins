@@ -76,6 +76,7 @@ To install JAR to your local repository, use following command:
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
+|1.0.1-SNAPSHOT   |Update for helpers 2.0.0    |
 |1.0.0-SNAPSHOT   |N/A                         |
 
 
