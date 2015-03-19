@@ -19,9 +19,9 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|||
-|||
-|||
+|Pattern|Text used as a replace part (second argument) in SPARQL REPLACE over file name.|
+|Value to substitute|Text used as a substitute part (third argument) in SPARQL REPLACE over file name.|
+
 
 ***
 
@@ -38,6 +38,7 @@
 
 |Version    |Release notes                                   |
 |-----------|------------------------------------------------|
+|2.0.1      |Bug fixing, added some help into about tab.     |
 |2.0.0      |Update for new helpers. SPARQL used to transform file name. Broken backward compatibility. |
 |1.5.0      |Added support for renaming against the mask.    |                                
 |1.4.0      |Small bug fixes.                                |                                
