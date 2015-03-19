@@ -19,11 +19,9 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|mask          |Mask used in renaming of filename.  |
-|extensionMask |Mask used in renaming of exatension.  |
-|counterStart  |Counter setting. Initial value of counter.  |
-|counterStep   |Counter setting. Difference between previous counter value and next.  |
-|counterDigits |Counter settings. Number of digits used in converting counter value to string.  |
+|||
+|||
+|||
 
 ***
 
@@ -40,10 +38,11 @@
 
 |Version    |Release notes                                   |
 |-----------|------------------------------------------------|
+|2.0.0      |Update for new helpers. SPARQL used to transform file name. Broken backward compatibility. |
 |1.5.0      |Added support for renaming against the mask.    |                                
 |1.4.0      |Small bug fixes.                                |                                
 |1.5.0      |Initial version, appends .ttl extension.        |                                
-|2.0.0      |Update for new helpers. Sparql used to transform file name. |
+
 
 ***
 
