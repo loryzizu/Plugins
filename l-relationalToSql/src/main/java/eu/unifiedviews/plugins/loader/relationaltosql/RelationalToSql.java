@@ -22,8 +22,10 @@ import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.relational.RelationalHelper;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 
 @DPU.AsLoader
 public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
@@ -32,6 +34,9 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
 
     @DataUnit.AsInput(name = "input")
     public RelationalDataUnit inTablesData;
+
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.loader.relationaltosql.RelationalToSqlConfig__V1")
+    public ConfigurationUpdate _ConfigurationUpdate;
 
     public RelationalToSql() {
         super(RelationalToSqlVaadinDialog.class, ConfigHistory.noHistory(RelationalToSqlConfig_V1.class));
