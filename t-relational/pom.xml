@@ -9,7 +9,7 @@
   </parent>
   
   <artifactId>uv-t-relational</artifactId>
-  <version>0.9.1-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>T-Relational</name>
   <description>Transforms input database tables using SQL into one output table</description>
