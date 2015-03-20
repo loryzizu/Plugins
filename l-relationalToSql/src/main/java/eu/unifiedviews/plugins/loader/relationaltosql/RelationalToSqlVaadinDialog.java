@@ -51,7 +51,7 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         this.mainLayout.setWidth("100%");
         this.mainLayout.setHeight("-1px");
         this.mainLayout.setSpacing(true);
-        this.mainLayout.setMargin(false);
+        this.mainLayout.setMargin(true);
 
         this.txtDatabaseURL = new TextField();
         this.txtDatabaseURL.setCaption(ctx.tr("dialog.dbload.dbURL"));

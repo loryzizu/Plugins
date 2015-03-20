@@ -66,17 +66,4 @@
 			<url>http://maven.eea.sk/artifactory/public/</url>
 		</repository>
 	</repositories>
-
-	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>resources*.properties</include>
-				</includes>
-			</resource>
-		</resources>
-	</build>
-
-
 </project>
