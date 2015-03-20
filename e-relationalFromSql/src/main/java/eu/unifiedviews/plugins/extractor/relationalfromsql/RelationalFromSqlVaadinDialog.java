@@ -266,12 +266,12 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
                     boolean bTestResult = true;
                     bTestResult = RelationalFromSqlHelper.testDatabaseConnection(getConfigurationInternal());
                     if (bTestResult) {
-                        showMessage("dialog.ctx.testsuccess", Notification.Type.HUMANIZED_MESSAGE);
+                        showMessage("dialog.messages.testsuccess", Notification.Type.HUMANIZED_MESSAGE);
                     } else {
-                        showMessage("dialog.ctx.testfail", Notification.Type.ERROR_MESSAGE);
+                        showMessage("dialog.messages.testfail", Notification.Type.ERROR_MESSAGE);
                     }
                 } else {
-                    showMessage("dialog.ctx.dbparams", Notification.Type.WARNING_MESSAGE);
+                    showMessage("dialog.messages.dbparams", Notification.Type.WARNING_MESSAGE);
                 }
             }
         };
@@ -301,7 +301,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
                         UI.getCurrent().addWindow(tablesWindow);
                     }
                 } else {
-                    showMessage("dialog.ctx.dbparams", Notification.Type.WARNING_MESSAGE);
+                    showMessage("dialog.messages.dbparams", Notification.Type.WARNING_MESSAGE);
                 }
             }
         };
@@ -323,7 +323,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
                     Window previewInit = createPreviewWindow();
                     UI.getCurrent().addWindow(previewInit);
                 } else {
-                    showMessage("dialog.ctx.dbparams", Notification.Type.WARNING_MESSAGE);
+                    showMessage("dialog.messages.dbparams", Notification.Type.WARNING_MESSAGE);
                 }
             }
         };
@@ -385,7 +385,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
                         String query = RelationalFromSqlHelper.generateSelectForTable(table, tableColumns);
                         RelationalFromSqlVaadinDialog.this.txtSqlQuery.setValue(query);
                     } else {
-                        showMessage("dialog.ctx.dbparams", Notification.Type.WARNING_MESSAGE);
+                        showMessage("dialog.messages.dbparams", Notification.Type.WARNING_MESSAGE);
                     }
                 } catch (SQLException e) {
                     showMessage("dialog.errors.select.query", Notification.Type.ERROR_MESSAGE);
