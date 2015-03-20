@@ -39,7 +39,7 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|0.9.1-SNAPSHOT   |Update to helpers 2.0.0     |
+|1.0.0-SNAPSHOT   |Update to helpers 2.0.0     |
 |0.9.0            |N/A                         |
 
 
