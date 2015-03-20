@@ -70,7 +70,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         this.mainLayout.setWidth("100%");
         this.mainLayout.setHeight("-1px");
         this.mainLayout.setSpacing(true);
-        this.mainLayout.setMargin(false);
+        this.mainLayout.setMargin(true);
 
         this.databaseType = new NativeSelect();
         this.databaseType.setCaption(ctx.tr("dialog.extractdb.dbtype"));
