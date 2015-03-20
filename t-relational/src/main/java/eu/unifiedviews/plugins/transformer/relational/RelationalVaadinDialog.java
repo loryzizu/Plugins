@@ -41,7 +41,7 @@ public class RelationalVaadinDialog extends AbstractDialog<RelationalConfig_V1> 
         this.mainLayout.setWidth("100%");
         this.mainLayout.setHeight("-1px");
         this.mainLayout.setSpacing(true);
-        this.mainLayout.setMargin(false);
+        this.mainLayout.setMargin(true);
 
         this.txtSqlQuery = new TextArea();
         this.txtSqlQuery.setCaption(ctx.tr("dialog.dbtransform.query"));
