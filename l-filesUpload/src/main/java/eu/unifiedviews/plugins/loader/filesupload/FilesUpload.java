@@ -15,7 +15,6 @@ import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.ftps.FtpsFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
-import org.apache.commons.vfs2.util.CryptorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,9 +64,9 @@ public class FilesUpload extends AbstractDpu<FilesUploadConfig_V1> {
     public FilesUpload() {
         super(FilesUploadVaadinDialog.class,
                 ConfigHistory.history(FilesUploadConfig_V1.class)
-                .alternative(FilesToScpConfig_V1.class)
-                .alternative(FilesToLocalFSConfig_V1.class)
-                .addCurrent(FilesUploadConfig_V1.class));
+                        .alternative(FilesToScpConfig_V1.class)
+                        .alternative(FilesToLocalFSConfig_V1.class)
+                        .addCurrent(FilesUploadConfig_V1.class));
     }
 
     @Override
@@ -93,7 +92,7 @@ public class FilesUpload extends AbstractDpu<FilesUploadConfig_V1> {
 
             try {
                 userAuthenticator = new StaticUserAuthenticator(URI.create(config.getUri()).getHost(),
-                        config.getUsername(), CryptorFactory.getCryptor().decrypt(config.getPassword()));
+                        config.getUsername(), config.getPassword());
             } catch (Exception ex) {
                 throw ContextUtils.dpuException(ctx, ex, "FilesUpload.execute.exception");
             }
