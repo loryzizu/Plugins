@@ -19,8 +19,8 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|Pattern|Text used as a replace part (second argument) in SPARQL REPLACE over file name.|
-|Value to substitute|Text used as a substitute part (third argument) in SPARQL REPLACE over file name.|
+|Pattern|Regular expression used to match string to replace in file name. This value is used as a replace part (second argument) in SPARQL REPLACE.|
+|Value to substitute|Value to substitute, can refer to groups that have been matched by 'Pattern' parameter. This value is used as a substitute part (third argument) in SPARQL REPLACE.|
 
 
 ***
