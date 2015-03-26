@@ -4,7 +4,6 @@ import java.net.URI;
 
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.vfs2.util.CryptorFactory;
 
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.PasswordField;
@@ -88,19 +87,16 @@ public class FilesUploadVaadinDialog extends AbstractDialog<FilesUploadConfig_V1
             }
 
             result.setUri(encodedUri.toString());
-            result.setUsername(username.getValue());
-
-            if (StringUtils.isNotBlank(password.getValue())) {
-                result.setPassword(CryptorFactory.getCryptor().encrypt(password.getValue()));
-            }
         } catch (DPUConfigException e) {
             throw e;
         } catch (Exception e) {
-            throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.getConfiguration.exception"));
+            throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.uri.invalid"));
         }
 
-        result.setMoveFiles(moveFiles.getValue());
+        result.setUsername(username.getValue());
+        result.setPassword(password.getValue());
         result.setSoftFail(softFail.getValue());
+        result.setMoveFiles(moveFiles.getValue());
 
         return result;
     }
@@ -109,17 +105,14 @@ public class FilesUploadVaadinDialog extends AbstractDialog<FilesUploadConfig_V1
     protected void setConfiguration(FilesUploadConfig_V1 config) throws DPUConfigException {
         try {
             uri.setValue(URIUtil.decode(config.getUri(), "utf8"));
-            username.setValue(config.getUsername());
-
-            if (StringUtils.isNotBlank(config.getPassword())) {
-                password.setValue(CryptorFactory.getCryptor().decrypt(config.getPassword()));
-            }
         } catch (Exception e) {
-            throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.setConfiguration.exception"), e);
+            throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.uri.invalid"), e);
         }
 
-        moveFiles.setValue(config.isMoveFiles());
+        username.setValue(config.getUsername());
+        password.setValue(config.getPassword());
         softFail.setValue(config.isSoftFail());
+        moveFiles.setValue(config.isMoveFiles());
     }
 
     @Override

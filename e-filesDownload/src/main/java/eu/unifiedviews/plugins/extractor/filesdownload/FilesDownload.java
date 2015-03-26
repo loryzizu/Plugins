@@ -19,7 +19,6 @@ import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.ftps.FtpsFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
-import org.apache.commons.vfs2.util.CryptorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +44,6 @@ import eu.unifiedviews.helpers.dpu.extension.rdf.RdfConfiguration;
 import eu.unifiedviews.plugins.extractor.httpdownload.HttpDownloadConfig_V1;
 
 /**
- *
  * TODO Add support for caching.
  * TODO Add support for soft failure.
  */
@@ -71,7 +69,7 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
     public MultipleConfigurationUpdate _configurationUpdate;
 
     public FilesDownload() {
-        super(FilesDownloadVaadinDialog.class, 
+        super(FilesDownloadVaadinDialog.class,
                 ConfigHistory.history(FilesDownloadConfig_V1.class)
                         .alternative(HttpDownloadConfig_V1.class)
                         .alternative(FilesFromScpConfig_V1.class)
@@ -89,7 +87,7 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
         FtpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
         FtpsFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
         SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
-        
+
         try {
             standardFileSystemManager.setFilesCache(new NullFilesCache());
             standardFileSystemManager.init();
@@ -108,7 +106,7 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
                     staticUserAuthenticator = new StaticUserAuthenticator(
                             URI.create(vfsFile.getUri()).getHost(),
                             vfsFile.getUsername(),
-                            CryptorFactory.getCryptor().decrypt(vfsFile.getPassword()));
+                            vfsFile.getPassword());
                 } catch (Exception ex) {
                     throw ContextUtils.dpuException(ctx, ex, "FilesDownload.execute.exception");
                 }
@@ -133,7 +131,7 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
                 LOG.warn("Skipping file: '{}' as it resolves on null value.", vfsFile.getUri());
                 continue;
             }
-            
+
             // We download each file.
             for (FileObject fileObject : fileObjects) {
                 final boolean isFile;

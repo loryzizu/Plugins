@@ -1,5 +1,6 @@
 package eu.unifiedviews.plugins.transformer.filesrenamer;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -27,12 +28,6 @@ public class Renamer extends AbstractDpu<RenamerConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Renamer.class);
 
-    private static final String SYMBOLIC_NAME_SUFFIX_BINDING = "suffix";
-
-    private static final String PATTERN_BINDING = "pattern";
-    
-    private static final String REPLACE_WITH_BINDING = "rpl";
-
     /**
      * First query copy all data from input to output.
      */
@@ -41,20 +36,23 @@ public class Renamer extends AbstractDpu<RenamerConfig_V1> {
 
     /**
      * Second (optional) query create new symbolic names based on some pattern.
+     * %s - suffix to to symbolic name
      */
     private static final String SPARQL_CREATE_NEW_SYMBOLIC_NAME
             = "INSERT { ?s <" + RenamerVocabulary.TEMP_SYMBOLIC_NAME + "> ?valueNew } \n"
             + "WHERE { ?s <" + MetadataVocabulary.UV_SYMBOLIC_NAME + "> ?value. \n"
-            + "BIND ( CONCAT(?value , \"" + SYMBOLIC_NAME_SUFFIX_BINDING + "\" ) AS ?valueNew) \n"
+            + "BIND ( CONCAT(?value , \"%s\" ) AS ?valueNew) \n"
             + "} ";
 
     /**
      * Next query creates new virtual paths.
+     * %s - regular expression pattern
+     * %s - value to replace
      */
     private static final String SPARQL_CREATE_VIRTUAL_PATH
             = "INSERT { ?s <" + RenamerVocabulary.TEMP_VIRTUAL_PATH + "> ?valueNew } \n"
             + "WHERE { ?s <" + FilesVocabulary.UV_VIRTUAL_PATH + "> ?value. \n"
-            + "BIND ( REPLACE(?value, \""+ PATTERN_BINDING + "\", \"" + REPLACE_WITH_BINDING + "\", \"i\") "
+            + "BIND ( REPLACE(?value, \"%s\", \"%s\", \"i\") "
             + "AS ?valueNew)\n"
             + "} ";
 
@@ -110,13 +108,13 @@ public class Renamer extends AbstractDpu<RenamerConfig_V1> {
         executeInsert(SPARQL_COPY_ALL, source, target);
 
         String suffix = Long.toString((new Date()).getTime());
-        executeInsert(SPARQL_CREATE_NEW_SYMBOLIC_NAME.replaceAll(SYMBOLIC_NAME_SUFFIX_BINDING, suffix),
+
+        executeInsert(String.format(SPARQL_CREATE_NEW_SYMBOLIC_NAME, suffix), source, target);
+        
+        executeInsert(String.format(SPARQL_CREATE_VIRTUAL_PATH, config.getPattern(), config.getReplaceText()),
                 source, target);
-
-        executeInsert(SPARQL_CREATE_VIRTUAL_PATH.replaceAll(PATTERN_BINDING, config.getPattern()).
-                replaceAll(REPLACE_WITH_BINDING,  config.getReplaceText()), source, target);
-
-        executeDeleteInsert(SPARQL_REPLACE, source, target);
+        
+        executeDeleteInsert(SPARQL_REPLACE, Arrays.asList(target), target);
     }
 
     private void executeInsert(final String query, final List<RDFDataUnit.Entry> source,
