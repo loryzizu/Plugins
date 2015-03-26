@@ -26,6 +26,8 @@ public class RelationalVaadinDialog extends AbstractDialog<RelationalConfig_V1> 
 
     private TextField txtPrimaryKeys;
 
+    private TextField txtIndexedColumns;
+
     public RelationalVaadinDialog() {
         super(Relational.class);
     }
@@ -67,6 +69,13 @@ public class RelationalVaadinDialog extends AbstractDialog<RelationalConfig_V1> 
         this.txtPrimaryKeys.setWidth("100%");
         this.mainLayout.addComponent(this.txtPrimaryKeys);
 
+        this.txtIndexedColumns = new TextField();
+        this.txtIndexedColumns.setCaption(this.messages.getString("dialog.dbtransform.indexes"));
+        this.txtIndexedColumns.setDescription(this.messages.getString("dialog.dbtransform.indexdescr"));
+        this.txtIndexedColumns.setNullRepresentation("");
+        this.txtIndexedColumns.setWidth("100%");
+        this.mainLayout.addComponent(this.txtIndexedColumns);
+
         Panel panel = new Panel();
         panel.setSizeFull();
         panel.setContent(this.mainLayout);
@@ -90,7 +99,7 @@ public class RelationalVaadinDialog extends AbstractDialog<RelationalConfig_V1> 
         return validator;
     }
 
-    private List<String> getPrimaryKeyColumns() {
+    private List<String> getPrimaryKeyColumnsAsList() {
         List<String> keyColumns = new ArrayList<>();
         if (this.txtPrimaryKeys.getValue() != null && !this.txtPrimaryKeys.getValue().equals("")) {
             String[] keys = this.txtPrimaryKeys.getValue().trim().split(",");
@@ -102,25 +111,24 @@ public class RelationalVaadinDialog extends AbstractDialog<RelationalConfig_V1> 
         return keyColumns;
     }
 
-    private static String getPrimaryKeysAsCommaSeparatedString(List<String> keys) {
-        if (keys == null || keys.isEmpty()) {
-            return null;
+    private List<String> getIndexedColumnsAsList() {
+        List<String> keyColumns = new ArrayList<>();
+        if (this.txtIndexedColumns.getValue() != null && !this.txtIndexedColumns.getValue().equals("")) {
+            String[] keys = this.txtIndexedColumns.getValue().trim().split(",");
+            for (String key : keys) {
+                keyColumns.add(key.trim().toUpperCase());
+            }
         }
-        StringBuilder sb = new StringBuilder();
-        for (String key : keys) {
-            sb.append(key);
-            sb.append(",");
-        }
-        sb.setLength(sb.length() - 1);
 
-        return sb.toString();
+        return keyColumns;
     }
 
     @Override
     protected void setConfiguration(RelationalConfig_V1 config) throws DPUConfigException {
         this.txtTargetTableName.setValue(config.getTargetTableName());
         this.txtSqlQuery.setValue(config.getSqlQuery());
-        this.txtPrimaryKeys.setValue(getPrimaryKeysAsCommaSeparatedString(config.getPrimaryKeyColumns()));
+        this.txtPrimaryKeys.setValue(DatabaseHelper.getListAsCommaSeparatedString(config.getPrimaryKeyColumns()));
+        this.txtIndexedColumns.setValue(DatabaseHelper.getListAsCommaSeparatedString(config.getIndexedColumns()));
     }
 
     @Override
@@ -140,7 +148,8 @@ public class RelationalVaadinDialog extends AbstractDialog<RelationalConfig_V1> 
         config.setTargetTableName(this.txtTargetTableName.getValue());
 
         config.setSqlQuery(this.txtSqlQuery.getValue());
-        config.setPrimaryKeyColumns(getPrimaryKeyColumns());
+        config.setPrimaryKeyColumns(getPrimaryKeyColumnsAsList());
+        config.setIndexedColumns(getIndexedColumnsAsList());
 
         return config;
     }

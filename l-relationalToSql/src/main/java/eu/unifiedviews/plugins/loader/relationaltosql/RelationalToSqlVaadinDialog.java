@@ -11,11 +11,9 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
-import eu.unifiedviews.helpers.dpu.localization.Messages;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
-public class RelationalToSqlVaadinDialog extends BaseConfigDialog<RelationalToSqlConfig_V1> implements InitializableConfigDialog {
+public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlConfig_V1> {
 
     private static final long serialVersionUID = 1680354540248433247L;
 
@@ -33,8 +31,6 @@ public class RelationalToSqlVaadinDialog extends BaseConfigDialog<RelationalToSq
 
     private CheckBox chckDropTable;
 
-    private Messages messages;
-
     VerticalLayout mainLayout;
 
     private Button btnTestConnection;
@@ -42,13 +38,11 @@ public class RelationalToSqlVaadinDialog extends BaseConfigDialog<RelationalToSq
     private Label lblTestConnection;
 
     public RelationalToSqlVaadinDialog() {
-        super(RelationalToSqlConfig_V1.class);
+        super(RelationalToSql.class);
     }
 
     @Override
-    public void initialize() {
-        this.messages = new Messages(getContext().getLocale(), this.getClass().getClassLoader());
-
+    protected void buildDialogLayout() {
         setWidth("100%");
         setHeight("100%");
 
@@ -57,35 +51,35 @@ public class RelationalToSqlVaadinDialog extends BaseConfigDialog<RelationalToSq
         this.mainLayout.setWidth("100%");
         this.mainLayout.setHeight("-1px");
         this.mainLayout.setSpacing(true);
-        this.mainLayout.setMargin(false);
+        this.mainLayout.setMargin(true);
 
         this.txtDatabaseURL = new TextField();
-        this.txtDatabaseURL.setCaption(this.messages.getString("dialog.dbload.dbURL"));
+        this.txtDatabaseURL.setCaption(ctx.tr("dialog.dbload.dbURL"));
         this.txtDatabaseURL.setRequired(true);
         this.txtDatabaseURL.setNullRepresentation("");
         this.txtDatabaseURL.setWidth("100%");
         this.mainLayout.addComponent(this.txtDatabaseURL);
 
         this.txtUserName = new TextField();
-        this.txtUserName.setCaption(this.messages.getString("dialog.dbload.username"));
+        this.txtUserName.setCaption(ctx.tr("dialog.dbload.username"));
         this.txtUserName.setRequired(true);
         this.txtUserName.setNullRepresentation("");
         this.txtUserName.setWidth("100%");
         this.mainLayout.addComponent(this.txtUserName);
 
         this.txtPassword = new PasswordField();
-        this.txtPassword.setCaption(this.messages.getString("dialog.dbload.password"));
+        this.txtPassword.setCaption(ctx.tr("dialog.dbload.password"));
         this.txtPassword.setRequired(true);
         this.txtPassword.setNullRepresentation("");
         this.txtPassword.setWidth("100%");
         this.mainLayout.addComponent(this.txtPassword);
 
         this.chckUseSsl = new CheckBox();
-        this.chckUseSsl.setCaption(this.messages.getString("dialog.dbload.usessl"));
+        this.chckUseSsl.setCaption(ctx.tr("dialog.dbload.usessl"));
         this.mainLayout.addComponent(this.chckUseSsl);
 
         this.btnTestConnection = new Button();
-        this.btnTestConnection.setCaption(this.messages.getString("dialog.extractdb.testdb"));
+        this.btnTestConnection.setCaption(ctx.tr("dialog.extractdb.testdb"));
         this.btnTestConnection.addClickListener(createTestClickListener());
         this.mainLayout.addComponent(this.btnTestConnection);
 
@@ -95,20 +89,20 @@ public class RelationalToSqlVaadinDialog extends BaseConfigDialog<RelationalToSq
         this.mainLayout.addComponent(this.lblTestConnection);
 
         this.txtTableName = new TextField();
-        this.txtTableName.setCaption(this.messages.getString("dialog.dbload.tablename"));
+        this.txtTableName.setCaption(ctx.tr("dialog.dbload.tablename"));
         this.txtTableName.setRequired(true);
         this.txtTableName.setNullRepresentation("");
         this.txtTableName.setWidth("100%");
-        this.txtTableName.setDescription(this.messages.getString("dialog.dbload.tooltip.tablename"));
+        this.txtTableName.setDescription(ctx.tr("dialog.dbload.tooltip.tablename"));
 
         this.mainLayout.addComponent(this.txtTableName);
 
         this.chckClearTable = new CheckBox();
-        this.chckClearTable.setCaption(this.messages.getString("dialog.dbload.cleartable"));
+        this.chckClearTable.setCaption(ctx.tr("dialog.dbload.cleartable"));
         this.mainLayout.addComponent(this.chckClearTable);
 
         this.chckDropTable = new CheckBox();
-        this.chckDropTable.setCaption(this.messages.getString("dialog.dbload.droptable"));
+        this.chckDropTable.setCaption(ctx.tr("dialog.dbload.droptable"));
         this.mainLayout.addComponent(this.chckDropTable);
 
         Panel panel = new Panel();
@@ -133,12 +127,12 @@ public class RelationalToSqlVaadinDialog extends BaseConfigDialog<RelationalToSq
                         bTestResult = false;
                     }
                     if (bTestResult) {
-                        RelationalToSqlVaadinDialog.this.lblTestConnection.setValue(RelationalToSqlVaadinDialog.this.messages.getString("dialog.messages.testsuccess"));
+                        RelationalToSqlVaadinDialog.this.lblTestConnection.setValue(ctx.tr("dialog.messages.testsuccess"));
                     } else {
-                        RelationalToSqlVaadinDialog.this.lblTestConnection.setValue(RelationalToSqlVaadinDialog.this.messages.getString("dialog.messages.testfail"));
+                        RelationalToSqlVaadinDialog.this.lblTestConnection.setValue(ctx.tr("dialog.messages.testfail"));
                     }
                 } else {
-                    RelationalToSqlVaadinDialog.this.lblTestConnection.setValue(RelationalToSqlVaadinDialog.this.messages.getString("dialog.messages.dbparams"));
+                    RelationalToSqlVaadinDialog.this.lblTestConnection.setValue(ctx.tr("dialog.messages.dbparams"));
                 }
             }
         };
@@ -180,7 +174,7 @@ public class RelationalToSqlVaadinDialog extends BaseConfigDialog<RelationalToSq
         final boolean isValid = this.txtDatabaseURL.isValid() && this.txtUserName.isValid() && this.txtPassword.isValid()
                 && this.txtTableName.isValid();
         if (!isValid) {
-            throw new DPUConfigException(this.messages.getString("errors.dialog.missing"));
+            throw new DPUConfigException(ctx.tr("errors.dialog.missing"));
         }
 
         config.setDatabaseURL(this.txtDatabaseURL.getValue());

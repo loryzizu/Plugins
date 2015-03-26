@@ -10,6 +10,8 @@ public class RelationalConfig_V1 {
 
     private List<String> primaryKeyColumns;
 
+    private List<String> indexedColumns;
+
     public String getTargetTableName() {
         return this.targetTableName;
     }
@@ -32,6 +34,14 @@ public class RelationalConfig_V1 {
 
     public void setPrimaryKeyColumns(List<String> primaryKeyColumns) {
         this.primaryKeyColumns = primaryKeyColumns;
+    }
+
+    public List<String> getIndexedColumns() {
+        return this.indexedColumns;
+    }
+
+    public void setIndexedColumns(List<String> indexedColumns) {
+        this.indexedColumns = indexedColumns;
     }
 
 }

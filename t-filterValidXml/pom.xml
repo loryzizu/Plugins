@@ -1,63 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
+    <parent>
         <groupId>eu.unifiedviews</groupId>
         <artifactId>uv-pom-dpu</artifactId>
         <version>2.0.0-SNAPSHOT</version>
-		<relativePath />
-	</parent>
-
-	<artifactId>uv-l-relationalToSql</artifactId>
-	<version>0.9.1-SNAPSHOT</version>
+    </parent>
+	<groupId>eu.unifiedviews.plugins</groupId>
+	<artifactId>uv-t-filterValidXml</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name> T-FilterValidXml</name>
+	<description>Validates XML inputs in 3 ways: checks if the XML is well formed, checks if it conforms to a specified XSD scheme and validates using specified XSLT template</description>
 	<packaging>bundle</packaging>
-	<name>L-RelationalToSql</name>
-	<description>Loads data from internal data unit relational database into external SQL database</description>
-
-	<properties>
-		<dpu.package>eu.unifiedviews.plugins.loader.relationaltosql</dpu.package>
-		<dpu.mainClass>RelationalToSql</dpu.mainClass>
-        <uv.helpers.version>[2.0.0-SNAPSHOT,3.0.0)</uv.helpers.version>
-        <module-test.version>2.0.0-SNAPSHOT</module-test.version>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>9.3-1100-jdbc41</version>
-		</dependency>
-		
-        <!-- UnifiedViews helpers. -->
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>uv-dataunit-helpers</artifactId>
-            <version>${uv.helpers.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>uv-dpu-helpers</artifactId>
-            <version>${uv.helpers.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-		<!--  JUnit tests dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>cz.cuni.mff.xrg.odcs</groupId>
-			<artifactId>module-test</artifactId>
-			<version>${module-test.version}</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 
 	<repositories>
 		<repository>
@@ -66,4 +21,45 @@
 			<url>http://maven.eea.sk/artifactory/public/</url>
 		</repository>
 	</repositories>
+
+	<properties>
+		<dpu.package>eu.unifiedviews.plugins.transformer.filtervalidxml</dpu.package>
+		<dpu.mainClass>FilterValidXml</dpu.mainClass>
+        <uv.helpers.version>[2.0.0-SNAPSHOT,3.0.0)</uv.helpers.version>
+        <module-test.version>2.0.0-SNAPSHOT</module-test.version>
+	</properties>
+
+	<dependencies>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- UnifiedViews helpers. -->
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dataunit-helpers</artifactId>
+            <version>${uv.helpers.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dpu-helpers</artifactId>
+            <version>${uv.helpers.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cz.cuni.mff.xrg.odcs</groupId>
+            <artifactId>module-test</artifactId>
+            <version>${module-test.version}</version>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
