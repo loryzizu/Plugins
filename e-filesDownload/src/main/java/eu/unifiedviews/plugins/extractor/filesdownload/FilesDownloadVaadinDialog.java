@@ -1,14 +1,11 @@
 package eu.unifiedviews.plugins.extractor.filesdownload;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.vfs2.util.CryptorFactory;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItemContainer;
@@ -117,17 +114,10 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
 
                     vfsFile.setUri(uri.toString());
 
-                    if (StringUtils.isNotBlank(vfsFile.getPassword())) {
-                        vfsFile.setPassword(CryptorFactory.getCryptor().encrypt(vfsFile.getPassword()));
-                    }
-
                     vfsFiles.add(vfsFile);
                 }
-            } catch (NullPointerException | URISyntaxException | URIException e) {
-                throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.uri.invalid"), e);
             } catch (Exception e) {
-                // Method org.apache.commons.vfs2.util.Cryptor.encrypt(String) throws exception with plain text input in the message.
-                throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.getConfiguration.exception"));
+                throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.getConfiguration.exception"), e);
             }
         }
 
@@ -189,16 +179,10 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
                     VfsFile vfsFileInContainer = new VfsFile(vfsFile);
                     vfsFileInContainer.setUri(URIUtil.decode(vfsFile.getUri(), "utf8"));
 
-                    if (StringUtils.isNotBlank(vfsFile.getPassword())) {
-                        vfsFileInContainer.setPassword(CryptorFactory.getCryptor().decrypt(vfsFile.getPassword()));
-                    }
-
                     container.addItem(vfsFileInContainer);
                 }
-            } catch (UnsupportedOperationException | URIException e) {
-                throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.setConfiguration.exception"), e);
             } catch (Exception e) {
-                throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.setConfiguration.exception"));
+                throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.setConfiguration.exception"), e);
             }
         }
     }
