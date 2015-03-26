@@ -1,0 +1,28 @@
+<b>E-RelationalFromSql</b> can be used to extract data from relational database using SQL queries and stores them into internal data unit relational database.
+<br/>This DPU provides some features for extracting from database: list of tables in database, generating SELECT for selected table, data preview
+<br/>Secured connection to source database via SSL is supported
+<p/>DPU currently supports these databases:
+<ul>
+	<li>PostgreSQL</li>
+	<li>Oracle</li>
+	<li>MySQL</li>
+	<li>Microsoft SQL</li>
+</ul>
+
+<p/>Configuration options:
+<ul>
+	<li><b>Database type</b> - Database type: PostgreSQL, Oracle, MySQL, MS SQL</li>
+	<li><b>Database host</b> - Database host (URL or IP), e.g. localhost</li>
+	<li><b>Database port</b> - Database port, default are filled automatically</li>
+	<li><b>Database name / SID</b> - Database name or for ORACLE database SID</li>
+	<li><b>Instance name</b> (optional) - Only for MS SQL, instance name of server</li>
+	<li><b>User name</b> - User name</li>
+	<li><b>User password</b> - Password</li>
+	<li><b>Connect via SSL</b> - Use secured SSL connection to connect to database</li>
+	<li><b>Truststore location</b> (optional) - Path to truststore file to be used to validate server's certificate. If not filled, default Java truststore is used</li>
+	<li><b>Truststore password</b> (optional) - Truststore password</li>
+	<li><b>SQL query</b> - SELECT SQL query</li>
+	<li><b>Target table name</b> - Table name used to internally store the extracted data</li>
+	<li><b>Primary key columns</b> (optional) - Target table primary key</li>	
+	<li><b>Indexed columns</b> (optional) - Target table indexed columns</li>
+</ul> 
