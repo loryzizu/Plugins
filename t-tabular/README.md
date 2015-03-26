@@ -36,7 +36,7 @@
 |Version          |Release notes               |
 |-----------------|----------------------------|
 |1.3.2            |N/A                         |                                
-|2.0.0            |Replaced with tabular from CUNI repository.|
+|2.0.0            |Replaced with the DPU taken from the repository https://github.com/mff-uk/DPUs.|
 
 ***
 
