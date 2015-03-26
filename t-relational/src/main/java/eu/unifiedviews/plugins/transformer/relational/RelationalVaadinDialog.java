@@ -70,8 +70,8 @@ public class RelationalVaadinDialog extends AbstractDialog<RelationalConfig_V1> 
         this.mainLayout.addComponent(this.txtPrimaryKeys);
 
         this.txtIndexedColumns = new TextField();
-        this.txtIndexedColumns.setCaption(this.messages.getString("dialog.dbtransform.indexes"));
-        this.txtIndexedColumns.setDescription(this.messages.getString("dialog.dbtransform.indexdescr"));
+        this.txtIndexedColumns.setCaption(ctx.tr("dialog.dbtransform.indexes"));
+        this.txtIndexedColumns.setDescription(ctx.tr("dialog.dbtransform.indexdescr"));
         this.txtIndexedColumns.setNullRepresentation("");
         this.txtIndexedColumns.setWidth("100%");
         this.mainLayout.addComponent(this.txtIndexedColumns);
