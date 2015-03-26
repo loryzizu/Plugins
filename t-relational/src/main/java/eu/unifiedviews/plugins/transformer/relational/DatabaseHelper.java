@@ -3,9 +3,13 @@ package eu.unifiedviews.plugins.transformer.relational;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +55,111 @@ public class DatabaseHelper {
         query.append("SET NOT NULL");
 
         return query.toString();
+    }
+
+    /**
+     * Generates INSERT query for prepared statement (values as ?) with given column names and for given table
+     * 
+     * @param columns
+     *            Columns to insert into
+     * @param tableName
+     *            Table to insert into
+     * @return INSERT query for prepared statement
+     * @throws SQLException
+     */
+    public static String getInsertQueryForPreparedStatement(List<ColumnDefinition> columns, String tableName) throws SQLException {
+        StringBuilder query = new StringBuilder("INSERT INTO ");
+        query.append(tableName);
+        query.append(" (");
+        for (ColumnDefinition column : columns) {
+            query.append(column.getColumnName());
+            query.append(", ");
+        }
+        query.setLength(query.length() - 2);
+        query.append(") VALUES (");
+
+        for (int i = 1; i <= columns.size(); i++) {
+            query.append("?");
+            query.append(", ");
+        }
+        query.setLength(query.length() - 2);
+        query.append(")");
+
+        return query.toString();
+    }
+
+    /**
+     * Generates CREATE table query with given column definitions
+     * 
+     * @param columns
+     *            List of column definitions
+     * @param tableName
+     *            Name of created table
+     * @return CREATE TABLE query
+     * @throws SQLException
+     */
+    public static String getCreateTableQueryFromMetaData(List<ColumnDefinition> columns, String tableName) throws SQLException {
+        StringBuilder query = new StringBuilder();
+        query.append("CREATE TABLE ");
+        query.append(tableName);
+        query.append(" (");
+        for (ColumnDefinition column : columns) {
+            query.append(column.getColumnName());
+            query.append(" ");
+            query.append(column.getColumnTypeName());
+            if (column.getColumnSize() != -1) {
+                query.append("(");
+                query.append(column.getColumnSize());
+                query.append(")");
+            }
+            if (column.isNotNull()) {
+                query.append(" ");
+                query.append("NOT NULL");
+            }
+            query.append(", ");
+        }
+
+        query.setLength(query.length() - 2);
+        query.append(")");
+
+        return query.toString();
+    }
+
+    /**
+     * Get list of table columns from {@link ResultSetMetaData} result set meta data
+     * 
+     * @param meta
+     *            ResultSet meta data
+     * @return List of columns
+     * @throws SQLException
+     */
+    public static List<ColumnDefinition> getTableColumnsFromMetaData(ResultSetMetaData meta) throws SQLException {
+        int columnsCount = meta.getColumnCount();
+        List<ColumnDefinition> columns = new ArrayList<>();
+        Set<String> uniqueColumns = new HashSet<String>();
+        // If result set contains multiple columns with the same name, add index
+        for (int i = 1; i <= columnsCount; i++) {
+            int type = meta.getColumnType(i);
+            String columnLabel = meta.getColumnLabel(i);
+            String typeName = meta.getColumnTypeName(i);
+            String typeClass = meta.getColumnClassName(i);
+            LOG.debug("Column name: {}, type name: {}, SQL type: {}", columnLabel, typeName, type);
+            boolean columnNotNull = (meta.isNullable(i) == ResultSetMetaData.columnNoNulls);
+            if (uniqueColumns.contains(columnLabel)) {
+                int index = 1;
+                String newLabel = columnLabel + "_" + index;
+                while (uniqueColumns.contains(newLabel)) {
+                    index++;
+                    newLabel = columnLabel + "_" + index;
+                }
+                columnLabel = newLabel;
+            }
+            uniqueColumns.add(columnLabel);
+            ColumnDefinition column = new ColumnDefinition(columnLabel, typeName, type, columnNotNull, typeClass);
+            columns.add(column);
+        }
+
+        return columns;
     }
 
     public static void tryCloseStatement(Statement stmnt) {
@@ -111,6 +220,59 @@ public class DatabaseHelper {
         tryCloseResultSet(rs);
         tryCloseStatement(stmnt);
         tryCloseConnection(conn);
+    }
+
+    public static String getCreateIndexQuery(String tableName, String columnName) {
+        StringBuilder query = new StringBuilder("CREATE INDEX ");
+        query.append(columnName + "_idx ");
+        query.append("ON ");
+        query.append(tableName);
+        query.append("(");
+        query.append(columnName);
+        query.append(")");
+
+        return query.toString();
+    }
+
+    public static String getListAsCommaSeparatedString(List<String> list) {
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String key : list) {
+            sb.append(key);
+            sb.append(",");
+        }
+        sb.setLength(sb.length() - 1);
+
+        return sb.toString();
+    }
+
+    public static String createDatabaseUserQuery(String userName, String password) {
+        StringBuilder query = new StringBuilder("CREATE USER ");
+        query.append(userName);
+        query.append(" PASSWORD '");
+        query.append(password);
+        query.append("'");
+
+        return query.toString();
+    }
+
+    public static String createGrantSelectOnTableQuery(String tableName, String userName) {
+        StringBuilder query = new StringBuilder("GRANT SELECT ON ");
+        query.append(tableName);
+        query.append(" TO ");
+        query.append(userName);
+
+        return query.toString();
+    }
+
+    public static String createDropUserQuery(String dbUserName) {
+        StringBuilder query = new StringBuilder("DROP USER ");
+        query.append(dbUserName);
+        query.append(" IF EXISTS");
+
+        return query.toString();
     }
 
 }

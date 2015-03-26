@@ -26,6 +26,10 @@ public class DatabaseHelperTest {
 
     private static final String EXPECTED_ALTER_TABLE_QUERY = "ALTER TABLE " + TABLE_NAME_1 + " ADD PRIMARY KEY (" + PRIMARY_KEY_1 + "," + PRIMARY_KEY_2 + ")";
 
+    private static final String INDEXED_COLUMN = "user_id";
+
+    private static final String EXPECTED_INDEXED_QUERY = "CREATE INDEX " + INDEXED_COLUMN + "_idx ON " + TABLE_NAME_1 + "(" + INDEXED_COLUMN + ")";
+
     @Test
     public void convertSelectQueryToSelectIntoQueryTest() {
         Assert.assertEquals(EXPECTED_CREATE_TABLE_QUERY_1, DatabaseHelper.convertSelectQueryToSelectIntoQuery(SELECT_QUERY_1, TABLE_NAME_1));
@@ -38,6 +42,11 @@ public class DatabaseHelperTest {
         keys.add(PRIMARY_KEY_1);
         keys.add(PRIMARY_KEY_2);
         Assert.assertEquals(EXPECTED_ALTER_TABLE_QUERY, DatabaseHelper.createPrimaryKeysQuery(TABLE_NAME_1, keys));
+    }
+
+    @Test
+    public void getCreateIndexQueryTest() {
+        Assert.assertEquals(EXPECTED_INDEXED_QUERY, DatabaseHelper.getCreateIndexQuery(TABLE_NAME_1, INDEXED_COLUMN));
     }
 
 }
