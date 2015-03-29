@@ -5,13 +5,13 @@ import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.*;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class FilesToRDFVaadinDialog extends BaseConfigDialog<FilesToRDFConfig_V1> {
+public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> {
 
     private static final long serialVersionUID = -5668436075836909428L;
 
@@ -26,11 +26,11 @@ public class FilesToRDFVaadinDialog extends BaseConfigDialog<FilesToRDFConfig_V1
     private TextField txtSymbolicName;
 
     public FilesToRDFVaadinDialog() {
-        super(FilesToRDFConfig_V1.class);
-        initialize();
+        super(FilesToRDF.class);
     }
 
-    private void initialize() {
+    @Override
+    protected void buildDialogLayout() {
         // top-level component properties
         setSizeFull();
 
