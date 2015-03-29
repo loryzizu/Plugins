@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |T-FilterValidXml                                              |
 |**Description:**              |Validates XML inputs in 3 ways: checks if the XML is well formed, checks if it conforms to a specified XSD scheme, validate using specified XSLT template. |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
 |**DPU class name:**           |FilterValidXml     |
 |**Configuration class name:** |FilterValidXmlConfig_V1                           |

@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |T-Xslt                                              |
 |**Description:**              |Does XSL Transformation over files and outputs Files |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
 |**DPU class name:**           |Xslt     | 
 |**Configuration class name:** |XsltConfig_V1                           |

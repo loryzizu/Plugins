@@ -7,6 +7,7 @@
 |------------------------------|-----------------------------------------------------------------------------|
 |**Name:**                     |T-FilesMerger                                                               |
 |**Description:**              |Merges Files inputs. |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                                             |
 |**DPU class name:**           |FilesMerger                                                                | 
 |**Configuration class name:** |FilesMergerConfig_V1                             |

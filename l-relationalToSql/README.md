@@ -7,6 +7,7 @@
 |------------------------------|-------------------------------------------------------------------------------------------------|
 |**Name:**                     |L-RelationalToSql                                                                                |
 |**Description:**              |Loads input internal database tables into external SQL database (currently PostgreSQL) supported |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                                                                 |
 |**DPU class name:**           |RelationalToSql                                                                                  | 
 |**Configuration class name:** |RelationalToSqlConfig_V1                                                                         |

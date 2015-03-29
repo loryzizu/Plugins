@@ -7,6 +7,7 @@
 |------------------------------|------------------------------------------------------------------------------|
 |**Name:**                     |T-SparqlConstruct                                                             |
 |**Description:**              |Transform input using SPARQL construct.                                       |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                                              |
 |**DPU class name:**           |SparqlConstruct                                                               | 
 |**Configuration class name:** |SparqlConstruct_V1                                                            |

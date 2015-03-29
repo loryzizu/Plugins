@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |T-FilesToRdf                                              |
 |**Description:**              |Extracts RDF data from Files (any file format) and adds them to RDF. |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
 |**DPU class name:**           |FilesToRDF     | 
 |**Configuration class name:** |FilesToRDFConfig_V1                           |

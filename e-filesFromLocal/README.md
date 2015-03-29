@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |E-FilesFromLocal                                               |
 |**Description:**              |Extracts local file or directory.                               |
+|**Status:**                   |Deprecated. Not supported in Plugins v2.X. Not updated to use Plugin-DevEnv v2.X. Use e-filesDownload instead.  |
 |                              |                                                               |
 |**DPU class name:**           |FilesFromLocal                                                 | 
 |**Configuration class name:** |FilesFromLocalConfig_V1                                        |

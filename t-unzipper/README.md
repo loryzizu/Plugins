@@ -7,6 +7,7 @@
 |------------------------------|--------------------------------------------------|
 |**Name:**                     |T-UnZipper                                        |
 |**Description:**              |UnZips input file into files based on zip content. |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                      |
 |**DPU class name:**           |UnZipper              | 
 |**Configuration class name:** |UnZipperConfig_V1     |

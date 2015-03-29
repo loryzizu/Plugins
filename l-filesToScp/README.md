@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |L-FilesToScp                                             |
 |**Description:**              |Uploads given files using scp. |
+|**Status:**                   |Deprecated. Not supported in Plugins v2.X. Not updated to use Plugin-DevEnv v2.X. Use l-filesUpload instead.  |
 |                              |                                                               |
 |**DPU class name:**           |FilesToScp     | 
 |**Configuration class name:** |FilesToScpConfig_V1                           |

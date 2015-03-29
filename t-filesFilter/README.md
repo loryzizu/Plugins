@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |T-FilesFilter                                              |
 |**Description:**              |Filters files. |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
 |**DPU class name:**           |FilesFilter     | 
 |**Configuration class name:** |FilesFilterConfig_V1                           |

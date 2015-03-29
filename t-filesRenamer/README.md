@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |T-FilesRenamer                                              |
 |**Description:**              |Renames files. |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
 |**DPU class name:**           |Renamer     | 
 |**Configuration class name:** |RenameConfig_V2                           |

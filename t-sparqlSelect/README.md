@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |T-SPARQLSelect                                              |
 |**Description:**              |Transforms SPARQL SELECT query result to CSV. Does not validate query. |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
 |**DPU class name:**           |SparqlSelect     | 
 |**Configuration class name:** |SparqlSelectConfig                           |

@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |T-RdfToFiles                                              |
 |**Description:**              |Transforms RDF graphs into files. |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
 |**DPU class name:**           |RdfToFiles     | 
 |**Configuration class name:** |RdfToFilesConfig_V1                           |

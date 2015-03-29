@@ -7,6 +7,7 @@
 |------------------------------|-----------------------------------------------------------------------------|
 |**Name:**                     |T-RdfMerger                                                               |
 |**Description:**              |Merges RDF data in no time. |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                                             |
 |**DPU class name:**           |RdfMerger                                                                 | 
 |**Configuration class name:** |RdfMergerConfig_V1                             |

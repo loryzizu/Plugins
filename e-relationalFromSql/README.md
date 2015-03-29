@@ -7,6 +7,7 @@
 |------------------------------|------------------------------------------------------------------------------|
 |**Name:**                     |E-RelationalFromSql                                                           |
 |**Description:**              |Extracts data from external relational database tables into internal database |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                                              |
 |**DPU class name:**           |RelationalFromSql                                                             | 
 |**Configuration class name:** |RelationalFromSqlConfig_V2                                                    |
