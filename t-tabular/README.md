@@ -35,8 +35,8 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|1.3.2            |N/A                         |                                
 |2.0.0            |Replaced with the DPU taken from the repository https://github.com/mff-uk/DPUs.|
+|1.3.2            |N/A                         |
 
 ***
 
@@ -45,3 +45,16 @@
 |Author           |Notes                           |
 |-----------------|--------------------------------|
 |N/A              |N/A                             | 
+
+***
+
+### Runtime dependencies ###
+t-Tabular requires runtime dependencies that must be presented in module/lib folder of UnifiedViews prior
+the t-Tabular usage. Those dependencies can be found in CUNI repository (https://github.com/mff-uk/DPUs).
+
+|Library          |
+|-----------------|
+|https://github.com/mff-uk/DPUs/blob/master/dpu/t-tabular/libs/org.apache.poi-bundle-3.10.0.jar |
+|https://github.com/mff-uk/DPUs/blob/master/dependencies/org.junit-bundle-4.11.0.jar |
+
+
