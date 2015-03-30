@@ -37,7 +37,7 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|1.1.2-SNAPSHOT   |Imported from the repository https://github.com/mff-uk/DPUs.                         |
+|1.1.2   |Imported from the repository https://github.com/mff-uk/DPUs.                         |
 
 
 ***

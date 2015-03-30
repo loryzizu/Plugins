@@ -37,7 +37,7 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|1.1.2-SNAPSHOT   |Import from CUNI repository.                         |
+|1.1.2        |Imported from https://github.com/mff-uk/DPUs repository of DPUs.                         |
 
 
 ***

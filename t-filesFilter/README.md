@@ -39,8 +39,8 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|1.3.2              |N/A                                             |                                
-|2.0.0              |Update for new helpers. SPARQL used to filter based on VirtualPath. |
+|2.0.0              |Update for helpers 2.0. SPARQL used to filter based on VirtualPath. |
+|1.3.2              |N/A
 
 ***
 

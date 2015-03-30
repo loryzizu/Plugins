@@ -4,11 +4,11 @@
     <parent>
         <groupId>eu.unifiedviews</groupId>
         <artifactId>uv-pom-dpu</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>2.0.0</version>
     </parent>
     <groupId>eu.unifiedviews.plugins</groupId>
     <artifactId>t-filesMerger</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.6.1</version>
     <packaging>bundle</packaging>
     <name>T-FilesMerger</name>
     <description></description>

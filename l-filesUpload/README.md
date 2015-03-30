@@ -37,8 +37,8 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|1.0.0-SNAPSHOT   |N/A                         |
-|1.0.1            |Update for new helpers. Input/output dataUnits names updated. |
+|1.0.1            |Update for helpers 2.0.0. Input/output dataUnits names updated. |
+|1.0.0            |N/A                         |
 
 ***
 
