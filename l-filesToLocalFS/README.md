@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |L-FilesToLocalFS                                             |
 |**Description:**              |Loads files to the specified local host directory. |
+|**Status:**                   |Deprecated. Not supported in Plugins v2.X. Not updated to use Plugin-DevEnv v2.X. Use l-filesUpload instead.  |
 |                              |                                                               |
 |**DPU class name:**           |FilesToLocalFS     | 
 |**Configuration class name:** |FilesToLocalFSConfig_V1                           |
@@ -38,6 +39,8 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
+|1.6.1              |small corrections in dialog                     |                                
+|1.6.0              |N/A                                             |                                
 |1.3.1              |N/A                                             |                                
 
 

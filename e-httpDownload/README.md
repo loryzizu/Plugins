@@ -7,6 +7,7 @@
 |------------------------------|-----------------------------------------------------------------------------|
 |**Name:**                     |E-HttpDownload                                                               |
 |**Description:**              |Downloads a single file from given URL and saves it with given virtual path. |
+|**Status:**                   |Deprecated. Not supported in Plugins v2.X. Not updated to use Plugin-DevEnv v2.X. Use e-filesDownload instead.  |
 |                              |                                                                             |
 |**DPU class name:**           |HttpDownload                                                                 | 
 |**Configuration class name:** |HttpDownloadConfig_V1 <BR> HttpDownloadConfig_V2                             |
@@ -37,6 +38,8 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
+|1.5.1            |small corrections in dialog |
+|1.5.0            |N/A                         |
 |1.3.1            |N/A                         |                                
 
 

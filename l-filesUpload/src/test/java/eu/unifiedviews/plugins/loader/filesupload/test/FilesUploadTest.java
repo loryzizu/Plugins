@@ -12,9 +12,10 @@ import org.junit.Test;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.files.FilesDataUnit.Entry;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
-import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
+import eu.unifiedviews.helpers.dataunit.files.FilesHelper;
+import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelper;
+import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelpers;
+import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 import eu.unifiedviews.plugins.loader.filesupload.FilesUpload;
 import eu.unifiedviews.plugins.loader.filesupload.FilesUploadConfig_V1;
 
@@ -31,14 +32,14 @@ public class FilesUploadTest {
 
         // Prepare DPU.
         FilesUpload upload = new FilesUpload();
-        upload.configureDirectly(config);
+        upload.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
 
         // Prepare test environment.
         TestEnvironment environment = new TestEnvironment();
 
         // Prepare data unit.
-        WritableFilesDataUnit filesInput = environment.createFilesInput("filesInput");
-        environment.createFilesOutput("filesOutput");
+        WritableFilesDataUnit filesInput = environment.createFilesInput("input");
+        environment.createFilesOutput("output");
         VirtualPathHelper virtualPathHelper = VirtualPathHelpers.create(filesInput);
 
         try {

@@ -1,0 +1,21 @@
+<http://localhost/resource/config>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://linked.opendata.cz/ontology/uv/dpu/xslt/Config>;
+    <http://linked.opendata.cz/ontology/uv/dpu/xslt/fileInfo> <http://localhost/resource/fileInfo/0>.
+
+<http://localhost/resource/fileInfo/0>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://linked.opendata.cz/ontology/uv/dpu/xslt/FileInfo>;
+    <http://unifiedviews.eu/DataUnit/MetadataDataUnit/symbolicName> "symbolicName-test";
+    <http://linked.opendata.cz/ontology/uv/dpu/xslt/param> <http://localhost/resource/param/0>;
+    <http://linked.opendata.cz/ontology/uv/dpu/xslt/param> <http://localhost/resource/param/1>.
+
+<http://localhost/resource/param/0> 
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://linked.opendata.cz/ontology/uv/dpu/xslt/Param>;
+    <http://linked.opendata.cz/ontology/uv/dpu/xslt/param/name> "one";
+    <http://linked.opendata.cz/ontology/uv/dpu/xslt/param/value> "1".
+
+<http://localhost/resource/param/1>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://linked.opendata.cz/ontology/uv/dpu/xslt/Param>;
+    <http://linked.opendata.cz/ontology/uv/dpu/xslt/param/name> "two";
+    <http://linked.opendata.cz/ontology/uv/dpu/xslt/param/value> "2".
+
+

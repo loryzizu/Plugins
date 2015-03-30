@@ -1,16 +1,17 @@
-# T-XSLT #
+﻿# T-Xslt #
 ----------
 
 ###General###
 
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
-|**Name:**                     |T-XSLT                                              |
+|**Name:**                     |T-Xslt                                              |
 |**Description:**              |Does XSL Transformation over files and outputs Files |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
-|**DPU class name:**           |XSLT     | 
-|**Configuration class name:** |XSLTConfig_V1                           |
-|**Dialogue class name:**      |XSLTVaadinDialog | 
+|**DPU class name:**           |Xslt     | 
+|**Configuration class name:** |XsltConfig_V1                           |
+|**Dialogue class name:**      |XsltVaadinDialog | 
 
 ***
 
@@ -19,10 +20,6 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|**Skip file on error (checkbox)** |Do not stop pipeline execution if error occurs. |
-|**Output file extension**|self-descriptive  | 
-|**XSLT Template upload (button):** |Choose and upload XSLT template file.  |
-|**Input:**|Displays the content of XSLT Template.  |
 
 
 ***
@@ -31,8 +28,9 @@
 
 |Name                |Type       |DataUnit                         |Description                        |
 |--------------------|-----------|---------------------------------|-----------------------------------|
-|filesInput  |i |FilesDataUnit  |File to be transformed.  |
-|filesOutput |o |FilesDataUnit  |Transformed file of given type.  |
+|files  |i |FilesDataUnit  |File to be transformed.  |
+|files |o |FilesDataUnit  |Transformed file of given type.  |
+|config |i |RDFDataUnit   | Configuration (template parameters). |
 
 ***
 
@@ -40,8 +38,10 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
+|1.5.1              |fix in localization                             |
+|1.5.0              |N/A                                             |
 |1.3.2              |N/A                                             |                                
-
+|2.0.0              |Replaced with version from CUNI repository.     |
 
 ***
 
@@ -50,4 +50,5 @@
 |Author            |Notes                 |
 |------------------|----------------------|
 |N/A               |N/A                   | 
+|Petr Škoda        |DPU fail if virtual path is not set. |
 

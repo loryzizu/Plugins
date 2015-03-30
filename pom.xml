@@ -3,19 +3,19 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-plugin-dpus</artifactId>
-	<version>1.5.5</version>
+	<version>1.6.0</version>
 	<packaging>pom</packaging>
 	<description>Maven parent project for core modules-DPU implementations.</description>
 
-	<!-- list of core modules -->
-	<modules>
-		<!-- EXTRACTORS -->
-		<module>e-filesDownload</module>
-		<module>e-filesFromLocal</module>
-		<module>e-rdfFromSparql</module>
-		<module>e-httpDownload</module>
-		<module>e-uploadToFiles</module>
-		<module>e-relationalFromSql</module>
+    <!-- list of core modules -->
+    <modules>
+        <!-- EXTRACTORS -->
+        <module>e-filesDownload</module>
+        <module>e-filesFromLocal</module>
+        <module>e-rdfFromSparql</module>
+        <module>e-httpDownload</module>
+        <module>e-uploadToFiles</module>
+        <module>e-relationalFromSql</module>
 
 		<!-- TRANSFORMERS -->
 		<module>t-sparql</module>
@@ -30,6 +30,10 @@
 		<module>t-tabular</module>
 		<module>t-metadata</module>
 		<module>t-relational</module>
+        <module>t-tabularToRelational</module>
+        <module>t-sparqlUpdate</module>
+        <module>t-sparqlConstruct</module>
+        <module>t-filterValidXml</module>
 
 		<!-- LOADERS -->
 		<module>l-rdfToSparql</module>
@@ -38,23 +42,28 @@
 		<module>l-filesToVirtuoso</module>
 		<module>l-filesUpload</module>
 		<module>l-relationalToSql</module>
-	</modules>
 
-	<repositories>
-		<repository>
-			<id>maven.eea.sk</id>
-			<name>maven.eea.sk-public</name>
-			<url>http://maven.eea.sk/artifactory/public/</url>
-		</repository>
-	</repositories>
+        <!-- MERGERS -->
+        <module>t-rdfMerger</module>
+        <module>t-filesMerger</module>
+        
+  </modules>
+
+    <repositories>
+        <repository>
+            <id>maven.eea.sk</id>
+            <name>maven.eea.sk-public</name>
+            <url>http://maven.eea.sk/artifactory/public/</url>
+        </repository>
+    </repositories>
 	
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.8.1</version>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+            </plugin>
+        </plugins>
+    </build>
 </project>

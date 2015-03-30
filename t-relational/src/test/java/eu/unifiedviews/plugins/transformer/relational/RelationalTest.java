@@ -17,7 +17,8 @@ import org.junit.Test;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
 import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
-import eu.unifiedviews.helpers.dataunit.relationalhelper.RelationalHelper;
+import eu.unifiedviews.helpers.dataunit.relational.RelationalHelper;
+import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 
 public class RelationalTest {
 
@@ -79,7 +80,7 @@ public class RelationalTest {
 
     @Test
     public void checkOutputTableAndColumnsTest() throws Exception {
-        this.dpu.configureDirectly(createDpuConfig(SELECT_JOIN_TABLES_QUERY));
+        this.dpu.configure(createDpuConfig(SELECT_JOIN_TABLES_QUERY));
         this.testEnv.run(this.dpu);
 
         Connection dataUnitConnection = null;
@@ -101,7 +102,7 @@ public class RelationalTest {
 
     @Test
     public void checkOutputTableContent() throws Exception {
-        this.dpu.configureDirectly(createDpuConfig(SELECT_JOIN_TABLES_QUERY));
+        this.dpu.configure(createDpuConfig(SELECT_JOIN_TABLES_QUERY));
         this.testEnv.run(this.dpu);
 
         Connection dataUnitConnection = null;
@@ -128,12 +129,12 @@ public class RelationalTest {
 
     }
 
-    private RelationalConfig_V1 createDpuConfig(String query) {
+    private String createDpuConfig(String query) {
         RelationalConfig_V1 config = new RelationalConfig_V1();
         config.setTargetTableName(TARGET_TABLE_NAME);
         config.setSqlQuery(query);
 
-        return config;
+        return (new ConfigurationBuilder()).setDpuConfiguration(config).toString();
     }
 
     private static final void createTable(Connection conn, String tableName, String[] columnNames, String[] columnTypes) throws SQLException {

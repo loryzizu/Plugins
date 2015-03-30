@@ -26,8 +26,9 @@ public class RdfToFilesConfig_V1 {
                 String outputGraphName) {
             this.inSymbolicName = outFileName;
             this.outFileName = outFileName;
+            // TODO Use outputGraphName as a graph name.
         }
-        
+
         public String getInSymbolicName() {
             return inSymbolicName;
         }
@@ -43,7 +44,7 @@ public class RdfToFilesConfig_V1 {
         public void setOutFileName(String outputFileName) {
             this.outFileName = outputFileName;
         }
-        
+
     }
 
     /**
@@ -66,7 +67,7 @@ public class RdfToFilesConfig_V1 {
      * Used only if {@link #genGraphFile} is true.
      */
     private String outGraphName = "";
-    
+
     /**
      * How convert graphs
      */

@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |E-UploadToFiles                                             |
 |**Description:**              |Downloads files from client during configuration. Then they are used during execution. Files are saved to directory specified in user.home system property. |
+|**Status:**                   |Deprecated. Not supported in Plugins v2.X. Not updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
 |**DPU class name:**           |UploadToFiles     | 
 |**Configuration class name:** |UploadToFilesConfig_V1                           |

@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |T-SPARQL                                              |
 |**Description:**              |Transforms data using SPARQL. |
+|**Status:**                   |Deprecated. Not supported in Plugins v2.X. Not updated to use Plugin-DevEnv v2.X. Use t-sparqlUpdate or t-sparqlConstruct instead.  |
 |                              |                                                               |
 |**DPU class name:**           |SPARQL     | 
 |**Configuration class name:** |SPARQLConfig_V1<BR>SPARQLConfig_V2                           |
@@ -38,6 +39,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
+|1.6.0              |localization support                            |                                
 |1.3.1              |N/A                                             |                                
 
 

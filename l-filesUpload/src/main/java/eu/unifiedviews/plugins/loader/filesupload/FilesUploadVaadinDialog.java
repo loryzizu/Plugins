@@ -1,27 +1,20 @@
 package eu.unifiedviews.plugins.loader.filesupload;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
-import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.vfs2.util.CryptorFactory;
 
-import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
-import eu.unifiedviews.helpers.dpu.localization.Messages;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 @SuppressWarnings("serial")
-public class FilesUploadVaadinDialog extends BaseConfigDialog<FilesUploadConfig_V1> implements InitializableConfigDialog {
+public class FilesUploadVaadinDialog extends AbstractDialog<FilesUploadConfig_V1> {
 
     private TextField uri;
 
@@ -29,56 +22,49 @@ public class FilesUploadVaadinDialog extends BaseConfigDialog<FilesUploadConfig_
 
     private PasswordField password;
 
-    private Messages messages;
+    private CheckBox softFail;
 
-    private ObjectProperty<Boolean> moveFiles = new ObjectProperty<Boolean>(false);
-
-    private ObjectProperty<Boolean> skipOnError = new ObjectProperty<Boolean>(false);
+    private CheckBox moveFiles;
 
     public FilesUploadVaadinDialog() {
-        super(FilesUploadConfig_V1.class);
+        super(FilesUpload.class);
     }
 
     @Override
-    public void initialize() {
-        messages = new Messages(getContext().getLocale(), getClass().getClassLoader());
+    protected void buildDialogLayout() {
+        setSizeFull();
 
-        Panel panel = new Panel();
-        panel.setContent(buildMainLayout());
-        panel.setSizeFull();
-
-        setCompositionRoot(panel);
-        setHeight("100%");
-        setWidth("100%");
-    }
-
-    private VerticalLayout buildMainLayout() {
-        VerticalLayout mainLayout = new VerticalLayout();
+        final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setHeight("-1px");
-        mainLayout.setImmediate(false);
-        mainLayout.setMargin(false);
+        mainLayout.setMargin(true);
         mainLayout.setSpacing(true);
         mainLayout.setWidth("100%");
 
-        uri = new TextField(messages.getString("FilesUploadVaadinDialog.uri"));
-        uri.setDescription(messages.getString("FilesUploadVaadinDialog.uri.description"));
+        uri = new TextField(ctx.tr("FilesUploadVaadinDialog.uri"));
+        uri.setDescription(ctx.tr("FilesUploadVaadinDialog.uri.description"));
         uri.setRequired(true);
-        uri.setRequiredError(messages.getString("FilesUploadVaadinDialog.uri.required"));
+        uri.setRequiredError(ctx.tr("FilesUploadVaadinDialog.uri.required"));
         uri.setWidth("100%");
 
         mainLayout.addComponent(uri);
 
-        username = new TextField(messages.getString("FilesUploadVaadinDialog.username"));
-
+        username = new TextField(ctx.tr("FilesUploadVaadinDialog.username"));
+        username.setWidth("75%");
         mainLayout.addComponent(username);
 
-        password = new PasswordField(messages.getString("FilesUploadVaadinDialog.password"));
-
+        password = new PasswordField(ctx.tr("FilesUploadVaadinDialog.password"));
+        password.setWidth("75%");
         mainLayout.addComponent(password);
 
-        mainLayout.addComponent(new CheckBox(messages.getString("FilesUploadVaadinDialog.move"), moveFiles));
-        mainLayout.addComponent(new CheckBox(messages.getString("FilesUploadVaadinDialog.skip"), skipOnError));
-        return mainLayout;
+        softFail = new CheckBox(ctx.tr("FilesUploadVaadinDialog.skip"));
+        softFail.setWidth("100%");
+        mainLayout.addComponent(softFail);
+
+        moveFiles = new CheckBox(ctx.tr("FilesUploadVaadinDialog.move"));
+        moveFiles.setWidth("100%");
+        mainLayout.addComponent(moveFiles);
+
+        setCompositionRoot(mainLayout);
     }
 
     @Override
@@ -87,35 +73,30 @@ public class FilesUploadVaadinDialog extends BaseConfigDialog<FilesUploadConfig_
 
         try {
             if (StringUtils.isBlank(uri.getValue())) {
-                throw new DPUConfigException(messages.getString("FilesUploadVaadinDialog.uri.required"));
+                throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.uri.required"));
             } else if (StringUtils.isBlank(username.getValue()) && StringUtils.isNotBlank(password.getValue())) {
-                throw new DPUConfigException(messages.getString("FilesUploadVaadinDialog.username.required"));
+                throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.username.required"));
             } else if (StringUtils.isNotBlank(username.getValue()) && StringUtils.isBlank(password.getValue())) {
-                throw new DPUConfigException(messages.getString("FilesUploadVaadinDialog.password.required"));
+                throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.password.required"));
             }
 
-            URI encodedUri = new URI(URIUtil.encodePathQuery(uri.getValue(), "utf8"));
+            URI encodedUri = new URI(URIUtil.encodePathQuery(URIUtil.decode(uri.getValue(), "utf8"), "utf8"));
 
             if (StringUtils.isNotBlank(username.getValue()) && StringUtils.isBlank(encodedUri.getHost())) {
-                throw new DPUConfigException(messages.getString("FilesUploadVaadinDialog.uri.invalid"));
+                throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.uri.invalid"));
             }
 
             result.setUri(encodedUri.toString());
-
-            result.setUsername(username.getValue());
-
-            if (StringUtils.isNotBlank(password.getValue())) {
-                result.setPassword(CryptorFactory.getCryptor().encrypt(password.getValue()));
-            }
-            result.setMoveFiles(moveFiles.getValue());
-            result.setSkipOnError(skipOnError.getValue());
         } catch (DPUConfigException e) {
             throw e;
-        } catch (NullPointerException | URISyntaxException | URIException e) {
-            throw new DPUConfigException(messages.getString("FilesUploadVaadinDialog.getConfiguration.exception"), e);
         } catch (Exception e) {
-            throw new DPUConfigException(messages.getString("FilesUploadVaadinDialog.getConfiguration.exception"));
+            throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.uri.invalid"));
         }
+
+        result.setUsername(username.getValue());
+        result.setPassword(password.getValue());
+        result.setSoftFail(softFail.getValue());
+        result.setMoveFiles(moveFiles.getValue());
 
         return result;
     }
@@ -124,24 +105,19 @@ public class FilesUploadVaadinDialog extends BaseConfigDialog<FilesUploadConfig_
     protected void setConfiguration(FilesUploadConfig_V1 config) throws DPUConfigException {
         try {
             uri.setValue(URIUtil.decode(config.getUri(), "utf8"));
-
-            username.setValue(config.getUsername());
-
-            if (StringUtils.isNotBlank(config.getPassword())) {
-                password.setValue(CryptorFactory.getCryptor().decrypt(config.getPassword()));
-            }
-            moveFiles.setValue(config.isMoveFiles());
-            skipOnError.setValue(config.isSkipOnError());
-        } catch (URIException e) {
-            throw new DPUConfigException(messages.getString("FilesUploadVaadinDialog.setConfiguration.exception"), e);
         } catch (Exception e) {
-            throw new DPUConfigException(messages.getString("FilesUploadVaadinDialog.setConfiguration.exception"));
+            throw new DPUConfigException(ctx.tr("FilesUploadVaadinDialog.uri.invalid"), e);
         }
+
+        username.setValue(config.getUsername());
+        password.setValue(config.getPassword());
+        softFail.setValue(config.isSoftFail());
+        moveFiles.setValue(config.isMoveFiles());
     }
 
     @Override
     public String getDescription() {
-        return messages.getString("FilesUploadVaadinDialog.getDescription", new Object[] { uri.getValue() });
+        return ctx.tr("FilesUploadVaadinDialog.getDescription", uri.getValue());
     }
 
 }

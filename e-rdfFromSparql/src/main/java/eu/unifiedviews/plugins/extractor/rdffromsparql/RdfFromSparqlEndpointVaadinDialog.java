@@ -327,12 +327,13 @@ public class RdfFromSparqlEndpointVaadinDialog extends BaseConfigDialog<RdfFromS
         gridLayoutCore = new GridLayout(2, 6);
         gridLayoutCore.setImmediate(false);
         gridLayoutCore.setWidth("100%");
-        gridLayoutCore.setHeight("-1px");
+        gridLayoutCore.setHeight("100%");
         gridLayoutCore.setMargin(true);
         gridLayoutCore.setSpacing(true);
 
         gridLayoutCore.setColumnExpandRatio(0, 0.0f);
         gridLayoutCore.setColumnExpandRatio(1, 1.0f);
+        gridLayoutCore.setRowExpandRatio(5, 1.0f);
 
         // labelSparql
         labelSparql = new Label("SPARQL endpoint:");
@@ -448,7 +449,7 @@ public class RdfFromSparqlEndpointVaadinDialog extends BaseConfigDialog<RdfFromS
         textAreaConstr.setNullRepresentation("");
         textAreaConstr.setImmediate(true);
         textAreaConstr.setWidth("100%");
-        textAreaConstr.setHeight("100px");
+        textAreaConstr.setHeight("100%");
         textAreaConstr.setInputPrompt(
                 "CONSTRUCT {<http://dbpedia.org/resource/Prague> ?p ?o} where {<http://dbpedia.org/resource/Prague> ?p ?o } LIMIT 100");
 

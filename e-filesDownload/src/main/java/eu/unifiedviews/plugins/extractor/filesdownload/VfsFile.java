@@ -1,13 +1,20 @@
 package eu.unifiedviews.plugins.extractor.filesdownload;
 
+import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
+
+@EntityDescription.Entity(type = FilesDownloadVocabulary.STR_FILE_CLASS)
 public class VfsFile {
 
+    @EntityDescription.Property(uri = FilesDownloadVocabulary.STR_FILE_URI)
     private String uri = "http://www.zmluvy.gov.sk/data/att/117597_dokument.pdf";
 
+    @EntityDescription.Property(uri = FilesDownloadVocabulary.STR_FILE_USERNAME)
     private String username = "";
 
+    @EntityDescription.Property(uri = FilesDownloadVocabulary.STR_FILE_PASSWORD)
     private String password = "";
 
+    @EntityDescription.Property(uri = FilesDownloadVocabulary.STR_FILE_NAME)
     private String fileName = "";
 
     public VfsFile() {
