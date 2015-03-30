@@ -7,14 +7,6 @@ import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
-import eu.unifiedviews.helpers.dpu.NonConfigurableBase;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
-import eu.unifiedviews.helpers.dpu.localization.Messages;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +17,19 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import eu.unifiedviews.helpers.dataunit.resource.Resource;
+import eu.unifiedviews.helpers.dataunit.resource.ResourceHelpers;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @DPU.AsTransformer
-public class TabularToRelational extends ConfigurableBase<TabularToRelationalConfig_V1> implements ConfigDialogProvider<TabularToRelationalConfig_V1> {
+public class TabularToRelational extends AbstractDpu<TabularToRelationalConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TabularToRelational.class);
 
@@ -38,47 +39,46 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
     @DataUnit.AsOutput(name = "output")
     public WritableRelationalDataUnit outRelationalData;
 
-    private Messages messages;
+    @ExtensionInitializer.Init
+    public FaultTolerance faultTolerance;
+
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.tabulartorelational.TabularToRelationalConfig__V1")
+    public ConfigurationUpdate _ConfigurationUpdate;
 
     public TabularToRelational() {
-        super(TabularToRelationalConfig_V1.class);
+        super(TabularToRelationalVaadinDialog.class, ConfigHistory.noHistory(TabularToRelationalConfig_V1.class));
     }
 
     @Override
-    public AbstractConfigDialog<TabularToRelationalConfig_V1> getConfigurationDialog() {
-        return new TabularToRelationalVaadinDialog();
-    }
-
-    @Override
-    public void execute(DPUContext context) throws DPUException, InterruptedException {
-
-        this.messages = new Messages(context.getLocale(), this.getClass().getClassLoader());
-        final Iterator<FilesDataUnit.Entry> filesIteration;
-        try {
-            filesIteration = FilesHelper.getFiles(inFilesData).iterator();
-        } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.dpu.failed"), messages.getString("errors.file.iterator"), ex);
-            return;
-        }
+    protected void innerExecute() throws DPUException {
+        final List<FilesDataUnit.Entry> files = FaultToleranceUtils.getEntries(faultTolerance, inFilesData, FilesDataUnit.Entry.class);
+        final Iterator<FilesDataUnit.Entry> filesIteration = files.iterator();
 
         try {
             // create table from user config
             String createTableQuery = prepareCreateTableQuery(config);
             LOG.debug("Table create query: {}", createTableQuery);
-            context.sendMessage(DPUContext.MessageType.DEBUG, messages.getString("create.new.table"), createTableQuery);
+            ctx.getExecMasterContext().getDpuContext().sendMessage(DPUContext.MessageType.DEBUG, ctx.tr("create.new.table"), createTableQuery);
             DatabaseHelper.executeUpdate(createTableQuery, outRelationalData);
 
             // add metadata
-            String tableName = processString(config.getTableName());
+            final String tableName = processString(config.getTableName());
             outRelationalData.addExistingDatabaseTable(tableName, tableName);
-            Resource resource = ResourceHelpers.getResource(outRelationalData, tableName);
-            Date now = new Date();
-            resource.setCreated(now);
-            resource.setLast_modified(now);
-            ResourceHelpers.setResource(outRelationalData, tableName, resource);
+
+            faultTolerance.execute(new FaultTolerance.Action() {
+
+                @Override
+                public void action() throws Exception {
+                    Resource resource = ResourceHelpers.getResource(outRelationalData, tableName);
+                    Date now = new Date();
+                    resource.setCreated(now);
+                    resource.setLast_modified(now);
+                    ResourceHelpers.setResource(outRelationalData, tableName, resource);
+                }
+            });
 
             // for each input file
-            while (!context.canceled() && filesIteration.hasNext()) {
+            while (!ctx.canceled() && filesIteration.hasNext()) {
                 final FilesDataUnit.Entry entry = filesIteration.next();
                 LOG.debug("Adding file: {}", entry.getSymbolicName());
                 // remove URL prefixes
@@ -86,15 +86,15 @@ public class TabularToRelational extends ConfigurableBase<TabularToRelationalCon
 
                 String insertIntoQuery = prepareInsertIntoQuery(csvPath, config);
                 LOG.debug("Insert into query: {}", insertIntoQuery);
-                context.sendMessage(DPUContext.MessageType.DEBUG, messages.getString("insert.file", entry.getSymbolicName()), insertIntoQuery);
+                ctx.getExecMasterContext().getDpuContext().sendMessage(DPUContext.MessageType.DEBUG, ctx.tr("insert.file", entry.getSymbolicName()), insertIntoQuery);
                 // insert file into internal database
                 DatabaseHelper.executeUpdate(insertIntoQuery, outRelationalData);
             }
         } catch (DataUnitException | UnsupportedEncodingException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, messages.getString("errors.dpu.parse.failed"), "", e);
+            throw ContextUtils.dpuException(ctx, e, "errors.dpu.parse.failed");
         }
 
-        context.sendMessage(DPUContext.MessageType.INFO, messages.getString("parsing.finished"), null);
+        ContextUtils.sendShortInfo(ctx, "parsing.finished");
     }
 
     protected static String prepareInsertIntoQuery(String csvFilePath, TabularToRelationalConfig_V1 config) {
