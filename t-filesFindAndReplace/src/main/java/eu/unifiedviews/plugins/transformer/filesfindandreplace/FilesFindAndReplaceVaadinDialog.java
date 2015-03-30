@@ -10,15 +10,13 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextField;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
-import eu.unifiedviews.helpers.dpu.localization.Messages;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class FilesFindAndReplaceVaadinDialog extends BaseConfigDialog<FilesFindAndReplaceConfig_V1> implements InitializableConfigDialog {
+public class FilesFindAndReplaceVaadinDialog extends AbstractDialog<FilesFindAndReplaceConfig_V1> {
 
     private static final long serialVersionUID = -5668436075836909428L;
 
@@ -26,25 +24,21 @@ public class FilesFindAndReplaceVaadinDialog extends BaseConfigDialog<FilesFindA
 
     private ObjectProperty<String> replace = new ObjectProperty<String>("");
 
-    private Messages messages;
-
     public FilesFindAndReplaceVaadinDialog() {
-        super(FilesFindAndReplaceConfig_V1.class);
+        super(FilesFindAndReplace.class);
     }
 
     @Override
-    public void initialize() {
-        messages = new Messages(getContext().getLocale(), this.getClass().getClassLoader());
-
+    protected void buildDialogLayout() {
         FormLayout mainLayout = new FormLayout();
 
         // top-level component properties
         setWidth("100%");
         setHeight("100%");
 
-        TextField txtSearch = new TextField(messages.getString("dialog.tlfs.search"), search);
+        TextField txtSearch = new TextField(this.ctx.tr("dialog.tlfs.search"), search);
         txtSearch.setWidth("100%");
-        TextField txtReplace = new TextField(messages.getString("dialog.tlfs.replace"), replace);
+        TextField txtReplace = new TextField(this.ctx.tr("dialog.tlfs.replace"), replace);
         txtReplace.setWidth("100%");
 
         mainLayout.addComponent(txtSearch);

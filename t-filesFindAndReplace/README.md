@@ -1,27 +1,25 @@
-# L-FilesToLocalFS #
+# T-FilesFindAndReplace #
 ----------
 
 ###General###
 
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
-|**Name:**                     |L-FilesToLocalFS                                             |
-|**Description:**              |Loads files to the specified local host directory. |
+|**Name:**                     |L-FilesFindAndReplace                                          |
+|**Description:**              |Finds and replaces strings (patterns) in files                 |
 |                              |                                                               |
-|**DPU class name:**           |FilesToLocalFS     | 
-|**Configuration class name:** |FilesToLocalFSConfig_V1                           |
-|**Dialogue class name:**      |FilesToLocalFSVaadinDialog | 
+|**DPU class name:**           |FilesFindAndReplace                                            | 
+|**Configuration class name:** |FilesFindAndReplaceConfig_V1                                   |
+|**Dialog class name:**        |FilesFindAndReplaceVaadinDialog                                | 
 
 ***
 
 ###Configuration parameters###
 
-
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|**Destination directory absolute path** |Destination path for file to load.  |
-|**Move files instead of copy (checkbox)** | Additional self-descriptive option for load.|
-|**Replace existing copy (checkbox)** | Additional self-descriptive option for load. |
+|**Search pattern** |Pattern to search for in files |
+|**Replace** | String to replace the searched pattern|
 |**Skip file on error (checkbox)** | Additional self-descriptive option for load. |
 
 ***
@@ -30,7 +28,8 @@
 
 |Name                |Type       |DataUnit                         |Description                        |
 |--------------------|-----------|---------------------------------|-----------------------------------|
-|filesInput |i |FilesDataUnit |File loaded to specified (local host) destiation.  |
+|filesInput |i |FilesDataUnit |Input files  |
+|filesOutput |o|FilesDataUnit|Output files |
 
 ***
 
@@ -38,7 +37,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|1.3.1              |N/A                                             |                                
+|1.0.0              |First release                                   |                                
 
 
 ***

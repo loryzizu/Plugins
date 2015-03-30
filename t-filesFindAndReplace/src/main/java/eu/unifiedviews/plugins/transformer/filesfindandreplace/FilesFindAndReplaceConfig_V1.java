@@ -7,7 +7,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class FilesFindAndReplaceConfig_V1 {
-    private static final long serialVersionUID = -31611625503740405L;
 
     private Map<String, String> patterns = new HashMap<String, String>();
 
