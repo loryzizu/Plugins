@@ -1,9 +1,7 @@
 package eu.unifiedviews.plugins.transformer.filestordft;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,8 +19,6 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.ParseErrorLogger;
 import org.slf4j.Logger;
@@ -35,7 +31,6 @@ import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.copy.CopyHelpers;
 import eu.unifiedviews.helpers.dataunit.dataset.DatasetBuilder;
@@ -142,8 +137,9 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
         final List<FilesDataUnit.Entry> files = FaultToleranceUtils.getEntries(faultTolerance, filesInput, FilesDataUnit.Entry.class);
 
         // If true then next file is processed.
-        boolean shouldContinue = true;
+        int index = 1;
         for (final FilesDataUnit.Entry entry : files) {
+            LOG.info("Processing file {}/{}", index++, files.size());
             if (ctx.canceled()) {
                 throw ContextUtils.dpuExceptionCancelled(ctx);
             }
