@@ -24,7 +24,7 @@
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.trandformer.sparqlselect</dpu.package>
 		<dpu.mainClass>SparqlSelect</dpu.mainClass>
-        <uv.helpers.version>[2.0.0-SNAPSHOT,3.0.0)</uv.helpers.version>
+        <uv.helpers.version>[2.0.0,3.0.0)</uv.helpers.version>
 	</properties>
 
 	<dependencies>

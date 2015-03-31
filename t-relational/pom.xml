@@ -18,7 +18,7 @@
     <dpu.package>eu.unifiedviews.plugins.transformer.relational</dpu.package>
     <dpu.mainClass>Relational</dpu.mainClass>
     <junit.version>4.12</junit.version>
-    <uv.helpers.version>[2.0.0-SNAPSHOT,3.0.0)</uv.helpers.version>
+    <uv.helpers.version>[2.0.0,3.0.0)</uv.helpers.version>
     <module-test.version>2.0.0</module-test.version>
   </properties>
   

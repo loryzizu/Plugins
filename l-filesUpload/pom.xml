@@ -16,7 +16,7 @@
     <properties>
         <dpu.package>eu.unifiedviews.plugins.loader.filesupload</dpu.package>
         <dpu.mainClass>FilesUpload</dpu.mainClass>
-        <uv.helpers.version>[2.0.0-SNAPSHOT,3.0.0)</uv.helpers.version>
+        <uv.helpers.version>[2.0.0,3.0.0)</uv.helpers.version>
         <!-- Setting for commons-vfs2. -->
         <embed.transitive>true</embed.transitive>
         <osgi.import.package>!com.ibm.uvm.tools,!com.sun.jdmk.comm,!javax.jmdns,!javax.jms,!sun.security.util,</osgi.import.package>
