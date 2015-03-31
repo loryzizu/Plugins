@@ -1,9 +1,8 @@
 package eu.unifiedviews.plugins.transformer.filestordft;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openrdf.model.Literal;
@@ -20,8 +19,6 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.ParseErrorLogger;
 import org.slf4j.Logger;
@@ -34,21 +31,23 @@ import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.copyhelper.CopyHelpers;
+import eu.unifiedviews.helpers.dataunit.copy.CopyHelpers;
 import eu.unifiedviews.helpers.dataunit.dataset.DatasetBuilder;
-import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.Resource;
-import eu.unifiedviews.helpers.dataunit.resourcehelper.ResourceHelpers;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dataunit.files.FilesVocabulary;
+import eu.unifiedviews.helpers.dataunit.metadata.MetadataUtils;
+import eu.unifiedviews.helpers.dataunit.resource.Resource;
+import eu.unifiedviews.helpers.dataunit.resource.ResourceHelpers;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
 
 @DPU.AsTransformer
-public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig_V1> implements ConfigDialogProvider<FilesToRDFConfig_V1> {
+public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FilesToRDF.class);
 
@@ -58,24 +57,30 @@ public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig_V1> implements
     @DataUnit.AsOutput(name = "rdfOutput")
     public WritableRDFDataUnit rdfOutput;
 
+    @ExtensionInitializer.Init
+    public FaultTolerance faultTolerance;
+
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.filestordft.FilesToRDFConfig__V1")
+    public ConfigurationUpdate _ConfigurationUpdate;
+
     private static final String SYMBOLIC_NAME_BINDING = "symbolicName";
 
     private static final String DATA_GRAPH_BINDING = "dataGraph";
 
-    private static final String UPDATE_EXISTING_GRAPH_FROM_FILE =
-            "DELETE "
-                    + "{ "
-                    + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o "
-                    + "} "
-                    + "INSERT "
-                    + "{ "
-                    + "?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?" + DATA_GRAPH_BINDING + " "
-                    + "} "
-                    + "WHERE "
-                    + "{"
-                    + "?s <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . "
-                    + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o "
-                    + "}";
+    private static final String UPDATE_EXISTING_GRAPH_FROM_FILE
+            = "DELETE "
+            + "{ "
+            + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o "
+            + "} "
+            + "INSERT "
+            + "{ "
+            + "?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?" + DATA_GRAPH_BINDING + " "
+            + "} "
+            + "WHERE "
+            + "{"
+            + "?s <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . "
+            + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o "
+            + "}";
 
     /**
      * True if at least one file has been skipped during conversion.
@@ -85,27 +90,19 @@ public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig_V1> implements
     protected AtomicInteger atomicInteger = new AtomicInteger();
 
     public FilesToRDF() {
-        super(FilesToRDFConfig_V1.class);
+        super(FilesToRDFVaadinDialog.class, ConfigHistory.noHistory(FilesToRDFConfig_V1.class));
     }
 
     @Override
-    public void execute(DPUContext dpuContext) throws DPUException, InterruptedException {
+    protected void innerExecute() throws DPUException {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.format("Configuration: commitSize: %d", config.getCommitSize());
-        dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
+        ContextUtils.sendInfo(ctx, shortMessage, longMessage);
+
         LOG.info(shortMessage + " " + longMessage);
-
-        VirtualPathHelper inputVirtualPathHelper = VirtualPathHelpers.create(filesInput);
-        RepositoryConnection connection = null;
-        final Iterator<FilesDataUnit.Entry> filesIteration;
-        try {
-            filesIteration = FilesHelper.getFiles(filesInput).iterator();
-        } catch (DataUnitException ex) {
-            dpuContext.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "Can't get file iterator.", ex);
-            return;
-        }
-
         final URI globalOutputGraphUri;
+
+        // Create output graph if we are in M->1 mode.
         if (FilesToRDFConfig_V1.USE_FIXED_SYMBOLIC_NAME.equals(config.getOutputNaming())) {
             // Use given value from config as output graph name.
             try {
@@ -116,105 +113,111 @@ public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig_V1> implements
                 }
                 LOG.info("Output symbolic name: {}", value);
                 globalOutputGraphUri = rdfOutput.addNewDataGraph(value);
-                Resource resource = ResourceHelpers.getResource(rdfOutput, value);
-                Date now = new Date();
-                resource.setLast_modified(now);
-                resource.setCreated(now);
-                ResourceHelpers.setResource(rdfOutput, value, resource);
+                final String outputSymbolicName = value;
+                faultTolerance.execute(new FaultTolerance.Action() {
+
+                    @Override
+                    public void action() throws Exception {
+                        Resource resource = ResourceHelpers.getResource(rdfOutput, outputSymbolicName);
+                        Date now = new Date();
+                        resource.setLast_modified(now);
+                        resource.setCreated(now);
+                        ResourceHelpers.setResource(rdfOutput, outputSymbolicName, resource);
+                    }
+                });
+
             } catch (DataUnitException ex) {
-                dpuContext.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "Can't create output graph.", ex);
-                return;
+                throw ContextUtils.dpuException(ctx, ex, "Can't create output graph.");
             }
         } else {
             globalOutputGraphUri = null;
         }
 
-        try {
+        // Load files.
+        final List<FilesDataUnit.Entry> files = FaultToleranceUtils.getEntries(faultTolerance, filesInput, FilesDataUnit.Entry.class);
 
-            if (!filesIteration.hasNext()) {
-                return;
+        // If true then next file is processed.
+        int index = 1;
+        for (final FilesDataUnit.Entry entry : files) {
+            LOG.info("Processing file {}/{}", index++, files.size());
+            if (ctx.canceled()) {
+                throw ContextUtils.dpuExceptionCancelled(ctx);
             }
-            // If true then next file is processed.
-            boolean shouldContinue = true;
 
-            while (filesIteration.hasNext() && !dpuContext.canceled() && shouldContinue) {
-                connection = rdfOutput.getConnection();
-                FilesDataUnit.Entry entry = filesIteration.next();
+            // Set output graph name.
+            final URI outputGraphUri;
+            if (globalOutputGraphUri == null) {
+                faultTolerance.execute(new FaultTolerance.Action() {
 
-                RDFInserter rdfInserter = new CancellableCommitSizeInserter(connection, config.getCommitSize(), dpuContext);
-                // Set output graph name.
-                if (globalOutputGraphUri == null) {
-                    CopyHelpers.copyMetadata(entry.getSymbolicName(), filesInput, rdfOutput);
-                    URI localOutputGraphUri = new URIImpl(rdfOutput.getBaseDataGraphURI().stringValue() + "/" + String.valueOf(atomicInteger.getAndIncrement()));
-                    updateExistingDataGraphFromFile(entry.getSymbolicName(), localOutputGraphUri);
-                    rdfInserter.enforceContext(localOutputGraphUri);
-                    Resource resource = ResourceHelpers.getResource(rdfOutput, entry.getSymbolicName());
-                    Date now = new Date();
-                    resource.setLast_modified(now);
-                    ResourceHelpers.setResource(rdfOutput, entry.getSymbolicName(), resource);
-                } else {
-                    rdfInserter.enforceContext(globalOutputGraphUri);
-                }
+                    @Override
+                    public void action() throws Exception {
+                        CopyHelpers.copyMetadata(entry.getSymbolicName(), filesInput, rdfOutput);
+                    }
+                });
 
-                ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(connection.getParserConfig(), connection.getValueFactory());
-                try {
-                    LOG.debug("Starting extraction of file on '{}' with uri: '{}'", entry.getSymbolicName(), entry.getFileURIString());
+                outputGraphUri = faultTolerance.execute(new FaultTolerance.ActionReturn<URI>() {
 
-                    RDFFormat format;
-                    String inputVirtualPath = inputVirtualPathHelper.getVirtualPath(entry.getSymbolicName());
+                    @Override
+                    public URI action() throws Exception {
+                        return new URIImpl(rdfOutput.getBaseDataGraphURI().stringValue() + "/" + String.valueOf(atomicInteger.getAndIncrement()));
+                    }
+                });
+
+                faultTolerance.execute(new FaultTolerance.Action() {
+
+                    @Override
+                    public void action() throws Exception {                        
+                        updateExistingDataGraphFromFile(entry.getSymbolicName(), outputGraphUri);
+                    }
+                });
+
+                faultTolerance.execute(new FaultTolerance.Action() {
+
+                    @Override
+                    public void action() throws Exception {
+                        Resource resource = ResourceHelpers.getResource(rdfOutput, entry.getSymbolicName());
+                        Date now = new Date();
+                        resource.setLast_modified(now);
+                        ResourceHelpers.setResource(rdfOutput, entry.getSymbolicName(), resource);
+                    }
+                });
+            } else {
+                outputGraphUri = globalOutputGraphUri;
+            }
+            // Determine format.
+            final RDFFormat format = faultTolerance.execute(new FaultTolerance.ActionReturn<RDFFormat>() {
+
+                @Override
+                public RDFFormat action() throws Exception {
+                    String inputVirtualPath = MetadataUtils.get(rdfOutput, entry, FilesVocabulary.UV_VIRTUAL_PATH);
                     if (inputVirtualPath != null) {
-                        format = Rio.getParserFormatForFileName(inputVirtualPath);
+                        return Rio.getParserFormatForFileName(inputVirtualPath);
                     } else {
-                        format = Rio.getParserFormatForFileName(entry.getSymbolicName());
+                        return Rio.getParserFormatForFileName(entry.getSymbolicName());
                     }
-                    loader.load(new File(java.net.URI.create(entry.getFileURIString())), null, format, rdfInserter, new ParseErrorLogger());
+                }
+            });
 
-                    LOG.debug("Finished extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFileURIString());
-                } catch (RDFHandlerException | RDFParseException | IOException ex) {
-                    // Problem with a single file, decide what next based on configuration.
-                    switch (config.getFatalErrorHandling()) {
-                        case FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING:
-                            LOG.error("Symbolic name '{}' with path '{}'", entry.getSymbolicName(), entry.getFileURIString());
-                            fileSkipped = true;
-                            break;
-                        case FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING:
-                        default:
-                            dpuContext.sendMessage(DPUContext.MessageType.ERROR, "Error when extracting.", "Symbolic name " + entry.getSymbolicName() + " path URI " + entry.getFileURIString(), ex);
-                            // And we need to stop the execution, as we got finally blocks we can just jump out.
-                            shouldContinue = false;
-                            break;
-                    }
-                } finally {
-                    // If we get here, null pointer exception would already been thrown, so connection != null.
-                    try {
-                        connection.close();
-                    } catch (RepositoryException ex) {
-                        dpuContext.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
-                    }
+            LOG.debug("Starting extraction of file: {}", entry);
+            faultTolerance.execute(rdfOutput, new FaultTolerance.ConnectionAction() {
+
+                @Override
+                public void action(RepositoryConnection connection) throws Exception {
+                    RDFInserter rdfInserter = new CancellableCommitSizeInserter(connection,
+                            config.getCommitSize(), ctx);
+                    rdfInserter.enforceContext(outputGraphUri);
+                    ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(
+                            connection.getParserConfig(), connection.getValueFactory());
+                    loader.load(new File(java.net.URI.create(entry.getFileURIString())), null, format,
+                            rdfInserter, new ParseErrorLogger());
                 }
-            }
-        } catch (DataUnitException ex) {
-            dpuContext.sendMessage(DPUContext.MessageType.ERROR, "Error when extracting.", "", ex);
-        } finally {
-            // This close connection if throws methods before inner try-catch block.
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (RepositoryException ex) {
-                    dpuContext.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
-                }
-            }
-            inputVirtualPathHelper.close();
+            });
+            LOG.debug("Finished extraction of file: {}", entry);
         }
         // Publish messsage.
         if (fileSkipped) {
-            dpuContext.sendMessage(DPUContext.MessageType.WARNING, "Some files has been skipped during conversion.", "See logs for more details.");
+            ContextUtils.sendWarn(ctx, "Some files has been skipped during conversion.", "See logs for more details.");
         }
-    }
-
-    @Override
-    public AbstractConfigDialog<FilesToRDFConfig_V1> getConfigurationDialog() {
-        return new FilesToRDFVaadinDialog();
     }
 
     private void updateExistingDataGraphFromFile(String symbolicName, URI newDataGraphURI) throws DataUnitException {
