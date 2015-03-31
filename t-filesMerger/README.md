@@ -36,7 +36,7 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|1.6.1            |Use SPARQL to merge metadata. Moved to plugins repository.|                            
+|2.0.0            |Update to helpers 2.0.0. Use SPARQL to merge metadata. Moved to plugins repository.|                            
 |1.3.1            |N/A                        |
 
 

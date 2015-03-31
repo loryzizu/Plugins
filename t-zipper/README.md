@@ -34,7 +34,7 @@
 
 |Version |Release notes |
 |--------|--------------|
-|1.6.1   |Update for helpers 2.0.0 |
+|2.0.0   |Update for helpers 2.0.0 |
 |1.3.2   |N/A         |
 
 ***
