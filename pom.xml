@@ -11,14 +11,10 @@
     <modules>
         <!-- EXTRACTORS -->
         <module>e-filesDownload</module>
-        <module>e-filesFromLocal</module>
         <module>e-rdfFromSparql</module>
-        <module>e-httpDownload</module>
-        <module>e-uploadToFiles</module>
         <module>e-relationalFromSql</module>
 
 		<!-- TRANSFORMERS -->
-		<module>t-sparql</module>
 		<module>t-sparqlSelect</module>
 		<module>t-xslt</module>
 		<module>t-filesRenamer</module>
@@ -37,8 +33,6 @@
 
 		<!-- LOADERS -->
 		<module>l-rdfToSparql</module>
-		<module>l-filesToLocalFS</module>
-		<module>l-filesToScp</module>
 		<module>l-filesToVirtuoso</module>
 		<module>l-filesUpload</module>
 		<module>l-relationalToSql</module>
