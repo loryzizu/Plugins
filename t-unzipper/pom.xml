@@ -24,12 +24,10 @@
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.transformer.unzipper</dpu.package>
 		<dpu.mainClass>UnZipper</dpu.mainClass>
-        <uv.helpers.version>[2.0.0,3.0.0)</uv.helpers.version>
         <!-- - - - -->
 		<mockito.version>1.10.8</mockito.version>
 		<powermock.version>1.6.1</powermock.version>
 		<junit.version>4.12</junit.version>
-        <module-test.version>2.0.0</module-test.version>
 	</properties>
 
 	<dependencies>
@@ -44,13 +42,11 @@
         <dependency>
             <groupId>eu.unifiedviews</groupId>
             <artifactId>uv-dataunit-helpers</artifactId>
-            <version>${uv.helpers.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>eu.unifiedviews</groupId>
             <artifactId>uv-dpu-helpers</artifactId>
-            <version>${uv.helpers.version}</version>
             <scope>compile</scope>
         </dependency>
         <!-- - - - -->
@@ -63,7 +59,6 @@
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>module-test</artifactId>
-			<version>${module-test.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

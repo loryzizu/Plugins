@@ -15,12 +15,9 @@
     <properties>
         <dpu.package>eu.unifiedviews.plugins.extractor.filesdownload</dpu.package>
         <dpu.mainClass>FilesDownload</dpu.mainClass>
-        <uv.helpers.version>[2.0.0,3.0.0)</uv.helpers.version>
         <!-- Setting for commons-vfs2. -->
         <osgi.import.package>!com.ibm.uvm.tools,!com.sun.jdmk.comm,!javax.jmdns,!javax.jms,!sun.security.util,</osgi.import.package>
         <embed.transitive>true</embed.transitive>
-        <!-- - - - -->
-        <module-test.version>2.0.0</module-test.version>
     </properties>
 
     <repositories>
@@ -117,13 +114,11 @@
         <dependency>
             <groupId>eu.unifiedviews</groupId>
             <artifactId>uv-dataunit-helpers</artifactId>
-            <version>${uv.helpers.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>eu.unifiedviews</groupId>
             <artifactId>uv-dpu-helpers</artifactId>
-            <version>${uv.helpers.version}</version>
             <scope>compile</scope>
         </dependency>
         <!-- UNIT Test dependencies. -->
@@ -137,7 +132,6 @@
         <dependency>
             <groupId>eu.unifiedviews</groupId>
             <artifactId>module-test</artifactId>
-            <version>${module-test.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

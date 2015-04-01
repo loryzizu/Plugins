@@ -24,7 +24,6 @@
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.transformer.metadata</dpu.package>
 		<dpu.mainClass>Metadata</dpu.mainClass>
-        <uv.helpers.version>[2.0.0,3.0.0)</uv.helpers.version>
 	</properties>
 
 	<dependencies>
@@ -39,13 +38,11 @@
         <dependency>
             <groupId>eu.unifiedviews</groupId>
             <artifactId>uv-dataunit-helpers</artifactId>
-            <version>${uv.helpers.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>eu.unifiedviews</groupId>
             <artifactId>uv-dpu-helpers</artifactId>
-            <version>${uv.helpers.version}</version>
             <scope>compile</scope>
         </dependency>
 	</dependencies>

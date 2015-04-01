@@ -18,11 +18,9 @@
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.extractor.relationalfromsql</dpu.package>
 		<dpu.mainClass>RelationalFromSql</dpu.mainClass>
-		<uv.helpers.version>[2.0.0,3.0.0)</uv.helpers.version>
 		<mockito.version>1.10.8</mockito.version>
 		<powermock.version>1.6.1</powermock.version>
 		<junit.version>4.12</junit.version>
-		<module-test.version>2.0.0</module-test.version>
 		<embed.transitive>true</embed.transitive>
 		<osgi.import.package>!com.sun.jdi.*,!com.sun.msv.*,!com.sun.org.apache.xerces.*,!org.jboss.*,!org.jdom,!org.jdom.input,!org.relaxng.datatype,!sun.io,!com.sun.security.*,!oracle.i18n.*,!oracle.ons,!oracle.security.pki,!oracle.xdb,!oracle.xml.*,!org.apache.log4j,!org.objectweb.asm,!sun.security.*,!com.oracle.common.*,!com.sun.jna.*,!waffle.windows.auth.*,*</osgi.import.package>
 	</properties>
@@ -129,14 +127,12 @@
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-helpers</artifactId>
-			<version>${uv.helpers.version}</version>
 			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-helpers</artifactId>
-			<version>${uv.helpers.version}</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -144,7 +140,6 @@
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>module-test</artifactId>
-			<version>${module-test.version}</version>
 			<scope>test</scope>
 		</dependency>
 
