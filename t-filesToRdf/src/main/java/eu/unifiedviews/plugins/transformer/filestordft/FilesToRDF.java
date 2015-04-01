@@ -1,6 +1,7 @@
 package eu.unifiedviews.plugins.transformer.filestordft;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,6 +20,8 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.ParseErrorLogger;
 import org.slf4j.Logger;
@@ -208,8 +211,22 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
                     rdfInserter.enforceContext(outputGraphUri);
                     ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(
                             connection.getParserConfig(), connection.getValueFactory());
-                    loader.load(new File(java.net.URI.create(entry.getFileURIString())), null, format,
+                    try {
+                        loader.load(new File(java.net.URI.create(entry.getFileURIString())), null, format,
                             rdfInserter, new ParseErrorLogger());
+                    } catch (IOException | RDFHandlerException | RDFParseException ex) {
+                        switch (config.getFatalErrorHandling()) {
+                            case FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING:
+                                LOG.error("Skipping file name '{}' with path '{}'",
+                                        entry.getSymbolicName(),
+                                        entry.getFileURIString());
+                                fileSkipped = true;
+                                break;
+                            case FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING:
+                            default:
+                                throw ex;
+                        }
+                    }
                 }
             });
             LOG.debug("Finished extraction of file: {}", entry);
