@@ -48,7 +48,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>eu.unifiedviews</groupId>
+			<groupId>cz.cuni.mff.xrg.odcs</groupId>
 			<artifactId>module-test</artifactId>
 			<version>${module-test.version}</version>
 			<scope>test</scope>
