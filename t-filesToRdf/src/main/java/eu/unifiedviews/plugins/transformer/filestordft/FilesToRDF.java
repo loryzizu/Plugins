@@ -175,7 +175,7 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
 
                     @Override
                     public void action() throws Exception {
-                        Resource resource = ResourceHelpers.getResource(rdfOutput, entry.getSymbolicName());
+                        Resource resource = ResourceHelpers.getResource(filesInput, entry.getSymbolicName());
                         Date now = new Date();
                         resource.setLast_modified(now);
                         ResourceHelpers.setResource(rdfOutput, entry.getSymbolicName(), resource);
@@ -189,7 +189,7 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
 
                 @Override
                 public RDFFormat action() throws Exception {
-                    String inputVirtualPath = MetadataUtils.get(rdfOutput, entry, FilesVocabulary.UV_VIRTUAL_PATH);
+                    String inputVirtualPath = MetadataUtils.get(filesInput, entry, FilesVocabulary.UV_VIRTUAL_PATH);
                     if (inputVirtualPath != null) {
                         return Rio.getParserFormatForFileName(inputVirtualPath);
                     } else {
