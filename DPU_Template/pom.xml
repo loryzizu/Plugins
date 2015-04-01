@@ -91,7 +91,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>cz.cuni.mff.xrg.odcs</groupId>
+			<groupId>eu.unifiedviews</groupId>
 			<artifactId>module-test</artifactId>
 			<version>${module-test.version}</version>
 			<scope>test</scope>
