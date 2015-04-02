@@ -39,8 +39,7 @@
 
 |Version    |Release notes                                   |
 |-----------|------------------------------------------------|
-|2.0.1      |Bug fixing, added some help into about tab.     |
-|2.0.0      |Update for new helpers. SPARQL used to transform file name. Broken backward compatibility. |
+|2.0.0      |Update for new helpers. SPARQL used to transform file name. Broken backward compatibility. Bug fixing, added help info to about tab |
 |1.5.0      |Added support for renaming against the mask.    |                                
 |1.4.0      |Small bug fixes.                                |                                
 |1.5.0      |Initial version, appends .ttl extension.        |                                
