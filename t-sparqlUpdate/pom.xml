@@ -8,7 +8,7 @@
     </parent>
 
     <groupId>eu.unifiedviews.plugins</groupId>
-    <artifactId>t-sparqlUpdate</artifactId>
+    <artifactId>uv-t-sparqlUpdate</artifactId>
     <version>2.0.0</version>
     <packaging>bundle</packaging>
     <name>T-SparqlUpdate</name>
