@@ -11,7 +11,6 @@
     <modules>
         <!-- EXTRACTORS -->
         <module>e-filesDownload</module>
-        <module>e-rdfFromSparql</module>
         <module>e-relationalFromSql</module>
 
 		<!-- TRANSFORMERS -->
@@ -32,7 +31,6 @@
         <module>t-filterValidXml</module>
 
 		<!-- LOADERS -->
-		<module>l-rdfToSparql</module>
 		<module>l-filesToVirtuoso</module>
 		<module>l-filesUpload</module>
 		<module>l-relationalToSql</module>
