@@ -18,6 +18,15 @@
         <dpu.package>cz.cuni.mff.xrg.uv.transformer.tabular</dpu.package>
         <dpu.mainClass>Tabular</dpu.mainClass>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>maven.eea.sk</id>
+            <name>maven.eea.sk-public</name>
+            <url>http://maven.eea.sk/artifactory/public/</url>
+        </repository>
+    </repositories>
+
 	
     <dependencies>
         <dependency>
