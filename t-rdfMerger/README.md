@@ -36,8 +36,8 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|1.3.2            |N/A                         |                                
-|1.6.1            |SPARQL is used to copy metadata. DPU moved from Core to Plugins repository. |
+|2.0.0            |SPARQL is used to copy metadata. DPU moved from Core to Plugins repository. |
+|1.3.2      |N/A           |
 
 ***
 

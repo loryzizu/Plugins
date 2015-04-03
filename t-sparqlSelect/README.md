@@ -38,7 +38,8 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|1.5.1              |Imported from the repository https://github.com/mff-uk/DPUs.                         |
+|2.0.0              |Updated to helpers 2.0.0                         |
+|1.3.2               |N/A          |
 
 ***
 

@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |L-FilesFindAndReplace                                          |
 |**Description:**              |Finds and replaces strings (patterns) in files                 |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
 |**DPU class name:**           |FilesFindAndReplace                                            | 
 |**Configuration class name:** |FilesFindAndReplaceConfig_V1                                   |
@@ -37,7 +38,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|1.0.0              |First release                                   |                                
+|2.0.0              |Initial release, using helpers 2.0.0                                   |                                
 
 
 ***

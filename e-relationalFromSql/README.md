@@ -53,7 +53,7 @@
 
 |Version          |Release notes                                                                                   |
 |-----------------|------------------------------------------------------------------------------------------------|
-|1.0.0            |New features, user-friendly GUI, support for MS SQL, Oracle, MySQL, Update for helpers 2.0.0    |
+|2.0.0            |New features, user-friendly GUI, support for MS SQL, Oracle, MySQL, Update for helpers 2.0.0    |
 | 0.9.0   | Version for evaluation, compatible with API v1.3.0                                                                                             |
 
 

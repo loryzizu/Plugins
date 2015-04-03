@@ -40,7 +40,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|1.0.0              |initial release                                 |                                
+|2.0.0              |initial release, uses version 2.0.0 of helpers  |                                
 
 
 ***
