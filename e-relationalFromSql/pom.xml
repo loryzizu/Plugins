@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>eu.unifiedviews</groupId>
+		<artifactId>uv-pom-dpu</artifactId>
+		<version>2.0.0</version>
+		<relativePath />
+	</parent>
+
+    <groupId>eu.unifiedviews.plugins</groupId>
+	<artifactId>uv-e-relationalFromSql</artifactId>
+	<version>2.0.0</version>
+	<packaging>bundle</packaging>
+	<name>E-RelationalFromSql</name>
+	<description>Extracts data from relational database using SQL queries and stores them into internal data unit relational database</description>
+
+	<properties>
+		<dpu.package>eu.unifiedviews.plugins.extractor.relationalfromsql</dpu.package>
+		<dpu.mainClass>RelationalFromSql</dpu.mainClass>
+		<mockito.version>1.10.8</mockito.version>
+		<powermock.version>1.6.1</powermock.version>
+		<junit.version>4.12</junit.version>
+		<embed.transitive>true</embed.transitive>
+		<osgi.import.package>!com.sun.jdi.*,!com.sun.msv.*,!com.sun.org.apache.xerces.*,!org.jboss.*,!org.jdom,!org.jdom.input,!org.relaxng.datatype,!sun.io,!com.sun.security.*,!oracle.i18n.*,!oracle.ons,!oracle.security.pki,!oracle.xdb,!oracle.xml.*,!org.apache.log4j,!org.objectweb.asm,!sun.security.*,!com.oracle.common.*,!com.sun.jna.*,!waffle.windows.auth.*,*</osgi.import.package>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4-1200-jdbc41</version>
+		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.34</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc7</artifactId>
+			<version>12.1.0.2.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>sqljdbc4</artifactId>
+			<version>4.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-c3p0</artifactId>
+			<version>4.0.0.CR2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.1.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>antlr</groupId>
+			<artifactId>antlr</artifactId>
+			<version>2.7.7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.12.1.GA</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml</groupId>
+			<artifactId>classmate</artifactId>
+			<version>0.8.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant</artifactId>
+			<version>1.9.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>pull-parser</groupId>
+			<artifactId>pull-parser</artifactId>
+			<version>2.1.10</version>
+		</dependency>
+
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.io7m.xom</groupId>
+			<artifactId>xom</artifactId>
+			<version>1.2.10</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.bcel</groupId>
+			<artifactId>bcel</artifactId>
+			<version>5.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>jakarta-regexp</groupId>
+			<artifactId>jakarta-regexp</artifactId>
+			<version>1.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>xml-resolver</groupId>
+			<artifactId>xml-resolver</artifactId>
+			<version>1.2</version>
+		</dependency>
+
+		<!-- UnifiedViews helpers. -->
+
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-helpers</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dpu-helpers</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Core UnifiedViews testing support. -->
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>module-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- JUnit tests dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<!-- <scope>test</scope> -->
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.182</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>maven.eea.sk</id>
+			<name>maven.eea.sk-public</name>
+			<url>http://maven.eea.sk/artifactory/public/</url>
+		</repository>
+	</repositories>
+
+</project>

@@ -1,42 +1,56 @@
 package eu.unifiedviews.plugins.dputemplate;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import eu.unifiedviews.dpu.DPU;
+
 /**
- * Put your DPU's configuration here.
- * You can optionally implement {@link #isValid()} to provide possibility
- * to validate the configuration.
+ * We put {@link DPU} configuration here. It has to be POJO with getters and setters.
+ *
+ * Try to avoid using complex types in fields, use {@link Long}, {@link String}, {@link java.util.Date}
+ * where you can.
+ *
  * <b>This class must have default (parameter less) constructor!</b>
  */
 public class DPUTemplateConfig_V1 {
 
-    private int width;
+    /**
+     * We should kindly provide reasonable default, just in case, user uses {@link DPU} but does not open configuration dialog at all
+     */
+    private String outputFilename = "output.csv";
 
-    private int height;
+    /**
+     * Should we just skip the graph is some error occurs or should {@link DPU} execution fail?
+     */
+    private Boolean skipGraphOnError = Boolean.FALSE;
 
-    // DPUTemplateConfig must provide public non-parametric constructor
-    public DPUTemplateConfig_V1() {
-        width = 100;
-        height = 100;
+    /**
+     * Getter for our property
+     * @return outputFilename
+     */
+    public String getOutputFilename() {
+        return outputFilename;
     }
 
-    public DPUTemplateConfig_V1(int w, int h) {
-        width = w;
-        height = h;
+    /**
+     * Setter for our property
+     * @param outputFilename new value
+     */
+    public void setOutputFilename(String outputFilename) {
+        this.outputFilename = outputFilename;
     }
 
-    public int getWidth() {
-        return width;
+    public Boolean getSkipGraphOnError() {
+        return skipGraphOnError;
     }
 
-    public int getHeight() {
-        return height;
+    public void setSkipGraphOnError(Boolean skipGraphOnError) {
+        this.skipGraphOnError = skipGraphOnError;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
     }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
 }

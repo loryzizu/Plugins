@@ -3,6 +3,7 @@ package eu.unifiedviews.plugins.transformer.unzipper;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Iterator;
+import java.util.List;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -11,26 +12,24 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.helpers.dataunit.files.FilesDataUnitUtils;
+import eu.unifiedviews.helpers.dataunit.metadata.MetadataUtils;
 import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelper;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
 
-/**
- * @author Škoda Petr
- */
 @DPU.AsTransformer
-public class UnZipper extends ConfigurableBase<UnZipperConfig_V1>
-        implements ConfigDialogProvider<UnZipperConfig_V1> {
+public class UnZipper extends AbstractDpu<UnZipperConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(UnZipper.class);
 
@@ -40,139 +39,107 @@ public class UnZipper extends ConfigurableBase<UnZipperConfig_V1>
     @DataUnit.AsOutput(name = "output")
     public WritableFilesDataUnit outFilesData;
 
-    private DPUContext context;
+    @ExtensionInitializer.Init
+    public FaultTolerance faultTolerance;
+
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.unzipper.UnZipperConfig__V1")
+    public ConfigurationUpdate _ConfigurationUpdate;
 
     public UnZipper() {
-        super(UnZipperConfig_V1.class);
+        super(UnZipperVaadinDialog.class, ConfigHistory.noHistory(UnZipperConfig_V1.class));
     }
 
     @Override
-    public void execute(DPUContext context) throws DPUException {
-        this.context = context;
-
-        final Iterator<FilesDataUnit.Entry> filesIteration;
-        try {
-            filesIteration = FilesHelper.getFiles(inFilesData).iterator();
-        } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "Can't get file iterator.", ex);
-            return;
+    protected void innerExecute() throws DPUException {
+        // Older version of unzipper does not have configuration at all.
+        if (config == null) {
+            config = new UnZipperConfig_V1();
         }
+        // Prepare root output directory.
+        final File baseTargetDirectory = faultTolerance.execute(new FaultTolerance.ActionReturn<File>() {
 
-        final File baseTargetDirectory;
-        try {
-            baseTargetDirectory = new File(java.net.URI.create(outFilesData.getBaseFileURIString()));
-        } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR,
-                    "DPU Failed", "Can't get base output directory.", ex);
-            return;
-        }
-
-        boolean symbolicNameUsed = false;
-
-        try {
-            while (!context.canceled() && filesIteration.hasNext()) {
-                FilesDataUnit.Entry entry = filesIteration.next();
-                //
-                // Prepare source/target file/directory
-                //
-                final File sourceFile = new File(java.net.URI.create(entry.getFileURIString()));
-
-                String zipRelativePath = VirtualPathHelpers.getVirtualPath(inFilesData, entry.getSymbolicName());
-                if (zipRelativePath == null) {
-                    // use symbolicv name
-                    zipRelativePath = entry.getSymbolicName();
-                    if (!symbolicNameUsed) {
-                        // first usage
-                        LOG.warn("Not all input files use VirtualPath, symbolic name is used instead.");
-                    }
-                    symbolicNameUsed = true;
-                }
-
-                final File targetDirectory = new File(baseTargetDirectory, zipRelativePath);
-                //
-                // Unzip
-                //
-                if (!unzip(sourceFile, targetDirectory)) {
-                    // failure
-                    break;
-                }
-                //
-                // Scan for new files and add them
-                //
-                scanDirectory(targetDirectory, entry.getSymbolicName());
-                //
-                // Copy metadata
-                //
-
-                //CopyHelpers.copyMetadata(entry.getSymbolicName(), inFilesData, outFilesData);
-                // TODO Above command copy whole file (is visible for next DPU)
-                // we should use something else and add triple to new file
-                // about source
+            @Override
+            public File action() throws Exception {
+                return new File(java.net.URI.create(outFilesData.getBaseFileURIString()));
             }
-        } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR,
-                    "Problem with data unit.", "", ex);
-        } finally {
+        }, "unzipper.errors.file.outputdir");
+        // Get list of files to unzip.
+        final List<FilesDataUnit.Entry> files = FaultToleranceUtils.getEntries(faultTolerance, inFilesData,
+            FilesDataUnit.Entry.class);
+
+        LOG.info(">> {}", files.size());
+
+        int counter = 0;
+        for (final FilesDataUnit.Entry fileEntry : files) {
+            LOG.info("Processing: {}/{}", counter++, files.size());
+            if (ctx.canceled()) {
+                return;
+            }
+            final File sourceFile = FaultToleranceUtils.asFile(faultTolerance, fileEntry);
+            // Get virtual path.
+            final String zipRelativePath = faultTolerance.execute(new FaultTolerance.ActionReturn<String>() {
+
+                @Override
+                public String action() throws Exception {
+                    return MetadataUtils.getFirst(inFilesData, fileEntry, VirtualPathHelper.PREDICATE_VIRTUAL_PATH);
+                }
+            }, "unzipper.error.virtualpath.get.failed");
+            if (zipRelativePath == null) {
+                throw ContextUtils.dpuException(ctx, "unzipper.error.missing.virtual.path", fileEntry.toString());
+            }
+            // Unzip.
+            final File targetDirectory = new File(baseTargetDirectory, zipRelativePath);
+            unzip(sourceFile, targetDirectory);
+            // Scan for new files.
+            scanDirectory(targetDirectory, zipRelativePath);
         }
     }
 
-    private void scanDirectory(File directory, String sourceSymbolicName) throws DataUnitException {
+    /**
+     * Scan given directory for files and add then to {@link #outFilesData}.
+     *
+     * @param directory
+     * @throws DPUException
+     */
+    private void scanDirectory(File directory, String pathPrefix) throws DPUException {
         final Path directoryPath = directory.toPath();
         final Iterator<File> iter = FileUtils.iterateFiles(directory, null, true);
         while (iter.hasNext()) {
             final File newFile = iter.next();
             final String relativePath = directoryPath.relativize(newFile.toPath()).toString();
-            final String newSymbolicName;
+            final String newFileRelativePath;
             if (config.isNotPrefixed()) {
-                newSymbolicName = relativePath;
+                newFileRelativePath = relativePath;
             } else {
-                newSymbolicName = sourceSymbolicName + "/" + relativePath;
+                newFileRelativePath = pathPrefix + "/" + relativePath;
             }
-            // add file
-            outFilesData.addExistingFile(newSymbolicName, newFile.toURI().toString());
-            //
-            // add metadata
-            //
-            VirtualPathHelpers.setVirtualPath(outFilesData, newSymbolicName, newSymbolicName);
+            // Add file.
+            faultTolerance.execute(new FaultTolerance.Action() {
+
+                @Override
+                public void action() throws Exception {
+                    FilesDataUnitUtils.addFile(outFilesData, newFile, newFileRelativePath);
+                }
+            }, "unzipper.error.file.add");
         }
     }
 
     /**
-     * Unzip given file into given directory.
+     * Extract given zip file into given directory.
      *
      * @param zipFile
      * @param targetDirectory
-     * @return
+     * @throws DPUException
      */
-    private boolean unzip(File zipFile, File targetDirectory) {
+    private void unzip(File zipFile, File targetDirectory) throws DPUException{
         try {
             final ZipFile zip = new ZipFile(zipFile);
             if (zip.isEncrypted()) {
-                context.sendMessage(DPUContext.MessageType.ERROR, "Extraction failed.", "Zip file is encrypted.");
-                return false;
+                throw ContextUtils.dpuException(ctx, "unzipper.errors.file.encrypted");
             }
             zip.extractAll(targetDirectory.toString());
         } catch (ZipException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Extraction failed.", "", ex);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public AbstractConfigDialog<UnZipperConfig_V1> getConfigurationDialog() {
-        return new UnZipperVaadinDialog();
-    }
-
-    @Override
-    public void configureDirectly(UnZipperConfig_V1 newConfig) throws DPUConfigException {
-        // workaround as configuration was initialy part of the Unzipper
-        // so original version of this function throws an exception
-        if (newConfig != null) {
-            config = newConfig;
-        } else {
-            // ignore and use default
-            config = new UnZipperConfig_V1();
+            throw ContextUtils.dpuException(ctx, ex, "unzipper.errors.dpu.extraction.failed");
         }
     }
 

@@ -7,9 +7,10 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |T-FilesRenamer                                              |
 |**Description:**              |Renames files. |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
 |**DPU class name:**           |Renamer     | 
-|**Configuration class name:** |RenameConfig_V1                           |
+|**Configuration class name:** |RenameConfig_V2                           |
 |**Dialogue class name:**      |RenameVaadinDialog | 
 
 ***
@@ -19,7 +20,9 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|N/A |N/A  |
+|Pattern|Regular expression used to match string to replace in file name. This value is used as a replace part (second argument) in SPARQL REPLACE.|
+|Value to substitute|Value to substitute, can refer to groups that have been matched by 'Pattern' parameter. This value is used as a substitute part (third argument) in SPARQL REPLACE.|
+
 
 ***
 
@@ -27,16 +30,19 @@
 
 |Name                |Type       |DataUnit                         |Description                        |
 |--------------------|-----------|---------------------------------|-----------------------------------|
-|filesInput |i |FilesDataUnit  |File name to be modified.  |
-|filesOutput|o |FilesDataUnit  |File name after modification. | 
+|inFilesData  |i |FilesDataUnit  |File name to be modified.  |
+|outFilesData |o |FilesDataUnit  |File name after modification. | 
 
 ***
 
 ### Version history ###
 
-|Version            |Release notes                                   |
-|-------------------|------------------------------------------------|
-|1.3.1              |N/A                                             |                                
+|Version    |Release notes                                   |
+|-----------|------------------------------------------------|
+|2.0.0      |Update for new helpers. SPARQL used to transform file name. Broken backward compatibility. Bug fixing, added help info to about tab |
+|1.5.0      |Added support for renaming against the mask.    |                                
+|1.4.0      |Small bug fixes.                                |                                
+|1.5.0      |Initial version, appends .ttl extension.        |                                
 
 
 ***

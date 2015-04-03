@@ -1,56 +1,62 @@
-<?xml version="1.0"?>
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>eu.unifiedviews.plugins</groupId>
-		<artifactId>dpu-base-pom</artifactId>
-		<version>1.0.1</version>
-		<relativePath />
-	</parent>
-	<groupId>eu.unifiedviews.plugins</groupId>
-	<artifactId>uv-l-filesToVirtuoso</artifactId>
-	<name>L-FilesToVirtuoso</name>
-	<description>VirtuosoLoader issues Virtuoso internal functions to load directory of RDF data.</description>
-	<version>1.4.0</version>
-	<packaging>bundle</packaging>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>eu.unifiedviews</groupId>
+        <artifactId>uv-pom-dpu</artifactId>
+        <version>2.0.0</version>
+    </parent>
 
-	<repositories>
-		<repository>
-			<id>maven.eea.sk</id>
-			<name>maven.eea.sk-public</name>
-			<url>http://maven.eea.sk/artifactory/public/</url>
-		</repository>
-		<repository>
-			<id>cz.cuni.mff.ms.xrg.odcl</id>
-			<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/groups/public/</url>
-		</repository>
-	</repositories>
+    <groupId>eu.unifiedviews.plugins</groupId>
+    <artifactId>uv-l-filesToVirtuoso</artifactId>
+    <name>L-FilesToVirtuoso</name>
+    <description>VirtuosoLoader issues Virtuoso internal functions to load directory of RDF data.</description>
+    <version>2.0.0</version>
+    <packaging>bundle</packaging>
 
-	<properties>
-		<dpu.package>eu.unifiedviews.plugins.loader.filestovirtuoso</dpu.package>
-		<dpu.mainClass>VirtuosoLoader</dpu.mainClass>
-	</properties>
+    <repositories>
+        <repository>
+            <id>maven.eea.sk</id>
+            <name>maven.eea.sk-public</name>
+            <url>http://maven.eea.sk/artifactory/public/</url>
+        </repository>
+    </repositories>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.openlinksw</groupId>
-			<artifactId>virt_sesame2</artifactId>
-			<version>2.7</version>
-		</dependency>
+    <properties>
+        <dpu.package>eu.unifiedviews.plugins.loader.filestovirtuoso</dpu.package>
+        <dpu.mainClass>VirtuosoLoader</dpu.mainClass>
+    </properties>
 
-		<dependency>
-			<groupId>com.openlinksw</groupId>
-			<artifactId>virtjdbc</artifactId>
-			<version>4.1</version>
-		</dependency>
+    <dependencies>
+        <!-- Virtuoso. -->
+        <dependency>
+            <groupId>eu.comsode</groupId>
+            <artifactId>com.openlinksw.virtuoso.virt_sesame2</artifactId>
+            <version>1.21-7-develop-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.comsode</groupId>
+            <artifactId>com.openlinksw.virtuoso.virtjdbc4_1</artifactId>
+            <version>3.76-7-develop-SNAPSHOT</version>
+        </dependency>
+        <!-- Provided by Core. -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- UnifiedViews helpers. -->
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dataunit-helpers</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dpu-helpers</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.0</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
 </project>

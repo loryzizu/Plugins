@@ -7,10 +7,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.Update;
@@ -21,16 +24,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import virtuoso.sesame2.driver.VirtuosoRepository;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dataunit.resource.Resource;
+import eu.unifiedviews.helpers.dataunit.resource.ResourceHelpers;
+import eu.unifiedviews.helpers.dataunit.virtualgraph.VirtualGraphHelpers;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 
 @DPU.AsLoader
-public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> implements ConfigDialogProvider<VirtuosoLoaderConfig_V1> {
+public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
+
     private static final Logger LOG = LoggerFactory.getLogger(VirtuosoLoader.class);
+
+    public static final String PREDICATE_HAS_DISTRIBUTION = "http://comsode.eu/hasDistribution";
+
+    @DataUnit.AsOutput(name = "rdfOutput")
+    public WritableRDFDataUnit rdfOutput;
 
     private static final String LD_DIR = "ld_dir (?, ?, ?)";
 
@@ -48,20 +65,60 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
 
     private static final String DELETE = "delete from DB.DBA.load_list where ll_file like ?";
 
-    private static final String MOVE_QUERY = "DEFINE sql:log-enable 3 MOVE <%s> TO <%s>";
-
-    private static final String ADD_QUERY = "DEFINE sql:log-enable 3 ADD <%s> TO <%s>";
-
     private static final String CLEAR_QUERY = "DEFINE sql:log-enable 3 CLEAR GRAPH <%s>";
 
     private static final String RUN = "rdf_loader_run()";
 
+    private static final String SELECT_USER = "SELECT U_NAME, U_ID FROM DB.DBA.SYS_USERS WHERE U_NAME LIKE ?";
+
+    private static final String CREATE_USER = "DB.DBA.USER_CREATE (?, ?)";
+
+    private static final String GRANT_USER = "grant SPARQL_UPDATE to ?";
+
+    private static final String GRANT_USER_READ = "DB.DBA.RDF_DEFAULT_USER_PERMS_SET (?, 1)";
+
+    private static final String GRANT_USER_WRITE = "DB.DBA.RDF_GRAPH_USER_PERMS_SET (?, ?, 3)";
+
+    public static final String CONFIGURATION_VIRTUOSO_CREATE_USER = "dpu.l-filesToVirtuoso.create.user";
+
+    public static final String CONFIGURATION_VIRTUOSO_USERNAME = "dpu.l-filesToVirtuoso.username";
+
+    public static final String CONFIGURATION_VIRTUOSO_PASSWORD = "dpu.l-filesToVirtuoso.password";
+
+    public static final String CONFIGURATION_VIRTUOSO_JDBC_URL = "dpu.l-filesToVirtuoso.jdbc.url";
+
+    public static final String CONFIGURATION_VIRTUOSO_LOAD_DIRECTORY_PATH = "dpu.l-filesToVirtuoso.load.directory.path";
+
+    @ExtensionInitializer.Init
+    public FaultTolerance faultTolerance;
+
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.loader.filestovirtuoso.VirtuosoLoaderConfig__V1")
+    public ConfigurationUpdate _ConfigurationUpdate;
+
     public VirtuosoLoader() {
-        super(VirtuosoLoaderConfig_V1.class);
+        super(VirtuosoLoaderVaadinDialog.class, ConfigHistory.noHistory(VirtuosoLoaderConfig_V1.class));
     }
 
     @Override
-    public void execute(DPUContext dpuContext) throws DPUException, InterruptedException {
+    protected void innerExecute() throws DPUException {
+        Map<String, String> environment = ctx.getExecMasterContext().getDpuContext().getEnvironment();
+        String username = environment.get(CONFIGURATION_VIRTUOSO_USERNAME);
+        if (config.getUsername() == null || config.getUsername().isEmpty()) {
+            config.setUsername(username);
+        }
+        String password = environment.get(CONFIGURATION_VIRTUOSO_PASSWORD);
+        if (config.getPassword() == null || config.getPassword().isEmpty()) {
+            config.setPassword(password);
+        }
+        String virtuosoJdbcUrl = environment.get(CONFIGURATION_VIRTUOSO_JDBC_URL);
+        if (config.getVirtuosoUrl() == null || config.getVirtuosoUrl().isEmpty()) {
+            config.setVirtuosoUrl(virtuosoJdbcUrl);
+        }
+        String virtuosoLoadDirectoryPath = environment.get(CONFIGURATION_VIRTUOSO_LOAD_DIRECTORY_PATH);
+        if (config.getLoadDirectoryPath() == null || config.getLoadDirectoryPath().isEmpty()) {
+            config.setLoadDirectoryPath(virtuosoLoadDirectoryPath);
+        }
+        String organization = ctx.getExecMasterContext().getDpuContext().getOrganization();
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.format("Configuration: VirtuosoUrl: %s, username: %s, password: %s, loadDirectoryPath: %s, "
                 + "includeSubdirectories: %s, targetContext: %s, statusUpdateInterval: %s, threadCount: %s",
@@ -69,7 +126,6 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
                 config.isIncludeSubdirectories(), config.getTargetContext(), config.getStatusUpdateInterval(),
                 config.getThreadCount());
         LOG.info(shortMessage + " " + longMessage);
-
         try {
             Class.forName("virtuoso.jdbc4.Driver");
         } catch (ClassNotFoundException ex) {
@@ -88,16 +144,6 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
                 update.execute();
                 LOG.info("Cleared destination graph");
             }
-//            else {
-//                LOG.info("Adding loaded data to destination graph");
-//                Update update = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(ADD_QUERY, config.getTargetTempContext(), config.getTargetContext()));    
-//                update.execute();
-//                LOG.info("Added data to destination graph.");
-//                LOG.info("Clearing temporary graph.");
-//                Update update2 = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(CLEAR_QUERY, config.getTargetTempContext()));    
-//                update2.execute();
-//                LOG.info("Cleared temporary graph.");
-//            }
         } catch (MalformedQueryException | RepositoryException | UpdateExecutionException ex) {
             throw new DPUException("Error working with Virtuoso using Repository API", ex);
         } finally {
@@ -120,6 +166,7 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
         Connection connection = null;
         boolean started = false;
         ExecutorService executor = null;
+        RepositoryConnection outputMetadataConnection = null;
         try {
             connection = DriverManager.getConnection(config.getVirtuosoUrl(), config.getUsername(), config.getPassword());
             Statement statementNow = connection.createStatement();
@@ -133,7 +180,6 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
             PreparedStatement statementLdDir = connection.prepareStatement(config.isIncludeSubdirectories() ? LD_DIR_ALL : LD_DIR);
             statementLdDir.setString(1, config.getLoadDirectoryPath());
             statementLdDir.setString(2, config.getLoadFilePattern());
-//            statementLdDir.setString(3, config.getTargetTempContext());
             statementLdDir.setString(3, config.getTargetContext());
             ResultSet resultSetLdDir = statementLdDir.executeQuery();
             resultSetLdDir.close();
@@ -187,15 +233,19 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
             LOG.info("Started {} load threads", config.getThreadCount());
 
             int done = 0;
-            boolean shouldContinue = !dpuContext.canceled();
-            while ((shouldContinue) && (!executor.awaitTermination(config.getStatusUpdateInterval(), TimeUnit.SECONDS))) {
-                ResultSet resultSetDoneLoop = statementStatusCountDone.executeQuery();
-                resultSetDoneLoop.next();
-                done = resultSetDoneLoop.getInt(1);
-                resultSetDoneLoop.close();
+            boolean shouldContinue = !ctx.canceled();
+            try {
+                while ((shouldContinue) && (!executor.awaitTermination(config.getStatusUpdateInterval(), TimeUnit.SECONDS))) {
+                    ResultSet resultSetDoneLoop = statementStatusCountDone.executeQuery();
+                    resultSetDoneLoop.next();
+                    done = resultSetDoneLoop.getInt(1);
+                    resultSetDoneLoop.close();
 
-                LOG.info("Processing {}/{} files", done, all);
-                shouldContinue = !dpuContext.canceled();
+                    LOG.info("Processing {}/{} files", done, all);
+                    shouldContinue = !ctx.canceled();
+                }
+            } catch (InterruptedException ex) {
+                throw ContextUtils.dpuExceptionCancelled(ctx);
             }
             LOG.info("Finished all threads");
 
@@ -209,15 +259,74 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
             statementsErrorRows.setString(1, config.getLoadDirectoryPath() + "%");
             ResultSet resultSetErrorRows = statementsErrorRows.executeQuery();
             while (resultSetErrorRows.next()) {
-                dpuContext.sendMessage(
-                        config.isSkipOnError() ? DPUContext.MessageType.WARNING : DPUContext.MessageType.ERROR,
-                        "Error processing file " + resultSetErrorRows.getString(1) + ", error " + resultSetErrorRows.getString(8));
+                if (config.isSkipOnError()) {
+                    ContextUtils.sendShortWarn(ctx, longMessage, "Error processing file %s,error %s",
+                            resultSetErrorRows.getString(1), resultSetErrorRows.getString(8));
+                } else {
+                    ContextUtils.sendError(ctx, longMessage, "Error processing file %s,error %s",
+                            resultSetErrorRows.getString(1), resultSetErrorRows.getString(8), "");
+
+                }
             }
             resultSetErrorRows.close();
             statementsErrorRows.close();
 
+            if ("true".equalsIgnoreCase(environment.get(CONFIGURATION_VIRTUOSO_CREATE_USER))) {
+                boolean userExists = false;
+                try (PreparedStatement statementSelectUser = connection.prepareStatement(SELECT_USER)) {
+                    statementSelectUser.setString(1, organization);
+                    try (ResultSet resultSetUser = statementSelectUser.executeQuery()) {
+                        userExists = resultSetUser.next();
+                        LOG.info("Executed " + SELECT_USER);
+                    }
+                }
+                if (!userExists) {
+                    try (PreparedStatement statementCreateUser = connection.prepareStatement(CREATE_USER)) {
+                        statementCreateUser.setString(1, organization);
+                        statementCreateUser.setString(2, organization);
+                        statementCreateUser.executeQuery();
+                        LOG.info("Executed " + CREATE_USER);
+                    }
+//                try (PreparedStatement statementGrantUser = connection.prepareStatement(GRANT_USER)) {
+//                    statementGrantUser.setString(1, organization);
+//                    statementGrantUser.executeQuery();
+//                    LOG.info("Executed " + GRANT_USER);
+//                }
+                    try (PreparedStatement statementGrantUserRead = connection.prepareStatement(GRANT_USER_READ)) {
+                        statementGrantUserRead.setString(1, organization);
+                        statementGrantUserRead.executeQuery();
+                        LOG.info("Executed " + GRANT_USER_READ);
+                    }
+                }
+                try (PreparedStatement statementGrantUserWrite = connection.prepareStatement(GRANT_USER_WRITE)) {
+                    statementGrantUserWrite.setString(1, config.getTargetContext());
+                    statementGrantUserWrite.setString(2, organization);
+                    statementGrantUserWrite.executeQuery();
+                    LOG.info("Executed " + GRANT_USER_WRITE);
+                }
+            }
+            final String outputSymbolicName = config.getTargetContext();
+
+            rdfOutput.addExistingDataGraph(outputSymbolicName, new URIImpl(outputSymbolicName));
+            faultTolerance.execute(new FaultTolerance.Action() {
+
+                @Override
+                public void action() throws Exception {
+                    VirtualGraphHelpers.setVirtualGraph(rdfOutput, outputSymbolicName, config.getTargetContext());
+                }
+            });
+            faultTolerance.execute(new FaultTolerance.Action() {
+
+                @Override
+                public void action() throws Exception {
+                    final Resource resource = ResourceHelpers.getResource(rdfOutput, outputSymbolicName);
+                    resource.setLast_modified(new Date());
+                    ResourceHelpers.setResource(rdfOutput, outputSymbolicName, resource);
+                }
+            });
+
             LOG.info("Done.");
-        } catch (SQLException ex) {
+        } catch (DataUnitException | SQLException ex) {
             throw new DPUException("Error executing query", ex);
         } finally {
             LOG.info("User cancelled.");
@@ -231,12 +340,16 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
                 }
             }
             if (executor != null && started) {
-                if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                    executor.shutdownNow(); // Cancel currently executing tasks
-                    // Wait a while for tasks to respond to being cancelled
+                try {
                     if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                        LOG.error("Pool did not terminate");
+                        executor.shutdownNow(); // Cancel currently executing tasks
+                        // Wait a while for tasks to respond to being cancelled
+                        if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                            LOG.error("Pool did not terminate");
+                        }
                     }
+                } catch (InterruptedException ex) {
+                    throw new DPUException("Interrupted.", ex);
                 }
             }
             try {
@@ -255,33 +368,13 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig_V1> im
                     LOG.warn("Error closing connection", ex);
                 }
             }
-        }
-    }
-
-    @Override
-    public AbstractConfigDialog<VirtuosoLoaderConfig_V1> getConfigurationDialog() {
-        return new VirtuosoLoaderVaadinDialog();
-    }
-
-    public static String appendNumber(long number) {
-        String value = String.valueOf(number);
-        if (value.length() > 1) {
-            // Check for special case: 11 - 13 are all "th".
-            // So if the second to last digit is 1, it is "th".
-            char secondToLastDigit = value.charAt(value.length() - 2);
-            if (secondToLastDigit == '1')
-                return value + "th";
-        }
-        char lastDigit = value.charAt(value.length() - 1);
-        switch (lastDigit) {
-            case '1':
-                return value + "st";
-            case '2':
-                return value + "nd";
-            case '3':
-                return value + "rd";
-            default:
-                return value + "th";
+            if (outputMetadataConnection != null) {
+                try {
+                    outputMetadataConnection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error in close", ex);
+                }
+            }
         }
     }
 }

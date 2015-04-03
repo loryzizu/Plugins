@@ -2,36 +2,32 @@ package eu.unifiedviews.plugins.transformer.unzipper;
 
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.VerticalLayout;
-import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 
-/**
- * @author Škoda Petr
- */
-public class UnZipperVaadinDialog extends BaseConfigDialog<UnZipperConfig_V1> {
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
+
+public class UnZipperVaadinDialog extends AbstractDialog<UnZipperConfig_V1> {
 
     private CheckBox checkNotPrefix;
-
+    
     public UnZipperVaadinDialog() {
-        super(UnZipperConfig_V1.class);
-        buildMainLayout();
+        super(UnZipper.class);
     }
 
-    private void buildMainLayout() {
-        setWidth("100%");
-        setHeight("100%");
-
+    @Override
+    public void buildDialogLayout() {
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setImmediate(false);
+        mainLayout.setMargin(true);
         mainLayout.setWidth("100%");
         mainLayout.setHeight("-1px");
 
-        checkNotPrefix = new CheckBox("Do not prefix symbolic name");
-        checkNotPrefix.setDescription("If checked then output symbolic names of output files are not prefixed with symbolic name of unzipped file."
-                + "Uncheck to prevent symbolic names collision if multiple zip files with same structure are unzipped. If you do not know, then uncheck this.");
+        checkNotPrefix = new CheckBox(ctx.tr("unzipper.dialog.unzip.noprefix"));
+        checkNotPrefix.setDescription(ctx.tr("unzipper.dialog.unzip.noprefix.description"));
         mainLayout.addComponent(checkNotPrefix);
 
         setCompositionRoot(mainLayout);
+        
     }
 
     @Override
@@ -51,13 +47,14 @@ public class UnZipperVaadinDialog extends BaseConfigDialog<UnZipperConfig_V1> {
         StringBuilder desc = new StringBuilder();
 
         if (checkNotPrefix.getValue() == true) {
-            // is true, then we do not use prefixes
-            desc.append("Not prefixed.");
+            // If true then we do not use prefixes.
+            desc.append(ctx.tr("unzipper.dialog.unzip.notprefixed"));
         } else {
-            // if false prefix is not used
-            desc.append("Prefixed.");
+            // If false prefix is not used.
+            desc.append(ctx.tr("unzipper.dialog.unzip.prefixed"));
         }
 
         return desc.toString();
     }
+
 }

@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |T-Metadata                                              |
 |**Description:**              |Generates metadata on output from input. |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
 |**DPU class name:**           |Metadata     | 
 |**Configuration class name:** |MetadataConfig_V1                           |
@@ -61,8 +62,8 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|1.3.1              |N/A                                             |                                
-
+|2.0.0              |Update for helpers 2.0.0                         | 
+|1.3.1              |N/A            |
 
 ***
 

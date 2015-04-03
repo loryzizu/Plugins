@@ -3,13 +3,14 @@ package eu.unifiedviews.plugins.transformer.rdftofiles;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 import java.util.Arrays;
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RdfToFilesVaadinDialog extends BaseConfigDialog<RdfToFilesConfig_V1> {
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
+
+public class RdfToFilesVaadinDialog extends AbstractDialog<RdfToFilesConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RdfToFilesVaadinDialog.class);
 
@@ -28,13 +29,12 @@ public class RdfToFilesVaadinDialog extends BaseConfigDialog<RdfToFilesConfig_V1
     private TextField txtSingleFileOutputSymbolicName;
 
     public RdfToFilesVaadinDialog() {
-        super(RdfToFilesConfig_V1.class);
-        buildMainLayout();
+        super(RdfToFiles.class);
     }
 
-    private void buildMainLayout() {
-        setWidth("100%");
-        setHeight("100%");
+    @Override
+    protected void buildDialogLayout() {
+        setSizeFull();
 
         mainLayout = new VerticalLayout();
         mainLayout.setImmediate(false);
@@ -42,7 +42,7 @@ public class RdfToFilesVaadinDialog extends BaseConfigDialog<RdfToFilesConfig_V1
         mainLayout.setHeight("-1px");
         mainLayout.setSpacing(true);
 
-        checkMergeGraphs = new CheckBox("Merge graphs:");
+        checkMergeGraphs = new CheckBox(ctx.tr("rdfTofiles.dialog.merge"));
         mainLayout.addComponent(checkMergeGraphs);
         checkMergeGraphs.setEnabled(false);
 
@@ -58,7 +58,7 @@ public class RdfToFilesVaadinDialog extends BaseConfigDialog<RdfToFilesConfig_V1
         mainLayout.setHeight("-1px");
         mainLayout.setSpacing(true);
 
-        selectRdfFormat = new NativeSelect("RDF format:");
+        selectRdfFormat = new NativeSelect(ctx.tr("rdfToFiles.dialog.format"));
         for (RDFFormat item : RDFFormat.values()) {
             selectRdfFormat.addItem(item);
             selectRdfFormat.setItemCaption(item, item.getName());
@@ -67,14 +67,14 @@ public class RdfToFilesVaadinDialog extends BaseConfigDialog<RdfToFilesConfig_V1
         selectRdfFormat.setImmediate(true);
         mainLayout.addComponent(selectRdfFormat);
 
-        checkGenGraphFile = new CheckBox("Generate graph file:");
+        checkGenGraphFile = new CheckBox(ctx.tr("rtfToFiles.dialog.graphFile"));
         mainLayout.addComponent(checkGenGraphFile);
 
-        txtOutGraphName = new TextField("Output graph name:");
+        txtOutGraphName = new TextField(ctx.tr("rdfToFiles.dialog.outputGraph"));
         txtOutGraphName.setWidth("100%");
         mainLayout.addComponent(txtOutGraphName);
 
-        txtSingleFileOutputSymbolicName = new TextField("File path/name without extension:");
+        txtSingleFileOutputSymbolicName = new TextField(ctx.tr("rdfToFiles.dialog.outputFile"));
         txtSingleFileOutputSymbolicName.setWidth("100%");
         mainLayout.addComponent(txtSingleFileOutputSymbolicName);
 
@@ -153,7 +153,7 @@ public class RdfToFilesVaadinDialog extends BaseConfigDialog<RdfToFilesConfig_V1
                 final String graphName = txtOutGraphName.getValue();
                 LOG.debug(">>> graphName:{}", graphName);
                 if (graphName == null || graphName.isEmpty()) {
-                    throw new DPUConfigException("Graph name must be set for context aware formats.");
+                    throw new DPUConfigException(ctx.tr("rdfToFiles.dialog.missing.graphName"));
                 }
             }
             final RdfToFilesConfig_V1.GraphToFileInfo info = cnf.new GraphToFileInfo();
@@ -172,7 +172,7 @@ public class RdfToFilesVaadinDialog extends BaseConfigDialog<RdfToFilesConfig_V1
 
         if (checkMergeGraphs.getValue()) {
             // single file
-            desc.append("input->");
+            desc.append(ctx.tr("rdfToFiles.dialog.description"));
             desc.append(txtSingleFileOutputSymbolicName);
             desc.append(".");
             desc.append(((RDFFormat) selectRdfFormat.getValue()).getDefaultFileExtension());

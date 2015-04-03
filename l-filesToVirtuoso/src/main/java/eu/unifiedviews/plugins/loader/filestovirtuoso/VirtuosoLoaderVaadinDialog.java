@@ -3,19 +3,18 @@ package eu.unifiedviews.plugins.loader.filestovirtuoso;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class VirtuosoLoaderVaadinDialog extends BaseConfigDialog<VirtuosoLoaderConfig_V1> {
-    /**
-     * 
-     */
+public class VirtuosoLoaderVaadinDialog extends AbstractDialog<VirtuosoLoaderConfig_V1> {
+
     private static final long serialVersionUID = -5666075836909428L;
 
     private static final String VIRTUOSO_URL_LABEL = "Virtuoso JDBC URL";
@@ -68,20 +67,23 @@ public class VirtuosoLoaderVaadinDialog extends BaseConfigDialog<VirtuosoLoaderC
             false);
 
     public VirtuosoLoaderVaadinDialog() {
-        super(VirtuosoLoaderConfig_V1.class);
-        initialize();
+        super(VirtuosoLoader.class);
     }
 
-    private void initialize() {
+    @Override
+    protected void buildDialogLayout() {
         FormLayout mainLayout = new FormLayout();
 
         // top-level component properties
         setWidth("100%");
         setHeight("100%");
 
+        final PasswordField passwordField = new PasswordField(PASSWORD_LABEL, password);
+        passwordField.setWidth("100%");
+
         mainLayout.addComponent(createTextField(VIRTUOSO_URL_LABEL, virtuosoUrl));
         mainLayout.addComponent(createTextField(USERNAME_LABEL, username));
-        mainLayout.addComponent(createTextField(PASSWORD_LABEL, password));
+        mainLayout.addComponent(passwordField);
         mainLayout.addComponent(new CheckBox(CLEAR_DESTINATION_GRAPH_LABEL, clearDestinationGraph));
         mainLayout.addComponent(createTextField(LOAD_DIRECTORY_PATH_LABEL, loadDirectoryPath));
         mainLayout.addComponent(createTextField(INCLUDE_SUBDIRECTORIES_LABEL, includeSubdirectories));

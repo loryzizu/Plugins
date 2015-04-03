@@ -6,7 +6,7 @@
 |                              |                                                                             |
 |------------------------------|-----------------------------------------------------------------------------|
 |**Name:**                     |T-Tabular                                                               |
-|**Description:**              |Converts tabular data into rdf data. |
+|**Description:**              |Converts tabular data into RDF data. |
 |                              |                                                                             |
 |**DPU class name:**           |Tabular                                                                 | 
 |**Configuration class name:** |TabularConfig_V1                             |
@@ -18,17 +18,7 @@
 
 |Parameter                                       |Description                                                              |                                                        
 |------------------------------------------------|-------------------------------------------------------------------------|
-|**Choose the input type:**                      |Choose the file type of the input type:<BR>- CVS<BR>- DBF                |
-|**Resource URI base***                          |Specifies base URI of the resource.                                      |
-|**Key column**                                  |Column in the input file which is used when URI for the resource is created. If not specified, row number is used. |
-|**Encoding***                                   |Specify character encoding of the input file. | 
-|**Quote char (for CSV)**         		 |Define a character for quoting (if no character is provided '\"' will be used by default). |
-|**Delimiter char (for CSV)**			 |Define value delimiter character (if no character is provided ',' will be used by default). |
-|**End of line symbols (for CSV)**	         |Define an end of line symbol (if no symbol is provided '\\n' will be used by default). |
-|**Rows limit**              			 |Number of rows to include in transformation. |
-|**Use static row counter (checkbox)**           |Row counter is not set to 0 between processing of multiple files. |
-|**Add blank cells <http://linked.opendata.cz/ontology/odcs/tabular/blank-cell> (checkbox)** |Creates blank cell URIs in mapping if no mapping is provided. |
-|**Column name/Property URI**|Define column to property URI mappings. Create new mapping using 'Add mapping' button below. |
+
 
 ***
 
@@ -45,8 +35,8 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|1.3.2            |N/A                         |                                
-
+|2.0.0            |Replaced with the DPU taken from the repository https://github.com/mff-uk/DPUs.|
+|1.3.2            |N/A                         |
 
 ***
 
@@ -55,3 +45,16 @@
 |Author           |Notes                           |
 |-----------------|--------------------------------|
 |N/A              |N/A                             | 
+
+***
+
+### Runtime dependencies ###
+t-Tabular requires runtime dependencies that must be presented in module/lib folder of UnifiedViews prior
+the t-Tabular usage. Those dependencies can be found in CUNI repository (https://github.com/mff-uk/DPUs).
+
+|Library          |
+|-----------------|
+|https://github.com/mff-uk/DPUs/blob/master/dpu/t-tabular/libs/org.apache.poi-bundle-3.10.0.jar |
+|https://github.com/mff-uk/DPUs/blob/master/dependencies/org.junit-bundle-4.11.0.jar |
+
+

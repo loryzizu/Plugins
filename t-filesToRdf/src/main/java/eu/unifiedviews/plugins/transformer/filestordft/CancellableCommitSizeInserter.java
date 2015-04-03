@@ -8,7 +8,7 @@ import org.openrdf.rio.RDFHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
 
 public class CancellableCommitSizeInserter extends RDFInserter {
     private static final Logger LOG = LoggerFactory.getLogger(CancellableCommitSizeInserter.class);
@@ -21,12 +21,12 @@ public class CancellableCommitSizeInserter extends RDFInserter {
     
     private long realStatementCounter = 0L;
 
-    private DPUContext dpuContext;
+    private final UserExecContext ctx;
 
-    public CancellableCommitSizeInserter(RepositoryConnection con, int commitSize, DPUContext dpuContext) {
+    public CancellableCommitSizeInserter(RepositoryConnection con, int commitSize, UserExecContext ctx) {
         super(con);
         this.commitSize = commitSize;
-        this.dpuContext = dpuContext;
+        this.ctx = ctx;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class CancellableCommitSizeInserter extends RDFInserter {
         super.handleStatement(st);
         statementCounter++;
         if (transactionOpen && (statementCounter == commitSize)) {
-            if (dpuContext.canceled()) {
+            if (ctx.canceled()) {
                 throw new RDFHandlerException("Cancelled by user");
             }
             try {

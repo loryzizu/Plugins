@@ -1,120 +1,166 @@
 package eu.unifiedviews.plugins.transformer.filesrenamer;
 
-import java.util.Iterator;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
+import org.openrdf.repository.RepositoryConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
-import eu.unifiedviews.helpers.dpu.NonConfigurableBase;
+import eu.unifiedviews.helpers.dataunit.DataUnitUtils;
+import eu.unifiedviews.helpers.dataunit.files.FilesVocabulary;
+import eu.unifiedviews.helpers.dataunit.metadata.MetadataVocabulary;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 
 @DPU.AsTransformer
-public class Renamer extends NonConfigurableBase {
+public class Renamer extends AbstractDpu<RenamerConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Renamer.class);
 
-    @DataUnit.AsInput(name = "filesInput")
-    public FilesDataUnit filesInput;
+    /**
+     * First query copy all data from input to output.
+     */
+    private static final String SPARQL_COPY_ALL
+            = "INSERT { ?s ?p ?o } WHERE { ?s ?p ?o }";
 
-    @DataUnit.AsOutput(name = "filesOutput")
-    public WritableFilesDataUnit filesOutput;
+    /**
+     * Second (optional) query create new symbolic names based on some pattern.
+     * %s - suffix to to symbolic name
+     */
+    private static final String SPARQL_CREATE_NEW_SYMBOLIC_NAME
+            = "INSERT { ?s <" + RenamerVocabulary.TEMP_SYMBOLIC_NAME + "> ?valueNew } \n"
+            + "WHERE { ?s <" + MetadataVocabulary.UV_SYMBOLIC_NAME + "> ?value. \n"
+            + "BIND ( CONCAT(?value , \"%s\" ) AS ?valueNew) \n"
+            + "} ";
+
+    /**
+     * Next query creates new virtual paths.
+     * %s - regular expression pattern
+     * %s - value to replace
+     */
+    private static final String SPARQL_CREATE_VIRTUAL_PATH
+            = "INSERT { ?s <" + RenamerVocabulary.TEMP_VIRTUAL_PATH + "> ?valueNew } \n"
+            + "WHERE { ?s <" + FilesVocabulary.UV_VIRTUAL_PATH + "> ?value. \n"
+            + "BIND ( REPLACE(?value, \"%s\", \"%s\", \"i\") "
+            + "AS ?valueNew)\n"
+            + "} ";
+
+    private static final String SPARQL_REPLACE
+            = "DELETE { "
+            + "?s ?p ?valueOld ; "
+            + "?pTemp ?valueNew ."
+            + "}\n"
+            + "INSERT { "
+            + "?s ?p ?valueNew "
+            + "}\n"
+            + "WHERE { "
+            + "?s ?p ?valueOld ; "
+            + " ?pTemp ?valueNew .\n"
+            + "VALUES ( ?p ?pTemp ) {\n"
+            + " ( <" + MetadataVocabulary.UV_SYMBOLIC_NAME + "> <" + RenamerVocabulary.TEMP_SYMBOLIC_NAME + "> )\n"
+            + " ( <" + FilesVocabulary.UV_VIRTUAL_PATH + "> <" + RenamerVocabulary.TEMP_VIRTUAL_PATH + "> )\n"
+            + "} }";
+
+    @DataUnit.AsInput(name = "input")
+    public FilesDataUnit inFilesData;
+
+    @DataUnit.AsOutput(name = "output")
+    public WritableFilesDataUnit outFilesData;
+
+    @ExtensionInitializer.Init
+    public FaultTolerance faultTolerance;
 
     public Renamer() {
-//        super(FilesToFilesRenameTransformerConfig.class);
+        super(RenamerVaadinDialog.class, ConfigHistory.noHistory(RenamerConfig_V1.class));
     }
-
-//    @Override
-//    public AbstractConfigDialog<FilesToFilesRenameTransformerConfig> getConfigurationDialog() {
-//        return new FilesToFilesRenameTransformerConfigDialog();
-//    }
 
     @Override
-    public void execute(DPUContext dpuContext) throws DPUException {
-        //check that XSLT is available
+    protected void innerExecute() throws DPUException {
+        // Get input and output
+        final List<RDFDataUnit.Entry> source = faultTolerance.execute(
+                new FaultTolerance.ActionReturn<List<RDFDataUnit.Entry>>() {
 
-        String shortMessage = this.getClass().getSimpleName() + " starting.";
-//        String longMessage = String.valueOf(config);
-//        dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
-        dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, "");
+                    @Override
+                    public List<RDFDataUnit.Entry> action() throws Exception {
+                        return DataUnitUtils.getMetadataEntries(inFilesData);
+                    }
+                }, "dpu.error.metadata.read");
+        final RDFDataUnit.Entry target = faultTolerance.execute(
+                new FaultTolerance.ActionReturn<RDFDataUnit.Entry>() {
 
-        final Iterator<FilesDataUnit.Entry> filesIteration;
-        try {
-            filesIteration = FilesHelper.getFiles(filesInput).iterator();
-        } catch (DataUnitException ex) {
-            throw new DPUException("Could not obtain filesInput", ex);
-        }
-        long filesSuccessfulCount = 0L;
-        long index = 0L;
-        boolean shouldContinue = !dpuContext.canceled();
+                    @Override
+                    public RDFDataUnit.Entry action() throws Exception {
+                        return DataUnitUtils.getWritableMetadataEntry(outFilesData);
+                    }
+                }, "dpu.error.metadata.write");
+        // ...
+        executeInsert(SPARQL_COPY_ALL, source, target);
 
-        VirtualPathHelper virtualPathHelperInput = VirtualPathHelpers.create(filesInput);
-        VirtualPathHelper virtualPathHelperOutput = VirtualPathHelpers.create(filesOutput);
-        try {
+        String suffix = Long.toString((new Date()).getTime());
 
-            while (shouldContinue && filesIteration.hasNext()) {
-                FilesDataUnit.Entry entry;
-                try {
-                    entry = filesIteration.next();
-                    index++;
-
-                    final String newSymbolicName = entry.getSymbolicName() + ".ttl";
-                    final String newVirtualPath = virtualPathHelperInput.getVirtualPath(entry.getSymbolicName()) + ".ttl";
-
-                    filesOutput.addExistingFile(newSymbolicName, entry.getFileURIString());
-                    virtualPathHelperOutput.setVirtualPath(newSymbolicName, newVirtualPath);
-
-                    filesSuccessfulCount++;
-                } catch (DataUnitException ex) {
-                    dpuContext.sendMessage(
-                            DPUContext.MessageType.ERROR,
-                            "DataUnit exception.",
-                            "",
-                            ex);
-                }
-
-                shouldContinue = !dpuContext.canceled();
-            }
-        } finally {
-            try {
-                virtualPathHelperInput.close();
-                virtualPathHelperOutput.close();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error closing filesInput", ex);
-            }
-        }
-        String message = String.format("Processed %d/%d", filesSuccessfulCount, index);
-        dpuContext.sendMessage(filesSuccessfulCount < index ? DPUContext.MessageType.WARNING : DPUContext.MessageType.INFO, message);
+        executeInsert(String.format(SPARQL_CREATE_NEW_SYMBOLIC_NAME, suffix), source, target);
+        
+        executeInsert(String.format(SPARQL_CREATE_VIRTUAL_PATH, config.getPattern(), config.getReplaceText()),
+                source, target);
+        
+        executeDeleteInsert(SPARQL_REPLACE, Arrays.asList(target), target);
     }
 
-    public static String appendNumber(long number) {
-        String value = String.valueOf(number);
-        if (value.length() > 1) {
-            // Check for special case: 11 - 13 are all "th".
-            // So if the second to last digit is 1, it is "th".
-            char secondToLastDigit = value.charAt(value.length() - 2);
-            if (secondToLastDigit == '1') {
-                return value + "th";
+    private void executeInsert(final String query, final List<RDFDataUnit.Entry> source,
+            final RDFDataUnit.Entry target) throws DPUException {
+        LOG.info("QUERY: {}", query);
+        // Prepare SPARQL update query.
+        final SparqlUtils.SparqlUpdateObject updateQuery = faultTolerance.execute(
+                new FaultTolerance.ActionReturn<SparqlUtils.SparqlUpdateObject>() {
+
+                    @Override
+                    public SparqlUtils.SparqlUpdateObject action() throws Exception {
+                        return SparqlUtils.createInsert(query, source, target);
+                    }
+                }, "dpu.error.sparql.preparation");
+
+        // Execute SPARQL ie. copy metadata that match given conditions.
+        faultTolerance.execute(outFilesData, new FaultTolerance.ConnectionAction() {
+
+            @Override
+            public void action(RepositoryConnection connection) throws Exception {
+                SparqlUtils.execute(connection, updateQuery);
             }
-        }
-        char lastDigit = value.charAt(value.length() - 1);
-        switch (lastDigit) {
-            case '1':
-                return value + "st";
-            case '2':
-                return value + "nd";
-            case '3':
-                return value + "rd";
-            default:
-                return value + "th";
-        }
+        }, "dpu.error.sparql.execution");
     }
+
+    private void executeDeleteInsert(final String query, final List<RDFDataUnit.Entry> source,
+            final RDFDataUnit.Entry target) throws DPUException {
+        LOG.info("QUERY: {}", query);
+        // Prepare SPARQL update query.
+        final SparqlUtils.SparqlUpdateObject updateQuery = faultTolerance.execute(
+                new FaultTolerance.ActionReturn<SparqlUtils.SparqlUpdateObject>() {
+
+                    @Override
+                    public SparqlUtils.SparqlUpdateObject action() throws Exception {
+                        return SparqlUtils.createDelete(query, source, target);
+                    }
+                }, "dpu.error.sparql.preparation");
+
+        // Execute SPARQL ie. copy metadata that match given conditions.
+        faultTolerance.execute(outFilesData, new FaultTolerance.ConnectionAction() {
+
+            @Override
+            public void action(RepositoryConnection connection) throws Exception {
+                SparqlUtils.execute(connection, updateQuery);
+            }
+        }, "dpu.error.sparql.execution");
+    }
+
 }
