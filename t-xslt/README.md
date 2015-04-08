@@ -38,6 +38,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
+|2.1.0-SNAPSHOT              |Resolved #128 |
 |2.0.0              |Replaces with the DPU taken from the repository https://github.com/mff-uk/DPUs |
 |1.5.1              |fix in localization                             |
 |1.5.0              |N/A                                             |
