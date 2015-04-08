@@ -179,8 +179,10 @@ public class XsltExecutor extends Thread {
                 - Runtime.getRuntime().freeMemory()) / 1024 / 1024));
         // Prepare classes and parameters.
         final Serializer out = new Serializer(task.targetFile);
+        executable.getProcessor().registerExtensionFunction(UUIDGenerator.getInstance());
+        
         final XsltTransformer transformer = executable.load();
-
+        
         LOG.debug("Used parameters:");
         for (XsltConfig_V2.Parameter parameter : config.getFilesParameters(task.symbolicName)) {
             LOG.debug("\t {} : {}", parameter.getKey(), parameter.getValue());
