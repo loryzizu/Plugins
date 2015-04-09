@@ -15,13 +15,6 @@
 	<description>Parse tabular file to relational data unit.</description>
 	<version>2.0.1-SNAPSHOT</version>
 	<packaging>bundle</packaging>
-	<repositories>
-		<repository>
-			<id>maven.eea.sk</id>
-			<name>maven.eea.sk-public</name>
-			<url>http://maven.eea.sk/artifactory/public/</url>
-		</repository>
-	</repositories>
 
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.transformer.tabulartorelational</dpu.package>
