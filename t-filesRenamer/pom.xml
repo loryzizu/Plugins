@@ -2,12 +2,12 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-        <groupId>eu.unifiedviews</groupId>
-        <artifactId>uv-pom-dpu</artifactId>
-        <version>2.1.0-SNAPSHOT</version>
+		<groupId>eu.unifiedviews</groupId>
+		<artifactId>uv-pom-dpu</artifactId>
+		<version>2.1.0-SNAPSHOT</version>
 	</parent>
 
-    <groupId>eu.unifiedviews.plugins</groupId>
+	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-t-filesRenamer</artifactId>
 	<name>T-FilesRenamer</name>
 	<description>Rename files</description>
@@ -25,29 +25,29 @@
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.transformer.filesrenamer</dpu.package>
 		<dpu.mainClass>Renamer</dpu.mainClass>
-        <!-- - - - -->
+		<!-- - - - -->
 		<junit.version>4.12</junit.version>
 	</properties>
 
 	<dependencies>
-        <!-- Provided by Core. -->
+		<!-- Provided by Core. -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.0</version>
 			<scope>provided</scope>
 		</dependency>
-        <!-- UnifiedViews helpers. -->
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>uv-dataunit-helpers</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>uv-dpu-helpers</artifactId>
-            <scope>compile</scope>
-        </dependency>
+		<!-- UnifiedViews helpers. -->
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-helpers</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dpu-helpers</artifactId>
+			<scope>compile</scope>
+		</dependency>
 		<!-- UNIT Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
