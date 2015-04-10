@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-pom-dpu</artifactId>
-		<version>2.1.0-SNAPSHOT</version>
+		<version>2.0.1</version>
 		<relativePath />
 	</parent>
 
@@ -21,7 +21,6 @@
 		<dpu.mainClass>RelationalFromSql</dpu.mainClass>
 		<mockito.version>1.10.8</mockito.version>
 		<powermock.version>1.6.1</powermock.version>
-		<junit.version>4.12</junit.version>
 		<embed.transitive>true</embed.transitive>
 		<osgi.import.package>!com.sun.jdi.*,!com.sun.msv.*,!com.sun.org.apache.xerces.*,!org.jboss.*,!org.jdom,!org.jdom.input,!org.relaxng.datatype,!sun.io,!com.sun.security.*,!oracle.i18n.*,!oracle.ons,!oracle.security.pki,!oracle.xdb,!oracle.xml.*,!org.apache.log4j,!org.objectweb.asm,!sun.security.*,!com.oracle.common.*,!com.sun.jna.*,!waffle.windows.auth.*,*</osgi.import.package>
 	</properties>
@@ -148,8 +147,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<!-- <scope>test</scope> -->
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -176,13 +174,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<repositories>
-		<repository>
-			<id>maven.eea.sk</id>
-			<name>maven.eea.sk-public</name>
-			<url>http://maven.eea.sk/artifactory/public/</url>
-		</repository>
-	</repositories>
 
 </project>
