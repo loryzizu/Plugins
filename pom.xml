@@ -18,6 +18,7 @@
 		<module>t-xslt</module>
 		<module>t-filesRenamer</module>
 		<module>t-filesFilter</module>
+		<module>t-filesFindAndReplace</module>
 		<module>t-filesToRdf</module>
 		<module>t-rdfToFiles</module>
 		<module>t-zipper</module>
