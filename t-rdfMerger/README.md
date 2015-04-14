@@ -36,8 +36,14 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
+|2.0.1            | fixes in build dependencies |
 |2.0.0            |SPARQL is used to copy metadata. DPU moved from Core to Plugins repository. |
-|1.3.2      |N/A           |
+|1.6.0            |N/A           |
+|1.5.5            |N/A           |
+|1.5.0            |N/A           |
+|1.4.0            |N/A           |
+|1.3.1            |N/A           |
+|1.3.0            |N/A           |
 
 ***
 

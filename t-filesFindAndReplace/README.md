@@ -38,7 +38,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|2.0.0              |Initial release, using helpers 2.0.0                                   |                                
+|2.0.0              | Initial release, using helpers 2.0.0           |                                
 
 
 ***
