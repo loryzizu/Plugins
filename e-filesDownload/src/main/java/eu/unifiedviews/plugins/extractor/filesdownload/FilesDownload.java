@@ -170,6 +170,7 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
                             resource.setCreated(now);
                             resource.setLast_modified(now);
                             resource.getExtras().setSource(URIUtil.decode(vfsFile.getUri(), "utf8"));
+                            ResourceHelpers.setResource(filesOutput, fileName, resource);
                         }
                     }, "FilesDownload.execute.exception");
                     // Copy file.
