@@ -7,6 +7,7 @@
 |------------------------------|-----------------------------------------------------------------------------|
 |**Name:**                     |E-FilesDownload                                                              |
 |**Description:**              |Downloads list of files. Replaces E-FilesFromLocal and E-HttpDownload.       |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.                |
 |                              |                                                                             |
 |**DPU class name:**           |FilesDownload                                                                | 
 |**Configuration class name:** |FilesDownloadConfig_V1                                                       |
@@ -34,8 +35,9 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|1.0.0-SNAPSHOT   |N/A                         |
-|1.0.1            |Update to new helpers.      |
+|2.0.1            | fixes in build dependencies |
+|2.0.0            | Update to helpers 2.0.0    |
+|1.0.0            | N/A                        |
 
 
 ***

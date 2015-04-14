@@ -2,6 +2,9 @@ package eu.unifiedviews.plugins.extractor.relationalfromsql;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,17 +18,23 @@ public class QueryBuilderTest {
 
     private static final String EXPECTED_INSERT_QUERY = "INSERT INTO " + TABLE_NAME + " (column1, column2, column3) VALUES (?, ?, ?)";
 
+    private static final ColumnDefinition COLUMN_1 = new ColumnDefinition("column1", "integer", Types.INTEGER, true, "java.lang.Integer", -1);
+
+    private static final ColumnDefinition COLUMN_2 = new ColumnDefinition("column2", "varchar", Types.VARCHAR, true, "java.lang.String", 255);
+
+    private static final ColumnDefinition COLUMN_3 = new ColumnDefinition("column3", "varchar", Types.VARCHAR, false, "java.lang.String", 255);
+
     @Test
     public void getCreateTableQueryFromMetaDataTest() throws SQLException {
-        ResultSetMetaData meta = mockResultSetMetaData();
-        String query = QueryBuilder.getCreateTableQueryFromMetaData(meta, TABLE_NAME);
+        List<ColumnDefinition> columns = Arrays.asList(COLUMN_1, COLUMN_2, COLUMN_3);
+        String query = QueryBuilder.getCreateTableQueryFromMetaData(columns, TABLE_NAME);
         Assert.assertEquals(EXPECTED_CREATE_TABLE_QUERY, query);
     }
 
     @Test
     public void getInsertQueryForPreparedStatementTest() throws SQLException {
-        ResultSetMetaData meta = mockResultSetMetaData();
-        String query = QueryBuilder.getInsertQueryForPreparedStatement(meta, TABLE_NAME);
+        List<ColumnDefinition> columns = Arrays.asList(COLUMN_1, COLUMN_2, COLUMN_3);
+        String query = QueryBuilder.getInsertQueryForPreparedStatement(columns, TABLE_NAME);
         Assert.assertEquals(EXPECTED_INSERT_QUERY, query);
     }
 

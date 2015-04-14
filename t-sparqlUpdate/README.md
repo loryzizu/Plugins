@@ -7,6 +7,7 @@
 |------------------------------|------------------------------------------------------------------------------|
 |**Name:**                     |T-SparqlUpdate                                                                |
 |**Description:**              |Transform input using SPARQL construct.                                       |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                                              |
 |**DPU class name:**           |SparqlUpdate                                                                  | 
 |**Configuration class name:** |SparqlUpdate_V1                                                               |
@@ -18,8 +19,8 @@
 
 |Parameter                           |Description                                                              |
 |------------------------------------|-------------------------------------------------------------------------|
-|**SQL query:**                      |SQL query to extract data from source database                           |
-**Target table name:**               |Table name used to internally store the extracted data                   |
+|**Per-graph execution:**            |If checked query is executed per-graph.                                  |
+|**SPARQL update query:**            |SPARQL update query.                                                     |
 
 ***
 
@@ -28,7 +29,7 @@
 |Name           |Type           |DataUnit           |Description                                  |
 |---------------|---------------|-------------------|---------------------------------------------|
 |input          |i              |RDFDataUnit        |RDF input                                    |
-|outpu          |o              |RDFDataUnit        |RDF output (transformed)                     |
+|output         |o              |RDFDataUnit        |RDF output (transformed)                     |
 
 ***
 
@@ -36,7 +37,8 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|1.1.2-SNAPSHOT   |Import from CUNI repository.                         |
+|2.0.1            | fixes in build dependencies |
+|2.0.0            | Imported from the repository https://github.com/mff-uk/DPUs, using helpers 2.0.0 |
 
 
 ***

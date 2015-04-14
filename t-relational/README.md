@@ -7,6 +7,7 @@
 |------------------------------|------------------------------------------------------------------------------|
 |**Name:**                     |T-Relational                                                                  |
 |**Description:**              |Transforms N input tables into 1 output table using SELECT SQL queries        |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                                              |
 |**DPU class name:**           |Relational                                                                    | 
 |**Configuration class name:** |RelationalConfig_V1                                                           |
@@ -39,7 +40,9 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|1.0.0-SNAPSHOT   |N/A                         |
+|2.0.1            | fixes in build dependencies |
+|2.0.0            | Update to helpers 2.0.0     |
+|0.9.0            | N/A                         |
 
 
 ***

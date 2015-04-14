@@ -19,34 +19,31 @@ import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
 import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.relationalhelper.RelationalHelper;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
-import eu.unifiedviews.helpers.dpu.localization.Messages;
+import eu.unifiedviews.helpers.dataunit.relational.RelationalHelper;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 
 @DPU.AsLoader
-public class RelationalToSql extends ConfigurableBase<RelationalToSqlConfig_V1> implements ConfigDialogProvider<RelationalToSqlConfig_V1> {
+public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RelationalToSql.class);
-
-    private DPUContext context;
-
-    private Messages messages;
 
     @DataUnit.AsInput(name = "input")
     public RelationalDataUnit inTablesData;
 
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.loader.relationaltosql.RelationalToSqlConfig__V1")
+    public ConfigurationUpdate _ConfigurationUpdate;
+
     public RelationalToSql() {
-        super(RelationalToSqlConfig_V1.class);
+        super(RelationalToSqlVaadinDialog.class, ConfigHistory.noHistory(RelationalToSqlConfig_V1.class));
     }
 
     @Override
-    public void execute(DPUContext dpuContext) throws DPUException, InterruptedException {
-        this.context = dpuContext;
-        this.messages = new Messages(this.context.getLocale(), this.getClass().getClassLoader());
+    protected void innerExecute() throws DPUException {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.format("Configuration: DatabaseUrl: %s, username: %s, password: %s, "
                 + "useSSL: %s, targetTable: %s, clearTargetTable: %s, dropTargetTable: %s",
@@ -58,15 +55,14 @@ public class RelationalToSql extends ConfigurableBase<RelationalToSqlConfig_V1> 
         try {
             Class.forName(this.config.getJDBCDriverName());
         } catch (ClassNotFoundException e) {
-            throw new DPUException(this.messages.getString("errors.driver.loadfailed"), e);
+            throw ContextUtils.dpuException(ctx, ("errors.driver.loadfailed"), e);
         }
 
         Iterator<RelationalDataUnit.Entry> tablesIteration;
         try {
             tablesIteration = RelationalHelper.getTables(this.inTablesData).iterator();
         } catch (DataUnitException ex) {
-            this.context.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.dpu.failed"), this.messages.getString("errors.tables.iterator"), ex);
-            return;
+            throw ContextUtils.dpuException(ctx, ex, "errors.tables.iterator");
         }
 
         boolean bTableExists = false;
@@ -76,7 +72,7 @@ public class RelationalToSql extends ConfigurableBase<RelationalToSqlConfig_V1> 
             conn = RelationalToSqlHelper.createConnection(this.config);
 
             int index = 1;
-            while (!this.context.canceled() && tablesIteration.hasNext()) {
+            while (!this.ctx.canceled() && tablesIteration.hasNext()) {
                 final RelationalDataUnit.Entry entry = tablesIteration.next();
                 final String sourceTableName = entry.getTableName();
                 final String targetTableName = createTargetTableName(index);
@@ -102,8 +98,7 @@ public class RelationalToSql extends ConfigurableBase<RelationalToSqlConfig_V1> 
                         createTable(conn, targetTableName, sourceColumns);
                     } else {
                         if (!checkTablesConsistent(conn, targetTableName, sourceColumns)) {
-                            this.context.sendMessage(DPUContext.MessageType.ERROR, this.messages.getString("errors.dpu.failed"), this.messages.getString("errors.table.inconsistent"));
-                            return;
+                            throw ContextUtils.dpuException(ctx, "errors.table.inconsistent");
                         }
                     }
                     String insertQuery = QueryBuilder.getInsertQueryForPreparedStatement(targetTableName, sourceColumns);
@@ -121,10 +116,10 @@ public class RelationalToSql extends ConfigurableBase<RelationalToSqlConfig_V1> 
         } catch (SQLException se) {
             RelationalToSqlHelper.tryRollbackConnection(conn);
             LOG.error("Database error occurred during loading data from internal database to external SQL database", se);
-            throw new DPUException(this.messages.getString("errors.dpu.insertfail"), se);
+            throw ContextUtils.dpuException(ctx, ("errors.dpu.insertfail"), se);
         } catch (Exception e) {
             LOG.error("Error during loading data from internal database to external SQL database", e);
-            throw new DPUException(this.messages.getString("errors.dpu.insertfail"), e);
+            throw ContextUtils.dpuException(ctx, ("errors.dpu.insertfail"), e);
         } finally {
             RelationalToSqlHelper.tryCloseConnection(conn);;
         }
@@ -275,11 +270,6 @@ public class RelationalToSql extends ConfigurableBase<RelationalToSqlConfig_V1> 
             RelationalToSqlHelper.tryCloseResultSet(tables);
         }
         return bTableExists;
-    }
-
-    @Override
-    public AbstractConfigDialog<RelationalToSqlConfig_V1> getConfigurationDialog() {
-        return new RelationalToSqlVaadinDialog();
     }
 
 }

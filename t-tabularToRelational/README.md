@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------|
 |**Name:**                     |T-TabularToRelational                        |
 |**Description:**              |Parse tabular file to relational data unit.  |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                             |
 |**DPU class name:**           |TabularToRelational                          | 
 |**Configuration class name:** |TabularToRelational_V1                       |
@@ -38,7 +39,9 @@
 
 |Version |Release notes |
 |--------|--------------|
-|1.0.0   |N/A           |                                
+|2.0.1   | fixes in build dependencies |
+|2.0.0   | Update to helpers 2.0.0 |
+|1.0.0   | N/A           |                                
 
 ***
 

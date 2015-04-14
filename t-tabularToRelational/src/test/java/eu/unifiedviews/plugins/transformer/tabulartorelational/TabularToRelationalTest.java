@@ -19,6 +19,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
+
 @RunWith(JUnit4.class)
 public class TabularToRelationalTest {
 
@@ -40,7 +42,7 @@ public class TabularToRelationalTest {
         TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
 
         dpu = new TabularToRelational();
-        dpu.configureDirectly(config);
+        dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
 
         env = new TestEnvironment();
         input = env.createFilesInput("input");
@@ -66,7 +68,7 @@ public class TabularToRelationalTest {
         Statement stmnt = null;
         ResultSet rs = null;
         try {
-            dpu.configureDirectly(config);
+            dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
 
             addFileToInput(CSV_FILE);
             env.run(dpu);

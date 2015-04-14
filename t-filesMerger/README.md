@@ -7,6 +7,7 @@
 |------------------------------|-----------------------------------------------------------------------------|
 |**Name:**                     |T-FilesMerger                                                               |
 |**Description:**              |Merges Files inputs. |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                                             |
 |**DPU class name:**           |FilesMerger                                                                | 
 |**Configuration class name:** |FilesMergerConfig_V1                             |
@@ -35,8 +36,13 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|1.3.1            |N/A                         |    
-|1.6.1            |Use SPARQL to merge metadata. Moved to plugins repository.|                            
+|2.0.1            | fixes in build dependencies |
+|2.0.0            | Update to helpers 2.0.0. Use SPARQL to merge metadata. Moved to plugins repository.|                            
+|1.6.0            | N/A                       |
+|1.5.5            | N/A                       |
+|1.5.0            | N/A                       |
+|1.4.0            | N/A                       |
+|1.3.1            | N/A                       |
 
 
 ***

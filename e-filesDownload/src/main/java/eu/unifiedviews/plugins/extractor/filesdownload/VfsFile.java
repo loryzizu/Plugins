@@ -5,8 +5,6 @@ import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
 @EntityDescription.Entity(type = FilesDownloadVocabulary.STR_FILE_CLASS)
 public class VfsFile {
 
-    private boolean displayed = true;
-
     @EntityDescription.Property(uri = FilesDownloadVocabulary.STR_FILE_URI)
     private String uri = "http://www.zmluvy.gov.sk/data/att/117597_dokument.pdf";
 
@@ -27,14 +25,6 @@ public class VfsFile {
         username = vfsFile.getUsername();
         password = vfsFile.getPassword();
         fileName = vfsFile.getFileName();
-    }
-
-    public boolean isDisplayed() {
-        return displayed;
-    }
-
-    public void setDisplayed(boolean displayed) {
-        this.displayed = displayed;
     }
 
     public String getUri() {

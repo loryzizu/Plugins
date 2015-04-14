@@ -7,6 +7,7 @@
 |------------------------------|-----------------------------------------------------------------------------|
 |**Name:**                     |L-FilesUpload                                                                |
 |**Description:**              |Uploads list of files. Replaces L-FilesToLocalFS and L-FilesToScp.           |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                                             |
 |**DPU class name:**           |FilesUpload                                                                  | 
 |**Configuration class name:** |FilesUploadConfig_V1                                                         |
@@ -34,10 +35,11 @@
 
 ### Version history ###
 
-|Version          |Release notes               |
-|-----------------|----------------------------|
-|1.0.0-SNAPSHOT   |N/A                         |
-|1.0.1            |Update for new helpers. Input/output dataUnits names updated. |
+|Version          |Release notes                |
+|-----------------|-----------------------------|
+|2.0.1            | fixes in build dependencies |
+|2.0.0            | Update for helpers 2.0.0. Input/output dataUnits names updated. |
+|1.0.0            | N/A                         |
 
 ***
 

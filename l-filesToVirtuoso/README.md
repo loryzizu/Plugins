@@ -7,6 +7,7 @@
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |L-FilesToVirtuoso                                              |
 |**Description:**              |VirtuosoLoader issues Virtuoso internal functions to load directory of RDF data. |
+|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
 |**DPU class name:**           |VirtuosoLoader     | 
 |**Configuration class name:** |VirtuosoLoaderConfig_V1                           |
@@ -46,8 +47,14 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|1.7.1              |Update for new helpers.                         |
-|1.3.1              |N/A                                             |                                
+|2.0.1              | fixes in build dependencies |
+|2.0.0              | Update for new helpers.                        |
+|1.7.0              | N/A                                            |                                
+|1.6.0              | N/A                                            |                                
+|1.5.0              | N/A                                            |                                
+|1.4.0              | N/A                                            |                                
+|1.3.1              | N/A                                            |                                
+|1.3.0              | N/A                                            |                                
 
 
 ***

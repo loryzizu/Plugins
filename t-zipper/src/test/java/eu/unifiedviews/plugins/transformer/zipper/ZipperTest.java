@@ -26,11 +26,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import eu.unifiedviews.helpers.dataunit.files.FilesDataUnitUtils;
-import eu.unifiedviews.helpers.dataunit.metadata.MetadataUtils;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
+import eu.unifiedviews.helpers.dataunit.files.FilesDataUnitUtils;
+import eu.unifiedviews.helpers.dataunit.metadata.MetadataUtils;
 import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 
 @RunWith(PowerMockRunner.class)
@@ -60,7 +60,7 @@ public class ZipperTest {
 
         dpu = new Zipper();
         dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
-        
+
         env = new TestEnvironment();
         input = env.createFilesInput("input");
         output = env.createFilesOutput("output");
@@ -89,23 +89,23 @@ public class ZipperTest {
         PowerMockito.when(MetadataUtils.getFirst(Mockito.any(MetadataDataUnit.class),
                 Mockito.any(MetadataDataUnit.Entry.class), Mockito.anyString())).then(new Answer<String>() {
 
-                    @Override
-                    public String answer(InvocationOnMock invocation) throws Throwable {
-                        // Fail twice to test fault tolerance.
-                        if (failCounter < 2) {
-                            ++failCounter;
-                            throw new java.sql.BatchUpdateException();
-                        } else {
-                            return TXT_FILE;
-                        }
-                    }
-                });
+            @Override
+            public String answer(InvocationOnMock invocation) throws Throwable {
+                // Fail twice to test fault tolerance.
+                if (failCounter < 2) {
+                    ++failCounter;
+                    throw new java.sql.BatchUpdateException();
+                } else {
+                    return TXT_FILE;
+                }
+            }
+        });
         // Execute DPU's code.
         executeValidZipPasses();
     }
 
     private void executeValidZipPasses() throws Exception {
-        String resource = this.getClass().getClassLoader().getResource(TXT_FILE).getFile();
+        URI resource = this.getClass().getClassLoader().getResource(TXT_FILE).toURI();
         File inputFile = new File(resource);
         String fileContent = readFile(inputFile);
 

@@ -1,10 +1,10 @@
 package eu.unifiedviews.plugins.transformer.xslt;
 
-import java.io.File;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,7 +31,6 @@ import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 import eu.unifiedviews.helpers.dpu.test.rdf.InputOutputUtils;
-import eu.unifiedviews.helpers.dpu.test.resources.ResourceUtils;
 
 public class XsltTest {
 
@@ -157,7 +156,7 @@ public class XsltTest {
 
         // Prepare configuration.
         final WritableRDFDataUnit configRdf = env.createRdfInput("config", false);
-        InputOutputUtils.extractFromFile(ResourceUtils.getFile("config.ttl"), RDFFormat.TURTLE, configRdf,
+        InputOutputUtils.extractFromFile(new File(getClass().getClassLoader().getResource("config.ttl").toURI()), RDFFormat.TURTLE, configRdf,
                 RdfDataUnitUtils.addGraph(configRdf, "main-config"));
 
         // configure DPU
@@ -196,7 +195,7 @@ public class XsltTest {
     }
 
     private void addFileToInput(final String filename) throws Exception {
-        final File file = ResourceUtils.getFile(filename);
+        final File file = new File(getClass().getClassLoader().getResource(filename).toURI());
         FilesDataUnitUtils.addFile(input, file, "symbolicName-test");
     }
 

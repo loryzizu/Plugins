@@ -20,7 +20,9 @@ import org.junit.Test;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
 import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
-import eu.unifiedviews.helpers.dataunit.relationalhelper.RelationalHelper;
+import eu.unifiedviews.helpers.dataunit.relational.RelationalHelper;
+import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
+import eu.unifiedviews.plugins.extractor.relationalfromsql.SqlDatabase.DatabaseType;
 
 public class RelationalFromSqlTest {
 
@@ -32,11 +34,11 @@ public class RelationalFromSqlTest {
 
     private static final String DATABASE_URL = "jdbc:h2:mem:db1";
 
+    private static final String JDBC_DRIVER = "org.h2.Driver";
+
     private static final String DB_USER = "user1";
 
     private static final String DB_PASSWORD = "pwd1";
-
-    private static final String JDBC_DRIVER = "org.h2.Driver";
 
     private static final String TABLE_NAME_USERS = "USER_DATA";
 
@@ -76,8 +78,8 @@ public class RelationalFromSqlTest {
 
     @Test
     public void selectSingleTableCheckTargetTableTest() throws Exception {
-        RelationalFromSqlConfig_V1 config = createConfig(SELECT_ONE_TABLE_QUERY);
-        this.dpu.configureDirectly(config);
+        RelationalFromSqlConfig_V2 config = createConfig(SELECT_ONE_TABLE_QUERY);
+        this.dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
         Connection sourceConnection = null;
         Connection dataUnitConnection = null;
         try {
@@ -104,8 +106,8 @@ public class RelationalFromSqlTest {
 
     @Test
     public void selectSingleTableCheckTargetTableContent() throws Exception {
-        RelationalFromSqlConfig_V1 config = createConfig(SELECT_ONE_TABLE_QUERY);
-        this.dpu.configureDirectly(config);
+        RelationalFromSqlConfig_V2 config = createConfig(SELECT_ONE_TABLE_QUERY);
+        this.dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
         Connection sourceConnection = null;
         Connection dataUnitConnection = null;
         ResultSet rs = null;
@@ -147,8 +149,8 @@ public class RelationalFromSqlTest {
 
     @Test
     public void selectJoinTablesCheckTargetTableTest() throws Exception {
-        RelationalFromSqlConfig_V1 config = createConfig(SELECT_JOIN_TABLES_QUERY);
-        this.dpu.configureDirectly(config);
+        RelationalFromSqlConfig_V2 config = createConfig(SELECT_JOIN_TABLES_QUERY);
+        this.dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
         Connection sourceConnection = null;
         Connection dataUnitConnection = null;
         try {
@@ -176,8 +178,8 @@ public class RelationalFromSqlTest {
 
     @Test
     public void selectJoinTablesCheckTargetTableContent() throws Exception {
-        RelationalFromSqlConfig_V1 config = createConfig(SELECT_JOIN_TABLES_QUERY);
-        this.dpu.configureDirectly(config);
+        RelationalFromSqlConfig_V2 config = createConfig(SELECT_JOIN_TABLES_QUERY);
+        this.dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
         Connection sourceConnection = null;
         Connection dataUnitConnection = null;
         ResultSet rs = null;
@@ -227,15 +229,16 @@ public class RelationalFromSqlTest {
         }
     }
 
-    private RelationalFromSqlConfig_V1 createConfig(String sqlQuery) {
-        RelationalFromSqlConfig_V1 config = new RelationalFromSqlConfig_V1();
-        config.setDatabaseURL(DATABASE_URL);
-        config.setJdbcDriverName(JDBC_DRIVER);
+    private RelationalFromSqlConfig_V2 createConfig(String sqlQuery) {
+        RelationalFromSqlConfig_V2 config = new RelationalFromSqlConfig_V2();
+        config.setDatabaseHost("mem");
+        config.setDatabaseName("db1");
         config.setUserName(DB_USER);
         config.setUserPassword(DB_PASSWORD);
         config.setUseSSL(false);
         config.setTargetTableName(TARGET_TABLE_NAME);
         config.setSqlQuery(sqlQuery);
+        config.setDatabaseType(DatabaseType.H2_MEM);
 
         return config;
     }

@@ -12,15 +12,11 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
-import eu.unifiedviews.helpers.dpu.localization.Messages;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
-public class RelationalVaadinDialog extends BaseConfigDialog<RelationalConfig_V1> implements InitializableConfigDialog {
+public class RelationalVaadinDialog extends AbstractDialog<RelationalConfig_V1> {
 
     private static final long serialVersionUID = 7069074978935972335L;
-
-    private Messages messages;
 
     private VerticalLayout mainLayout;
 
@@ -30,13 +26,14 @@ public class RelationalVaadinDialog extends BaseConfigDialog<RelationalConfig_V1
 
     private TextField txtPrimaryKeys;
 
+    private TextField txtIndexedColumns;
+
     public RelationalVaadinDialog() {
-        super(RelationalConfig_V1.class);
+        super(Relational.class);
     }
 
     @Override
-    public void initialize() {
-        this.messages = new Messages(getContext().getLocale(), this.getClass().getClassLoader());
+    protected void buildDialogLayout() {
 
         setWidth("100%");
         setHeight("100%");
@@ -46,10 +43,10 @@ public class RelationalVaadinDialog extends BaseConfigDialog<RelationalConfig_V1
         this.mainLayout.setWidth("100%");
         this.mainLayout.setHeight("-1px");
         this.mainLayout.setSpacing(true);
-        this.mainLayout.setMargin(false);
+        this.mainLayout.setMargin(true);
 
         this.txtSqlQuery = new TextArea();
-        this.txtSqlQuery.setCaption(this.messages.getString("dialog.dbtransform.query"));
+        this.txtSqlQuery.setCaption(ctx.tr("dialog.dbtransform.query"));
         this.txtSqlQuery.setRequired(true);
         this.txtSqlQuery.setNullRepresentation("");
         this.txtSqlQuery.setWidth("100%");
@@ -58,19 +55,26 @@ public class RelationalVaadinDialog extends BaseConfigDialog<RelationalConfig_V1
         this.mainLayout.addComponent(this.txtSqlQuery);
 
         this.txtTargetTableName = new TextField();
-        this.txtTargetTableName.setCaption(this.messages.getString("dialog.dbtransform.targettable"));
-        this.txtTargetTableName.setDescription(this.messages.getString("dialog.dbtransform.tabledescr"));
+        this.txtTargetTableName.setCaption(ctx.tr("dialog.dbtransform.targettable"));
+        this.txtTargetTableName.setDescription(ctx.tr("dialog.dbtransform.tabledescr"));
         this.txtTargetTableName.setRequired(true);
         this.txtTargetTableName.setNullRepresentation("");
         this.txtTargetTableName.setWidth("100%");
         this.mainLayout.addComponent(this.txtTargetTableName);
 
         this.txtPrimaryKeys = new TextField();
-        this.txtPrimaryKeys.setCaption(this.messages.getString("dialog.dbtransform.keys"));
-        this.txtPrimaryKeys.setDescription(this.messages.getString("dialog.dbtransform.keysdescr"));
+        this.txtPrimaryKeys.setCaption(ctx.tr("dialog.dbtransform.keys"));
+        this.txtPrimaryKeys.setDescription(ctx.tr("dialog.dbtransform.keysdescr"));
         this.txtPrimaryKeys.setNullRepresentation("");
         this.txtPrimaryKeys.setWidth("100%");
         this.mainLayout.addComponent(this.txtPrimaryKeys);
+
+        this.txtIndexedColumns = new TextField();
+        this.txtIndexedColumns.setCaption(ctx.tr("dialog.dbtransform.indexes"));
+        this.txtIndexedColumns.setDescription(ctx.tr("dialog.dbtransform.indexdescr"));
+        this.txtIndexedColumns.setNullRepresentation("");
+        this.txtIndexedColumns.setWidth("100%");
+        this.mainLayout.addComponent(this.txtIndexedColumns);
 
         Panel panel = new Panel();
         panel.setSizeFull();
@@ -87,7 +91,7 @@ public class RelationalVaadinDialog extends BaseConfigDialog<RelationalConfig_V1
             public void validate(Object value) throws InvalidValueException {
                 String query = ((String) value).trim();
                 if (!query.toLowerCase().startsWith("select")) {
-                    throw new InvalidValueException(RelationalVaadinDialog.this.messages.getString("dialog.errors.validation.select"));
+                    throw new InvalidValueException(ctx.tr("dialog.errors.validation.select"));
                 }
             }
         };
@@ -95,7 +99,7 @@ public class RelationalVaadinDialog extends BaseConfigDialog<RelationalConfig_V1
         return validator;
     }
 
-    private List<String> getPrimaryKeyColumns() {
+    private List<String> getPrimaryKeyColumnsAsList() {
         List<String> keyColumns = new ArrayList<>();
         if (this.txtPrimaryKeys.getValue() != null && !this.txtPrimaryKeys.getValue().equals("")) {
             String[] keys = this.txtPrimaryKeys.getValue().trim().split(",");
@@ -107,25 +111,24 @@ public class RelationalVaadinDialog extends BaseConfigDialog<RelationalConfig_V1
         return keyColumns;
     }
 
-    private static String getPrimaryKeysAsCommaSeparatedString(List<String> keys) {
-        if (keys == null || keys.isEmpty()) {
-            return null;
+    private List<String> getIndexedColumnsAsList() {
+        List<String> keyColumns = new ArrayList<>();
+        if (this.txtIndexedColumns.getValue() != null && !this.txtIndexedColumns.getValue().equals("")) {
+            String[] keys = this.txtIndexedColumns.getValue().trim().split(",");
+            for (String key : keys) {
+                keyColumns.add(key.trim().toUpperCase());
+            }
         }
-        StringBuilder sb = new StringBuilder();
-        for (String key : keys) {
-            sb.append(key);
-            sb.append(",");
-        }
-        sb.setLength(sb.length() - 1);
 
-        return sb.toString();
+        return keyColumns;
     }
 
     @Override
     protected void setConfiguration(RelationalConfig_V1 config) throws DPUConfigException {
         this.txtTargetTableName.setValue(config.getTargetTableName());
         this.txtSqlQuery.setValue(config.getSqlQuery());
-        this.txtPrimaryKeys.setValue(getPrimaryKeysAsCommaSeparatedString(config.getPrimaryKeyColumns()));
+        this.txtPrimaryKeys.setValue(DatabaseHelper.getListAsCommaSeparatedString(config.getPrimaryKeyColumns()));
+        this.txtIndexedColumns.setValue(DatabaseHelper.getListAsCommaSeparatedString(config.getIndexedColumns()));
     }
 
     @Override
@@ -133,19 +136,20 @@ public class RelationalVaadinDialog extends BaseConfigDialog<RelationalConfig_V1
         RelationalConfig_V1 config = new RelationalConfig_V1();
         boolean isValid = this.txtTargetTableName.isValid();
         if (!isValid) {
-            throw new DPUConfigException(this.messages.getString("errors.dialog.missing"));
+            throw new DPUConfigException(ctx.tr("errors.dialog.missing"));
         }
         try {
             this.txtSqlQuery.validate();
         } catch (EmptyValueException e) {
-            throw new DPUConfigException(this.messages.getString("errors.dialog.missing"));
+            throw new DPUConfigException(ctx.tr("errors.dialog.missing"));
         } catch (InvalidValueException e) {
             throw new DPUConfigException(e.getMessage());
         }
         config.setTargetTableName(this.txtTargetTableName.getValue());
 
         config.setSqlQuery(this.txtSqlQuery.getValue());
-        config.setPrimaryKeyColumns(getPrimaryKeyColumns());
+        config.setPrimaryKeyColumns(getPrimaryKeyColumnsAsList());
+        config.setIndexedColumns(getIndexedColumnsAsList());
 
         return config;
     }
