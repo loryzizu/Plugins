@@ -35,8 +35,12 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
+|2.0.1 | fixes in build dependencies |
 |2.0.0            |Replaced with the DPU taken from the repository https://github.com/mff-uk/DPUs.|
-|1.3.2            |N/A                         |
+|1.5.0            |N/A                         |
+|1.4.0            |N/A                         |
+|1.3.1            |N/A                         |
+|1.0.0            |N/A                         |
 
 ***
 
