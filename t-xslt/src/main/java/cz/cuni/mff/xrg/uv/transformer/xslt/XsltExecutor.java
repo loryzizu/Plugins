@@ -128,6 +128,8 @@ public class XsltExecutor extends Thread {
             throws DPUException {
         LOG.info("New executor created!");
         this.proc = new Processor(false);
+        // register UUID extension function
+        proc.registerExtensionFunction(UUIDGenerator.getInstance());
         this.compiler = proc.newXsltCompiler();
         try {
             this.executable = compiler.compile(
@@ -179,7 +181,6 @@ public class XsltExecutor extends Thread {
                 - Runtime.getRuntime().freeMemory()) / 1024 / 1024));
         // Prepare classes and parameters.
         final Serializer out = new Serializer(task.targetFile);
-        executable.getProcessor().registerExtensionFunction(UUIDGenerator.getInstance());
         
         final XsltTransformer transformer = executable.load();
         
