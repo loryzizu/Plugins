@@ -21,7 +21,7 @@ public class UUIDGenerator extends ExtensionFunctionDefinition {
 
     @Override
     public StructuredQName getFunctionQName() {
-        return new StructuredQName("uuid", "xslt-functions", "randomUUID");
+        return new StructuredQName("uuid", "uuid-functions", "randomUUID");
     }
 
     @Override
