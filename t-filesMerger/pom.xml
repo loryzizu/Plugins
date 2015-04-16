@@ -10,10 +10,10 @@
 
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-t-filesMerger</artifactId>
-	<version>2.0.1-SNAPSHOT</version>
-	<packaging>bundle</packaging>
 	<name>T-FilesMerger</name>
 	<description></description>
+	<version>2.0.1</version>
+	<packaging>bundle</packaging>
 
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.transformer.filesmerger</dpu.package>

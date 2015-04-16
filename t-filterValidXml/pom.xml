@@ -11,10 +11,10 @@
 
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-t-filterValidXml</artifactId>
-	<version>2.0.1-SNAPSHOT</version>
-	<name> T-FilterValidXml</name>
 	<description>Validates XML inputs in 3 ways: checks if the XML is well formed, checks if it conforms to a specified XSD scheme and validates using specified XSLT template</description>
 	<packaging>bundle</packaging>
+	<version>2.0.1</version>
+	<name> T-FilterValidXml</name>
 
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.transformer.filtervalidxml</dpu.package>

@@ -10,10 +10,10 @@
 
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-t-relational</artifactId>
-	<version>2.0.1-SNAPSHOT</version>
-	<packaging>bundle</packaging>
 	<name>T-Relational</name>
 	<description>Transforms input database tables using SQL into one output table</description>
+	<version>2.0.1</version>
+	<packaging>bundle</packaging>
 
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.transformer.relational</dpu.package>
