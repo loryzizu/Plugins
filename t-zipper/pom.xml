@@ -1,91 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>eu.unifiedviews</groupId>
-        <artifactId>uv-pom-dpu</artifactId>
-        <version>2.0.0</version>
-    </parent>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>eu.unifiedviews</groupId>
+		<artifactId>uv-pom-dpu</artifactId>
+		<version>2.0.1</version>
+		<relativePath />
+	</parent>
 
-    <groupId>eu.unifiedviews.plugins</groupId>
-    <artifactId>uv-t-zipper</artifactId>
-    <name>T-Zipper</name>
-    <description>Zip input files into zip file of given name.</description>
-    <version>2.0.0</version>
-    <packaging>bundle</packaging>
+	<groupId>eu.unifiedviews.plugins</groupId>
+	<artifactId>uv-t-zipper</artifactId>
+	<name>T-Zipper</name>
+	<description>Zip input files into zip file of given name.</description>
+	<version>2.0.1</version>
+	<packaging>bundle</packaging>
 
-    <repositories>
-        <repository>
-            <id>maven.eea.sk</id>
-            <name>maven.eea.sk-public</name>
-            <url>http://maven.eea.sk/artifactory/public/</url>
-        </repository>
-    </repositories>
+	<properties>
+		<dpu.package>eu.unifiedviews.plugins.transformer.zipper</dpu.package>
+		<dpu.mainClass>Zipper</dpu.mainClass>
+		<!-- - - - -->
+		<mockito.version>1.10.8</mockito.version>
+		<powermock.version>1.6.1</powermock.version>
+	</properties>
 
-    <properties>
-        <dpu.package>eu.unifiedviews.plugins.transformer.zipper</dpu.package>
-        <dpu.mainClass>Zipper</dpu.mainClass>
-        <!-- - - - -->
-        <mockito.version>1.10.8</mockito.version>
-        <powermock.version>1.6.1</powermock.version>
-        <junit.version>4.12</junit.version>
-    </properties>
+	<dependencies>
+		<!-- Provided by Core. -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- UnifiedViews helpers. -->
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-helpers</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dpu-helpers</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Core UnifiedViews testing support. -->
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>module-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- UNIT Test dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.lingala.zip4j</groupId>
+			<artifactId>zip4j</artifactId>
+			<version>1.2.3</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
-    <dependencies>
-        <!-- Provided by Core. -->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- UnifiedViews helpers. -->
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>uv-dataunit-helpers</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>uv-dpu-helpers</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Core UnifiedViews testing support. -->
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>module-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- UNIT Test dependencies -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.lingala.zip4j</groupId>
-            <artifactId>zip4j</artifactId>
-            <version>1.2.3</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+	<repositories>
+		<repository>
+			<id>maven.eea.sk</id>
+			<name>maven.eea.sk-public</name>
+			<url>http://maven.eea.sk/artifactory/public/</url>
+		</repository>
+	</repositories>
+
 </project>

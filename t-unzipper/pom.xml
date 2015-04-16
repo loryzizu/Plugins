@@ -2,55 +2,46 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-        <groupId>eu.unifiedviews</groupId>
-        <artifactId>uv-pom-dpu</artifactId>
-        <version>2.0.0</version>
+		<groupId>eu.unifiedviews</groupId>
+		<artifactId>uv-pom-dpu</artifactId>
+		<version>2.0.1</version>
+		<relativePath />
 	</parent>
 
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-t-unzipper</artifactId>
 	<name>T-UnZipper</name>
 	<description>UnZip input file into files based on zip content.</description>
-	<version>2.0.0</version>
+	<version>2.0.1</version>
 	<packaging>bundle</packaging>
-
-	<repositories>
-		<repository>
-			<id>maven.eea.sk</id>
-			<name>maven.eea.sk-public</name>
-			<url>http://maven.eea.sk/artifactory/public/</url>
-		</repository>
-	</repositories>
 
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.transformer.unzipper</dpu.package>
 		<dpu.mainClass>UnZipper</dpu.mainClass>
-        <!-- - - - -->
+		<!-- - - - -->
 		<mockito.version>1.10.8</mockito.version>
 		<powermock.version>1.6.1</powermock.version>
-		<junit.version>4.12</junit.version>
 	</properties>
 
 	<dependencies>
-        <!-- Provided by Core. -->
+		<!-- Provided by Core. -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
 			<scope>provided</scope>
 		</dependency>
-        <!-- UnifiedViews helpers. -->
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>uv-dataunit-helpers</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>uv-dpu-helpers</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <!-- - - - -->
+		<!-- UnifiedViews helpers. -->
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-helpers</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dpu-helpers</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<!-- - - - -->
 		<dependency>
 			<groupId>net.lingala.zip4j</groupId>
 			<artifactId>zip4j</artifactId>
@@ -65,14 +56,13 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>${mockito.version}</version>
-			<scope>test</scope>		
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
@@ -87,5 +77,13 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>maven.eea.sk</id>
+			<name>maven.eea.sk-public</name>
+			<url>http://maven.eea.sk/artifactory/public/</url>
+		</repository>
+	</repositories>
 
 </project>

@@ -1,69 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>eu.unifiedviews</groupId>
-        <artifactId>uv-pom-dpu</artifactId>
-        <version>2.0.0</version>
-    </parent>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>eu.unifiedviews</groupId>
+		<artifactId>uv-pom-dpu</artifactId>
+		<version>2.0.1</version>
+		<relativePath />
+	</parent>
 
-    <groupId>eu.unifiedviews.plugins</groupId>
-    <artifactId>uv-t-xslt</artifactId>
-    <version>2.0.0</version>
-    <packaging>bundle</packaging>
-    <name>T-Xslt</name>
-    <description>Description of XSLT.</description>
-	
-    <properties>
-        <dpu.package>cz.cuni.mff.xrg.uv.transformer.xslt</dpu.package>
-        <dpu.mainClass>Xslt</dpu.mainClass>
-    </properties>
+	<groupId>eu.unifiedviews.plugins</groupId>
+	<artifactId>uv-t-xslt</artifactId>
+	<version>2.1.0</version>
+	<packaging>bundle</packaging>
+	<name>T-Xslt</name>
+	<description>Description of XSLT.</description>
 
-    <repositories>
-        <repository>
-            <id>maven.eea.sk</id>
-            <name>maven.eea.sk-public</name>
-            <url>http://maven.eea.sk/artifactory/public/</url>
-        </repository>
-    </repositories>
+	<properties>
+		<dpu.package>cz.cuni.mff.xrg.uv.transformer.xslt</dpu.package>
+		<dpu.mainClass>Xslt</dpu.mainClass>
+	</properties>
 
-    <dependencies>
-        <!-- UnifiedViews helpers. -->
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>uv-dataunit-helpers</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>uv-dpu-helpers</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <!-- XSLT dependencies. -->
-        <dependency>
-            <groupId>net.sf.saxon</groupId>
-            <artifactId>Saxon-HE</artifactId>
-            <version>9.6.0-4</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>xml-resolver</groupId>
-            <artifactId>xml-resolver</artifactId>
-            <version>1.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- - - - -->
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>module-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+	<dependencies>
+		<!-- UnifiedViews helpers. -->
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-helpers</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dpu-helpers</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<!-- XSLT dependencies. -->
+		<dependency>
+			<groupId>net.sf.saxon</groupId>
+			<artifactId>Saxon-HE</artifactId>
+			<version>9.6.0-4</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>xml-resolver</groupId>
+			<artifactId>xml-resolver</artifactId>
+			<version>1.2</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- - - - -->
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>module-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>maven.eea.sk</id>
+			<name>maven.eea.sk-public</name>
+			<url>http://maven.eea.sk/artifactory/public/</url>
+		</repository>
+	</repositories>
 
 </project>

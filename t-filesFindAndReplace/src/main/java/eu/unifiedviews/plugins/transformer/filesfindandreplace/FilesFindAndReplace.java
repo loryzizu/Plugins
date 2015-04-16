@@ -37,7 +37,7 @@ import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 
 @DPU.AsTransformer
-public class FilesFindAndReplace extends AbstractDpu<FilesFindAndReplaceConfig_V1> {
+public class FilesFindAndReplace extends AbstractDpu<FilesFindAndReplaceConfig_V2> {
 
     public static final String PREDICATE_HAS_DISTRIBUTION = "http://comsode.eu/hasDistribution";
 
@@ -56,7 +56,7 @@ public class FilesFindAndReplace extends AbstractDpu<FilesFindAndReplaceConfig_V
     public ConfigurationUpdate _ConfigurationUpdate;
 
     public FilesFindAndReplace() {
-        super(FilesFindAndReplaceVaadinDialog.class, ConfigHistory.noHistory(FilesFindAndReplaceConfig_V1.class));
+        super(FilesFindAndReplaceVaadinDialog.class, ConfigHistory.history(FilesFindAndReplaceConfig_V2.class).alternative(FilesFindAndReplaceConfig_V1.class).addCurrent(FilesFindAndReplaceConfig_V2.class));
     }
 
     private DPUContext dpuContext;
@@ -113,7 +113,9 @@ public class FilesFindAndReplace extends AbstractDpu<FilesFindAndReplaceConfig_V
                         }
                     });
 
-                    String str = IOUtils.toString(outputFile.toURI(), Charset.forName(config.getCharset()));
+                    Charset charset = Charset.forName(config.getEncoding().getCharset());
+
+                    String str = IOUtils.toString(outputFile.toURI(), charset);
                     for (Map.Entry<String, String> pattern : config.getPatterns().entrySet()) {
                         str = str.replace(pattern.getKey(), pattern.getValue());
                         if (this.dpuContext.canceled()) {
@@ -123,7 +125,7 @@ public class FilesFindAndReplace extends AbstractDpu<FilesFindAndReplaceConfig_V
                     FileOutputStream outputStream = null;
                     try {
                         outputStream = new FileOutputStream(outputFile);
-                        IOUtils.write(str, outputStream, Charset.forName(config.getCharset()));
+                        IOUtils.write(str, outputStream, charset);
                     } finally {
                         if (outputStream != null) {
                             outputStream.close();
