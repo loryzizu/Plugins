@@ -26,8 +26,8 @@
 | XSLT template | Template used during transformation |
 
 
-DPU supports random UUID generation using '''randomUUID()''' function in namespace '''uuid-functions'''. Example of usage:
-'''xml
+DPU supports random UUID generation using ```randomUUID()``` function in namespace ```uuid-functions```. Example of usage:
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet
     xmlns:uuid="uuid-functions"
@@ -37,7 +37,7 @@ DPU supports random UUID generation using '''randomUUID()''' function in namespa
         <xsl:value-of select="uuid:randomUUID()"/>
     </xsl:template>
 </xsl:stylesheet>
-'''
+```
 
 ***
 
