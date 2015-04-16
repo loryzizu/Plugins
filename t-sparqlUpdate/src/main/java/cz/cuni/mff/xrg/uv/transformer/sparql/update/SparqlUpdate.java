@@ -223,8 +223,9 @@ public class SparqlUpdate extends AbstractDpu<SparqlUpdateConfig_V1> {
      * @throws DPUException
      */
     protected URI createOutputGraph(RDFDataUnit.Entry entry) throws DPUException {
+        final String suffix = "/" + ctx.getExecMasterContext().getDpuContext().getDpuInstanceId().toString();
         try {
-            return rdfOutput.addNewDataGraph(entry.getSymbolicName());
+            return rdfOutput.addNewDataGraph(entry.getSymbolicName() + suffix);
         } catch (DataUnitException ex) {
             throw ContextUtils.dpuException(ctx, "sparqlUpdate.dpu.error.cantAddGraph", ex);
         }
