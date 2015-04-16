@@ -20,7 +20,24 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
+| Skip file on error | If selected and transformation fail, then the file is skipped and the execution continues. |
+| File extension | If provided then file extension in virtual path is set to given value.\nIf no virtual path is set for some file then error message is logged and no virtual path is set. |
+| Number of extra threads | How many additional workers should be spawn. Remember that higher number of workers may speed up transformation but will also result in greater memory consumption.\nThis option should work better with files that takes longer to transform. One worker thread is always spawned even if the value is zero. |
+| XSLT template | Template used during transformation |
 
+
+DPU supports random UUID generation using ```randomUUID()``` function in namespace ```uuid-functions```. Example of usage:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet
+    xmlns:uuid="uuid-functions"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    version="2.0">
+    <xsl:template match="/">
+        <xsl:value-of select="uuid:randomUUID()"/>
+    </xsl:template>
+</xsl:stylesheet>
+```
 
 ***
 
@@ -38,7 +55,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|2.0.1              | fixes in build dependencies |
+|2.1.0              | Added support for generation of UUIDs and fixes in build dependencies |
 |2.0.0              | Replaces with the DPU taken from the repository https://github.com/mff-uk/DPUs |
 |1.5.1              | fix in localization                            |
 |1.5.0              | N/A                                            |
