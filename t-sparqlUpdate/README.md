@@ -37,6 +37,7 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
+|2.0.2            | TODO to describe changes in commit 909c28ebb1a35c235981027285daa3c9bdd2eda4|
 |2.0.1            | fixes in build dependencies |
 |2.0.0            | Imported from the repository https://github.com/mff-uk/DPUs, using helpers 2.0.0 |
 
