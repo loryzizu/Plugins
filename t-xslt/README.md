@@ -20,6 +20,10 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
+| Skip file on error | If selected and transformation fail, then the file is skipped and the execution continues. |
+| File extension | If provided then file extension in virtual path is set to given value.\nIf no virtual path is set for some file then error message is logged and no virtual path is set. |
+| Number of extra threads | How many additional workers should be spawn. Remember that higher number of workers may speed up transformation but will also result in greater memory consumption.\nThis option should work better with files that takes longer to transform. One worker thread is always spawned even if the value is zero. |
+| XSLT template | Template used during transformation |
 
 
 DPU supports random UUID generation using '''randomUUID()''' function in namespace '''uuid-functions'''. Example of usage:
