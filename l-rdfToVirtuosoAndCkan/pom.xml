@@ -30,7 +30,7 @@
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>eu.opendatanode.plugins</groupId>
+			<groupId>org.opendatanode.plugins</groupId>
 			<artifactId>uv-l-rdfToCkan</artifactId>
 			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
