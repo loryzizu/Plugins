@@ -6,12 +6,14 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.UserDialogContext;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
@@ -43,8 +45,14 @@ public class RdfToVirtuosoVaadinDialog extends AbstractDialog<RdfToVirtuosoConfi
         super(RdfToVirtuoso.class);
     }
 
+    public void outerBuildDialogLayout(UserDialogContext ctx) {
+        this.ctx = ctx;
+        buildDialogLayout();
+    }
+    
     @Override
     protected void buildDialogLayout() {
+        setSizeFull();
         FormLayout mainLayout = new FormLayout();
 
         // top-level component properties
@@ -61,6 +69,8 @@ public class RdfToVirtuosoVaadinDialog extends AbstractDialog<RdfToVirtuosoConfi
         final TextField targerGraphNameTextField = createTextField(ctx.tr("RdfToVirtuosoVaadinDialog.targetGraphName"), targetGraphName);
         final CheckBox perGraphCheckbox = new CheckBox(ctx.tr("RdfToVirtuosoVaadinDialog.perGraph"), perGraph);
         perGraphCheckbox.addValueChangeListener(new ValueChangeListener() {
+
+            private static final long serialVersionUID = 6044061864546491939L;
 
             @Override
             public void valueChange(ValueChangeEvent event) {

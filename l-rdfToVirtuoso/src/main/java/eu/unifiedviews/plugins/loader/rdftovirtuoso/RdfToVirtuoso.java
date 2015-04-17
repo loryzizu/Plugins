@@ -24,6 +24,7 @@ import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.Update;
 import org.openrdf.query.UpdateExecutionException;
+import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
@@ -48,6 +49,8 @@ import eu.unifiedviews.helpers.dataunit.virtualgraph.VirtualGraphHelpers;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
+import eu.unifiedviews.plugins.loader.rdftovirtuoso.RdfToVirtuoso.Status;
 
 @DPU.AsLoader
 public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
@@ -62,7 +65,7 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
 
     VirtuosoRepository virtuosoRepository = null;
 
-    private static final String CLEAR_QUERY = "DEFINE sql:log-enable 3 CLEAR GRAPH <%s>";
+    static final String CLEAR_QUERY = "DEFINE sql:log-enable 3 CLEAR GRAPH <%s>";
 
     public static final String CONFIGURATION_VIRTUOSO_CREATE_USER = "dpu.l-filesToVirtuoso.create.user";
 
@@ -78,8 +81,7 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
         super(RdfToVirtuosoVaadinDialog.class, ConfigHistory.noHistory(RdfToVirtuosoConfig_V1.class));
     }
 
-    @Override
-    protected void innerExecute() throws DPUException {
+    public void outerExecute(UserExecContext ctx, RdfToVirtuosoConfig_V1 config) throws DPUException {
         Map<String, String> environment = ctx.getExecMasterContext().getDpuContext().getEnvironment();
         String virtuosoJdbcUrl = environment.get(CONFIGURATION_VIRTUOSO_JDBC_URL);
         if (config.getVirtuosoUrl() == null || config.getVirtuosoUrl().isEmpty()) {
@@ -168,7 +170,13 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
             executor = Executors.newFixedThreadPool(config.getThreadCount());
             for (int i = 0; i < config.getThreadCount(); i++) {
                 final String loggerName = LOG.getName() + ".Worker" + i;
-                futures.add(executor.<Status> submit(new LoadWorker(loggerName, workQueue, done)));
+                futures.add(executor.<Status> submit(new LoadWorker(loggerName,
+                        workQueue,
+                        done,
+                        rdfInput,
+                        rdfOutput,
+                        virtuosoRepository,
+                        config.isSkipOnError())));
             }
             executor.shutdown();
             LOG.info("Started {} load threads", config.getThreadCount());
@@ -236,11 +244,16 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
         }
     }
 
-    class Status {
+    @Override
+    protected void innerExecute() throws DPUException {
+        this.outerExecute(ctx, config);
+    }
+
+    static class Status {
         Set<Work> skippedEntries = new HashSet<>();
     }
 
-    class Work {
+    static class Work {
         RDFDataUnit.Entry inEntry;
 
         URI outDataGraphURI;
@@ -250,23 +263,36 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
         boolean perGraphMode;
     }
 
-    class LoadWorker implements Callable<Status> {
-        private final Logger LOG;
+    static class LoadWorker implements Callable<Status> {
+        final Logger LOG;
 
-        private ConcurrentLinkedQueue<Work> workQueue;
+        ConcurrentLinkedQueue<Work> workQueue;
 
-        private AtomicInteger done;
+        AtomicInteger done;
 
-        public LoadWorker(String loggerName, ConcurrentLinkedQueue<Work> workQueue, AtomicInteger done) {
+        RDFDataUnit rdfInput;
+
+        WritableRDFDataUnit rdfOutput;
+
+        Repository virtuosoRepository;
+
+        boolean skipOnError;
+
+        public LoadWorker(String loggerName, ConcurrentLinkedQueue<Work> workQueue, AtomicInteger done,
+                RDFDataUnit rdfInput, WritableRDFDataUnit rdfOutput, Repository virtuosoRepository, boolean skipOnError) {
             this.LOG = LoggerFactory.getLogger(loggerName);
             this.workQueue = workQueue;
             this.done = done;
+            this.rdfInput = rdfInput;
+            this.rdfOutput = rdfOutput;
+            this.virtuosoRepository = virtuosoRepository;
+            this.skipOnError = skipOnError;
         }
 
         @Override
         public Status call() throws InterruptedException, Exception {
             Work work = null;
-            Status status = new Status();
+            Status status = new RdfToVirtuoso.Status();
             RepositoryConnection inConnection = null;
             RepositoryConnection externalConnection = null;
             ResourceHelper outResourceHelper = ResourceHelpers.create(rdfOutput);
@@ -281,7 +307,7 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
                             throw new InterruptedException();
                         }
                         if (work.clearGraphBeforeLoad && work.perGraphMode) {
-                            Update update = externalConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(CLEAR_QUERY, work.outDataGraphURI.stringValue()));
+                            Update update = externalConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(RdfToVirtuoso.CLEAR_QUERY, work.outDataGraphURI.stringValue()));
                             update.execute();
                         }
 
@@ -299,7 +325,7 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
                         }
                         done.incrementAndGet();
                     } catch (RepositoryException | DataUnitException | UpdateExecutionException | MalformedQueryException ex) {
-                        if (config.isSkipOnError()) {
+                        if (skipOnError) {
                             LOG.warn("Skipping graph: '{}' because of error.", work.inEntry.toString(), ex);
                             status.skippedEntries.add(work);
                         } else {
