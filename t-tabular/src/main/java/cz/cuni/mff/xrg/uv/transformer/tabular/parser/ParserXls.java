@@ -4,7 +4,6 @@ import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnType;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdf;
 import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdfConfigurator;
-import eu.unifiedviews.dpu.DPUContext;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -177,7 +176,8 @@ public class ParserXls implements Parser {
             if (row == null) {
                 continue;
             }
-            final int columnStart = row.getFirstCellNum();
+            // We use zero as the first column must be column 1.
+            final int columnStart = 0;
             final int columnEnd = row.getLastCellNum();
             // generate header
             if (!headerGenerated) {
@@ -195,12 +195,10 @@ public class ParserXls implements Parser {
                 }
                 if (columnNames == null) {
                     columnNames = new ArrayList<>(columnEnd);
-                    // Generate column names, columns may not start from 0, so we use special
-                    // variable to count from 0.
+                    // Generate column names, first column is col1.
                     int columnIndex = 0;
                     for (int i = columnStart; i < columnEnd; i++) {
-                        ++columnIndex;
-                        columnNames.add("col" + Integer.toString(columnIndex + 1));
+                        columnNames.add("col" + Integer.toString(++columnIndex));
                     }
                 }
                 // add user defined names
