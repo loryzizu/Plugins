@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.uv.transformer.sparql.construct;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -13,8 +14,10 @@ import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +28,7 @@ import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPUContext.MessageType;
 import eu.unifiedviews.helpers.dataunit.DataUnitUtils;
 import eu.unifiedviews.helpers.dataunit.metadata.MetadataUtilsInstance;
+import eu.unifiedviews.helpers.dataunit.rdf.RdfDataUnitUtils;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
 import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
@@ -52,12 +56,12 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
 
     @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
-    
+
     @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.sparql.SPARQLConfig__V1")
     public ConfigurationUpdate _ConfigurationUpdate;
 
     public SparqlConstruct() {
-        super(SparqlConstructVaadinDialog.class, 
+        super(SparqlConstructVaadinDialog.class,
                 ConfigHistory.history(SPARQLConfig_V1.class).addCurrent(SparqlConstructConfig_V1.class));
     }
 
@@ -92,6 +96,7 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
      */
     protected void executeUpdateQuery(final String query, final List<RDFDataUnit.Entry> sourceEntries)
             throws DPUException {
+        final List<URI> outputGraphs = new LinkedList<>();
         // Execute based on configuration.
         if (config.isPerGraph()) {
             // Execute one graph at time.
@@ -121,6 +126,7 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
                     }
 
                 });
+                outputGraphs.add(targetGraph);
             }
         } else {
             // All graph at once, just check size.
@@ -148,7 +154,19 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
                 }
 
             });
+            outputGraphs.add(targetGraph);
         }
+        // Summmary message.
+        long inputSize = getTriplesCount(rdfOutput, faultTolerance.execute(new FaultTolerance.ActionReturn<URI[]>() {
+
+            @Override
+            public URI[] action() throws Exception {
+                return RdfDataUnitUtils.asGraphs(sourceEntries);
+            }
+        }) );
+        long outputSize = getTriplesCount(rdfOutput, outputGraphs.toArray(new URI[0]));
+        
+        ContextUtils.sendShortInfo(ctx, "sparqlUpdate.dpu.msg.report", inputSize, outputSize);
     }
 
     /**
@@ -285,6 +303,34 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
     protected final boolean useDataset() {
         // Should be removed once bug in Sesame or Virtuoso is fixex.
         return System.getProperty(MetadataUtilsInstance.ENV_PROP_VIRTUOSO) == null;
+    }
+
+    /**
+     *
+     * @param dataUnit
+     * @param entries
+     * @return Number of triples in given entries.
+     */
+    protected Long getTriplesCount(final RDFDataUnit dataUnit, final URI[] graphs)
+            throws DPUException {
+        return faultTolerance.execute(new FaultTolerance.ActionReturn<Long>() {
+
+            @Override
+            public Long action() throws Exception {
+                RepositoryConnection connection = null;
+                Long size = 0l;
+                try {
+                    connection = dataUnit.getConnection();
+                    size = connection.size(graphs);
+                } finally {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+                return size;
+            }
+
+        });
     }
 
 }
