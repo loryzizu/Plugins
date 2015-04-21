@@ -10,7 +10,7 @@
 
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-t-sparqlConstruct</artifactId>
-	<name>t-SparqlConstruct</name>
+	<name>T-SparqlConstruct</name>
 	<description>Execute a single SPARQL construct query. Does not support quads!</description>
 	<version>2.0.2-SNAPSHOT</version>
 	<packaging>bundle</packaging>
