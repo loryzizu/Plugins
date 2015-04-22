@@ -65,17 +65,13 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
 
     VirtuosoRepository virtuosoRepository = null;
 
-    static final String CLEAR_QUERY = "DEFINE sql:log-enable 3 CLEAR GRAPH <%s>";
+    static final String CLEAR_QUERY = "CLEAR GRAPH <%s>";
 
-    public static final String CONFIGURATION_VIRTUOSO_CREATE_USER = "dpu.l-filesToVirtuoso.create.user";
+    public static final String CONFIGURATION_VIRTUOSO_USERNAME = "dpu.l-rdfToVirtuoso.username";
 
-    public static final String CONFIGURATION_VIRTUOSO_USERNAME = "dpu.l-filesToVirtuoso.username";
+    public static final String CONFIGURATION_VIRTUOSO_PASSWORD = "dpu.l-rdfToVirtuoso.password";
 
-    public static final String CONFIGURATION_VIRTUOSO_PASSWORD = "dpu.l-filesToVirtuoso.password";
-
-    public static final String CONFIGURATION_VIRTUOSO_JDBC_URL = "dpu.l-filesToVirtuoso.jdbc.url";
-
-    public static final String CONFIGURATION_VIRTUOSO_LOAD_DIRECTORY_PATH = "dpu.l-filesToVirtuoso.load.directory.path";
+    public static final String CONFIGURATION_VIRTUOSO_JDBC_URL = "dpu.l-rdfToVirtuoso.jdbc.url";
 
     public RdfToVirtuoso() {
         super(RdfToVirtuosoVaadinDialog.class, ConfigHistory.noHistory(RdfToVirtuosoConfig_V1.class));
@@ -95,10 +91,10 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
         if (config.getPassword() == null || config.getPassword().isEmpty()) {
             config.setPassword(password);
         }
-        String organization = ctx.getExecMasterContext().getDpuContext().getOrganization();
-
         final URI globalOutGraphURI = org.apache.commons.lang3.StringUtils.isEmpty(config.getTargetGraphName()) ? null : new URIImpl(config.getTargetGraphName());
-
+        if (config.getThreadCount() == 0) {
+            config.setThreadCount(1);
+        }
         RepositoryConnection externalConnection = null;
         virtuosoRepository = new VirtuosoRepository(config.getVirtuosoUrl(), config.getUsername(), config.getPassword());
         try {

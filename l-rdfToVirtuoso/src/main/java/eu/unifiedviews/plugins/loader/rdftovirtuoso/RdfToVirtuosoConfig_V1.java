@@ -12,7 +12,7 @@ public class RdfToVirtuosoConfig_V1 {
 
     private String targetGraphName = "";
 
-    private int threadCount = 1;
+    private int threadCount = 0;
 
     private boolean skipOnError = false;
 
