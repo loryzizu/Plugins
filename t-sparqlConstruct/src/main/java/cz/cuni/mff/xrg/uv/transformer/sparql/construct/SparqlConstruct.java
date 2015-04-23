@@ -68,14 +68,14 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
     @Override
     protected void innerExecute() throws DPUException {
         if (useDataset()) {
-            ContextUtils.sendShortInfo(ctx, "OpenRdf mode.");
+            ContextUtils.sendShortInfo(ctx, "SparqlConstruct.execute.openrdfMode");
         } else {
-            ContextUtils.sendShortInfo(ctx, "Virtuoso mode.");
+            ContextUtils.sendShortInfo(ctx, "SparqlConstruct.execute.virtuosoMode");
         }
         // Update query ie. substitute constract with insert.
         String query = config.getQuery();
         if (query == null || query.isEmpty()) {
-            throw new DPUException("Query string is null or empty");
+            throw ContextUtils.dpuException(ctx, "SparqlConstruct.execute.exception.emptyQuery");
         }
         // Modify query - we always do inserts.
         query = query.replaceFirst("(?i)CONSTRUCT", "INSERT");
@@ -100,8 +100,7 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
         // Execute based on configuration.
         if (config.isPerGraph()) {
             // Execute one graph at time.
-            ContextUtils.sendMessage(ctx, MessageType.INFO, "Per-graph query execution",
-                    "Number of graphs: %d", sourceEntries.size());
+            ContextUtils.sendInfo(ctx, "SparqlConstruct.execute.perGraphMode", "SparqlConstruct.execute.graphCount", sourceEntries.size());
             // Execute one query per graph, the target graph is always the same.
             int counter = 1;
             for (final RDFDataUnit.Entry sourceEntry : sourceEntries) {
@@ -131,11 +130,9 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
         } else {
             // All graph at once, just check size.
             if (sourceEntries.size() > MAX_GRAPH_COUNT) {
-                throw new DPUException("Too many graphs .. (limit: " + MAX_GRAPH_COUNT + ", given: "
-                        + sourceEntries.size() + ")");
+                throw ContextUtils.dpuException(ctx, "SparqlConstruct.execute.exception.tooManyGraphs", MAX_GRAPH_COUNT, sourceEntries.size());
             }
-            ContextUtils.sendMessage(ctx, MessageType.INFO, "Executing over all graphs",
-                    "Executing query over all graphs (%d)", sourceEntries.size());
+            ContextUtils.sendInfo(ctx, "SparqlConstruct.execute.allGraphMode", "SparqlConstruct.execute.allGraphMode.count", sourceEntries.size());
             // Prepare single output graph.
             final URI targetGraph = faultTolerance.execute(new FaultTolerance.ActionReturn<URI>() {
 
@@ -163,18 +160,20 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
             public URI[] action() throws Exception {
                 return RdfDataUnitUtils.asGraphs(sourceEntries);
             }
-        }) );
+        }));
         long outputSize = getTriplesCount(rdfOutput, outputGraphs.toArray(new URI[0]));
-        
-        ContextUtils.sendShortInfo(ctx, "sparqlUpdate.dpu.msg.report", inputSize, outputSize);
+
+        ContextUtils.sendShortInfo(ctx, "SparqlConstruct.execute.report", inputSize, outputSize);
     }
 
     /**
      * Execute given query.
      *
      * @param query
-     * @param sourceEntries USING graphs.
-     * @param targetGraph   WITH graphs.
+     * @param sourceEntries
+     *            USING graphs.
+     * @param targetGraph
+     *            WITH graphs.
      * @param connection
      * @throws eu.unifiedviews.dpu.DPUException
      * @throws eu.unifiedviews.dataunit.DataUnitException
@@ -205,15 +204,12 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
                 update.setDataset(dataset);
             }
             update.execute();
-        } catch (MalformedQueryException | UpdateExecutionException ex) {
-            throw new DPUException("Problem with query", ex);
-        } catch (RepositoryException ex) {
-            throw new DPUException("Problem with repository.", ex);
+        } catch (RepositoryException | MalformedQueryException | UpdateExecutionException ex) {
+            throw ContextUtils.dpuException(ctx, ex, "SparqlConstruct.execute.exception.updateExecute");
         }
     }
 
     /**
-     *
      * @return New output graph.
      * @throws DPUException
      */
@@ -224,12 +220,11 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
         try {
             return rdfOutput.addNewDataGraph(symbolicName);
         } catch (DataUnitException ex) {
-            throw new DPUException("DPU failed to add a new graph.", ex);
+            throw ContextUtils.dpuException(ctx, ex, "SparqlConstruct.execute.exception.addGraph");
         }
     }
 
     /**
-     *
      * @param symbolicName
      * @return New output graph.
      * @throws DPUException
@@ -239,7 +234,7 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
         try {
             return rdfOutput.addNewDataGraph(entry.getSymbolicName() + suffix);
         } catch (DataUnitException ex) {
-            throw new DPUException("DPU failed to add a new graph.", ex);
+            throw ContextUtils.dpuException(ctx, ex, "SparqlConstruct.execute.exception.addGraph");
         }
     }
 
@@ -258,8 +253,8 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
     }
 
     /**
-     *
-     * @param entries List of entries to use.
+     * @param entries
+     *            List of entries to use.
      * @return Using clause for SPARQL insert, based on input graphs.
      * @throws DPUException
      */
@@ -274,7 +269,7 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
                     try {
                         usingClause.append(entry.getDataGraphURI().stringValue());
                     } catch (DataUnitException ex) {
-                        throw new DPUException("Problem with DataUnit.", ex);
+                        throw ContextUtils.dpuException(ctx, ex, "SparqlConstruct.execute.exception.internal");
                     }
                     usingClause.append("> \n");
                 }
@@ -285,7 +280,6 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
     }
 
     /**
-     *
      * @param dataUnit
      * @return Data graphs in given DataUnit.
      * @throws DPUException
@@ -306,7 +300,6 @@ public class SparqlConstruct extends AbstractDpu<SparqlConstructConfig_V1> {
     }
 
     /**
-     *
      * @param dataUnit
      * @param entries
      * @return Number of triples in given entries.
