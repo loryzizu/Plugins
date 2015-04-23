@@ -38,6 +38,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
+|2.0.2-SNAPSHOT              | sk and en localization |
 |2.0.1              | fixes in build dependencies |
 |2.0.0              | Updated to helpers 2.0.0 |
 |1.5.0              | N/A          |
