@@ -26,14 +26,14 @@ public class SparqlSelectVaadinDialog extends AbstractDialog<SparqlSelectConfig>
         txtTarget = new TextField();
         txtTarget.setWidth("100%");
         txtTarget.setHeight("-1px");
-        txtTarget.setCaption("SparqlSelectVaadinDialog.txtTarget");
+        txtTarget.setCaption(ctx.tr("SparqlSelectVaadinDialog.txtTarget"));
         txtTarget.setRequired(true);
         mainLayout.addComponent(txtTarget);
         mainLayout.setExpandRatio(txtTarget, 0);
 
         txtQuery = new TextArea();
         txtQuery.setSizeFull();
-        txtQuery.setCaption("SparqlSelectVaadinDialog.txtQuery");
+        txtQuery.setCaption(ctx.tr("SparqlSelectVaadinDialog.txtQuery"));
         txtTarget.setRequired(true);
         mainLayout.addComponent(txtQuery);
         mainLayout.setExpandRatio(txtQuery, 1);
