@@ -40,6 +40,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
+|2.0.2-SNAPSHOT              | Sk localization and minor typos |
 |2.0.1              | fixes in build dependencies |
 |2.0.0              | Update for helpers 2.0.0, added statement-based progress log.|
 |1.5.1              | fixed per graph select                         |                           
