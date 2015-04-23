@@ -15,8 +15,6 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
 
     private static final long serialVersionUID = -5668436075836909428L;
 
-    private static final String COMMIT_SIZE_LABEL = "Commit size (0 = one file, one transaction, 1 = autocommit connection, n = commit every n triples)";
-
     private final ObjectProperty<Integer> commitSize = new ObjectProperty<>(0);
 
     private ComboBox comboFailPolicy;
@@ -44,29 +42,29 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
         mainLayout.setWidth("100%");
         mainLayout.setHeight("-1px");
 
-        mainLayout.addComponent(new TextField(COMMIT_SIZE_LABEL, commitSize));
+        mainLayout.addComponent(new TextField(ctx.tr("FilesToRDFVaadinDialog.commitSize"), commitSize));
 
-        comboFailPolicy = new ComboBox("What to do if extraction on a single file fail:");
+        comboFailPolicy = new ComboBox(ctx.tr("FilesToRDFVaadinDialog.comboFailPolicy"));
         comboFailPolicy.addItem(FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING);
-        comboFailPolicy.setItemCaption(FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING, "Skip and continue");
+        comboFailPolicy.setItemCaption(FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING, ctx.tr("FilesToRDFVaadinDialog.comboFailPolicy.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING"));
         comboFailPolicy.addItem(FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING);
-        comboFailPolicy.setItemCaption(FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING, "Stop execution of the pipeline");
+        comboFailPolicy.setItemCaption(FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING, ctx.tr("FilesToRDFVaadinDialog.comboFailPolicy.STOP_EXTRACTION_ERROR_HANDLING"));
         comboFailPolicy.setInvalidAllowed(false);
         comboFailPolicy.setNullSelectionAllowed(false);
         mainLayout.addComponent(comboFailPolicy);
 
-        comboOutputGraph = new ComboBox("Policy for output symbolic name selection:");
+        comboOutputGraph = new ComboBox(ctx.tr("FilesToRDFVaadinDialog.comboOutputGraph"));
         comboOutputGraph.addItem(FilesToRDFConfig_V1.USE_INPUT_SYMBOLIC_NAME);
-        comboOutputGraph.setItemCaption(FilesToRDFConfig_V1.USE_INPUT_SYMBOLIC_NAME, "Use input file's symbolic name");
+        comboOutputGraph.setItemCaption(FilesToRDFConfig_V1.USE_INPUT_SYMBOLIC_NAME, ctx.tr("FilesToRDFVaadinDialog.comboOutputGraph.USE_INPUT_SYMBOLIC_NAME"));
         comboOutputGraph.addItem(FilesToRDFConfig_V1.USE_FIXED_SYMBOLIC_NAME);
-        comboOutputGraph.setItemCaption(FilesToRDFConfig_V1.USE_FIXED_SYMBOLIC_NAME, "Use single fixed symbolic name");
+        comboOutputGraph.setItemCaption(FilesToRDFConfig_V1.USE_FIXED_SYMBOLIC_NAME, ctx.tr("FilesToRDFVaadinDialog.comboOutputGraph.USE_FIXED_SYMBOLIC_NAME"));
         comboOutputGraph.setInvalidAllowed(false);
         comboOutputGraph.setNullSelectionAllowed(false);
         comboOutputGraph.setImmediate(true);
         mainLayout.addComponent(comboOutputGraph);
 
-        txtSymbolicName = new TextField("Fixed output symbolic name:");
-        txtSymbolicName.setDescription("Symbolic name for output, if left blank an 'unique' symbolic is generated.");
+        txtSymbolicName = new TextField(ctx.tr("FilesToRDFVaadinDialog.txtSymbolicName"));
+        txtSymbolicName.setDescription(ctx.tr("FilesToRDFVaadinDialog.txtSymbolicName.description"));
         txtSymbolicName.setWidth("100%");
         txtSymbolicName.setInputPrompt("auto");
         txtSymbolicName.setNullSettingAllowed(true);
