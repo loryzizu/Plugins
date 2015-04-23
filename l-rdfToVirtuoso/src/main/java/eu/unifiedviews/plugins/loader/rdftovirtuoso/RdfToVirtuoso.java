@@ -50,7 +50,6 @@ import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
 import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
-import eu.unifiedviews.plugins.loader.rdftovirtuoso.RdfToVirtuoso.Status;
 
 @DPU.AsLoader
 public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
