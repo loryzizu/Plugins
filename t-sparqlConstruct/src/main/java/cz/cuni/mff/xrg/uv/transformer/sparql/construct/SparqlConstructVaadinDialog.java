@@ -31,7 +31,7 @@ public class SparqlConstructVaadinDialog extends AbstractDialog<SparqlConstructC
     public SparqlConstructConfig_V1 getConfiguration() throws DPUConfigException {
         final SparqlConstructConfig_V1 c = new SparqlConstructConfig_V1();
         if (txtQuery.getValue().isEmpty()) {
-            throw new DPUConfigException("Query must not be empty.");
+            throw new DPUConfigException(ctx.tr("SparqlConstructVaadinDialog.emptyQuery"));
         }
         c.setQuery(txtQuery.getValue());
         c.setPerGraph(checkPerGraph.getValue());
@@ -45,12 +45,12 @@ public class SparqlConstructVaadinDialog extends AbstractDialog<SparqlConstructC
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
 
-        checkPerGraph = new CheckBox("Per-graph execution");
+        checkPerGraph = new CheckBox(ctx.tr("SparqlConstructVaadinDialog.perGraphMode"));
         checkPerGraph.setWidth("100%");
         mainLayout.addComponent(checkPerGraph);
         mainLayout.setExpandRatio(checkPerGraph, 0.0f);
 
-        txtQuery = new TextArea("SPARQL construct query");
+        txtQuery = new TextArea(ctx.tr("SparqlConstructVaadinDialog.constructQuery"));
         txtQuery.setSizeFull();
         txtQuery.setRequired(true);
         mainLayout.addComponent(txtQuery);
