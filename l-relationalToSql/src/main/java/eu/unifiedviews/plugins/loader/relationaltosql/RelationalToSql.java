@@ -262,7 +262,7 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
         ResultSet tables = null;
         try {
             dbm = conn.getMetaData();
-            tables = dbm.getTables(null, null, targetTableName, null);
+            tables = dbm.getTables(null, null, targetTableName.toLowerCase(), null);
             if (tables.next()) {
                 bTableExists = true;
             }
