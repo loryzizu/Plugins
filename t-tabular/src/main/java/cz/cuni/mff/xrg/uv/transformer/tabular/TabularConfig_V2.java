@@ -144,6 +144,11 @@ public class TabularConfig_V2 {
      */
     private boolean generateTableClass = false;
 
+    /**
+     * Generate RDF.LABEL for columns from colum name.
+     */
+    private boolean generateLabels = false;
+
     public TabularConfig_V2() {
     }
 
@@ -323,10 +328,18 @@ public class TabularConfig_V2 {
         this.generateTableClass = tableRowClass;
     }
 
+    public boolean isGenerateLabels() {
+        return generateLabels;
+    }
+
+    public void setGenerateLabels(boolean generateLabels) {
+        this.generateLabels = generateLabels;
+    }
+
     public TableToRdfConfig getTableToRdfConfig() {
         return new TableToRdfConfig(keyColumn, baseURI, columnsInfo,
                 generateNew, rowsClass, ignoreBlankCells, columnsInfoAdv,
-                advancedKeyColumn, generateRowTriple, autoAsStrings, generateTableClass);
+                advancedKeyColumn, generateRowTriple, autoAsStrings, generateTableClass, generateLabels);
     }
 
     public ParserCsvConfig getParserCsvConfig() {
