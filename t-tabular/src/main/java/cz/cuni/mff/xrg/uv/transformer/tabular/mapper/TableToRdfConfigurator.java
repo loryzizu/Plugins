@@ -8,7 +8,10 @@ import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnType;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ValueGenerator;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ValueGeneratorReplace;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParseFailed;
+
 import java.util.*;
+
+import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,6 +139,14 @@ public class TableToRdfConfigurator {
             valueGenerators.add(ValueGeneratorReplace.create(
                 tableToRdf.valueFactory.createURI(columnInfo.getURI()),
                 template));
+            //
+            // generate metadata about column - for now only labels
+            //
+            if (config.generateLabels) {
+                tableToRdf.outRdf.add(
+                    tableToRdf.valueFactory.createURI(columnInfo.getURI()), RDFS.LABEL,
+                    tableToRdf.valueFactory.createLiteral(columnName));
+            }
         }
         //
         // key template
