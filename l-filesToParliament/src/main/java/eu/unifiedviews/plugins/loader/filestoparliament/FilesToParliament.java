@@ -66,10 +66,10 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
             response = client.execute(httpPost);
 
             if (response.getStatusLine().getStatusCode() != 200) {
-                throw ContextUtils.dpuException(ctx, "RdfToCkan.execute.exception.uploadFail");
+                throw ContextUtils.dpuException(ctx, "FilesToParliament.execute.uploadFail");
             }
         } catch (URISyntaxException | IllegalStateException | IOException | DataUnitException ex) {
-            throw ContextUtils.dpuException(ctx, ex, "RdfToCkan.execute.exception.exception");
+            throw ContextUtils.dpuException(ctx, ex, "FilesToParliament.execute.exception");
         } finally {
             if (response != null) {
                 EntityUtils.consumeQuietly(response.getEntity());
@@ -95,7 +95,7 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
                 sendFile(ctx, config.getBulkUploadEndpointURL(), client, config.getRdfFileFormat().toUpperCase(), filename, entry);
             }
         } catch (DataUnitException ex) {
-            throw ContextUtils.dpuException(ctx, ex, "RdfToCkan.execute.exception.exception");
+            throw ContextUtils.dpuException(ctx, ex, "FilesToParliament.execute.exception");
         } finally {
             if (client != null) {
                 try {
