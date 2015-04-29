@@ -60,10 +60,11 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
             uriBuilder.setPath(uriBuilder.getPath());
             HttpPost httpPost = new HttpPost(uriBuilder.build().normalize());
             MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create()
-                    .addTextBody("graph", graph, ContentType.MULTIPART_FORM_DATA)
                     .addTextBody("dataFormat", rdfFormat, ContentType.MULTIPART_FORM_DATA)
                     .addBinaryBody("statements", new File(URI.create(entry.getFileURIString())), ContentType.DEFAULT_BINARY, filename);
-
+            if (graph != null) {
+                entityBuilder.addTextBody("graph", graph, ContentType.MULTIPART_FORM_DATA);
+            }
             HttpEntity entity = entityBuilder.build();
             httpPost.setEntity(entity);
             response = client.execute(httpPost);

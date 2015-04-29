@@ -77,6 +77,7 @@ public class FilesToParliamentVaadinDialog extends AbstractDialog<FilesToParliam
         });
 
         mainLayout.addComponent(perGraphCheckbox);
+        mainLayout.addComponent(targerGraphNameTextField);
         setCompositionRoot(mainLayout);
     }
 
