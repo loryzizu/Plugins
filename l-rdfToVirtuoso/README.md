@@ -6,7 +6,7 @@
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |L-RdfToVirtuoso                                              |
-|**Description:**              |RdfToVirtuoso uses Virtuos Sesame Provider (OpenRDF API) to load RDF graphs from internal store to external Virtuoso instance. |
+|**Description:**              |RdfToVirtuoso uses Virtuoso Sesame Provider 1.21 (Virtuoso 7 Develop branch) which works with Virtuoso 7, to load RDF graphs from internal store to external Virtuoso instance. |
 |**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                               |
 |**DPU class name:**           |RdfToVirtuoso     | 
@@ -35,7 +35,8 @@
 
 |Name                |Type       |DataUnit                         |Description                        |
 |--------------------|-----------|---------------------------------|-----------------------------------|
-|TODO: provide Name, Dataunit and Description of input |i |  |  |
+|rdfInput |i | RDFDataUnit | RDF graphs to be loaded |
+|rdfOutput |o | WritableRDFDataUnit | In per-graph mode: RDF graphs from input with CKAN Resource set, with VirtualGraph set to real graph name, where the data were loaded. In single graph mode: One RDF graph with CKAN Resource set, with VirtualGraph set to real graph name, where the data were loaded. |
 
 ***
 

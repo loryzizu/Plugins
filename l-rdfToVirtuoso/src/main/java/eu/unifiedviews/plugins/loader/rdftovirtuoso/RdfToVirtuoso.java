@@ -59,7 +59,7 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
     @DataUnit.AsInput(name = "rdfInput")
     public RDFDataUnit rdfInput;
 
-    @DataUnit.AsOutput(name = "rdfOutput")
+    @DataUnit.AsOutput(name = "rdfOutput", optional = true)
     public WritableRDFDataUnit rdfOutput;
 
     VirtuosoRepository virtuosoRepository = null;
