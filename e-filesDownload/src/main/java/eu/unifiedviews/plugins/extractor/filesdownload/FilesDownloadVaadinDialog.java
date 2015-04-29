@@ -85,12 +85,13 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
 
                 if (propertyId.equals("uri")) {
                     result.setDescription(ctx.tr("FilesDownloadVaadinDialog.uri.description"));
-                    result.setWidth("100%");
                 } else if (propertyId.equals("password")) {
                     result = new PasswordField();
                 } else if (propertyId.equals("fileName")) {
                     result.setDescription(ctx.tr("FilesDownloadVaadinDialog.fileName.description"));
                 }
+
+                result.setWidth("100%");
 
                 return result;
             }
