@@ -1,17 +1,17 @@
-# L-FilesUpload #
+# L-FilesToParliament #
 ----------
 
 ###General###
 
 |                              |                                                                             |
 |------------------------------|-----------------------------------------------------------------------------|
-|**Name:**                     |L-FilesUpload                                                                |
-|**Description:**              |Uploads list of files. Replaces L-FilesToLocalFS and L-FilesToScp.           |
+|**Name:**                     |L-FilesToParliament                                                                |
+|**Description:**              |Uploads list of files to Parliament store using bulk HTTP interface.          |
 |**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                                                             |
-|**DPU class name:**           |FilesUpload                                                                  | 
-|**Configuration class name:** |FilesUploadConfig_V1                                                         |
-|**Dialogue class name:**      |FilesUploadVaadinDialog                                                      |
+|**DPU class name:**           |FilesToParliament                                                                  | 
+|**Configuration class name:** |FilesToParliamentConfig_V1                                                         |
+|**Dialogue class name:**      |FilesToParliamentVaadinDialog                                                      |
 
 ***
 
@@ -19,9 +19,8 @@
 
 |Parameter                                       |Description                                                              |
 |------------------------------------------------|-------------------------------------------------------------------------|
-|**Destination directory absolute path***        |Destination path for files to upload.                                    |
-|**Username:**                                   |Username for destination host.                                           |
-|**Password:**                                   |Password for the username.                                               |
+|**Bulk upload endpoint URL***        |Bulk upload endpoint URL for Parliament store (e.g. http://localhost:8080/parliament/bulk/insert)                                 |
+|**RDF format**                                   |RDF format of input files (to instruct Parliament loader).    |
 
 ***
 
@@ -37,9 +36,7 @@
 
 |Version          |Release notes                |
 |-----------------|-----------------------------|
-|2.0.1            | fixes in build dependencies |
-|2.0.0            | Update for helpers 2.0.0. Input/output dataUnits names updated. |
-|1.0.0            | N/A                         |
+|1.0.0            | Initial release |
 
 ***
 
@@ -48,4 +45,3 @@
 |Author           |Notes                           |
 |-----------------|--------------------------------|
 |N/A              |N/A                             | 
-|Petr Škoda       |VirtualPath is required.        |
