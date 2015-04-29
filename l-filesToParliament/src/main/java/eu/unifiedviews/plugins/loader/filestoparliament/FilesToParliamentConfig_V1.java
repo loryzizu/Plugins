@@ -5,6 +5,8 @@ public class FilesToParliamentConfig_V1 {
 
     private String rdfFileFormat = "Auto";
 
+    private String targetGraphName = "";
+    
     public String getBulkUploadEndpointURL() {
         return bulkUploadEndpointURL;
     }
@@ -21,4 +23,11 @@ public class FilesToParliamentConfig_V1 {
         this.rdfFileFormat = rdfFileFormat;
     }
 
+    public String getTargetGraphName() {
+        return targetGraphName;
+    }
+
+    public void setTargetGraphName(String targetGraphName) {
+        this.targetGraphName = targetGraphName;
+    }
 }

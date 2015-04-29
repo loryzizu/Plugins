@@ -1,13 +1,16 @@
 package eu.unifiedviews.plugins.loader.filestoparliament;
 
 import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openrdf.rio.RDFFormat;
 
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -22,7 +25,9 @@ public class FilesToParliamentVaadinDialog extends AbstractDialog<FilesToParliam
     private NativeSelect selectRdfFormat;
 
     private static Set<RDFFormat> supportedRdfFormats;
-
+    private ObjectProperty<String> targetGraphName = new ObjectProperty<String>("");
+    private ObjectProperty<Boolean> perGraph = new ObjectProperty<Boolean>(
+            false);    
     private static RDFFormat auto;
     static {
         auto = new RDFFormat("Auto", "text/plain",
@@ -58,6 +63,20 @@ public class FilesToParliamentVaadinDialog extends AbstractDialog<FilesToParliam
         selectRdfFormat.setNullSelectionAllowed(false);
         selectRdfFormat.setImmediate(true);
         mainLayout.addComponent(selectRdfFormat);
+        
+        final TextField targerGraphNameTextField = createTextField(ctx.tr("FilesToParliamentVaadinDialog.targetGraphName"), targetGraphName);
+        final CheckBox perGraphCheckbox = new CheckBox(ctx.tr("FilesToParliamentVaadinDialog.perGraph"), perGraph);
+        perGraphCheckbox.addValueChangeListener(new ValueChangeListener() {
+
+            private static final long serialVersionUID = 60440618645464919L;
+
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                targerGraphNameTextField.setEnabled(!perGraphCheckbox.getValue());
+            }
+        });
+
+        mainLayout.addComponent(perGraphCheckbox);
         setCompositionRoot(mainLayout);
     }
 
@@ -67,6 +86,11 @@ public class FilesToParliamentVaadinDialog extends AbstractDialog<FilesToParliam
         result.setBulkUploadEndpointURL(bulkUploadEndpointURL.getValue());
         final RDFFormat format = (RDFFormat) selectRdfFormat.getValue();
         result.setRdfFileFormat(format.getName());
+        if (perGraph.getValue()) {
+            result.setTargetGraphName("");
+        } else {
+            result.setTargetGraphName(targetGraphName.getValue());
+        }
         return result;
     }
 
@@ -79,6 +103,8 @@ public class FilesToParliamentVaadinDialog extends AbstractDialog<FilesToParliam
         } else {
             selectRdfFormat.setValue(RDFFormat.valueOf(format));    
         }        
+        perGraph.setValue(StringUtils.isEmpty(config.getTargetGraphName()));
+        targetGraphName.setValue(config.getTargetGraphName());
     }
 
     private <T> TextField createTextField(String caption, ObjectProperty<T> property) {

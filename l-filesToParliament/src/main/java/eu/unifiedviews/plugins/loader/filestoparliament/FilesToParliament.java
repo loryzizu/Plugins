@@ -16,6 +16,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.openrdf.model.impl.URIImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,7 @@ import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.files.FilesHelper;
+import eu.unifiedviews.helpers.dataunit.virtualgraph.VirtualGraphHelpers;
 import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
@@ -48,7 +50,7 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
         super(FilesToParliamentVaadinDialog.class, ConfigHistory.noHistory(FilesToParliamentConfig_V1.class));
     }
 
-    public void sendFile(UserContext ctx, String parliamentBulkInsertLocation, CloseableHttpClient client, String rdfFormat, String filename, FilesDataUnit.Entry entry) throws DPUException {
+    public void sendFile(UserContext ctx, String parliamentBulkInsertLocation, CloseableHttpClient client, String graph, String rdfFormat, String filename, FilesDataUnit.Entry entry) throws DPUException {
         CloseableHttpResponse response = null;
         try {
 
@@ -58,6 +60,7 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
             uriBuilder.setPath(uriBuilder.getPath());
             HttpPost httpPost = new HttpPost(uriBuilder.build().normalize());
             MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create()
+                    .addTextBody("graph", graph, ContentType.MULTIPART_FORM_DATA)
                     .addTextBody("dataFormat", rdfFormat, ContentType.MULTIPART_FORM_DATA)
                     .addBinaryBody("statements", new File(URI.create(entry.getFileURIString())), ContentType.DEFAULT_BINARY, filename);
 
@@ -86,6 +89,7 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
     @Override
     protected void innerExecute() throws DPUException {
         CloseableHttpClient client = null;
+        final String globalOutGraph = org.apache.commons.lang3.StringUtils.isEmpty(config.getTargetGraphName()) ? null : config.getTargetGraphName();
         try {
             client = HttpClients.createDefault();
             for (FilesDataUnit.Entry entry : FilesHelper.getFiles(filesInput)) {
@@ -93,7 +97,18 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
                 if (StringUtils.isEmpty(filename)) {
                     filename = entry.getSymbolicName();
                 }
-                sendFile(ctx, config.getBulkUploadEndpointURL(), client, config.getRdfFileFormat().toUpperCase(), filename, entry);
+                String outGraph= null;
+                if (globalOutGraph == null) {
+                    String outGraphURIString = VirtualGraphHelpers.getVirtualGraph(filesInput, entry.getSymbolicName());
+                    if (outGraphURIString == null) {
+                        outGraph = null;
+                    } else {
+                        outGraph = outGraphURIString;
+                    }
+                } else {
+                    outGraph = globalOutGraph;
+                }                
+                sendFile(ctx, config.getBulkUploadEndpointURL(), client, outGraph, config.getRdfFileFormat().toUpperCase(), filename, entry);
             }
         } catch (DataUnitException ex) {
             throw ContextUtils.dpuException(ctx, ex, "FilesToParliament.execute.exception");
