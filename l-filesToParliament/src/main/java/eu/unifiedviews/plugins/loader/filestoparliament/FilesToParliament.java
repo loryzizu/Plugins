@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -24,7 +25,6 @@ import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.files.FilesHelper;
-import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
@@ -66,7 +66,7 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
             response = client.execute(httpPost);
 
             if (response.getStatusLine().getStatusCode() != 200) {
-                throw ContextUtils.dpuException(ctx, "FilesToParliament.execute.uploadFail");
+                throw ContextUtils.dpuException(ctx, "FilesToParliament.execute.uploadFail", entry.toString(), IOUtils.toString(response.getEntity().getContent()));
             }
         } catch (URISyntaxException | IllegalStateException | IOException | DataUnitException ex) {
             throw ContextUtils.dpuException(ctx, ex, "FilesToParliament.execute.exception");
