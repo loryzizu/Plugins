@@ -68,6 +68,7 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
             if (response.getStatusLine().getStatusCode() != 200) {
                 throw ContextUtils.dpuException(ctx, "FilesToParliament.execute.uploadFail", entry.toString(), IOUtils.toString(response.getEntity().getContent()));
             }
+            LOG.info("File {} uploaded successfuly", entry);
         } catch (URISyntaxException | IllegalStateException | IOException | DataUnitException ex) {
             throw ContextUtils.dpuException(ctx, ex, "FilesToParliament.execute.exception");
         } finally {
