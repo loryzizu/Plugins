@@ -212,9 +212,9 @@ public class SparqlUpdate extends AbstractDpu<SparqlUpdateConfig_V1> {
             }
             update.execute();
         } catch (MalformedQueryException | UpdateExecutionException ex) {
-            throw ContextUtils.dpuException(ctx, "sparqlUpdate.dpu.error.query", ex);
+            throw ContextUtils.dpuException(ctx, ex, "sparqlUpdate.dpu.error.query");
         } catch (RepositoryException ex) {
-            throw ContextUtils.dpuException(ctx, "sparqlUpdate.dpu.error.repository", ex);
+            throw ContextUtils.dpuException(ctx, ex, "sparqlUpdate.dpu.error.repository");
         }
     }
 
@@ -230,7 +230,7 @@ public class SparqlUpdate extends AbstractDpu<SparqlUpdateConfig_V1> {
         try {
             return rdfOutput.addNewDataGraph(symbolicName);
         } catch (DataUnitException ex) {
-            throw ContextUtils.dpuException(ctx, "sparqlUpdate.dpu.error.cantAddGraph", ex);
+            throw ContextUtils.dpuException(ctx, ex, "sparqlUpdate.dpu.error.cantAddGraph");
         }
     }
 
@@ -245,7 +245,7 @@ public class SparqlUpdate extends AbstractDpu<SparqlUpdateConfig_V1> {
         try {
             return rdfOutput.addNewDataGraph(entry.getSymbolicName() + suffix);
         } catch (DataUnitException ex) {
-            throw ContextUtils.dpuException(ctx, "sparqlUpdate.dpu.error.cantAddGraph", ex);
+            throw ContextUtils.dpuException(ctx, ex, "sparqlUpdate.dpu.error.cantAddGraph");
         }
     }
 
@@ -280,7 +280,7 @@ public class SparqlUpdate extends AbstractDpu<SparqlUpdateConfig_V1> {
                     try {
                         result.add(entry.getDataGraphURI());
                     } catch (DataUnitException ex) {
-                        throw ContextUtils.dpuException(ctx, "sparqlUpdate.dpu.error.dataUnit", ex);
+                        throw ContextUtils.dpuException(ctx, ex, "sparqlUpdate.dpu.error.dataUnit");
                     }
                 }
             }
