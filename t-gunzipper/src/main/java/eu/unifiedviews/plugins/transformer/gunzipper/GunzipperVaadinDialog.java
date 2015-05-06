@@ -9,7 +9,6 @@ import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 /**
  * Vaadin configuration dialog for FilesMerger.
  *
- * @author Petr Škoda
  */
 public class GunzipperVaadinDialog extends AbstractDialog<GunzipperConfig_V1> {
 
