@@ -1,10 +1,5 @@
 package eu.unifiedviews.plugins.loader.rdftovirtuoso;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -58,15 +53,6 @@ import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
 
 @DPU.AsLoader
 public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
-    private static final String SELECT_USER = "SELECT U_NAME, U_ID FROM DB.DBA.SYS_USERS WHERE U_NAME LIKE ?";
-
-    private static final String CREATE_USER = "DB.DBA.USER_CREATE (?, ?)";
-
-    private static final String GRANT_USER_SPARQL_SELECT = "GRANT SPARQL_SELECT TO ?";
-
-    private static final String GRANT_USER = "DB.DBA.RDF_DEFAULT_USER_PERMS_SET (?, ?)";
-
-    private static final String GRANT_GRAPH = "DB.DBA.RDF_GRAPH_USER_PERMS_SET (?, ?, ?)";
 
     private static final Logger LOG = LoggerFactory.getLogger(RdfToVirtuoso.class);
 
@@ -86,8 +72,6 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
 
     public static final String CONFIGURATION_VIRTUOSO_JDBC_URL = "dpu.l-rdfToVirtuoso.jdbc.url";
 
-    public static final String CONFIGURATION_VIRTUOSO_CREATE_USER = "dpu.l-rdfToVirtuoso.create.user";
-
     public RdfToVirtuoso() {
         super(RdfToVirtuosoVaadinDialog.class, ConfigHistory.noHistory(RdfToVirtuosoConfig_V1.class));
     }
@@ -106,56 +90,10 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
         if (config.getPassword() == null || config.getPassword().isEmpty()) {
             config.setPassword(password);
         }
-        String organization = ctx.getExecMasterContext().getDpuContext().getOrganization();
+        final URI globalOutGraphURI = org.apache.commons.lang3.StringUtils.isEmpty(config.getTargetGraphName()) ? null : new URIImpl(config.getTargetGraphName());
         if (config.getThreadCount() == 0) {
             config.setThreadCount(1);
         }
-        final URI globalOutGraphURI = org.apache.commons.lang3.StringUtils.isEmpty(config.getTargetGraphName()) ? null : new URIImpl(config.getTargetGraphName());
-        try {
-            Class.forName("virtuoso.jdbc4.Driver");
-        } catch (ClassNotFoundException ex) {
-            throw ContextUtils.dpuException(ctx, ex, "RdfToVirtuoso.executeInner.missingJdbcDriver");
-        }
-        try (Connection connection = DriverManager.getConnection(config.getVirtuosoUrl(), config.getUsername(), config.getPassword())) {
-            if ("true".equalsIgnoreCase(environment.get(CONFIGURATION_VIRTUOSO_CREATE_USER))) {
-                boolean userExists = false;
-                try (PreparedStatement statementSelectUser = connection.prepareStatement(SELECT_USER)) {
-                    statementSelectUser.setString(1, organization);
-                    try (ResultSet resultSetUser = statementSelectUser.executeQuery()) {
-                        userExists = resultSetUser.next();
-                        LOG.info("Executed " + SELECT_USER);
-                    }
-                }
-                if (!userExists) {
-                    try (PreparedStatement statementCreateUser = connection.prepareStatement(CREATE_USER)) {
-                        statementCreateUser.setString(1, organization);
-                        statementCreateUser.setString(2, organization);
-                        statementCreateUser.executeQuery();
-                        LOG.info("Executed " + CREATE_USER);
-                    }
-                }
-                try (PreparedStatement statementGrantUserSparql = connection.prepareStatement(GRANT_USER_SPARQL_SELECT)) {
-                    statementGrantUserSparql.setString(1, organization);
-                    statementGrantUserSparql.executeQuery();
-                    LOG.info("Executed " + GRANT_USER_SPARQL_SELECT);
-                }
-                try (PreparedStatement statementGrantUser = connection.prepareStatement(GRANT_USER)) {
-                    statementGrantUser.setString(1, "nobody");
-                    statementGrantUser.setInt(2, 0);
-                    statementGrantUser.executeQuery();
-                    LOG.info("Executed " + GRANT_USER);
-                }
-                try (PreparedStatement statementGrantUser = connection.prepareStatement(GRANT_USER)) {
-                    statementGrantUser.setString(1, organization);
-                    statementGrantUser.setInt(2, 0);
-                    statementGrantUser.executeQuery();
-                    LOG.info("Executed " + GRANT_USER);
-                }
-            }
-        } catch (SQLException ex) {
-            throw ContextUtils.dpuException(ctx, ex, "RdfToVirtuoso.executeInner.exceptionJdbc");
-        }
-
         RepositoryConnection externalConnection = null;
         virtuosoRepository = new VirtuosoRepository(config.getVirtuosoUrl(), config.getUsername(), config.getPassword());
         try {
@@ -233,12 +171,7 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
                         rdfInput,
                         rdfOutput,
                         virtuosoRepository,
-                        config.isSkipOnError(),
-                        config.getVirtuosoUrl(),
-                        config.getUsername(),
-                        config.getPassword(),
-                        organization
-                        )));
+                        config.isSkipOnError())));
             }
             executor.shutdown();
             LOG.info("Started {} load threads", config.getThreadCount());
@@ -278,16 +211,6 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
                 resource.setCreated(now);
                 ResourceHelpers.setResource(rdfOutput, outputSymbolicName, resource);
                 VirtualGraphHelpers.setVirtualGraph(rdfOutput, outputSymbolicName, globalOutGraphURI.stringValue());
-
-                try (Connection connection = DriverManager.getConnection(config.getVirtuosoUrl(), config.getUsername(), config.getPassword()); PreparedStatement statementGrantUserWrite = connection.prepareStatement(GRANT_GRAPH)) {
-                    statementGrantUserWrite.setString(1, globalOutGraphURI.stringValue());
-                    statementGrantUserWrite.setString(2, organization);
-                    statementGrantUserWrite.setInt(3, 1);
-                    statementGrantUserWrite.executeQuery();
-                    LOG.info("Executed " + GRANT_GRAPH);
-                } catch (SQLException ex) {
-                    throw ContextUtils.dpuException(ctx, ex, "RdfToVirtuoso.executeInner.exceptionJdbc");
-                }
             }
         } catch (DataUnitException ex) {
             throw ContextUtils.dpuException(ctx, ex, "RdfToVirtuoso.executeInner.exception");
@@ -348,19 +271,10 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
 
         Repository virtuosoRepository;
 
-        String virtuosoUrl;
-
-        String virtuosoUsername;
-
-        String virtuosoPassword;
-
-        String organization;
-
         boolean skipOnError;
 
         public LoadWorker(String loggerName, ConcurrentLinkedQueue<Work> workQueue, AtomicInteger done,
-                RDFDataUnit rdfInput, WritableRDFDataUnit rdfOutput, Repository virtuosoRepository, boolean skipOnError,
-                String virtuosoUrl, String virtuosoUsername, String virtuosoPassword, String organization) {
+                RDFDataUnit rdfInput, WritableRDFDataUnit rdfOutput, Repository virtuosoRepository, boolean skipOnError) {
             this.LOG = LoggerFactory.getLogger(loggerName);
             this.workQueue = workQueue;
             this.done = done;
@@ -368,10 +282,6 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
             this.rdfOutput = rdfOutput;
             this.virtuosoRepository = virtuosoRepository;
             this.skipOnError = skipOnError;
-            this.virtuosoUrl = virtuosoUrl;
-            this.virtuosoUsername = virtuosoUsername;
-            this.virtuosoPassword = virtuosoPassword;
-            this.organization = organization;
         }
 
         @Override
@@ -383,14 +293,10 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
             ResourceHelper outResourceHelper = ResourceHelpers.create(rdfOutput);
             CopyHelper copyHelper = CopyHelpers.create(rdfInput, rdfOutput);
             VirtualGraphHelper outVirtualGraphHelper = VirtualGraphHelpers.create(rdfOutput);
-            Connection connection = null;
-
             try {
                 inConnection = rdfInput.getConnection();
-                connection = DriverManager.getConnection(virtuosoUrl, virtuosoUsername, virtuosoPassword);
                 externalConnection = virtuosoRepository.getConnection();
                 while ((work = workQueue.poll()) != null) {
-                    PreparedStatement statementGrantUserWrite = null;
                     try {
                         if (Thread.interrupted()) {
                             throw new InterruptedException();
@@ -411,32 +317,18 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
                             resource.setLast_modified(now);
                             outResourceHelper.setResource(work.inEntry.getSymbolicName(), resource);
                             outVirtualGraphHelper.setVirtualGraph(work.inEntry.getSymbolicName(), work.outDataGraphURI.stringValue());
-                            statementGrantUserWrite = connection.prepareStatement(GRANT_GRAPH);
-                            statementGrantUserWrite.setString(1, work.outDataGraphURI.stringValue());
-                            statementGrantUserWrite.setString(2, organization);
-                            statementGrantUserWrite.setInt(3, 1);
-                            statementGrantUserWrite.executeQuery();
-                            LOG.info("Executed " + GRANT_GRAPH);
                         }
                         done.incrementAndGet();
-                    } catch (RepositoryException | DataUnitException | UpdateExecutionException | MalformedQueryException | SQLException ex) {
+                    } catch (RepositoryException | DataUnitException | UpdateExecutionException | MalformedQueryException ex) {
                         if (skipOnError) {
                             LOG.warn("Skipping graph: '{}' because of error.", work.inEntry.toString(), ex);
                             status.skippedEntries.add(work);
                         } else {
                             throw ex;
                         }
-                    } finally {
-                        if (statementGrantUserWrite != null) {
-                            try {
-                                statementGrantUserWrite.close();
-                            } catch (SQLException ex) {
-                                LOG.warn("Error in close", ex);
-                            }
-                        }
                     }
                 }
-            } catch (DataUnitException | RepositoryException | SQLException ex) {
+            } catch (DataUnitException | RepositoryException ex) {
                 throw ex;
             } finally {
                 outVirtualGraphHelper.close();
