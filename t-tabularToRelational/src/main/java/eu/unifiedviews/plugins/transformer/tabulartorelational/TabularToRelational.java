@@ -43,7 +43,7 @@ public class TabularToRelational extends AbstractDpu<TabularToRelationalConfig_V
     @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
 
-    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.tabulartorelational.TabularToRelationalConfig__V2")
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.tabulartorelational.TabularToRelationalConfig__V1")
     public ConfigurationUpdate _ConfigurationUpdate;
 
     public static final String[] CHARSETS = { "UTF-8", "windows-1250", "ISO-8859-2", "US-ASCII", "IBM00858", "IBM437", "IBM775", "IBM850", "IBM852", "IBM855", "IBM857", "IBM862", "IBM866", "ISO-8859-1", "ISO-8859-4", "ISO-8859-5", "ISO-8859-7", "ISO-8859-9", "ISO-8859-13", "ISO-8859-15", "KOI8-R", "KOI8-U",
