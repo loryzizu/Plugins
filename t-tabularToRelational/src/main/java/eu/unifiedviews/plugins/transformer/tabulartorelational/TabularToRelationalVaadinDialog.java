@@ -33,16 +33,20 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
 
     @Override
     protected void buildDialogLayout() {
-        VerticalLayout mainLayout = new VerticalLayout();
+        final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setImmediate(false);
         mainLayout.setWidth("100%");
         mainLayout.setHeight("-1px");
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
 
-        mainLayout.addComponent(buildFormLayout());
-        mainLayout.addComponent(buildTableLayout());
-        mainLayout.addComponent(buildButtonsLayout());
+        final Label inputConfigurationsLabel = new Label(ctx.tr("dialog.configuration.input"));
+        mainLayout.addComponent(inputConfigurationsLabel);
+        mainLayout.addComponent(buildInputConfigurationLayout());
+
+        final Label outputConfigurationsLabel = new Label(ctx.tr("dialog.configuration.output"));
+        mainLayout.addComponent(outputConfigurationsLabel);
+        mainLayout.addComponent(buildOutputConfigurationLayout());
 
         Panel panel = new Panel();
         panel.setSizeFull();
@@ -53,57 +57,60 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         setCompositionRoot(panel);
     }
 
-    private Component buildFormLayout() {
-        final FormLayout layout = new FormLayout();
-        layout.setSizeFull();
-        layout.setSpacing(true);
+    private Component buildInputConfigurationLayout() {
+        final FormLayout formLayout = new FormLayout();
+
+        fieldSeparatorField = new TextField(ctx.tr("dialog.fieldSeparator"));
+        fieldSeparatorField.setDescription(ctx.tr("dialog.fieldSeparator.description"));
+        formLayout.addComponent(fieldSeparatorField);
+
+        fieldDelimiterField = new TextField(ctx.tr("dialog.fieldDelimiter"));
+        fieldDelimiterField.setDescription(ctx.tr("dialog.fieldDelimiter.description"));
+        formLayout.addComponent(fieldDelimiterField);
+
+        final BeanItemContainer<String> container = new BeanItemContainer<String>(String.class, Arrays.asList(TabularToRelational.CHARSETS));
+        charsetSelect = new NativeSelect(ctx.tr("dialog.charset"), container);
+        charsetSelect.setDescription(ctx.tr("dialog.charset.description"));
+        charsetSelect.setNullSelectionAllowed(false);
+        charsetSelect.setImmediate(true);
+        formLayout.addComponent(charsetSelect);
+
+        hasHeaderCheckbox = new CheckBox(ctx.tr("dialog.header"));
+        hasHeaderCheckbox.setDescription(ctx.tr("dialog.header.description"));
+        formLayout.addComponent(hasHeaderCheckbox);
+
+        return formLayout;
+    }
+
+    private Component buildOutputConfigurationLayout() {
+        final FormLayout formLayout = new FormLayout();
 
         tableNameField = new TextField(ctx.tr("dialog.tablename"));
         tableNameField.setRequired(true);
         tableNameField.setImmediate(true);
         tableNameField.addValidator(new Validator() {
-            @Override public void validate(Object value) throws InvalidValueException {
+            @Override public void validate(Object value) throws Validator.InvalidValueException {
                 if (!(value instanceof String && isNameValid((String) value)))
-                    throw new InvalidValueException(ctx.tr("dialog.tablename.restriction"));
+                    throw new Validator.InvalidValueException(ctx.tr("dialog.tablename.restriction"));
             }
         });
         tableNameField.setRequiredError(ctx.tr("dialog.tablename.required"));
         tableNameField.setDescription(ctx.tr("dialog.tablename.description") + " " + ctx.tr("dialog.tablename.restriction"));
-        layout.addComponent(tableNameField);
+        formLayout.addComponent(tableNameField);
 
-        final BeanItemContainer<String> container = new BeanItemContainer<String>(String.class, Arrays.asList(TabularToRelational.CHARSETS));
-        charsetSelect = new NativeSelect(ctx.tr("dialog.charset"), container);
-        charsetSelect.setNullSelectionAllowed(false);
-        charsetSelect.setImmediate(true);
-        layout.addComponent(charsetSelect);
-
-        hasHeaderCheckbox = new CheckBox(ctx.tr("dialog.header"));
-        hasHeaderCheckbox.setDescription(ctx.tr("dialog.header.description"));
-        layout.addComponent(hasHeaderCheckbox);
-
-        fieldSeparatorField = new TextField(ctx.tr("dialog.fieldSeparator"));
-        fieldSeparatorField.setDescription(ctx.tr("dialog.fieldSeparator.description"));
-        layout.addComponent(fieldSeparatorField);
-
-        fieldDelimiterField = new TextField(ctx.tr("dialog.fieldDelimiter"));
-        fieldDelimiterField.setDescription(ctx.tr("dialog.fieldDelimiter.description"));
-        layout.addComponent(fieldDelimiterField);
-
-        return layout;
-    }
-
-    private Component buildTableLayout() {
-        table = new Table();
+        table = new Table(ctx.tr("table.label"));
         table.setPageLength(7);
-
         table.addContainerProperty("name", String.class, null);
         table.addContainerProperty("primaryKey", CheckBox.class, null);
-
         table.setColumnHeaders(ctx.tr("table.name"), ctx.tr("table.primary.key"));
-
+        table.setDescription(ctx.tr("table.desciption"));
         table.setImmediate(true);
         table.setEditable(true);
-        return table;
+        formLayout.addComponent(table);
+
+        formLayout.addComponent(buildButtonsLayout());
+
+        return formLayout;
     }
 
     private Component buildButtonsLayout() {
