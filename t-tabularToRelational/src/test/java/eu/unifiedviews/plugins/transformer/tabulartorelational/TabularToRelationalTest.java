@@ -1,11 +1,9 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
+import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +17,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(JUnit4.class)
 public class TabularToRelationalTest {
@@ -34,7 +33,13 @@ public class TabularToRelationalTest {
 
     public static final String CSV_FILE = "sample.csv";
 
+    public static final String CSV_ENCODING_FILE = "sample_encoding.csv";
+
+    public static final String CSV_WITH_HEADER_FILE = "sample_encoding.csv";
+
     public static final int CSV_FILE_ROW_COUNT = 11;
+
+    public static final int CSV_FILE_WITH_HEADER_ROW_COUNT = 104;
 
     @Before
     public void init() throws Exception {
@@ -55,13 +60,61 @@ public class TabularToRelationalTest {
     }
 
     @Test
+    public void sampleCSVWithEncodingPasses() throws Exception {
+        TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
+        config.setFieldSeparator(";");
+        config.setFieldDelimiter("\"");
+        config.setEncoding("windows-1250");
+        config.setTableName("test");
+        List<ColumnMappingEntry> list = new ArrayList<>();
+        list.add(new ColumnMappingEntry("nazov", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("predmet", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("hyperlink", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("datum", "VARCHAR", false));
+        config.setColumnMapping(list);
+
+        Connection conn = null;
+        Statement stmnt = null;
+        ResultSet rs = null;
+        try {
+            dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
+
+            addFileToInput(CSV_ENCODING_FILE);
+            env.run(dpu);
+
+            conn = output.getDatabaseConnection();
+            stmnt = conn.createStatement();
+            rs = stmnt.executeQuery("SELECT * FROM test LIMIT 1");
+
+            StringBuilder sb = new StringBuilder();
+            while (rs.next()) {
+                for (int i = 1; i < rs.getMetaData().getColumnCount() + 1; i++) {
+                    sb.append(rs.getString(i) + ", ");
+                }
+            }
+            assertEquals("Názov obstarávateľa, Predmet, Hyperlink, Dátum, ", sb.toString());
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmnt != null) {
+                    stmnt.close();
+                }
+            } catch (SQLException ignore) {
+            }
+            DatabaseHelper.tryCloseConnection(conn);
+        }
+    }
+
+    @Test
     public void sampleCsvFilePasses() throws Exception {
         TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
-        config.setTableName("TEST_TABLE");
+        config.setTableName("daka_tabulka");
         List<ColumnMappingEntry> list = new ArrayList<>();
-        list.add(new ColumnMappingEntry("id", "INT", true));
-        list.add(new ColumnMappingEntry("code", "VARCHAR(255)", false));
-        list.add(new ColumnMappingEntry("county", "VARCHAR(255)", false));
+        list.add(new ColumnMappingEntry("id", "VARCHAR", true));
+        list.add(new ColumnMappingEntry("neznamy_kod", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("kod_krajiny", "VARCHAR", false));
         config.setColumnMapping(list);
 
         Connection conn = null;
@@ -75,7 +128,8 @@ public class TabularToRelationalTest {
 
             conn = output.getDatabaseConnection();
             stmnt = conn.createStatement();
-            rs = stmnt.executeQuery("SELECT COUNT(*) FROM TEST_TABLE");
+
+            rs = stmnt.executeQuery("SELECT COUNT(*) FROM daka_tabulka");
             rs.next();
             int rowCount = rs.getInt(1);
             assertEquals("Sample CSV should contain 11 entries!", CSV_FILE_ROW_COUNT, rowCount);
@@ -94,47 +148,72 @@ public class TabularToRelationalTest {
     }
 
     @Test
-    public void joinColumnNamesTest() {
+    public void sampleCsvWithHeaderPasses() throws Exception {
+        TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
+        config.setHasHeader(true);
+        config.setTableName("test");
         List<ColumnMappingEntry> list = new ArrayList<>();
-        list.add(new ColumnMappingEntry("col1", "", false));
-        list.add(new ColumnMappingEntry("col2", "", false));
-        list.add(new ColumnMappingEntry("col3", "", false));
-        list.add(new ColumnMappingEntry("col4", "", false));
-        list.add(new ColumnMappingEntry("col5", "", false));
+        list.add(new ColumnMappingEntry("street", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("city", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("zip", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("state", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("beds", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("baths", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("sq__ft", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("type", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("sale_date", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("price", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("latitude", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("longitude", "VARCHAR", false));
+        // add more columns that the file really contains
+        list.add(new ColumnMappingEntry("boo", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("foo", "VARCHAR", false));
+        config.setColumnMapping(list);
 
-        assertEquals("", TabularToRelational.joinColumnNames(new ArrayList<ColumnMappingEntry>(), ", "));
-        assertEquals("COL1, COL2, COL3, COL4, COL5", TabularToRelational.joinColumnNames(list, ", "));
-        assertEquals("COL1;COL2;COL3;COL4;COL5", TabularToRelational.joinColumnNames(list, ";"));
-    }
+        Connection conn = null;
+        Statement stmnt = null;
+        ResultSet rs = null;
+        try {
+            dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
 
-    @Test
-    public void processStringTest() {
-        String testString = "NAME";
-        assertEquals("NAME", TabularToRelational.processString(testString));
-        testString = " NAME ";
-        assertEquals("NAME", TabularToRelational.processString(testString));
-        testString = " table_name ";
-        assertEquals("TABLE_NAME", TabularToRelational.processString(testString));
-        testString = "";
-        assertEquals("", TabularToRelational.processString(testString));
-        testString = null;
-        assertEquals("", TabularToRelational.processString(testString));
+            addFileToInput(CSV_WITH_HEADER_FILE);
+            env.run(dpu);
+
+            conn = output.getDatabaseConnection();
+            stmnt = conn.createStatement();
+
+            rs = stmnt.executeQuery("SELECT COUNT(*) FROM test");
+            rs.next();
+            int rowCount = rs.getInt(1);
+            assertEquals("Sample CSV should contain 11 entries!", CSV_FILE_WITH_HEADER_ROW_COUNT, rowCount);
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmnt != null) {
+                    stmnt.close();
+                }
+            } catch (SQLException ignore) {
+            }
+            DatabaseHelper.tryCloseConnection(conn);
+        }
     }
 
     @Test
     public void processCsvOptionsTest() {
         TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
-        assertEquals("'charset=UTF-8 fieldDelimiter=\" fieldSeparator=,'", TabularToRelational.processCsvOptions(config));
+        assertEquals("charset=UTF-8 fieldDelimiter=\" fieldSeparator=,", TabularToRelational.processCsvOptions(config));
 
         config.setEncoding("UTF-16");
         config.setFieldSeparator("|");
         config.setFieldDelimiter("'");
-        assertEquals("'charset=UTF-16 fieldDelimiter=' fieldSeparator=|'", TabularToRelational.processCsvOptions(config));
+        assertEquals("charset=UTF-16 fieldDelimiter=' fieldSeparator=|", TabularToRelational.processCsvOptions(config));
 
         config.setEncoding(null);
         config.setFieldSeparator(null);
         config.setFieldDelimiter(null);
-        assertEquals("''", TabularToRelational.processCsvOptions(config));
+        assertEquals("", TabularToRelational.processCsvOptions(config));
     }
 
     @Test
@@ -152,7 +231,7 @@ public class TabularToRelationalTest {
         list.add(new ColumnMappingEntry("surname", "VARCHAR(255)", false));
         config.setColumnMapping(list);
 
-        assertEquals("CREATE TABLE TEST_TABLE(ID INT, NAME VARCHAR(255), SURNAME VARCHAR(255),  PRIMARY KEY (ID, NAME))", TabularToRelational.prepareCreateTableQuery(config));
+        assertEquals("CREATE TABLE test_table (id INT, name VARCHAR(255), surname VARCHAR(255), PRIMARY KEY (id, name));", TabularToRelational.prepareCreateTableQuery(config));
     }
 
     private void addFileToInput(final String filename) throws Exception {
