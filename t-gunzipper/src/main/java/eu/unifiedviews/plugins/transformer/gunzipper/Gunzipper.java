@@ -47,31 +47,6 @@ public class Gunzipper extends AbstractDpu<GunzipperConfig_V1> {
 		
     @Override
     protected void innerExecute() throws DPUException {
-        final List<RDFDataUnit.Entry> source = faultTolerance.execute(new FaultTolerance.ActionReturn<List<RDFDataUnit.Entry>>() {
-
-            @Override
-            public List<RDFDataUnit.Entry> action() throws Exception {
-                return DataUnitUtils.getMetadataEntries(input);
-            }
-        });
-        final RDFDataUnit.Entry target = faultTolerance.execute(new FaultTolerance.ActionReturn<RDFDataUnit.Entry>() {
-
-            @Override
-            public RDFDataUnit.Entry action() throws Exception {
-                return DataUnitUtils.getWritableMetadataEntry(output);
-            }
-        });
-        // Use query to copy data.
-        faultTolerance.execute(input, new FaultTolerance.ConnectionAction() {
-
-            @Override
-            public void action(RepositoryConnection connection) throws Exception {
-                final SparqlUtils.SparqlUpdateObject update = SparqlUtils.createInsert(QUERY_COPY, source, target);
-                // Copy data.
-                SparqlUtils.execute(connection, update);
-
-            }
-        });
         
     }
 	
