@@ -118,19 +118,19 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         setHeight("100%");
 
         tfDownloadURL = new TextField();
-        tfDownloadURL.setCaption("Download URL:");
+        tfDownloadURL.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfDownloadURL"));
         tfDownloadURL.setInputPrompt("http://data.mydomain.com/dumps/dataset.ttl");
         tfDownloadURL.setWidth("100%");
         mainLayout.addComponent(tfDownloadURL);
 
         tfMediaType = new TextField();
-        tfMediaType.setCaption("Media (MIME) type:");
+        tfMediaType.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfMediaType"));
         tfMediaType.setInputPrompt("text/turtle|text/csv");
         tfMediaType.setWidth("100%");
         mainLayout.addComponent(tfMediaType);
 
         tfAccessURL = new TextField();
-        tfAccessURL.setCaption("Access URL:");
+        tfAccessURL.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfAccessURL"));
         tfAccessURL.setInputPrompt("http://data.mydomain.com/dataset/dataset");
         tfAccessURL.setWidth("100%");
         mainLayout.addComponent(tfAccessURL);
@@ -138,25 +138,25 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         lsExampleResources = new ListSelect();
         lsExampleResources.setWidth("100%");
         lsExampleResources.setNewItemsAllowed(true);
-        lsExampleResources.setCaption("Example resources");
+        lsExampleResources.setCaption(ctx.tr("DistributionMetadataVaadinDialog.lsExampleResources"));
         lsExampleResources.setMultiSelect(true);
         lsExampleResources.setRows(3);
         mainLayout.addComponent(lsExampleResources);
 
         tfSPARQLEndpointURL = new TextField();
-        tfSPARQLEndpointURL.setCaption("SPARQL Endpoint URL:");
+        tfSPARQLEndpointURL.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfSPARQLEndpointURL"));
         tfSPARQLEndpointURL.setInputPrompt("http://linked.opendata.cz/sparql");
         tfSPARQLEndpointURL.setWidth("100%");
         mainLayout.addComponent(tfSPARQLEndpointURL);
 
         tfSchemaType = new TextField();
-        tfSchemaType.setCaption("Schema MIME type:");
+        tfSchemaType.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfSchemaType"));
         tfSchemaType.setInputPrompt("text/csv");
         tfSchemaType.setWidth("100%");
         mainLayout.addComponent(tfSchemaType);
 
         chkSchemaFromInput = new CheckBox();
-        chkSchemaFromInput.setCaption("Use schema from dataset");
+        chkSchemaFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkSchemaFromInput"));
         chkSchemaFromInput.setWidth("100%");
         chkSchemaFromInput.setImmediate(true);
         chkSchemaFromInput.addValueChangeListener(new ValueChangeListener() {
@@ -169,13 +169,13 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         mainLayout.addComponent(chkSchemaFromInput);
 
         tfSchema = new TextField();
-        tfSchema.setCaption("Schema URL:");
+        tfSchema.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfSchema"));
         tfSchema.setInputPrompt("http://data.example.org/dataset/myschema");
         tfSchema.setWidth("100%");
         mainLayout.addComponent(tfSchema);
 
         chkDatasetURIFromInput = new CheckBox();
-        chkDatasetURIFromInput.setCaption("Get dataset URI from dataset");
+        chkDatasetURIFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkDatasetURIFromInput"));
         chkDatasetURIFromInput.setWidth("100%");
         chkDatasetURIFromInput.setImmediate(true);
         chkDatasetURIFromInput.addValueChangeListener(new ValueChangeListener() {
@@ -188,13 +188,13 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         mainLayout.addComponent(chkDatasetURIFromInput);
 
         tfDatasetURI = new TextField();
-        tfDatasetURI.setCaption("Dataset URI:");
+        tfDatasetURI.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfDatasetURI"));
         tfDatasetURI.setInputPrompt("http://data.mydomain.com/resource/dataset/mydataset");
         tfDatasetURI.setWidth("100%");
         mainLayout.addComponent(tfDatasetURI);
 
         chkGenerateDistroURIFromDataset = new CheckBox();
-        chkGenerateDistroURIFromDataset.setCaption("Generate distribution URI from dataset (+\"/distribution\")");
+        chkGenerateDistroURIFromDataset.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkGenerateDistroURIFromDataset"));
         chkGenerateDistroURIFromDataset.setWidth("100%");
         chkGenerateDistroURIFromDataset.setImmediate(true);
         chkGenerateDistroURIFromDataset.addValueChangeListener(new ValueChangeListener() {
@@ -207,13 +207,13 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         mainLayout.addComponent(chkGenerateDistroURIFromDataset);
 
         tfDistributionURI = new TextField();
-        tfDistributionURI.setCaption("Distribution URI:");
+        tfDistributionURI.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfDistributionURI"));
         tfDistributionURI.setInputPrompt("http://data.mydomain.com/resource/dataset/mydataset/distribution/rdf");
         tfDistributionURI.setWidth("100%");
         mainLayout.addComponent(tfDistributionURI);
 
         chkLanguageFromInput = new CheckBox();
-        chkLanguageFromInput.setCaption("Get original language from dataset");
+        chkLanguageFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkLanguageFromInput"));
         chkLanguageFromInput.setWidth("100%");
         chkLanguageFromInput.setImmediate(true);
         chkLanguageFromInput.addValueChangeListener(new ValueChangeListener() {
@@ -226,13 +226,13 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         mainLayout.addComponent(chkLanguageFromInput);
 
         tfLanguage = new TextField();
-        tfLanguage.setCaption("Original language (RDF language tag, e.g. cs):");
+        tfLanguage.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfLanguage"));
         tfLanguage.setInputPrompt("cs|en|sk|it");
         tfLanguage.setWidth("100%");
         mainLayout.addComponent(tfLanguage);
 
         chkTitleFromInput = new CheckBox();
-        chkTitleFromInput.setCaption("Get title from dataset");
+        chkTitleFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkTitleFromInput"));
         chkTitleFromInput.setWidth("100%");
         chkTitleFromInput.setImmediate(true);
         chkTitleFromInput.addValueChangeListener(new ValueChangeListener() {
@@ -246,19 +246,19 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         mainLayout.addComponent(chkTitleFromInput);
 
         tfTitle = new TextField();
-        tfTitle.setCaption("Dataset title in original language:");
+        tfTitle.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfTitle"));
         tfTitle.setInputPrompt("My dataset");
         tfTitle.setWidth("100%");
         mainLayout.addComponent(tfTitle);
 
         tfTitleEn = new TextField();
-        tfTitleEn.setCaption("Dataset title in English:");
+        tfTitleEn.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfTitleEn"));
         tfTitleEn.setInputPrompt("My dataset");
         tfTitleEn.setWidth("100%");
         mainLayout.addComponent(tfTitleEn);
 
         chkDescriptionFromInput = new CheckBox();
-        chkDescriptionFromInput.setCaption("Get description from dataset");
+        chkDescriptionFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkDescriptionFromInput"));
         chkDescriptionFromInput.setWidth("100%");
         chkDescriptionFromInput.setImmediate(true);
         chkDescriptionFromInput.addValueChangeListener(new ValueChangeListener() {
@@ -272,19 +272,19 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         mainLayout.addComponent(chkDescriptionFromInput);
 
         tfDesc = new TextField();
-        tfDesc.setCaption("Description in original language:");
+        tfDesc.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfDesc"));
         tfDesc.setInputPrompt("Longer description in original language");
         tfDesc.setWidth("100%");
         mainLayout.addComponent(tfDesc);
 
         tfDescEn = new TextField();
-        tfDescEn.setCaption("Description in English:");
+        tfDescEn.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfDescEn"));
         tfDescEn.setInputPrompt("Longer description in English");
         tfDescEn.setWidth("100%");
         mainLayout.addComponent(tfDescEn);
 
         chkIssuedFromInput = new CheckBox();
-        chkIssuedFromInput.setCaption("Use issued date from dataset");
+        chkIssuedFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkIssuedFromInput"));
         chkIssuedFromInput.setWidth("100%");
         chkIssuedFromInput.setImmediate(true);
         chkIssuedFromInput.addValueChangeListener(new ValueChangeListener() {
@@ -297,13 +297,13 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         mainLayout.addComponent(chkIssuedFromInput);
 
         dfIssued = new DateField();
-        dfIssued.setCaption("Issued:");
+        dfIssued.setCaption(ctx.tr("DistributionMetadataVaadinDialog.dfIssued"));
         dfIssued.setWidth("100%");
         dfIssued.setResolution(Resolution.DAY);
         mainLayout.addComponent(dfIssued);
 
         chkNow = new CheckBox();
-        chkNow.setCaption("Use current date as modified");
+        chkNow.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkNow"));
         chkNow.setWidth("100%");
         chkNow.setImmediate(true);
         chkNow.addValueChangeListener(new ValueChangeListener() {
@@ -316,13 +316,13 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         mainLayout.addComponent(chkNow);
 
         dfModified = new DateField();
-        dfModified.setCaption("Modified:");
+        dfModified.setCaption(ctx.tr("DistributionMetadataVaadinDialog.dfModified"));
         dfModified.setWidth("100%");
         dfModified.setResolution(Resolution.DAY);
         mainLayout.addComponent(dfModified);
 
         chkUseTemporal = new CheckBox();
-        chkUseTemporal.setCaption("Use temporal coverage");
+        chkUseTemporal.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkUseTemporal"));
         chkUseTemporal.setWidth("100%");
         chkUseTemporal.setImmediate(true);
         chkUseTemporal.addValueChangeListener(new ValueChangeListener() {
@@ -338,7 +338,7 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         mainLayout.addComponent(chkUseTemporal);
 
         chkTemporalFromInput = new CheckBox();
-        chkTemporalFromInput.setCaption("Use temporal coverage from dataset");
+        chkTemporalFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkTemporalFromInput"));
         chkTemporalFromInput.setWidth("100%");
         chkTemporalFromInput.setImmediate(true);
         chkTemporalFromInput.addValueChangeListener(new ValueChangeListener() {
@@ -353,19 +353,19 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         mainLayout.addComponent(chkTemporalFromInput);
 
         dfTemporalStart = new DateField();
-        dfTemporalStart.setCaption("Temporal coverage start:");
+        dfTemporalStart.setCaption(ctx.tr("DistributionMetadataVaadinDialog.dfTemporalStart"));
         dfTemporalStart.setWidth("100%");
         dfTemporalStart.setResolution(Resolution.DAY);
         mainLayout.addComponent(dfTemporalStart);
 
         dfTemporalEnd = new DateField();
-        dfTemporalEnd.setCaption("Temporal coverage end:");
+        dfTemporalEnd.setCaption(ctx.tr("DistributionMetadataVaadinDialog.dfTemporalEnd"));
         dfTemporalEnd.setWidth("100%");
         dfTemporalEnd.setResolution(Resolution.DAY);
         mainLayout.addComponent(dfTemporalEnd);
 
         chkNowTemporalEnd = new CheckBox();
-        chkNowTemporalEnd.setCaption("Use current date as temporal coverage end");
+        chkNowTemporalEnd.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkNowTemporalEnd"));
         chkNowTemporalEnd.setWidth("100%");
         chkNowTemporalEnd.setImmediate(true);
         chkNowTemporalEnd.addValueChangeListener(new ValueChangeListener() {
@@ -397,7 +397,7 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
 //        mainLayout.addComponent(tfSpatial);
 
         chkLicensesFromInput = new CheckBox();
-        chkLicensesFromInput.setCaption("Use license from dataset");
+        chkLicensesFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkLicensesFromInput"));
         chkLicensesFromInput.setWidth("100%");
         chkLicensesFromInput.setImmediate(true);
         chkLicensesFromInput.addValueChangeListener(new ValueChangeListener() {
@@ -412,7 +412,7 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         lsLicenses = new ListSelect();
         lsLicenses.setWidth("100%");
         lsLicenses.setNewItemsAllowed(true);
-        lsLicenses.setCaption("License");
+        lsLicenses.setCaption(ctx.tr("DistributionMetadataVaadinDialog.lsLicenses"));
         lsLicenses.setMultiSelect(false);
         lsLicenses.setNullSelectionAllowed(false);
         lsLicenses.setRows(3);
@@ -426,7 +426,7 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         setCompositionRoot(p);
 
         // Tabs.
-        this.addTab(ConfigCopyPaste.create(ctx), "Copy&Paste");
+        this.addTab(ConfigCopyPaste.create(ctx), "DistributionMetadataVaadinDialog.addTabCopyPaste");
     }
 
     @Override

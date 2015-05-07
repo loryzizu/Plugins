@@ -60,7 +60,7 @@ public class DistributionMetadata extends AbstractDpu<DistributionMetadataConfig
         generateMetadata();
 
         final Date dateEnd = new Date();
-        ContextUtils.sendShortInfo(ctx, "Done in {0} ms", (dateEnd.getTime() - dateStart.getTime()));
+        ContextUtils.sendShortInfo(ctx, "DistributionMetadata.innerExecute.done", (dateEnd.getTime() - dateStart.getTime()));
     }
 
     private void generateMetadata() throws DPUException {
@@ -303,7 +303,7 @@ public class DistributionMetadata extends AbstractDpu<DistributionMetadataConfig
         } else if (result.getResults().isEmpty()) {
             return "";
         } else {
-            throw new DPUException("Unexpected number of results: " + result.getResults().size());
+            throw ContextUtils.dpuException(ctx, "DistributionMetadata.innerExecute.unexpectedNumberResults", result.getResults().size());
         }
     }
 
