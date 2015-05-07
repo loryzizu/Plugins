@@ -1,16 +1,16 @@
-# T-Metadata #
+# T-DistributionMetadata #
 ----------
 
 ###General###
 
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
-|**Name:**                     |T-Metadata                                              |
-|**Description:**              |Generates metadata on output from input. |
+|**Name:**                     |T-DistributionMetadata                                              |
+|**Description:**              |Generates DCAT distribution metadata on output from input. |
 |                              |                                                               |
-|**DPU class name:**           |Metadata     | 
-|**Configuration class name:** |MetadataConfig_V1                           |
-|**Dialogue class name:**      |MetadataVaadinDialog | 
+|**DPU class name:**           |DistributionMetadata     | 
+|**Configuration class name:** |DistributionMetadataConfig_V1                           |
+|**Dialogue class name:**      |DistributionMetadataVaadinDialog | 
 
 ***
 
@@ -61,6 +61,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
+|2.2.0-SNAPSHOT              |Adopted by UV/Plugins                                             |                                
 |1.3.1              |N/A                                             |                                
 |1.5.1              |Update for new helpers.                         | 
 
