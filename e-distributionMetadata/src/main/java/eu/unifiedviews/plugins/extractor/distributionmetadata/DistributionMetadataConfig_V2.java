@@ -1,15 +1,13 @@
-package cz.opendata.unifiedviews.dpus.distributionMetadata;
+package eu.unifiedviews.plugins.extractor.distributionmetadata;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
-import eu.unifiedviews.plugins.extractor.distributionmetadata.DistributionMetadataConfig_V2;
 
-public class DistributionMetadataConfig_V1 implements VersionedConfig<DistributionMetadataConfig_V2> {
+public class DistributionMetadataConfig_V2 implements VersionedConfig<DistributionMetadataConfig_V2> {
 
     private String datasetURI = "";
 
@@ -80,7 +78,7 @@ public class DistributionMetadataConfig_V1 implements VersionedConfig<Distributi
 
     private String schemaType = "";
 
-    public DistributionMetadataConfig_V1() {
+    public DistributionMetadataConfig_V2() {
 
     }
 
@@ -145,7 +143,7 @@ public class DistributionMetadataConfig_V1 implements VersionedConfig<Distributi
     }
 
     public void setExampleResources(
-            LinkedList<String> exampleResources) {
+            Collection<String> exampleResources) {
         this.exampleResources = exampleResources;
     }
 
@@ -351,39 +349,7 @@ public class DistributionMetadataConfig_V1 implements VersionedConfig<Distributi
 
     @Override
     public DistributionMetadataConfig_V2 toNextVersion() throws DPUConfigException {
-        DistributionMetadataConfig_V2 result = new DistributionMetadataConfig_V2();
-        result.setAccessURL(accessURL);
-        result.setDatasetURI(datasetURI);
-        result.setDesc_en(desc_en);
-        result.setDesc_orig(desc_orig);
-        result.setDescriptionFromDataset(descriptionFromDataset);
-        result.setDistributionURI(distributionURI);
-        result.setDownloadURL(downloadURL);
-        result.setExampleResources(new ArrayList<>(exampleResources));
-        result.setGenerateDistroURIFromDataset(generateDistroURIFromDataset);
-        result.setIssued(issued);
-        result.setIssuedFromDataset(issuedFromDataset);
-        result.setLanguage_orig(language_orig);
-        result.setLicense(license);
-        result.setLicenseFromDataset(licenseFromDataset);
-        result.setMediaType(mediaType);
-        result.setModified(modified);
-        result.setOriginalLanguageFromDataset(originalLanguageFromDataset);
-        result.setSchema(schema);
-        result.setSchemaFromDataset(schemaFromDataset);
-        result.setSchemaType(schemaType);
-        result.setSparqlEndpointUrl(sparqlEndpointUrl);
-        result.setTemporalEnd(temporalEnd);
-        result.setTemporalFromDataset(temporalFromDataset);
-        result.setTemporalStart(temporalStart);
-        result.setTitle_en(title_en);
-        result.setTitle_orig(title_orig);
-        result.setTitleFromDataset(titleFromDataset);
-        result.setUseDatasetURIfromInput(useDatasetURIfromInput);
-        result.setUseNow(useNow);
-        result.setUseNowTemporalEnd(useNowTemporalEnd);
-        result.setUseTemporal(useTemporal);
-        return result;
+        return this;
     }
 	
 }

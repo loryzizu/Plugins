@@ -1,4 +1,4 @@
-package cz.opendata.unifiedviews.dpus.distributionMetadata;
+package eu.unifiedviews.plugins.extractor.distributionmetadata;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,7 +21,7 @@ import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 import eu.unifiedviews.helpers.dpu.vaadin.tabs.ConfigCopyPaste;
 
 
-public class DistributionMetadataVaadinDialog extends AbstractDialog<DistributionMetadataConfig_V1> {
+public class DistributionMetadataVaadinDialog extends AbstractDialog<DistributionMetadataConfig_V2> {
 
     private static final long serialVersionUID = 7003725620084616056L;
 
@@ -430,7 +430,7 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
     }
 
     @Override
-    public void setConfiguration(DistributionMetadataConfig_V1 conf) throws DPUConfigException {
+    public void setConfiguration(DistributionMetadataConfig_V2 conf) throws DPUConfigException {
         tfDatasetURI.setValue(conf.getDatasetURI());
         chkGenerateDistroURIFromDataset.setValue(conf.isGenerateDistroURIFromDataset());
         tfDistributionURI.setValue(conf.getDistributionURI());
@@ -472,8 +472,8 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
 
 	@SuppressWarnings("unchecked")
 	@Override
-    public DistributionMetadataConfig_V1 getConfiguration() throws DPUConfigException {
-        DistributionMetadataConfig_V1 conf = new DistributionMetadataConfig_V1();
+    public DistributionMetadataConfig_V2 getConfiguration() throws DPUConfigException {
+        DistributionMetadataConfig_V2 conf = new DistributionMetadataConfig_V2();
 
         conf.setUseDatasetURIfromInput(chkDatasetURIFromInput.getValue());
         try {

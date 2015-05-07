@@ -1,4 +1,4 @@
-package cz.opendata.unifiedviews.dpus.distributionMetadata;
+package eu.unifiedviews.plugins.extractor.distributionmetadata;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
