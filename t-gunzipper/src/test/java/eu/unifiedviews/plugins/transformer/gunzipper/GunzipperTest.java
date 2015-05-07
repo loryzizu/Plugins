@@ -14,12 +14,16 @@ import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.helpers.dataunit.files.FilesHelper;
+import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 
 public class GunzipperTest {
     @Test
     public void testSmallFile() throws Exception {
+        GunzipperConfig_V1 config = new GunzipperConfig_V1();
+        
         // Prepare DPU.
         Gunzipper dpu = new Gunzipper();
+        dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
 
         // Prepare test environment.
         TestEnvironment environment = new TestEnvironment();
