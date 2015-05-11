@@ -1,11 +1,11 @@
-# T-DistributionMetadata #
+# E-DistributionMetadata #
 ----------
 
 ###General###
 
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
-|**Name:**                     |T-DistributionMetadata                                              |
+|**Name:**                     |E-DistributionMetadata                                              |
 |**Description:**              |Generates DCAT distribution metadata on output from input. |
 |                              |                                                               |
 |**DPU class name:**           |DistributionMetadata     | 
