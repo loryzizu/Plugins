@@ -17,6 +17,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 import eu.unifiedviews.helpers.dpu.vaadin.tabs.ConfigCopyPaste;
 
@@ -247,13 +248,13 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
 
         tfTitle = new TextField();
         tfTitle.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfTitle"));
-        tfTitle.setInputPrompt("My dataset");
+        tfTitle.setInputPrompt(ctx.tr("DistributionMetadataVaadinDialog.tfTitle.inputPrompt"));
         tfTitle.setWidth("100%");
         mainLayout.addComponent(tfTitle);
 
         tfTitleEn = new TextField();
         tfTitleEn.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfTitleEn"));
-        tfTitleEn.setInputPrompt("My dataset");
+        tfTitleEn.setInputPrompt(ctx.tr("DistributionMetadataVaadinDialog.tfTitle.inputPrompt"));
         tfTitleEn.setWidth("100%");
         mainLayout.addComponent(tfTitleEn);
 
@@ -273,13 +274,13 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
 
         tfDesc = new TextField();
         tfDesc.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfDesc"));
-        tfDesc.setInputPrompt("Longer description in original language");
+        tfDesc.setInputPrompt(ctx.tr("DistributionMetadataVaadinDialog.tfDesc.inputPrompt"));
         tfDesc.setWidth("100%");
         mainLayout.addComponent(tfDesc);
 
         tfDescEn = new TextField();
         tfDescEn.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfDescEn"));
-        tfDescEn.setInputPrompt("Longer description in English");
+        tfDescEn.setInputPrompt(ctx.tr("DistributionMetadataVaadinDialog.tfDescEn.inputPrompt"));
         tfDescEn.setWidth("100%");
         mainLayout.addComponent(tfDescEn);
 
@@ -480,7 +481,7 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
             conf.setDatasetURI((new URL(tfDatasetURI.getValue())).toString());
         } catch (MalformedURLException ex) {
         	if (chkDatasetURIFromInput.getValue()) conf.setDatasetURI(""); 
-        	else throw new DPUConfigException("Invalid dataset URI.", ex);
+        	else throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfDatasetURI"), ex);
         }
 
         conf.setGenerateDistroURIFromDataset(chkGenerateDistroURIFromDataset.getValue());
@@ -489,7 +490,7 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
             conf.setDistributionURI((new URL(tfDistributionURI.getValue())).toString());
         } catch (MalformedURLException ex) {
         	if (chkGenerateDistroURIFromDataset.getValue()) conf.setDistributionURI(""); 
-        	else throw new DPUConfigException("Invalid distribution URI.", ex);
+        	else throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfDistributionURI"), ex);
         }
 
         conf.setOriginalLanguageFromDataset(chkLanguageFromInput.getValue());
@@ -523,7 +524,7 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
             conf.setSchema(new URL(tfSchema.getValue()).toString());
         } catch (MalformedURLException ex) {
             if (chkSchemaFromInput.getValue()) conf.setSchema("");
-            else throw new DPUConfigException("Invalid schema URL.", ex);
+            else throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfSchema"), ex);
         }
 
         conf.setSchemaType(tfSchemaType.getValue());
@@ -534,13 +535,13 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
             conf.setLicense(new URL((String)lsLicenses.getValue()).toString());
         } catch (MalformedURLException ex) {
             if (chkLicensesFromInput.getValue()) conf.setLicense("");
-            else throw new DPUConfigException("Invalid license URL.", ex);
+            else throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.lsLicenses"), ex);
         }
 
         try {
             conf.setDownloadURL(new URL(tfDownloadURL.getValue()).toString());
         } catch (MalformedURLException ex) {
-            throw new DPUConfigException("Invalid download URL.", ex);
+            throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfDownloadURL"), ex);
         }
 
         try {
@@ -548,27 +549,27 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
             if (val.isEmpty()) conf.setSparqlEndpointUrl("");
             else conf.setSparqlEndpointUrl(new URL(tfSPARQLEndpointURL.getValue()).toString());
         } catch (MalformedURLException ex) {
-            throw new DPUConfigException("Invalid SPARQL Endpoint URL.", ex);
+            throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfSPARQLEndpointURL"), ex);
         }
 
         try {
             conf.setAccessURL(new URL(tfAccessURL.getValue()).toString());
         } catch (MalformedURLException ex) {
-            throw new DPUConfigException("Invalid access URL.", ex);
+            throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfAccessURL"), ex);
         }
 
         try {
             conf.setSchema(new URL(tfSchema.getValue()).toString());
         } catch (MalformedURLException ex) {
             if (chkSchemaFromInput.getValue()) conf.setSchema("");
-            else throw new DPUConfigException("Invalid schema URL.", ex);
+            else throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfSchema"), ex);
         }
 
         try {
             for (String resource: (Collection<String>) lsExampleResources.getValue())
         	conf.getExampleResources().add(new URL(resource).toString());
         } catch (MalformedURLException ex) {
-            throw new DPUConfigException("Invalid example resource URL: " + ex.getMessage(), ex);
+            throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.lsExampleResources", ex.getMessage()), ex);
         }
 
         return conf;
