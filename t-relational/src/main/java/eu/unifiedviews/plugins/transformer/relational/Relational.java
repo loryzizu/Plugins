@@ -171,6 +171,14 @@ public class Relational extends AbstractDpu<RelationalConfig_V1> {
             });
             LOG.debug("Resource parameters for table updated");
 
+        } catch (SQLTransformException e) {
+            switch (e.getErrorCode()) {
+                case DUPLICATE_COLUMN_NAME:
+                    ContextUtils.sendError(ctx, "errors.db.duplicate.column.short", e, "errors.db.duplicate.column.long");
+                    return;
+                default:
+                    throw ContextUtils.dpuException(ctx, e, "errors.db.transformfailed");
+            }
         } catch (SQLException se) {
             LOG.error("Database error occured during transforming database tables", se);
             DatabaseHelper.tryRollbackConnection(conn);
