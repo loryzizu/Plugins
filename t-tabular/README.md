@@ -35,6 +35,7 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
+|2.1.1 | Fixed bug with :Skip n first lines: for XLS, where empty text box makes configuration invalid. |
 |2.1.0 | Added option "Generate labels". |
 |2.0.2 | Fixed bug with wrong initial column. First column wrongly named as "col2" instead of "col1". |
 |2.0.1 | fixes in build dependencies |
