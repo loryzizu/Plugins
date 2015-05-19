@@ -609,7 +609,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             checkXlsHasHeader.setValue(c.isHasHeader());
         } else {
             txtXlsSheetName.setValue("");
-            txtXlsLinesToIgnore.setValue("");
+            txtXlsLinesToIgnore.setValue("0");
             loadCellMapping(Collections.EMPTY_LIST);
             checkXlsHasHeader.setValue(true);
         }
@@ -670,7 +670,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             cnf.setDelimiterChar(txtCsvDelimeterChar.getValue());
             try {
                 final String linesToSkipStr = txtCsvLinesToIgnore.getValue();
-                if (linesToSkipStr == null) {
+                if (linesToSkipStr == null || linesToSkipStr.isEmpty()) {
                     cnf.setLinesToIgnore(0);
                 } else {
                     cnf.setLinesToIgnore(
@@ -689,7 +689,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
             try {
                 final String linesToSkipStr = txtXlsLinesToIgnore.getValue();
-                if (linesToSkipStr == null) {
+                if (linesToSkipStr == null || linesToSkipStr.isEmpty()) {
                     cnf.setLinesToIgnore(0);
                 } else {
                     cnf.setLinesToIgnore(Integer.parseInt(linesToSkipStr));
