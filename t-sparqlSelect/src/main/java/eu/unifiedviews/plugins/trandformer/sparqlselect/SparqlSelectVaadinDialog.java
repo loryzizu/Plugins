@@ -22,6 +22,8 @@ public class SparqlSelectVaadinDialog extends AbstractDialog<SparqlSelectConfig>
         final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setImmediate(false);
         mainLayout.setSizeFull();
+        mainLayout.setSpacing(true);
+        mainLayout.setMargin(true);
 
         txtTarget = new TextField();
         txtTarget.setWidth("100%");

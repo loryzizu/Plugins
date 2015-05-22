@@ -163,6 +163,14 @@ public class RelationalFromSql extends AbstractDpu<RelationalFromSqlConfig_V2> {
                     }
                 });
                 LOG.debug("Resource parameters for table updated");
+            } catch (SQLTransformException e) {
+                switch (e.getErrorCode()) {
+                    case DUPLICATE_COLUMN_NAME:
+                        ContextUtils.sendError(ctx, "errors.db.duplicate.column.short", e, "errors.db.duplicate.column.long");
+                        return;
+                    default:
+                        throw ContextUtils.dpuException(ctx, e, "errors.db.transformfailed");
+                }
             } catch (Exception e) {
                 throw ContextUtils.dpuException(ctx, e, "errors.db.transformfailed");
             }

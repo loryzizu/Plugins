@@ -40,6 +40,7 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
+|2.0.2            | Fixes of automatic naming of duplicate columns in SQL select |
 |2.0.1            | fixes in build dependencies |
 |2.0.0            | Update to helpers 2.0.0     |
 |0.9.0            | N/A                         |

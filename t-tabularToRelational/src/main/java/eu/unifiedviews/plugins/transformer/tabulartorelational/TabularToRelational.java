@@ -7,16 +7,6 @@ import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
 import eu.unifiedviews.helpers.dataunit.resource.Resource;
 import eu.unifiedviews.helpers.dataunit.resource.ResourceHelpers;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
@@ -26,6 +16,17 @@ import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
 import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @DPU.AsTransformer
@@ -45,6 +46,9 @@ public class TabularToRelational extends AbstractDpu<TabularToRelationalConfig_V
     @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.tabulartorelational.TabularToRelationalConfig__V1")
     public ConfigurationUpdate _ConfigurationUpdate;
 
+    public static final String[] CHARSETS = { "UTF-8", "windows-1250", "ISO-8859-2", "US-ASCII", "IBM00858", "IBM437", "IBM775", "IBM850", "IBM852", "IBM855", "IBM857", "IBM862", "IBM866", "ISO-8859-1", "ISO-8859-4", "ISO-8859-5", "ISO-8859-7", "ISO-8859-9", "ISO-8859-13", "ISO-8859-15", "KOI8-R", "KOI8-U",
+            "UTF-16", "UTF-16BE", "UTF-16LE", "UTF-32", "UTF-32BE", "UTF-32LE", "x-UTF-32BE-BOM", "x-UTF-32LE-BOM", "windows-1251", "windows-1252", "windows-1253", "windows-1254", "windows-1257", "x-IBM737", "x-IBM874", "x-UTF-16LE-BOM" };
+
     public TabularToRelational() {
         super(TabularToRelationalVaadinDialog.class, ConfigHistory.noHistory(TabularToRelationalConfig_V1.class));
     }
@@ -58,11 +62,11 @@ public class TabularToRelational extends AbstractDpu<TabularToRelationalConfig_V
             // create table from user config
             String createTableQuery = prepareCreateTableQuery(config);
             LOG.debug("Table create query: {}", createTableQuery);
-            ctx.getExecMasterContext().getDpuContext().sendMessage(DPUContext.MessageType.DEBUG, ctx.tr("create.new.table"), createTableQuery);
+            ContextUtils.sendMessage(ctx, DPUContext.MessageType.DEBUG, ctx.tr("create.new.table"), createTableQuery);
             DatabaseHelper.executeUpdate(createTableQuery, outRelationalData);
 
             // add metadata
-            final String tableName = processString(config.getTableName());
+            final String tableName = config.getTableName().toUpperCase();
             outRelationalData.addExistingDatabaseTable(tableName, tableName);
 
             faultTolerance.execute(new FaultTolerance.Action() {
@@ -81,12 +85,13 @@ public class TabularToRelational extends AbstractDpu<TabularToRelationalConfig_V
             while (!ctx.canceled() && filesIteration.hasNext()) {
                 final FilesDataUnit.Entry entry = filesIteration.next();
                 LOG.debug("Adding file: {}", entry.getSymbolicName());
+
                 // remove URL prefixes
                 final String csvPath = StringUtils.substringAfterLast(URLDecoder.decode(entry.getFileURIString(), "UTF8"), ":");
 
                 String insertIntoQuery = prepareInsertIntoQuery(csvPath, config);
                 LOG.debug("Insert into query: {}", insertIntoQuery);
-                ctx.getExecMasterContext().getDpuContext().sendMessage(DPUContext.MessageType.DEBUG, ctx.tr("insert.file", entry.getSymbolicName()), insertIntoQuery);
+                ContextUtils.sendMessage(ctx, DPUContext.MessageType.DEBUG, ctx.tr("insert.file", entry.getSymbolicName()), insertIntoQuery);
                 // insert file into internal database
                 DatabaseHelper.executeUpdate(insertIntoQuery, outRelationalData);
             }
@@ -98,103 +103,49 @@ public class TabularToRelational extends AbstractDpu<TabularToRelationalConfig_V
     }
 
     protected static String prepareInsertIntoQuery(String csvFilePath, TabularToRelationalConfig_V1 config) {
+        List<String> columnNames = getColumnNamesFromColumnMappings(config);
         StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO ");
+        sb.append(String.format("INSERT INTO %s (SELECT %s FROM CSVREAD( '%s', '%s', '%s')",
+                config.getTableName(),
+                StringUtils.join(columnNames, ", "),
+                csvFilePath,
+                StringUtils.join(columnNames, config.getFieldSeparator()).toUpperCase(), // names of columns have to be in upper case
+                processCsvOptions(config)
+        ));
 
-        // add tablename
-        String tableName = processString(config.getTableName());
-        sb.append(tableName);
-
-        sb.append("(SELECT ");
-        // add maximum row limit
-        sb.append("TOP ");
-        sb.append(config.getRowsLimit());
-        sb.append(" ");
-        // columns
-        sb.append(joinColumnNames(config.getColumnMapping(), ", "));
-
-        sb.append(" FROM CSVREAD(");
-
-        // add filename
-        sb.append("'");
-        sb.append(csvFilePath);
-        sb.append("'");
-        // column mapping
-        sb.append(", '");
-        sb.append(joinColumnNames(config.getColumnMapping(), config.getFieldSeparator()));
-        sb.append("'");
-        // add csv options
-        sb.append(", ");
-        sb.append(processCsvOptions(config));
-
-        sb.append("))");
-
+        if (config.isHasHeader()) { // skip header
+            sb.append(" LIMIT NULL OFFSET 1");
+        }
+        sb.append(");");
         return sb.toString();
     }
 
     protected static String prepareCreateTableQuery(TabularToRelationalConfig_V1 config) {
+        // get column names that make up composite key
+        List<String> compositeKeyList = getCompositeKeyColumnNamesFromColumnMappings(config);
+
         StringBuilder sb = new StringBuilder();
-        sb.append("CREATE TABLE ");
-
-        // add tablename
-        String tableName = processString(config.getTableName());
-        sb.append(tableName);
-
-        sb.append("(");
-        StringBuilder primaryKeys = new StringBuilder("PRIMARY KEY (");
+        sb.append(String.format("CREATE TABLE %s (", config.getTableName()));
         for (ColumnMappingEntry entry : config.getColumnMapping()) {
-            // add column name
-            sb.append(processString(entry.getColumnName()));
-
+            sb.append(entry.getColumnName());
             sb.append(" ");
-            // add data type
-            sb.append(processString(entry.getDataType()));
+            sb.append(entry.getDataType());
             sb.append(", ");
-            if (entry.isPrimaryKey()) {
-                primaryKeys.append(processString(entry.getColumnName()));
-                primaryKeys.append(", ");
-            }
         }
-        // remove last ", "
-        if (primaryKeys.length() > 1) {
-            primaryKeys.setLength(primaryKeys.length() - 2);
+        if (!compositeKeyList.isEmpty()) {
+            sb.append(String.format("PRIMARY KEY (%s)", StringUtils.join(compositeKeyList, ", ")));
         }
-        primaryKeys.append(")");
-        sb.append(" ");
-        sb.append(primaryKeys);
-        sb.append(")");
-
-        return sb.toString();
-    }
-
-    protected static String processString(String input) {
-        String output = (input == null) ? "" : input;
-        output = output.trim();
-        output = output.toUpperCase();
-        return output;
-    }
-
-    protected static String joinColumnNames(List<ColumnMappingEntry> list, String joiner) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < list.size(); i++) {
-            if (i > 0) {
-                sb.append(joiner);
-            }
-            sb.append(processString(list.get(i).getColumnName()));
-        }
+        sb.append(");");
         return sb.toString();
     }
 
     protected static String processCsvOptions(TabularToRelationalConfig_V1 config) {
         StringBuilder sb = new StringBuilder();
-        sb.append("'");
-
         if (isNotEmpty(config.getEncoding())) {
             sb.append("charset=");
             sb.append(config.getEncoding());
             sb.append(" ");
         }
-
         if (isNotEmpty(config.getFieldDelimiter())) {
             sb.append("fieldDelimiter=");
             sb.append(config.getFieldDelimiter());
@@ -206,11 +157,27 @@ public class TabularToRelational extends AbstractDpu<TabularToRelationalConfig_V
             sb.append(config.getFieldSeparator());
             sb.append(" ");
         }
-
-        if (sb.charAt(sb.length() - 1) == ' ') { // if last char is space, remove it
-            sb.setLength(sb.length() - 1);
+        if (sb.length() > 0) { // remove last space if needed
+            sb.deleteCharAt(sb.length() - 1);
         }
-        sb.append("'");
         return sb.toString();
+    }
+
+    private static List<String> getColumnNamesFromColumnMappings(TabularToRelationalConfig_V1 config) {
+        List<String> list = new ArrayList<>();
+        for (ColumnMappingEntry e : config.getColumnMapping()) {
+            list.add(e.getColumnName());
+        }
+        return list;
+    }
+
+    private static List<String> getCompositeKeyColumnNamesFromColumnMappings(TabularToRelationalConfig_V1 config) {
+        List<String> list = new ArrayList<>();
+        for (ColumnMappingEntry e : config.getColumnMapping()) {
+            if (e.isPrimaryKey()) {
+                list.add(e.getColumnName());
+            }
+        }
+        return list;
     }
 }
