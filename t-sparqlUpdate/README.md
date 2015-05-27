@@ -37,6 +37,7 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
+|2.1.0            | Update to API 2.1.0        |
 |2.0.4            | Adde error message in case of SPARQL update query failure. |
 |2.0.3            | sk localization |
 |2.0.2            | TODO to describe changes in commit 909c28ebb1a35c235981027285daa3c9bdd2eda4|
