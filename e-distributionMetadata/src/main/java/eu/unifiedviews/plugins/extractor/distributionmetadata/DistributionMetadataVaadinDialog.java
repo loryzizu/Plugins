@@ -1,113 +1,58 @@
 package eu.unifiedviews.plugins.extractor.distributionmetadata;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.lang.reflect.Field;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.shared.ui.datefield.Resolution;
-import com.vaadin.ui.CheckBox;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.ui.AbstractTextField;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
-import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
-import eu.unifiedviews.helpers.dpu.vaadin.tabs.ConfigCopyPaste;
 
-
-public class DistributionMetadataVaadinDialog extends AbstractDialog<DistributionMetadataConfig_V2> {
+public class DistributionMetadataVaadinDialog extends AbstractDialog<DistributionMetadataConfig_V1> {
 
     private static final long serialVersionUID = 7003725620084616056L;
 
-    private VerticalLayout mainLayout;
+    private DistributionMetadataConfig_V1 config = null; //new DistributionMetadataConfig_V1();
 
-    private CheckBox chkDatasetURIFromInput;
+    BeanFieldGroup<DistributionMetadataConfig_V1> binder;
 
-    private TextField tfDatasetURI;
+    private TextField dcatAccessURL = new TextField();
 
-    private CheckBox chkGenerateDistroURIFromDataset;
+    private TextField dctermsDescription = new TextField();
 
-    private TextField tfDistributionURI;
+    private TextField dctermsFormat = new TextField();
 
-    private CheckBox chkLanguageFromInput;
+    private TextField dctermsLicense = new TextField();
 
-    private TextField tfLanguage;
+    private TextField dcatDownloadURL = new TextField();
 
-    private CheckBox chkTitleFromInput;
+    private TextField dcatMediaType = new TextField();
 
-    private TextField tfTitle;
+    private DateField dctermsIssued = new DateField();
 
-    private TextField tfTitleEn;
+    private TextField dctermsTitle = new TextField();
 
-    private CheckBox chkDescriptionFromInput;
+    private TextField wdrsDescribedBy = new TextField();
 
-    private TextField tfDesc;
+    private TextField podDistributionDescribedByType = new TextField();
 
-    private TextField tfDescEn;
+    private TextField dctermsTemporal = new TextField();
 
-    private CheckBox chkSchemaFromInput;
+    private TextField voidExampleResource = new TextField();
 
-    private CheckBox chkUseTemporal;
-
-    private CheckBox chkNowTemporalEnd;
-
-    private TextField tfSchema;
-
-    private TextField tfSchemaType;
-
-    private TextField tfSPARQLEndpointURL;
-
-    private TextField tfDownloadURL;
-
-    private TextField tfAccessURL;
-
-    private TextField tfMediaType;
-
-    private CheckBox chkNow;
-
-    private DateField dfModified;
-
-    private CheckBox chkIssuedFromInput;
-
-    private DateField dfIssued;
-
-    private CheckBox chkTemporalFromInput;
-
-    private DateField dfTemporalStart;
-
-    private DateField dfTemporalEnd;
-
-//    private CheckBox chkSpatialFromInput;
-//
-//    private TextField tfSpatial;
-
-    private CheckBox chkLicensesFromInput;
-
-    private ListSelect lsLicenses;
-
-    private ListSelect lsExampleResources;
-
-    private final List<String> licenses = new LinkedList<>();
-    
     public DistributionMetadataVaadinDialog() {
         super(DistributionMetadata.class);
-        licenses.add("https://creativecommons.org/licenses/by/4.0/");
-        licenses.add("https://creativecommons.org/licenses/by-sa/4.0/");
-        licenses.add("http://opendatacommons.org/licenses/pddl/1.0/");
-        
     }
 
     @Override
     protected void buildDialogLayout() {
         // common part: create layout
-        mainLayout = new VerticalLayout();
+        VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setImmediate(true);
         mainLayout.setWidth("100%");
         mainLayout.setHeight(null);
@@ -117,462 +62,44 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         // top-level component properties
         setWidth("100%");
         setHeight("100%");
+        for (Field f : this.getClass().getDeclaredFields()) {
+            if (Component.class.isAssignableFrom(f.getType())) {
+                try {
+                    ((Component) f.get(this)).setCaption(ctx.tr(this.getClass().getSimpleName() + "." + f.getName() + ".caption"));
+                    ((Component) f.get(this)).setSizeFull();
+                    if (AbstractTextField.class.isAssignableFrom(f.getType())) {
+                        ((AbstractTextField) f.get(this)).setInputPrompt(ctx.tr(this.getClass().getSimpleName() + "." + f.getName() + ".inputPrompt"));
+                        ((AbstractTextField) f.get(this)).setNullRepresentation("");
+                    }
+                    mainLayout.addComponent((Component) f.get(this));
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
 
-        tfDownloadURL = new TextField();
-        tfDownloadURL.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfDownloadURL"));
-        tfDownloadURL.setInputPrompt("http://data.mydomain.com/dumps/dataset.ttl");
-        tfDownloadURL.setWidth("100%");
-        mainLayout.addComponent(tfDownloadURL);
-
-        tfMediaType = new TextField();
-        tfMediaType.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfMediaType"));
-        tfMediaType.setInputPrompt("text/turtle|text/csv");
-        tfMediaType.setWidth("100%");
-        mainLayout.addComponent(tfMediaType);
-
-        tfAccessURL = new TextField();
-        tfAccessURL.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfAccessURL"));
-        tfAccessURL.setInputPrompt("http://data.mydomain.com/dataset/dataset");
-        tfAccessURL.setWidth("100%");
-        mainLayout.addComponent(tfAccessURL);
-
-        lsExampleResources = new ListSelect();
-        lsExampleResources.setWidth("100%");
-        lsExampleResources.setNewItemsAllowed(true);
-        lsExampleResources.setCaption(ctx.tr("DistributionMetadataVaadinDialog.lsExampleResources"));
-        lsExampleResources.setMultiSelect(true);
-        lsExampleResources.setRows(3);
-        mainLayout.addComponent(lsExampleResources);
-
-        tfSPARQLEndpointURL = new TextField();
-        tfSPARQLEndpointURL.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfSPARQLEndpointURL"));
-        tfSPARQLEndpointURL.setInputPrompt("http://linked.opendata.cz/sparql");
-        tfSPARQLEndpointURL.setWidth("100%");
-        mainLayout.addComponent(tfSPARQLEndpointURL);
-
-        tfSchemaType = new TextField();
-        tfSchemaType.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfSchemaType"));
-        tfSchemaType.setInputPrompt("text/csv");
-        tfSchemaType.setWidth("100%");
-        mainLayout.addComponent(tfSchemaType);
-
-        chkSchemaFromInput = new CheckBox();
-        chkSchemaFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkSchemaFromInput"));
-        chkSchemaFromInput.setWidth("100%");
-        chkSchemaFromInput.setImmediate(true);
-        chkSchemaFromInput.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6135328311357043784L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				tfSchema.setEnabled(!chkSchemaFromInput.getValue());
-		}});
-        mainLayout.addComponent(chkSchemaFromInput);
-
-        tfSchema = new TextField();
-        tfSchema.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfSchema"));
-        tfSchema.setInputPrompt("http://data.example.org/dataset/myschema");
-        tfSchema.setWidth("100%");
-        mainLayout.addComponent(tfSchema);
-
-        chkDatasetURIFromInput = new CheckBox();
-        chkDatasetURIFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkDatasetURIFromInput"));
-        chkDatasetURIFromInput.setWidth("100%");
-        chkDatasetURIFromInput.setImmediate(true);
-        chkDatasetURIFromInput.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6135328311357043784L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				tfDatasetURI.setEnabled(!chkDatasetURIFromInput.getValue());
-		}});
-        mainLayout.addComponent(chkDatasetURIFromInput);
-
-        tfDatasetURI = new TextField();
-        tfDatasetURI.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfDatasetURI"));
-        tfDatasetURI.setInputPrompt("http://data.mydomain.com/resource/dataset/mydataset");
-        tfDatasetURI.setWidth("100%");
-        mainLayout.addComponent(tfDatasetURI);
-
-        chkGenerateDistroURIFromDataset = new CheckBox();
-        chkGenerateDistroURIFromDataset.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkGenerateDistroURIFromDataset"));
-        chkGenerateDistroURIFromDataset.setWidth("100%");
-        chkGenerateDistroURIFromDataset.setImmediate(true);
-        chkGenerateDistroURIFromDataset.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6135328311357043784L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				tfDistributionURI.setEnabled(!chkGenerateDistroURIFromDataset.getValue());
-		}});
-        mainLayout.addComponent(chkGenerateDistroURIFromDataset);
-
-        tfDistributionURI = new TextField();
-        tfDistributionURI.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfDistributionURI"));
-        tfDistributionURI.setInputPrompt("http://data.mydomain.com/resource/dataset/mydataset/distribution/rdf");
-        tfDistributionURI.setWidth("100%");
-        mainLayout.addComponent(tfDistributionURI);
-
-        chkLanguageFromInput = new CheckBox();
-        chkLanguageFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkLanguageFromInput"));
-        chkLanguageFromInput.setWidth("100%");
-        chkLanguageFromInput.setImmediate(true);
-        chkLanguageFromInput.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6135328311357043784L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				tfLanguage.setEnabled(!chkLanguageFromInput.getValue());
-		}});
-        mainLayout.addComponent(chkLanguageFromInput);
-
-        tfLanguage = new TextField();
-        tfLanguage.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfLanguage"));
-        tfLanguage.setInputPrompt("cs|en|sk|it");
-        tfLanguage.setWidth("100%");
-        mainLayout.addComponent(tfLanguage);
-
-        chkTitleFromInput = new CheckBox();
-        chkTitleFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkTitleFromInput"));
-        chkTitleFromInput.setWidth("100%");
-        chkTitleFromInput.setImmediate(true);
-        chkTitleFromInput.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6135328311357043784L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				tfTitle.setEnabled(!chkTitleFromInput.getValue());
-				tfTitleEn.setEnabled(!chkTitleFromInput.getValue());
-		}});
-        mainLayout.addComponent(chkTitleFromInput);
-
-        tfTitle = new TextField();
-        tfTitle.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfTitle"));
-        tfTitle.setInputPrompt(ctx.tr("DistributionMetadataVaadinDialog.tfTitle.inputPrompt"));
-        tfTitle.setWidth("100%");
-        mainLayout.addComponent(tfTitle);
-
-        tfTitleEn = new TextField();
-        tfTitleEn.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfTitleEn"));
-        tfTitleEn.setInputPrompt(ctx.tr("DistributionMetadataVaadinDialog.tfTitle.inputPrompt"));
-        tfTitleEn.setWidth("100%");
-        mainLayout.addComponent(tfTitleEn);
-
-        chkDescriptionFromInput = new CheckBox();
-        chkDescriptionFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkDescriptionFromInput"));
-        chkDescriptionFromInput.setWidth("100%");
-        chkDescriptionFromInput.setImmediate(true);
-        chkDescriptionFromInput.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6135328311357043784L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				tfDesc.setEnabled(!chkDescriptionFromInput.getValue());
-				tfDescEn.setEnabled(!chkDescriptionFromInput.getValue());
-		}});
-        mainLayout.addComponent(chkDescriptionFromInput);
-
-        tfDesc = new TextField();
-        tfDesc.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfDesc"));
-        tfDesc.setInputPrompt(ctx.tr("DistributionMetadataVaadinDialog.tfDesc.inputPrompt"));
-        tfDesc.setWidth("100%");
-        mainLayout.addComponent(tfDesc);
-
-        tfDescEn = new TextField();
-        tfDescEn.setCaption(ctx.tr("DistributionMetadataVaadinDialog.tfDescEn"));
-        tfDescEn.setInputPrompt(ctx.tr("DistributionMetadataVaadinDialog.tfDescEn.inputPrompt"));
-        tfDescEn.setWidth("100%");
-        mainLayout.addComponent(tfDescEn);
-
-        chkIssuedFromInput = new CheckBox();
-        chkIssuedFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkIssuedFromInput"));
-        chkIssuedFromInput.setWidth("100%");
-        chkIssuedFromInput.setImmediate(true);
-        chkIssuedFromInput.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6135328311357043784L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				dfIssued.setEnabled(!chkIssuedFromInput.getValue());
-		}});
-        mainLayout.addComponent(chkIssuedFromInput);
-
-        dfIssued = new DateField();
-        dfIssued.setCaption(ctx.tr("DistributionMetadataVaadinDialog.dfIssued"));
-        dfIssued.setWidth("100%");
-        dfIssued.setResolution(Resolution.DAY);
-        mainLayout.addComponent(dfIssued);
-
-        chkNow = new CheckBox();
-        chkNow.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkNow"));
-        chkNow.setWidth("100%");
-        chkNow.setImmediate(true);
-        chkNow.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6135328311357043784L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				dfModified.setEnabled(!chkNow.getValue());
-		}});
-        mainLayout.addComponent(chkNow);
-
-        dfModified = new DateField();
-        dfModified.setCaption(ctx.tr("DistributionMetadataVaadinDialog.dfModified"));
-        dfModified.setWidth("100%");
-        dfModified.setResolution(Resolution.DAY);
-        mainLayout.addComponent(dfModified);
-
-        chkUseTemporal = new CheckBox();
-        chkUseTemporal.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkUseTemporal"));
-        chkUseTemporal.setWidth("100%");
-        chkUseTemporal.setImmediate(true);
-        chkUseTemporal.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6135328311357043784L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				chkTemporalFromInput.setEnabled(chkUseTemporal.getValue());
-				dfTemporalStart.setEnabled(chkUseTemporal.getValue() && !chkTemporalFromInput.getValue());
-				dfTemporalEnd.setEnabled(chkUseTemporal.getValue() && !chkNowTemporalEnd.getValue() && !chkTemporalFromInput.getValue());
-				chkNowTemporalEnd.setEnabled(chkUseTemporal.getValue() && !chkTemporalFromInput.getValue());
-		}});
-        mainLayout.addComponent(chkUseTemporal);
-
-        chkTemporalFromInput = new CheckBox();
-        chkTemporalFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkTemporalFromInput"));
-        chkTemporalFromInput.setWidth("100%");
-        chkTemporalFromInput.setImmediate(true);
-        chkTemporalFromInput.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6135328311357043784L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				dfTemporalStart.setEnabled(!chkTemporalFromInput.getValue());
-				dfTemporalEnd.setEnabled(!chkTemporalFromInput.getValue() && !chkNowTemporalEnd.getValue());
-				chkNowTemporalEnd.setEnabled(!chkTemporalFromInput.getValue());
-		}});
-        mainLayout.addComponent(chkTemporalFromInput);
-
-        dfTemporalStart = new DateField();
-        dfTemporalStart.setCaption(ctx.tr("DistributionMetadataVaadinDialog.dfTemporalStart"));
-        dfTemporalStart.setWidth("100%");
-        dfTemporalStart.setResolution(Resolution.DAY);
-        mainLayout.addComponent(dfTemporalStart);
-
-        dfTemporalEnd = new DateField();
-        dfTemporalEnd.setCaption(ctx.tr("DistributionMetadataVaadinDialog.dfTemporalEnd"));
-        dfTemporalEnd.setWidth("100%");
-        dfTemporalEnd.setResolution(Resolution.DAY);
-        mainLayout.addComponent(dfTemporalEnd);
-
-        chkNowTemporalEnd = new CheckBox();
-        chkNowTemporalEnd.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkNowTemporalEnd"));
-        chkNowTemporalEnd.setWidth("100%");
-        chkNowTemporalEnd.setImmediate(true);
-        chkNowTemporalEnd.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6135328311357043784L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				dfTemporalEnd.setEnabled(!chkNowTemporalEnd.getValue());
-		}});
-        mainLayout.addComponent(chkNowTemporalEnd);
-
-//        chkSpatialFromInput = new CheckBox();
-//        chkSpatialFromInput.setCaption("Use spatial coverage from dataset");
-//        chkSpatialFromInput.setWidth("100%");
-//        chkSpatialFromInput.setImmediate(true);
-//        chkSpatialFromInput.addValueChangeListener(new ValueChangeListener() {
-//			private static final long serialVersionUID = -6135328311357043784L;
-//
-//			@Override
-//			public void valueChange(ValueChangeEvent event) {
-//				tfSpatial.setEnabled(!chkSpatialFromInput.getValue());
-//		}});
-//        mainLayout.addComponent(chkSpatialFromInput);
-//
-//        tfSpatial = new TextField();
-//        tfSpatial.setCaption("Spatial coverage URI:");
-//        tfSpatial.setInputPrompt("http://ruian.linked.opendata.cz/resource/adresni-mista/25958810");
-//        tfSpatial.setWidth("100%");
-//        mainLayout.addComponent(tfSpatial);
-
-        chkLicensesFromInput = new CheckBox();
-        chkLicensesFromInput.setCaption(ctx.tr("DistributionMetadataVaadinDialog.chkLicensesFromInput"));
-        chkLicensesFromInput.setWidth("100%");
-        chkLicensesFromInput.setImmediate(true);
-        chkLicensesFromInput.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6135328311357043784L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				lsLicenses.setEnabled(!chkLicensesFromInput.getValue());
-		}});
-        mainLayout.addComponent(chkLicensesFromInput);
-
-        lsLicenses = new ListSelect();
-        lsLicenses.setWidth("100%");
-        lsLicenses.setNewItemsAllowed(true);
-        lsLicenses.setCaption(ctx.tr("DistributionMetadataVaadinDialog.lsLicenses"));
-        lsLicenses.setMultiSelect(false);
-        lsLicenses.setNullSelectionAllowed(false);
-        lsLicenses.setRows(3);
-        lsLicenses.addItems(licenses);
-        mainLayout.addComponent(lsLicenses);
-
-        Panel p = new Panel();
-        p.setSizeFull();
-        p.setContent(mainLayout);
-
-        setCompositionRoot(p);
-
-        // Tabs.
-        this.addTab(ConfigCopyPaste.create(ctx), "DistributionMetadataVaadinDialog.addTabCopyPaste");
+        setCompositionRoot(mainLayout);
     }
 
     @Override
-    public void setConfiguration(DistributionMetadataConfig_V2 conf) throws DPUConfigException {
-        tfDatasetURI.setValue(conf.getDatasetURI());
-        chkGenerateDistroURIFromDataset.setValue(conf.isGenerateDistroURIFromDataset());
-        tfDistributionURI.setValue(conf.getDistributionURI());
-        chkDatasetURIFromInput.setValue(conf.isUseDatasetURIfromInput());
-        chkLanguageFromInput.setValue(conf.isOriginalLanguageFromDataset());
-        tfLanguage.setValue(conf.getLanguage_orig());
-        chkTitleFromInput.setValue(conf.isTitleFromDataset());
-        tfTitle.setValue(conf.getTitle_orig());
-        tfTitleEn.setValue(conf.getTitle_en());
-        chkDescriptionFromInput.setValue(conf.isDescriptionFromDataset());
-        tfDesc.setValue(conf.getDesc_orig());
-        tfDescEn.setValue(conf.getDesc_en());
-        chkIssuedFromInput.setValue(conf.isIssuedFromDataset());
-        dfIssued.setValue(conf.getIssued());
-        dfModified.setValue(conf.getModified());
-        chkNow.setValue(conf.isUseNow());
-        chkNowTemporalEnd.setValue(conf.isUseNowTemporalEnd());
-        chkUseTemporal.setValue(conf.isUseTemporal());
-        tfDownloadURL.setValue(conf.getDownloadURL());
-        tfAccessURL.setValue(conf.getAccessURL());
-        tfMediaType.setValue(conf.getMediaType());
-        chkSchemaFromInput.setValue(conf.isSchemaFromDataset());
-        tfSchema.setValue(conf.getSchema());
-        tfSchemaType.setValue(conf.getSchemaType());
-        tfSPARQLEndpointURL.setValue(conf.getSparqlEndpointUrl());
-        
-        chkTemporalFromInput.setValue(conf.isTemporalFromDataset());
-        dfTemporalStart.setValue(conf.getTemporalStart());
-        dfTemporalEnd.setValue(conf.getTemporalEnd());
-//        chkSpatialFromInput.setValue(conf.isSpatialFromDataset());
-//        tfSpatial.setValue(conf.getSpatial());
-
-    	for (String s: conf.getExampleResources()) lsExampleResources.addItem(s);
-    	lsExampleResources.setValue(conf.getExampleResources());
-
-        chkLicensesFromInput.setValue(conf.isLicenseFromDataset());
-    	lsLicenses.setValue(conf.getLicense());
+    public void setConfiguration(DistributionMetadataConfig_V1 conf) throws DPUConfigException {
+        if (config == null) {
+            config = conf;
+            binder = new BeanFieldGroup<DistributionMetadataConfig_V1>(DistributionMetadataConfig_V1.class);
+            binder.setItemDataSource(config);
+            binder.buildAndBindMemberFields(this);
+        }
     }
 
-	@SuppressWarnings("unchecked")
-	@Override
-    public DistributionMetadataConfig_V2 getConfiguration() throws DPUConfigException {
-        DistributionMetadataConfig_V2 conf = new DistributionMetadataConfig_V2();
-
-        conf.setUseDatasetURIfromInput(chkDatasetURIFromInput.getValue());
+    @SuppressWarnings("unchecked")
+    @Override
+    public DistributionMetadataConfig_V1 getConfiguration() throws DPUConfigException {
         try {
-            conf.setDatasetURI((new URL(tfDatasetURI.getValue())).toString());
-        } catch (MalformedURLException ex) {
-        	if (chkDatasetURIFromInput.getValue()) conf.setDatasetURI(""); 
-        	else throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfDatasetURI"), ex);
+            binder.commit();
+        } catch (CommitException ex) {
+            throw new DPUConfigException(ex);
         }
-
-        conf.setGenerateDistroURIFromDataset(chkGenerateDistroURIFromDataset.getValue());
-        
-        try {
-            conf.setDistributionURI((new URL(tfDistributionURI.getValue())).toString());
-        } catch (MalformedURLException ex) {
-        	if (chkGenerateDistroURIFromDataset.getValue()) conf.setDistributionURI(""); 
-        	else throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfDistributionURI"), ex);
-        }
-
-        conf.setOriginalLanguageFromDataset(chkLanguageFromInput.getValue());
-        conf.setLanguage_orig(tfLanguage.getValue());
-        conf.setTitleFromDataset(chkTitleFromInput.getValue());
-        conf.setTitle_orig(tfTitle.getValue());
-        conf.setTitle_en(tfTitleEn.getValue());
-        conf.setDescriptionFromDataset(chkDescriptionFromInput.getValue());
-        conf.setDesc_orig(tfDesc.getValue());
-        conf.setDesc_en(tfDescEn.getValue());
-        conf.setIssuedFromDataset(chkIssuedFromInput.getValue());
-        conf.setIssued(dfIssued.getValue());
-        conf.setModified(dfModified.getValue());
-        conf.setUseNow((boolean) chkNow.getValue());
-        conf.setUseNowTemporalEnd((boolean) chkNowTemporalEnd.getValue());
-        conf.setUseTemporal((boolean) chkUseTemporal.getValue());
-        conf.setTemporalFromDataset(chkTemporalFromInput.getValue());
-        conf.setTemporalStart(dfTemporalStart.getValue());
-        conf.setTemporalEnd(dfTemporalEnd.getValue());
-
-//        conf.setSpatialFromDataset(chkSpatialFromInput.getValue());
-//        try {
-//	        conf.setSpatial(new URL(tfSpatial.getValue()).toString());
-//        } catch (MalformedURLException ex) {
-//            if (chkSpatialFromInput.getValue()) conf.setSpatial("");
-//            else throw new DPUConfigException("Invalid spatial converage URL.", ex);
-//        }
-        
-        conf.setSchemaFromDataset(chkSchemaFromInput.getValue());
-        try {
-            conf.setSchema(new URL(tfSchema.getValue()).toString());
-        } catch (MalformedURLException ex) {
-            if (chkSchemaFromInput.getValue()) conf.setSchema("");
-            else throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfSchema"), ex);
-        }
-
-        conf.setSchemaType(tfSchemaType.getValue());
-        conf.setMediaType(tfMediaType.getValue());
-
-        conf.setLicenseFromDataset(chkLicensesFromInput.getValue());
-        try {
-            conf.setLicense(new URL((String)lsLicenses.getValue()).toString());
-        } catch (MalformedURLException ex) {
-            if (chkLicensesFromInput.getValue()) conf.setLicense("");
-            else throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.lsLicenses"), ex);
-        }
-
-        try {
-            conf.setDownloadURL(new URL(tfDownloadURL.getValue()).toString());
-        } catch (MalformedURLException ex) {
-            throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfDownloadURL"), ex);
-        }
-
-        try {
-            String val = tfSPARQLEndpointURL.getValue();
-            if (val.isEmpty()) conf.setSparqlEndpointUrl("");
-            else conf.setSparqlEndpointUrl(new URL(tfSPARQLEndpointURL.getValue()).toString());
-        } catch (MalformedURLException ex) {
-            throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfSPARQLEndpointURL"), ex);
-        }
-
-        try {
-            conf.setAccessURL(new URL(tfAccessURL.getValue()).toString());
-        } catch (MalformedURLException ex) {
-            throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfAccessURL"), ex);
-        }
-
-        try {
-            conf.setSchema(new URL(tfSchema.getValue()).toString());
-        } catch (MalformedURLException ex) {
-            if (chkSchemaFromInput.getValue()) conf.setSchema("");
-            else throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.tfSchema"), ex);
-        }
-
-        try {
-            for (String resource: (Collection<String>) lsExampleResources.getValue())
-        	conf.getExampleResources().add(new URL(resource).toString());
-        } catch (MalformedURLException ex) {
-            throw new DPUConfigException(ctx.tr("DistributionMetadataVaadinDialog.DPUConfigException.lsExampleResources", ex.getMessage()), ex);
-        }
-
-        return conf;
+        return config;
     }
 
 }
