@@ -1,49 +1,26 @@
 package eu.unifiedviews.plugins.extractor.distributionmetadata;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.vocabulary.DCTERMS;
-import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 
 import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.DataUnitUtils;
-import eu.unifiedviews.helpers.dataunit.rdf.RdfDataUnitUtils;
+import eu.unifiedviews.helpers.dataunit.distribution.DistributionToStatementsConverter;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
-import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
-import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
-import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
-import eu.unifiedviews.helpers.dpu.extension.rdf.simple.WritableSimpleRdf;
-import eu.unifiedviews.helpers.dpu.rdf.EntityBuilder;
-import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 
 @DPU.AsExtractor
 public class DistributionMetadata extends AbstractDpu<DistributionMetadataConfig_V1> {
 
-    @DataUnit.AsInput(name = "datasetMetadata", optional = true)
-    public RDFDataUnit inRdfData;
-
     @DataUnit.AsOutput(name = "metadata")
-    public WritableRDFDataUnit outRdfData;
-
-    @ExtensionInitializer.Init(param = "outRdfData")
-    public WritableSimpleRdf rdfData;
-
-    @ExtensionInitializer.Init
-    public FaultTolerance faultTolerance;
-
-    @ExtensionInitializer.Init
-    public ConfigurationUpdate _configurationUpdate;
+    public WritableRDFDataUnit rdfMetadataOutput;
 
     public DistributionMetadata() {
         super(DistributionMetadataVaadinDialog.class,
@@ -54,6 +31,24 @@ public class DistributionMetadata extends AbstractDpu<DistributionMetadataConfig
     @Override
     protected void innerExecute() throws DPUException {
         final Date dateStart = new Date();
+
+        RepositoryConnection connection = null;
+        try {
+            URI graph = rdfMetadataOutput.addNewDataGraph("distributionMetadata");
+            connection = rdfMetadataOutput.getConnection();
+            connection.begin();
+            connection.add(DistributionToStatementsConverter.distributionToStatements(DistributionMetadataConfigDistributionConverter.v1ToDistribution(config)), graph);
+            connection.commit();
+        } catch (RepositoryException | DataUnitException ex) {
+            ContextUtils.dpuException(ctx, ex, "DistributionMetadata.execute.exception");
+        } finally {
+            if (connection!=null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                }
+            }
+        }
 
         final Date dateEnd = new Date();
         ContextUtils.sendShortInfo(ctx, "DistributionMetadata.innerExecute.done", (dateEnd.getTime() - dateStart.getTime()));

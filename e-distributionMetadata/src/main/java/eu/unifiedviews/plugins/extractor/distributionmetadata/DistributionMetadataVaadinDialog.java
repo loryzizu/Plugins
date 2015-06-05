@@ -1,7 +1,10 @@
 package eu.unifiedviews.plugins.extractor.distributionmetadata;
 
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.util.Locale;
 
+import com.vaadin.data.Validatable;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.AbstractComponent;
@@ -30,8 +33,6 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         mainLayout.setImmediate(true);
         mainLayout.setWidth("100%");
         mainLayout.setHeight(null);
-        mainLayout.setMargin(false);
-//        mainLayout.setSpacing(true);
 
         // top-level component properties
         setWidth("100%");
@@ -46,12 +47,16 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
             if (AbstractTextField.class.isAssignableFrom(component.getClass())) {
                 ((AbstractTextField) component).setInputPrompt(ctx.tr(this.getClass().getSimpleName() + "." + f.getName() + ".inputPrompt"));
                 ((AbstractTextField) component).setNullRepresentation("");
-                ((AbstractTextField) component).addValidator(new UrlValidator());
+            }
+            if (Validatable.class.isAssignableFrom(component.getClass())) {
+                if (URI.class.isAssignableFrom(f.getType())) {
+                    ((Validatable) component).addValidator(new UrlValidator(true, ctx.getDialogMasterContext().getDialogContext().getLocale()));
+                }
             }
             if (AbstractComponent.class.isAssignableFrom(component.getClass())) {
                 ((AbstractComponent) component).setImmediate(true);
             }
-            
+
             mainLayout.addComponent(component);
         }
         setCompositionRoot(mainLayout);
@@ -65,7 +70,11 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
     @Override
     public DistributionMetadataConfig_V1 getConfiguration() throws DPUConfigException {
         try {
-            binder.commit();
+            if (binder.isValid()) {
+                binder.commit();
+            } else {
+                throw new DPUConfigException(ctx.tr(this.getClass().getSimpleName() + ".validation.exception"));
+            }
         } catch (CommitException ex) {
             throw new DPUConfigException(ctx.tr(this.getClass().getSimpleName() + ".validation.exception"));
         }
