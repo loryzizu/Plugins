@@ -37,8 +37,7 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|2.1.0            | Update to API 2.1.0; en and sk localization      |
-|2.0.2            | TODO to describe changes in commit 909c28ebb1a35c235981027285daa3c9bdd2eda4|
+|2.1.0            | Symbolic name of output is modified; Update to API 2.1.0; en and sk localization      |
 |2.0.1            | fixes in build dependencies |
 |2.0.0            | Imported from https://github.com/mff-uk/DPUs repository of DPUs, using helpers 2.0.0                         |
 

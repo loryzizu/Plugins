@@ -38,7 +38,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|2.1.0              | Update to API 2.1.0        |
+|2.1.0              | Update to API 2.1.0; File character set encoding is configurable by user    |
 |2.0.0              | Initial release, using helpers 2.0.0           |                                
 
 
