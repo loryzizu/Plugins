@@ -24,7 +24,6 @@ public class DistributionMetadataConfigDistributionConverter {
         if (config.getPodDistributionDescribedByType() != null) {
             distribution.setPodDistributionDescribedByType(config.getPodDistributionDescribedByType().toASCIIString());
         }
-        distribution.setDctermsTemporal(config.getDctermsTemporal());
         if (config.getVoidExampleResource() != null) {
             distribution.setVoidExampleResource(config.getVoidExampleResource().toASCIIString());
         }

@@ -20,8 +20,6 @@ public class DistributionMetadataConfig_V1 {
 
     private java.net.URI podDistributionDescribedByType;
 
-    private String dctermsTemporal;
-
     private java.net.URI voidExampleResource;
 
     public java.net.URI getDcatAccessURL() {
@@ -94,14 +92,6 @@ public class DistributionMetadataConfig_V1 {
 
     public void setPodDistributionDescribedByType(java.net.URI podDistributionDescribedByType) {
         this.podDistributionDescribedByType = podDistributionDescribedByType;
-    }
-
-    public String getDctermsTemporal() {
-        return dctermsTemporal;
-    }
-
-    public void setDctermsTemporal(String dctermsTemporal) {
-        this.dctermsTemporal = dctermsTemporal;
     }
 
     public java.net.URI getVoidExampleResource() {

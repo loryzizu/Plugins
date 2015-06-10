@@ -47,6 +47,10 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
             if (AbstractTextField.class.isAssignableFrom(component.getClass())) {
                 ((AbstractTextField) component).setInputPrompt(ctx.tr(this.getClass().getSimpleName() + "." + f.getName() + ".inputPrompt"));
                 ((AbstractTextField) component).setNullRepresentation("");
+                if (URI.class.isAssignableFrom(f.getType())) {
+                    ((AbstractTextField) component).setConverter(new StringToUriConverter());
+                    ((AbstractTextField) component).setConversionError(ctx.tr("DistributionMetadataVaadinDialog.exception.uri.conversion"));
+                }
             }
             if (Validatable.class.isAssignableFrom(component.getClass())) {
                 if (URI.class.isAssignableFrom(f.getType())) {

@@ -19,8 +19,8 @@ import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
 @DPU.AsExtractor
 public class DistributionMetadata extends AbstractDpu<DistributionMetadataConfig_V1> {
 
-    @DataUnit.AsOutput(name = "metadata")
-    public WritableRDFDataUnit rdfMetadataOutput;
+    @DataUnit.AsOutput(name = "distributionOutput")
+    public WritableRDFDataUnit distributionOutput;
 
     public DistributionMetadata() {
         super(DistributionMetadataVaadinDialog.class,
@@ -34,8 +34,8 @@ public class DistributionMetadata extends AbstractDpu<DistributionMetadataConfig
 
         RepositoryConnection connection = null;
         try {
-            URI graph = rdfMetadataOutput.addNewDataGraph("distributionMetadata");
-            connection = rdfMetadataOutput.getConnection();
+            URI graph = distributionOutput.addNewDataGraph("distributionMetadata");
+            connection = distributionOutput.getConnection();
             connection.begin();
             connection.add(DistributionToStatementsConverter.distributionToStatements(DistributionMetadataConfigDistributionConverter.v1ToDistribution(config)), graph);
             connection.commit();
