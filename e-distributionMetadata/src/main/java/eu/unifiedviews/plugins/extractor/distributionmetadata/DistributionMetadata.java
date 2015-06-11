@@ -37,7 +37,7 @@ public class DistributionMetadata extends AbstractDpu<DistributionMetadataConfig
             URI graph = distributionOutput.addNewDataGraph("distributionMetadata");
             connection = distributionOutput.getConnection();
             connection.begin();
-            connection.add(DistributionToStatementsConverter.distributionToStatements(DistributionMetadataConfigDistributionConverter.v1ToDistribution(config)), graph);
+            connection.add(DistributionToStatementsConverter.distributionToStatements(DistributionMetadataConfigToDistributionConverter.v1ToDistribution(config)), graph);
             connection.commit();
         } catch (RepositoryException | DataUnitException ex) {
             ContextUtils.dpuException(ctx, ex, "DistributionMetadata.execute.exception");
