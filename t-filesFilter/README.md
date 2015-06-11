@@ -39,6 +39,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
+|2.1.0              | Update to API 2.1.0        |
 |2.0.1              | fixes in build dependencies |
 |2.0.0              | Update for helpers 2.0. SPARQL used to filter based on VirtualPath. |
 |1.5.0              | N/A |
