@@ -2,7 +2,6 @@ package eu.unifiedviews.plugins.extractor.distributionmetadata;
 
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.Locale;
 
 import com.vaadin.data.Validatable;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;

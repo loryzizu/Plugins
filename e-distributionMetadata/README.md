@@ -6,7 +6,7 @@
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |E-DistributionMetadata                                              |
-|**Description:**              |Generates DCAT distribution metadata on output from input. |
+|**Description:**              |Generates DCAT distribution metadata on output. |
 |                              |                                                               |
 |**DPU class name:**           |DistributionMetadata     | 
 |**Configuration class name:** |DistributionMetadataConfig_V1                           |
@@ -19,31 +19,19 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|**Output graph name:** |self-descriptive  |
-|**COMSODE Dataset ID (will be used as part of the URI)** |self-descriptive  |
-|**Dataset URI:** |self-descriptive  |
-|**Distribution URI:** |self-descriptive  |
-|**Data dump URL:** |self-descriptive  |
-|**Media Type: (list)** |- application/zip<BR>- text/csv<BR>- application/rdf+xml<BR>- text/plain<BR>- application/x-turtle  |
+|**Access URL:** | A landing page, feed, SPARQL endpoint or other type of resource that gives access to the distribution of the dataset  |
+|**Description in original language:** | free-text account of the distribution.  |
+|**Format:** | The file format of the distribution.  |
+|**License:** | This links to the license document under which the catalog is made available and not the datasets. Even if the license of the catalog applies to all of its datasets and distributions, it should be replicated on each distribution. |
+|**Download URL:** | A file that contains the distribution of the dataset in a given format |
+|**Media (MIME) type:** | The media type of the distribution as defined by IANA. |
 |**Sparql Endpoint URI:** |self-descriptive  |
-|**Contact Point URL:** |self-descriptive  |
-|**Original language - RDF language tag:** |self-descriptive  |
-|**Title original language:** |self-descriptive  |
-|**Title in English:** |self-descriptive |
-|**Description original language:** |self-descriptive  |
-|**Description in English:** |self-descriptive  |
-|**Dataset is RDF Data Cube (checkbox)** |self-descriptive  |
-|**Modified:(calendar)** |self-descriptive  |
-|**Always use current date instead (checkbox)** |self-descriptive  |
-|**Periodicity: (list)** |- Monthly<BR>- Annual<BR>- Daily-business week<BR>- Daily<BR>- Minutely<BR>- Quarterly<BR>- Half Yearly, semester<BR>- Weekly  |
-|**Available licenses/Selected licenses** |self-descriptive  |
-|**Available example resources/Selected example resources** |self-descriptive  |
-|**Available sources/Selected sources** |self-descriptive  |
-|**Available keywords/Selected keywords** |self-descriptive  |
-|**Available themes/Selected themes** |self-descriptive  |
-|**Available languages/Selected languages** |self-descriptive  |
-|**Available authors/Selected authors** |self-descriptive  |
-|**Available publishers/Selected publishers** |self-descriptive  |
+|**Issued:** | Date of formal issuance (e.g., publication) of the distribution. |
+|**Distribution title in original language:** | A name given to the distribution.  |
+|**Described by:** | URL to the data dictionary for the distribution found at the downloadURL. Note that documentation other than a data dictionary can be referenced using Related Documents as shown in the expanded fields. |
+|**Description original language:** | The machine-readable file format (IANA Media Type or MIME Type) of the distribution’s describedBy URL.  |
+|**Type of description** | The machine-readable file format (IANA Media Type or MIME Type) of the distribution’s describedBy URL.  |
+|**Example resource** | Example resource |
 
 
 ***
@@ -52,8 +40,7 @@
 
 |Name                |Type       |DataUnit                         |Description                        |
 |--------------------|-----------|---------------------------------|-----------------------------------|
-|data |i |RDFDataUnit  |Data to be described.   |
-|metadata|o |RDFDataUnit  |Descriptive data.  | 
+|distributionOutput |o |RDFDataUnit  |DCAT-AP Descriptive data.  | 
 
 ***
 
@@ -61,7 +48,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|2.2.0-SNAPSHOT              |Adopted by UV/Plugins                                             |                                
+|2.0.0-SNAPSHOT              |Adopted by UV/Plugins                                             |                                
 |1.3.1              |N/A                                             |                                
 |1.5.1              |Update for new helpers.                         | 
 
