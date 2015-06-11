@@ -104,7 +104,9 @@ public class DatabaseHelper {
         query.append(tableName);
         query.append(" (");
         for (ColumnDefinition column : columns) {
+            query.append("\"");
             query.append(column.getColumnName());
+            query.append("\"");
             query.append(" ");
             query.append(column.getColumnTypeName());
             if (column.getColumnSize() != -1) {
