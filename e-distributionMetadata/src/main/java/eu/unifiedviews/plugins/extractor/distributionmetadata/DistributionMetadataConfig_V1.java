@@ -1,104 +1,65 @@
 package eu.unifiedviews.plugins.extractor.distributionmetadata;
 
+import java.util.Date;
 
 public class DistributionMetadataConfig_V1 {
-    private java.net.URI dcatAccessURL;
+    private String name;
 
-    private String dctermsDescription;
+    private String description;
 
-    private String dctermsFormat;
+    private java.net.URI url;
 
-    private java.net.URI dctermsLicense;
+    private String format;
 
-    private java.net.URI dcatDownloadURL;
+    private String mimetype;
 
-    private String dcatMediaType;
+    private Date created;
 
-    private String dctermsTitle;
-
-    private java.net.URI wdrsDescribedBy;
-
-    private java.net.URI podDistributionDescribedByType;
-
-    private java.net.URI voidExampleResource;
-
-    public java.net.URI getDcatAccessURL() {
-        return dcatAccessURL;
+    public String getName() {
+        return name;
     }
 
-    public void setDcatAccessURL(java.net.URI dcatAccessURL) {
-        this.dcatAccessURL = dcatAccessURL;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getDctermsDescription() {
-        return dctermsDescription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDctermsDescription(String dctermsDescription) {
-        this.dctermsDescription = dctermsDescription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getDctermsFormat() {
-        return dctermsFormat;
+    public java.net.URI getUrl() {
+        return url;
     }
 
-    public void setDctermsFormat(String dctermsFormat) {
-        this.dctermsFormat = dctermsFormat;
+    public void setUrl(java.net.URI url) {
+        this.url = url;
     }
 
-    public java.net.URI getDctermsLicense() {
-        return dctermsLicense;
+    public String getFormat() {
+        return format;
     }
 
-    public void setDctermsLicense(java.net.URI dctermsLicense) {
-        this.dctermsLicense = dctermsLicense;
+    public void setFormat(String format) {
+        this.format = format;
     }
 
-    public java.net.URI getDcatDownloadURL() {
-        return dcatDownloadURL;
+    public String getMimetype() {
+        return mimetype;
     }
 
-    public void setDcatDownloadURL(java.net.URI dcatDownloadURL) {
-        this.dcatDownloadURL = dcatDownloadURL;
+    public void setMimetype(String mimetype) {
+        this.mimetype = mimetype;
     }
 
-    public String getDcatMediaType() {
-        return dcatMediaType;
+    public Date getCreated() {
+        return created;
     }
 
-    public void setDcatMediaType(String dcatMediaType) {
-        this.dcatMediaType = dcatMediaType;
-    }
-
-    public String getDctermsTitle() {
-        return dctermsTitle;
-    }
-
-    public void setDctermsTitle(String dctermsTitle) {
-        this.dctermsTitle = dctermsTitle;
-    }
-
-    public java.net.URI getWdrsDescribedBy() {
-        return wdrsDescribedBy;
-    }
-
-    public void setWdrsDescribedBy(java.net.URI wdrsDescribedBy) {
-        this.wdrsDescribedBy = wdrsDescribedBy;
-    }
-
-    public java.net.URI getPodDistributionDescribedByType() {
-        return podDistributionDescribedByType;
-    }
-
-    public void setPodDistributionDescribedByType(java.net.URI podDistributionDescribedByType) {
-        this.podDistributionDescribedByType = podDistributionDescribedByType;
-    }
-
-    public java.net.URI getVoidExampleResource() {
-        return voidExampleResource;
-    }
-
-    public void setVoidExampleResource(java.net.URI voidExampleResource) {
-        this.voidExampleResource = voidExampleResource;
+    public void setCreated(Date created) {
+        this.created = created;
     }
 }
