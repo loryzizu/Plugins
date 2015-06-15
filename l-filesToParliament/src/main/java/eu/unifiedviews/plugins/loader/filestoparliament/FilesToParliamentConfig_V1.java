@@ -1,18 +1,20 @@
 package eu.unifiedviews.plugins.loader.filestoparliament;
 
 public class FilesToParliamentConfig_V1 {
-    private String bulkUploadEndpointURL = "http://localhost:8080/parliament/bulk/insert";
+    private String endpointURL = "http://localhost:8080/parliament/";
 
     private String rdfFileFormat = "Auto";
 
     private String targetGraphName = "";
-    
-    public String getBulkUploadEndpointURL() {
-        return bulkUploadEndpointURL;
+
+    private boolean clearDestinationGraph = false;
+
+    public String getEndpointURL() {
+        return endpointURL;
     }
 
-    public void setBulkUploadEndpointURL(String bulkUploadEndpointURL) {
-        this.bulkUploadEndpointURL = bulkUploadEndpointURL;
+    public void setEndpointURL(String endpointURL) {
+        this.endpointURL = endpointURL;
     }
 
     public String getRdfFileFormat() {
@@ -29,5 +31,13 @@ public class FilesToParliamentConfig_V1 {
 
     public void setTargetGraphName(String targetGraphName) {
         this.targetGraphName = targetGraphName;
+    }
+
+    public boolean isClearDestinationGraph() {
+        return clearDestinationGraph;
+    }
+
+    public void setClearDestinationGraph(boolean clearDestinationGraph) {
+        this.clearDestinationGraph = clearDestinationGraph;
     }
 }

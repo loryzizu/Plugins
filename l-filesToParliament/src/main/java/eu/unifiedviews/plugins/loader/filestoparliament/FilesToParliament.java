@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
@@ -15,8 +16,8 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.openrdf.model.impl.URIImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +87,40 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
             }
         }
     }
+    
+    public void sendClear(UserContext ctx, String parliamentSparqlLocation, CloseableHttpClient client, String graph) throws DPUException {
+        CloseableHttpResponse response = null;
+        try {
+            String query = "CLEAR GRAPH <" + graph + ">";
+            URIBuilder uriBuilder;
+            uriBuilder = new URIBuilder(parliamentSparqlLocation);
+
+            uriBuilder.setPath(uriBuilder.getPath());
+            HttpPost httpPost = new HttpPost(uriBuilder.build().normalize());
+            EntityBuilder entityBuilder = EntityBuilder.create()
+                    .setParameters(new BasicNameValuePair("update", query));
+                    
+            HttpEntity entity = entityBuilder.build();
+            httpPost.setEntity(entity);
+            response = client.execute(httpPost);
+
+            if (response.getStatusLine().getStatusCode() != 200) {
+                throw ContextUtils.dpuException(ctx, "FilesToParliament.execute.clearFail", graph, IOUtils.toString(response.getEntity().getContent()));
+            }
+            LOG.info("Graph {} cleared successfuly", graph);
+        } catch (URISyntaxException | IllegalStateException | IOException ex) {
+            throw ContextUtils.dpuException(ctx, ex, "FilesToParliament.execute.exception");
+        } finally {
+            if (response != null) {
+                EntityUtils.consumeQuietly(response.getEntity());
+                try {
+                    response.close();
+                } catch (IOException ex) {
+                    LOG.warn("Error in close", ex);
+                }
+            }
+        }
+    }
 
     @Override
     protected void innerExecute() throws DPUException {
@@ -109,7 +144,12 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
                 } else {
                     outGraph = globalOutGraph;
                 }                
-                sendFile(ctx, config.getBulkUploadEndpointURL(), client, outGraph, config.getRdfFileFormat().toUpperCase(), filename, entry);
+                if (config.isClearDestinationGraph()) {
+                    LOG.info("Clearing destination graph");
+                    sendClear(ctx, config.getEndpointURL() + "sparql", client, outGraph);
+                    LOG.info("Cleared destination graph");
+                }
+                sendFile(ctx, config.getEndpointURL() + "bulk/insert", client, outGraph, config.getRdfFileFormat().toUpperCase(), filename, entry);
             }
         } catch (DataUnitException ex) {
             throw ContextUtils.dpuException(ctx, ex, "FilesToParliament.execute.exception");
@@ -123,5 +163,4 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
             }
         }
     }
-
 }
