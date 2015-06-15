@@ -20,10 +20,10 @@ import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 @SuppressWarnings("serial")
 public class FilesToParliamentVaadinDialog extends AbstractDialog<FilesToParliamentConfig_V1> {
-    private ObjectProperty<String> bulkUploadEndpointURL = new ObjectProperty<String>("");
+    private ObjectProperty<String> endpointURL = new ObjectProperty<String>("");
 
     private NativeSelect selectRdfFormat;
-
+    private ObjectProperty<Boolean> clearDestinationGraph = new ObjectProperty<Boolean>(false);
     private static Set<RDFFormat> supportedRdfFormats;
     private ObjectProperty<String> targetGraphName = new ObjectProperty<String>("");
     private ObjectProperty<Boolean> perGraph = new ObjectProperty<Boolean>(
@@ -54,7 +54,7 @@ public class FilesToParliamentVaadinDialog extends AbstractDialog<FilesToParliam
         mainLayout.setSpacing(true);
         mainLayout.setWidth("100%");
 
-        mainLayout.addComponent(createTextField(ctx.tr("FilesToParliamentVaadinDialog.bulkUploadEndpointURL"), bulkUploadEndpointURL));
+        mainLayout.addComponent(createTextField(ctx.tr("FilesToParliamentVaadinDialog.endpointURL"), endpointURL));
         selectRdfFormat = new NativeSelect(ctx.tr("FilesToParliamentVaadinDialog.dialog.format"));
         for (RDFFormat item : supportedRdfFormats) {
             selectRdfFormat.addItem(item);
@@ -75,7 +75,8 @@ public class FilesToParliamentVaadinDialog extends AbstractDialog<FilesToParliam
                 targerGraphNameTextField.setEnabled(!perGraphCheckbox.getValue());
             }
         });
-
+        mainLayout.addComponent(new CheckBox(ctx.tr("FilesToParliamentVaadinDialog.clearDestinationGraph"), clearDestinationGraph));
+        
         mainLayout.addComponent(perGraphCheckbox);
         mainLayout.addComponent(targerGraphNameTextField);
         setCompositionRoot(mainLayout);
@@ -84,7 +85,7 @@ public class FilesToParliamentVaadinDialog extends AbstractDialog<FilesToParliam
     @Override
     protected FilesToParliamentConfig_V1 getConfiguration() throws DPUConfigException {
         FilesToParliamentConfig_V1 result = new FilesToParliamentConfig_V1();
-        result.setBulkUploadEndpointURL(bulkUploadEndpointURL.getValue());
+        result.setEndpointURL(endpointURL.getValue());
         final RDFFormat format = (RDFFormat) selectRdfFormat.getValue();
         result.setRdfFileFormat(format.getName());
         if (perGraph.getValue()) {
@@ -92,18 +93,21 @@ public class FilesToParliamentVaadinDialog extends AbstractDialog<FilesToParliam
         } else {
             result.setTargetGraphName(targetGraphName.getValue());
         }
+        result.setClearDestinationGraph(clearDestinationGraph.getValue());
+
         return result;
     }
 
     @Override
     protected void setConfiguration(FilesToParliamentConfig_V1 config) throws DPUConfigException {
-        bulkUploadEndpointURL.setValue(config.getBulkUploadEndpointURL());
+        endpointURL.setValue(config.getEndpointURL());
         String format = config.getRdfFileFormat();
         if (auto.getName().equals(format)) {
             selectRdfFormat.setValue(auto);    
         } else {
             selectRdfFormat.setValue(RDFFormat.valueOf(format));    
         }        
+        clearDestinationGraph.setValue(config.isClearDestinationGraph());
         perGraph.setValue(StringUtils.isEmpty(config.getTargetGraphName()));
         targetGraphName.setValue(config.getTargetGraphName());
     }
