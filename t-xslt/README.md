@@ -55,6 +55,7 @@ DPU supports random UUID generation using ```randomUUID()``` function in namespa
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
+|2.2.0              | Update to API 2.1.0        |
 |2.1.0              | Added support for generation of UUIDs and fixes in build dependencies |
 |2.0.0              | Replaces with the DPU taken from the repository https://github.com/mff-uk/DPUs |
 |1.5.1              | fix in localization                            |
