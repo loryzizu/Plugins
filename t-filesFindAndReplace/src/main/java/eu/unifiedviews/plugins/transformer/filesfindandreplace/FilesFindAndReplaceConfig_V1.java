@@ -3,10 +3,12 @@ package eu.unifiedviews.plugins.transformer.filesfindandreplace;
 import java.util.HashMap;
 import java.util.Map;
 
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class FilesFindAndReplaceConfig_V1 {
+public class FilesFindAndReplaceConfig_V1 implements VersionedConfig<FilesFindAndReplaceConfig_V2>{
 
     private Map<String, String> patterns = new HashMap<String, String>();
 
@@ -45,5 +47,17 @@ public class FilesFindAndReplaceConfig_V1 {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
+    }
+
+    /**
+     * @return Next version of configuration with "same" settings.
+     * @throws DPUConfigException
+     */
+    @Override public FilesFindAndReplaceConfig_V2 toNextVersion() throws DPUConfigException {
+        FilesFindAndReplaceConfig_V2 config = new FilesFindAndReplaceConfig_V2();
+        config.setPatterns(patterns);
+        config.setSkipOnError(skipOnError);
+        config.setEncoding(Encoding.UTF8); // previous version had hardcoded UTF8 encoding
+        return config;
     }
 }

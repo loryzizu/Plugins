@@ -54,6 +54,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     private CheckBox checkGenerateTableClass;
 
+    private CheckBox checkGenerateLabels ;
+
     private TextField txtCsvQuoteChar;
 
     private TextField txtCsvDelimeterChar;
@@ -207,6 +209,11 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         this.checkGenerateRowTriple.setDescription(
                 "If checked then for table entities statement with type class is generated.");
         checkLayout.addComponent(this.checkGenerateTableClass);
+
+        this.checkGenerateLabels = new CheckBox("Generate labels");
+        this.checkGenerateLabels.setDescription(
+                "If checked then rdfs:labels are generated to column URIs, as the value original column name is used. If file does not contain header then data from first row are used. Does not generate labels for advanced mapping.");
+        checkLayout.addComponent(this.checkGenerateLabels);
 
         // -------------------------- CSV ----------------------------
         final FormLayout csvLayout = new FormLayout();
@@ -602,7 +609,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             checkXlsHasHeader.setValue(c.isHasHeader());
         } else {
             txtXlsSheetName.setValue("");
-            txtXlsLinesToIgnore.setValue("");
+            txtXlsLinesToIgnore.setValue("0");
             loadCellMapping(Collections.EMPTY_LIST);
             checkXlsHasHeader.setValue(true);
         }
@@ -625,6 +632,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         checkTableSubject.setValue(c.isUseTableSubject());
         checkAutoAsString.setValue(c.isAutoAsStrings());
         checkGenerateTableClass.setValue(c.isGenerateTableClass());
+        checkGenerateLabels.setValue(c.isGenerateLabels());
         //
         // enable/disable controlls
         //
@@ -662,7 +670,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             cnf.setDelimiterChar(txtCsvDelimeterChar.getValue());
             try {
                 final String linesToSkipStr = txtCsvLinesToIgnore.getValue();
-                if (linesToSkipStr == null) {
+                if (linesToSkipStr == null || linesToSkipStr.isEmpty()) {
                     cnf.setLinesToIgnore(0);
                 } else {
                     cnf.setLinesToIgnore(
@@ -681,7 +689,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
             try {
                 final String linesToSkipStr = txtXlsLinesToIgnore.getValue();
-                if (linesToSkipStr == null) {
+                if (linesToSkipStr == null || linesToSkipStr.isEmpty()) {
                     cnf.setLinesToIgnore(0);
                 } else {
                     cnf.setLinesToIgnore(Integer.parseInt(linesToSkipStr));
@@ -721,6 +729,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         cnf.setUseTableSubject(checkTableSubject.getValue());
         cnf.setAutoAsStrings(checkAutoAsString.getValue());
         cnf.setGenerateTableClass(checkGenerateTableClass.getValue());
+        cnf.setGenerateLabels(checkGenerateLabels.getValue());
 
         final String rowsClass = txtRowsClass.getValue();
         if (rowsClass == null || rowsClass.isEmpty()) {

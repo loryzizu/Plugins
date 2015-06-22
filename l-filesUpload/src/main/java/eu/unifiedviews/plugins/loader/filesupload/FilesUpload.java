@@ -49,7 +49,7 @@ public class FilesUpload extends AbstractDpu<FilesUploadConfig_V1> {
     @DataUnit.AsInput(name = "input")
     public FilesDataUnit filesInput;
 
-    @DataUnit.AsOutput(name = "output")
+    @DataUnit.AsOutput(name = "output", optional = true)
     public WritableFilesDataUnit filesOutput;
 
     @ExtensionInitializer.Init

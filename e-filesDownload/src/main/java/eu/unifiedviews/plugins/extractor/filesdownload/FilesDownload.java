@@ -2,8 +2,10 @@ package eu.unifiedviews.plugins.extractor.filesdownload;
 
 import java.io.IOException;
 import java.net.URI;
+import java.text.NumberFormat;
 import java.util.Date;
 
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -84,9 +86,17 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
         standardFileSystemManager.setClassLoader(standardFileSystemManager.getClass().getClassLoader());
 
         final FileSystemOptions fileSystemOptions = new FileSystemOptions();
+        FtpFileSystemConfigBuilder.getInstance().setDataTimeout(fileSystemOptions, 20000);
         FtpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
+        FtpsFileSystemConfigBuilder.getInstance().setDataTimeout(fileSystemOptions, 20000);
         FtpsFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
+        HttpConnectionManagerParams.getDefaultParams().setParameter(HttpConnectionManagerParams.CONNECTION_TIMEOUT, 20000);
+        HttpConnectionManagerParams.getDefaultParams().setParameter(HttpConnectionManagerParams.SO_TIMEOUT, 20000);
+        SftpFileSystemConfigBuilder.getInstance().setTimeout(fileSystemOptions, 20000);
         SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
+
+        final NumberFormat numberFormat = NumberFormat.getNumberInstance();
+        numberFormat.setMaximumFractionDigits(0);
 
         try {
             standardFileSystemManager.setFilesCache(new NullFilesCache());
@@ -95,7 +105,9 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
             throw ContextUtils.dpuException(ctx, ex, "FilesDownload.execute.exception");
         }
         // For each file in cofiguration.
+        int vfsProgress = 0;
         for (final VfsFile vfsFile : config.getVfsFiles()) {
+            LOG.info("Processing VFS entry: {}/{}", ++vfsProgress, config.getVfsFiles().size());
             if (ctx.canceled()) {
                 throw ContextUtils.dpuExceptionCancelled(ctx);
             }
@@ -133,7 +145,12 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
             }
 
             // We download each file.
+            int fileProgress = 0;
             for (FileObject fileObject : fileObjects) {
+                fileProgress++;
+                if (fileProgress % (int) Math.ceil(fileObjects.length / 10.0) == 0) {
+                    LOG.info("Downloading progress: {}%", numberFormat.format((double) fileProgress / (double) fileObjects.length * 100));
+                }
                 final boolean isFile;
                 try {
                     isFile = FileType.FILE.equals(fileObject.getType());
@@ -182,7 +199,7 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
                     }
                 }
             }
-
         }
     }
+
 }

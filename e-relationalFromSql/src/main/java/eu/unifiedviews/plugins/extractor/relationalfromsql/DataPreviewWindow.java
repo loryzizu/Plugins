@@ -39,7 +39,7 @@ public class DataPreviewWindow extends Window {
      * @throws SQLException
      *             If something fails
      */
-    public DataPreviewWindow(RelationalFromSqlConfig_V2 config, int limit) throws SQLException {
+    public DataPreviewWindow(RelationalFromSqlConfig_V2 config, int limit) throws Exception {
         setClosable(true);
         center();
         setModal(true);
@@ -55,7 +55,7 @@ public class DataPreviewWindow extends Window {
     }
 
     @SuppressWarnings("unchecked")
-    private Table createTable(RelationalFromSqlConfig_V2 config, int limit) throws SQLException {
+    private Table createTable(RelationalFromSqlConfig_V2 config, int limit) throws SQLException, SQLTransformException {
         Table table = new Table();
         Connection conn = null;
         Statement stmnt = null;
@@ -79,7 +79,7 @@ public class DataPreviewWindow extends Window {
                     item.getItemProperty(column.getColumnName()).setValue(rs.getObject(column.getColumnName()));
                 }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOG.error("Error occurred during creating data preview", e);
             throw e;
         } finally {

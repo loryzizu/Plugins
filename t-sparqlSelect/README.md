@@ -38,8 +38,13 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|2.0.0              |Updated to helpers 2.0.0                         |
-|1.3.2               |N/A          |
+|2.1.0              | Update to API 2.1.0; sk and en localization      |
+|2.0.1              | fixes in build dependencies |
+|2.0.0              | Updated to helpers 2.0.0 |
+|1.5.0              | N/A          |
+|1.4.0              | N/A          |
+|1.3.1              | N/A          |
+|1.0.0              | N/A          |
 
 ***
 

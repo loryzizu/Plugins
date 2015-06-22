@@ -5,16 +5,16 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-pom-dpu</artifactId>
-		<version>2.0.1</version>
+		<version>2.1.0-SNAPSHOT</version>
 		<relativePath />
 	</parent>
 
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-e-relationalFromSql</artifactId>
-	<version>2.0.1-SNAPSHOT</version>
-	<packaging>bundle</packaging>
 	<name>E-RelationalFromSql</name>
 	<description>Extracts data from relational database using SQL queries and stores them into internal data unit relational database</description>
+	<version>2.1.0-SNAPSHOT</version>
+	<packaging>bundle</packaging>
 
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.extractor.relationalfromsql</dpu.package>
@@ -147,7 +147,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -174,5 +173,13 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>maven.eea.sk</id>
+			<name>maven.eea.sk-public</name>
+			<url>http://maven.eea.sk/artifactory/public/</url>
+		</repository>
+	</repositories>
 
 </project>

@@ -22,18 +22,20 @@ public class SparqlSelectVaadinDialog extends AbstractDialog<SparqlSelectConfig>
         final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setImmediate(false);
         mainLayout.setSizeFull();
+        mainLayout.setSpacing(true);
+        mainLayout.setMargin(true);
 
         txtTarget = new TextField();
         txtTarget.setWidth("100%");
         txtTarget.setHeight("-1px");
-        txtTarget.setCaption("Target path:");
+        txtTarget.setCaption(ctx.tr("SparqlSelectVaadinDialog.txtTarget"));
         txtTarget.setRequired(true);
         mainLayout.addComponent(txtTarget);
         mainLayout.setExpandRatio(txtTarget, 0);
 
         txtQuery = new TextArea();
         txtQuery.setSizeFull();
-        txtQuery.setCaption("SPARQL query:");
+        txtQuery.setCaption(ctx.tr("SparqlSelectVaadinDialog.txtQuery"));
         txtTarget.setRequired(true);
         mainLayout.addComponent(txtQuery);
         mainLayout.setExpandRatio(txtQuery, 1);
@@ -50,10 +52,10 @@ public class SparqlSelectVaadinDialog extends AbstractDialog<SparqlSelectConfig>
     @Override
     protected SparqlSelectConfig getConfiguration() throws DPUConfigException {
         if (!txtTarget.isValid()) {
-            throw new DPUConfigException("Target path must be filled.");
+            throw new DPUConfigException(ctx.tr("SparqlSelectVaadinDialog.exception.pathFilled"));
         }
         if (!txtQuery.isValid()) {
-            throw new DPUConfigException("SPARQL query must be filled.");
+            throw new DPUConfigException(ctx.tr("SparqlSelectVaadinDialog.exception.queryFilled"));
         }
 
         SparqlSelectConfig conf = new SparqlSelectConfig();
@@ -64,12 +66,7 @@ public class SparqlSelectVaadinDialog extends AbstractDialog<SparqlSelectConfig>
 
     @Override
     public String getDescription() {
-        StringBuilder desc = new StringBuilder();
-
-        desc.append("Export data as csv into ");
-        desc.append(txtTarget.getValue());
-
-        return desc.toString();
+        return ctx.tr("SparqlSelectVaadinDialog.description", txtTarget.getValue());
     }
 
 }

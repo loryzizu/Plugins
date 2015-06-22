@@ -441,7 +441,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
                     window.close();
                     DataPreviewWindow dataPreview = new DataPreviewWindow(getConfigurationInternal(), Integer.parseInt(txtLimit.getValue()));
                     UI.getCurrent().addWindow(dataPreview);
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     showMessage("dialog.errors.preview", Notification.Type.ERROR_MESSAGE);
                 }
             }
