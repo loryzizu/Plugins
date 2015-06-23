@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.Validator;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CustomComponent;
@@ -14,6 +16,7 @@ import com.vaadin.ui.TextField;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.UserDialogContext;
+import eu.unifiedviews.helpers.dpu.vaadin.validator.UrlValidator;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
@@ -41,6 +44,8 @@ public class RdfToVirtuosoVaadinDialog extends AbstractDialog<RdfToVirtuosoConfi
     private ObjectProperty<Boolean> skipOnError = new ObjectProperty<Boolean>(
             false);
 
+    TextField targerGraphNameTextField;
+
     public RdfToVirtuosoVaadinDialog() {
         super(RdfToVirtuoso.class);
     }
@@ -49,7 +54,7 @@ public class RdfToVirtuosoVaadinDialog extends AbstractDialog<RdfToVirtuosoConfi
         this.ctx = ctx;
         buildDialogLayout();
     }
-    
+
     @Override
     protected void buildDialogLayout() {
         setSizeFull();
@@ -66,7 +71,7 @@ public class RdfToVirtuosoVaadinDialog extends AbstractDialog<RdfToVirtuosoConfi
         mainLayout.addComponent(createTextField(ctx.tr("RdfToVirtuosoVaadinDialog.username"), username));
         mainLayout.addComponent(passwordField);
         mainLayout.addComponent(new CheckBox(ctx.tr("RdfToVirtuosoVaadinDialog.clearDestinationGraph"), clearDestinationGraph));
-        final TextField targerGraphNameTextField = createTextField(ctx.tr("RdfToVirtuosoVaadinDialog.targetGraphName"), targetGraphName);
+        targerGraphNameTextField = createTextField(ctx.tr("RdfToVirtuosoVaadinDialog.targetGraphName"), targetGraphName);
         final CheckBox perGraphCheckbox = new CheckBox(ctx.tr("RdfToVirtuosoVaadinDialog.perGraph"), perGraph);
         perGraphCheckbox.addValueChangeListener(new ValueChangeListener() {
 
@@ -77,11 +82,24 @@ public class RdfToVirtuosoVaadinDialog extends AbstractDialog<RdfToVirtuosoConfi
                 targerGraphNameTextField.setEnabled(!perGraphCheckbox.getValue());
             }
         });
+        targerGraphNameTextField.addValidator(new Validator() {
+
+            @Override
+            public void validate(Object value) throws InvalidValueException {
+                if (value == null || StringUtils.isBlank((String) value)) {
+                    if (!perGraphCheckbox.getValue()) {
+                        throw new InvalidValueException(ctx.tr(RdfToVirtuosoVaadinDialog.this.getClass().getSimpleName() + ".exception.target.graph.name.empty"));
+                    }
+                }
+            }
+        });
+        targerGraphNameTextField.addValidator(new UrlValidator(true, ctx.getDialogMasterContext().getDialogContext().getLocale()));
+        targerGraphNameTextField.setImmediate(true);
 
         mainLayout.addComponent(perGraphCheckbox);
         mainLayout.addComponent(targerGraphNameTextField);
-        mainLayout.addComponent(createTextField(ctx.tr("RdfToVirtuosoVaadinDialog.threadCount"), threadCount));
-        mainLayout.addComponent(new CheckBox(ctx.tr("RdfToVirtuosoVaadinDialog.skipOnError"), skipOnError));
+        mainLayout.addComponent(createTextField(ctx.tr(this.getClass().getSimpleName() + ".threadCount"), threadCount));
+        mainLayout.addComponent(new CheckBox(ctx.tr(this.getClass().getSimpleName() + ".skipOnError"), skipOnError));
 
         setCompositionRoot(mainLayout);
     }
@@ -114,6 +132,9 @@ public class RdfToVirtuosoVaadinDialog extends AbstractDialog<RdfToVirtuosoConfi
         if (perGraph.getValue()) {
             conf.setTargetGraphName("");
         } else {
+            if (!targerGraphNameTextField.isValid()) {
+                throw new DPUConfigException(ctx.tr(this.getClass().getSimpleName() + ".validation.exception"));
+            }
             conf.setTargetGraphName(targetGraphName.getValue());
         }
         conf.setThreadCount(threadCount.getValue());
