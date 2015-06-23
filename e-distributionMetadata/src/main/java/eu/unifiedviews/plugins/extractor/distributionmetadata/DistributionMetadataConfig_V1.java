@@ -7,8 +7,6 @@ public class DistributionMetadataConfig_V1 {
 
     private String description;
 
-    private java.net.URI url;
-
     private String format;
 
     private String mimetype;
@@ -29,14 +27,6 @@ public class DistributionMetadataConfig_V1 {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public java.net.URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(java.net.URI url) {
-        this.url = url;
     }
 
     public String getFormat() {
