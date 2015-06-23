@@ -23,6 +23,7 @@
         <module>t-rdfToFiles</module>
         <module>t-zipper</module>
         <module>t-unzipper</module>
+        <module>t-gunzipper</module>
         <module>t-tabular</module>
         <module>t-metadata</module>
         <module>t-relational</module>
@@ -33,8 +34,11 @@
 
         <!-- LOADERS -->
         <module>l-filesToVirtuoso</module>
+        <module>l-rdfToVirtuoso</module>
         <module>l-filesUpload</module>
         <module>l-relationalToSql</module>
+        <module>l-filesToParliament</module>
+
 
         <!-- MERGERS -->
         <module>t-rdfMerger</module>
