@@ -9,6 +9,8 @@ import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
@@ -41,7 +43,11 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         binder.setItemDataSource(config);
         for (Field f : DistributionMetadataConfig_V1.class.getDeclaredFields()) {
             Component component = null;
-            component = binder.buildAndBind(ctx.tr(this.getClass().getSimpleName() + "." + f.getName() + ".caption"), f.getName());
+            if ("description".equals(f.getName())) {
+                component = binder.buildAndBind(ctx.tr(this.getClass().getSimpleName() + "." + f.getName() + ".caption"), f.getName(), TextArea.class);
+            } else {
+                component = binder.buildAndBind(ctx.tr(this.getClass().getSimpleName() + "." + f.getName() + ".caption"), f.getName());
+            }
             component.setSizeFull();
             if (AbstractTextField.class.isAssignableFrom(component.getClass())) {
                 ((AbstractTextField) component).setInputPrompt(ctx.tr(this.getClass().getSimpleName() + "." + f.getName() + ".inputPrompt"));
@@ -51,6 +57,7 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
                     ((AbstractTextField) component).setConversionError(ctx.tr("DistributionMetadataVaadinDialog.exception.uri.conversion"));
                 }
             }
+
             if (Validatable.class.isAssignableFrom(component.getClass())) {
                 if (URI.class.isAssignableFrom(f.getType())) {
                     ((Validatable) component).addValidator(new UrlValidator(true, ctx.getDialogMasterContext().getDialogContext().getLocale()));
@@ -58,8 +65,11 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
             }
             if (AbstractComponent.class.isAssignableFrom(component.getClass())) {
                 ((AbstractComponent) component).setImmediate(true);
+                ((AbstractComponent) component).setLocale(ctx.getDialogMasterContext().getDialogContext().getLocale());
             }
-
+            if (DateField.class.isAssignableFrom(component.getClass())) {
+                ((DateField) component).setParseErrorMessage(ctx.tr("DistributionMetadataVaadinDialog.exception.date.conversion"));
+            }
             mainLayout.addComponent(component);
         }
         setCompositionRoot(mainLayout);
