@@ -1,9 +1,19 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular;
 
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Property;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.TabSheet.Tab;
+
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnInfo_V1;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 import cz.cuni.mff.xrg.uv.transformer.tabular.gui.PropertyGroup;
@@ -12,19 +22,13 @@ import cz.cuni.mff.xrg.uv.transformer.tabular.gui.PropertyNamedCell;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserType;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserXls;
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TabularVaadinDialog.class);
+
+    private String[] encoding = { "UTF-8", "UTF-16", "ISO-8859-1", "windows-1250" };
 
     private OptionGroup optionTableType;
 
@@ -32,7 +36,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     private TextField txtKeyColumnName;
 
-    private TextField txtEncoding;
+    private NativeSelect txtEncoding;
 
     private TextField txtRowsLimit;
 
@@ -144,7 +148,12 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
                 + " used as subject for rows. This can be changed by checking 'Advanced key column'");
         generalLayout.addComponent(this.txtKeyColumnName);
 
-        this.txtEncoding = new TextField("Encoding");
+        this.txtEncoding = new NativeSelect("Encoding");
+        for (String encd : encoding) {
+            txtEncoding.addItem(encd);
+            txtEncoding.setItemCaption(encd, encd);
+        }
+        txtEncoding.setNullSelectionAllowed(false);
         this.txtEncoding.setRequired(true);
         generalLayout.addComponent(this.txtEncoding);
 
@@ -707,7 +716,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         //
         // other data
         //
-        cnf.setEncoding(txtEncoding.getValue());
+        cnf.setEncoding((String) txtEncoding.getValue());
 
         final String rowsLimitStr = txtRowsLimit.getValue();
         if (rowsLimitStr == null || rowsLimitStr.isEmpty()) {
