@@ -21,7 +21,6 @@
 |---------------------------------|----------------------------------------|
 |**Distribution title in original language:** | A name given to the distribution.  |
 |**Description in original language:** | free-text account of the distribution.  |
-|**URL:** | A landing page, feed, SPARQL endpoint or other type of resource that gives access to the distribution of the dataset  |
 |**Format:** | The file format of the distribution.  |
 |**Media (MIME) type:** | The media type of the distribution as defined by IANA. |
 |**Issued:** | Date of formal issuance (e.g., publication) of the distribution. |
