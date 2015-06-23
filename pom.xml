@@ -10,35 +10,38 @@
     <!-- list of core modules -->
     <modules>
         <!-- EXTRACTORS -->
+        <module>e-distributionMetadata</module>
         <module>e-filesDownload</module>
         <module>e-relationalFromSql</module>
 
         <!-- TRANSFORMERS -->
-        <module>t-sparqlSelect</module>
-        <module>t-xslt</module>
-        <module>t-filesRenamer</module>
         <module>t-filesFilter</module>
         <module>t-filesFindAndReplace</module>
+        <module>t-filesMerger</module>
+        <module>t-filesRenamer</module>
         <module>t-filesToRdf</module>
-        <module>t-rdfToFiles</module>
-        <module>t-zipper</module>
-        <module>t-unzipper</module>
-        <module>t-tabular</module>
-        <module>t-metadata</module>
-        <module>t-relational</module>
-        <module>t-tabularToRelational</module>
-        <module>t-sparqlUpdate</module>
-        <module>t-sparqlConstruct</module>
         <module>t-filterValidXml</module>
+        <module>t-gunzipper</module>
+        <module>t-metadata</module>
+        <module>t-rdfMerger</module>
+        <module>t-rdfToFiles</module>
+        <module>t-relational</module>
+        <module>t-sparqlConstruct</module>
+        <module>t-sparqlSelect</module>
+        <module>t-sparqlUpdate</module>
+        <module>t-tabular</module>
+        <module>t-tabularToRelational</module>
+        <module>t-unzipper</module>
+        <module>t-xslt</module>
+        <module>t-zipper</module>
 
         <!-- LOADERS -->
+        <module>l-filesToParliament</module>
         <module>l-filesToVirtuoso</module>
         <module>l-filesUpload</module>
+        <module>l-rdfToVirtuoso</module>
         <module>l-relationalToSql</module>
 
-        <!-- MERGERS -->
-        <module>t-rdfMerger</module>
-        <module>t-filesMerger</module>
 
     </modules>
 
