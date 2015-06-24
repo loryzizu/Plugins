@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+		<groupId>eu.unifiedviews</groupId>
+		<artifactId>uv-pom-dpu</artifactId>
+		<version>2.0.1</version>
+		<relativePath />
+    </parent>
+    <groupId>cz.cuni.mff.xrg.uv</groupId>
+    <artifactId>e-sparqlEndpoint</artifactId>
+    <version>1.0.1</version>
+    <packaging>bundle</packaging>
+    <name>E-SparqlEndpoint</name>
+    <description>Extract RDF data from remote SPARQL.</description>
+
+    <properties>
+        <dpu.package>cz.cuni.mff.xrg.uv.extractor.sparqlendpoint</dpu.package>
+        <dpu.mainClass>SparqlEndpoint</dpu.mainClass>
+    </properties>
+
+    <dependencies>
+        <!-- UnifiedViews helpers. -->
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dataunit-helpers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dpu-helpers</artifactId>
+        </dependency>
+		<!-- OpenRdf support for remote query. -->
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-repository-api</artifactId>
+            <version>${sesame.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-repository-sparql</artifactId>
+            <version>${sesame.version}</version>
+            <type>jar</type>
+        </dependency>
+		<!-- Tuple query result parsers. -->
+        <dependency> 
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-queryresultio-binary</artifactId>
+            <version>${sesame.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-queryresultio-compliance</artifactId>
+            <version>${sesame.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-queryresultio-sparqljson</artifactId>
+            <version>${sesame.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-queryresultio-sparqlxml</artifactId>
+            <version>${sesame.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-queryresultio-text</artifactId>
+            <version>${sesame.version}</version>
+            <type>jar</type>
+        </dependency>
+        <!-- Test environment. -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
+		<!-- Test dependencie. -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+	
+</project>
