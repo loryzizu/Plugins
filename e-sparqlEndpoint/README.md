@@ -49,16 +49,3 @@
 | | |
 
 ***
-
-### Runtime dependencies ###
-
-|Dependency|Provided by|
-|---------|----|
-|commons-io-2.4.jar|UnifiedViews,Core|
-|httpclient-osgi-4.3.2.jar||
-|httpcore-osgi-4.3.2.jar||
-|jackson-annotations-2.4.4.jar||
-|jackson-core-2.4.4.jar||
-|jackson-databind-2.4.4.jar||
-|opencsv-3.3.jar||
-|commons-lang3-3.3.2.jar||
