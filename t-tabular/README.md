@@ -35,7 +35,8 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|2.1.0            | Update to API 2.1.0.Combobox for Encoding in Dialog |        
+|2.2.0 | Added possibility to strip null value in header. For XSL: If row is shorter than header then row is expanded. |
+|2.1.0            | Update to API 2.1.0.Combobox for Encoding in Dialog |
 |                 | Fixed bug with :Skip n first lines: for XLS, where empty text box makes configuration invalid. |
 |                 | Added option "Generate labels". |
 |                 | Fixed bug with wrong initial column. First column wrongly named as "col2" instead of "col1". |
