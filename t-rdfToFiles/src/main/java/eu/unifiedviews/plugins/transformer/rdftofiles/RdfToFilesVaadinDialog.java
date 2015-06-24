@@ -3,22 +3,19 @@ package eu.unifiedviews.plugins.transformer.rdftofiles;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import java.util.Arrays;
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
-public class RdfToFilesVaadinDialog extends AbstractDialog<RdfToFilesConfig_V1> {
+public class RdfToFilesVaadinDialog extends AbstractDialog<RdfToFilesConfig_V2> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RdfToFilesVaadinDialog.class);
 
     private VerticalLayout mainLayout;
 
     private NativeSelect selectRdfFormat;
-
-    private CheckBox checkMergeGraphs;
 
     private Panel panelSingleGraph;
 
@@ -41,10 +38,6 @@ public class RdfToFilesVaadinDialog extends AbstractDialog<RdfToFilesConfig_V1> 
         mainLayout.setWidth("100%");
         mainLayout.setHeight("-1px");
         mainLayout.setSpacing(true);
-
-        checkMergeGraphs = new CheckBox(ctx.tr("rdfTofiles.dialog.merge"));
-        mainLayout.addComponent(checkMergeGraphs);
-        checkMergeGraphs.setEnabled(false);
 
         buildPanelSingleGraph();
         mainLayout.addComponent(panelSingleGraph);
@@ -106,63 +99,39 @@ public class RdfToFilesVaadinDialog extends AbstractDialog<RdfToFilesConfig_V1> 
     }
 
     @Override
-    protected void setConfiguration(RdfToFilesConfig_V1 c) throws DPUConfigException {
+    protected void setConfiguration(RdfToFilesConfig_V2 c) throws DPUConfigException {
         selectRdfFormat.setValue(RDFFormat.valueOf(c.getRdfFileFormat()));
-        checkMergeGraphs.setValue(c.isMergeGraphs());
-        if (c.isMergeGraphs()) {
-            // single graph
-            checkGenGraphFile.setValue(c.isGenGraphFile());
-            if (c.isGenGraphFile()) {
-                txtOutGraphName.setValue(c.getOutGraphName());
-                txtOutGraphName.setEnabled(true);
-            } else {
-                txtOutGraphName.setEnabled(false);
-            }
-
-            if (!c.getGraphToFileInfo().isEmpty()) {
-                final RdfToFilesConfig_V1.GraphToFileInfo info = c.getGraphToFileInfo().get(0);
-                txtSingleFileOutputSymbolicName.setValue(info.getOutFileName());
-                if (c.getGraphToFileInfo().size() > 1) {
-                    LOG.warn("GraphToFileInfo.size() > 1, but were expected equal to 1.");
-                }
-            } else {
-                LOG.warn("No GraphToFileInfo found in configuration.");
-            }
+        checkGenGraphFile.setValue(c.isGenGraphFile());
+        if (c.isGenGraphFile()) {
+            txtOutGraphName.setValue(c.getOutGraphName());
+            txtOutGraphName.setEnabled(true);
         } else {
-            // multiple files
+            txtOutGraphName.setEnabled(false);
         }
+        txtSingleFileOutputSymbolicName.setValue(c.getOutFileName());
     }
 
     @Override
-    protected RdfToFilesConfig_V1 getConfiguration() throws DPUConfigException {
-        RdfToFilesConfig_V1 cnf = new RdfToFilesConfig_V1();
+    protected RdfToFilesConfig_V2 getConfiguration() throws DPUConfigException {
+        RdfToFilesConfig_V2 cnf = new RdfToFilesConfig_V2();
 
         final RDFFormat format = (RDFFormat) selectRdfFormat.getValue();
 
         cnf.setRdfFileFormat(format.getName());
-        cnf.setMergeGraphs(checkMergeGraphs.getValue());
 
-        if (cnf.isMergeGraphs()) {
-            // single graph
-            cnf.setGenGraphFile(checkGenGraphFile.getValue());
-            // set always even if not used, to be friendly to user
-            cnf.setOutGraphName(txtOutGraphName.getValue());
-            // check for text box - as it's required for context aware file formats
-            if (format.supportsContexts()) {
-                // graph uri must be provided
-                final String graphName = txtOutGraphName.getValue();
-                LOG.debug(">>> graphName:{}", graphName);
-                if (graphName == null || graphName.isEmpty()) {
-                    throw new DPUConfigException(ctx.tr("rdfToFiles.dialog.missing.graphName"));
-                }
+        cnf.setGenGraphFile(checkGenGraphFile.getValue());
+        // set always even if not used, to be friendly to user
+        cnf.setOutGraphName(txtOutGraphName.getValue());
+        // check for text box - as it's required for context aware file formats
+        if (format.supportsContexts()) {
+            // graph uri must be provided
+            final String graphName = txtOutGraphName.getValue();
+            if (graphName == null || graphName.isEmpty()) {
+                throw new DPUConfigException(ctx.tr("rdfToFiles.dialog.missing.graphName"));
             }
-            final RdfToFilesConfig_V1.GraphToFileInfo info = cnf.new GraphToFileInfo();
-            info.setInSymbolicName("");
-            info.setOutFileName(txtSingleFileOutputSymbolicName.getValue());
-            cnf.setGraphToFileInfo(Arrays.asList(info));
-        } else {
-            // multiple graphs, not supoorted yet
         }
+        cnf.setOutFileName(txtSingleFileOutputSymbolicName.getValue());
+
         return cnf;
     }
 
@@ -170,15 +139,10 @@ public class RdfToFilesVaadinDialog extends AbstractDialog<RdfToFilesConfig_V1> 
     public String getDescription() {
         StringBuilder desc = new StringBuilder();
 
-        if (checkMergeGraphs.getValue()) {
-            // single file
-            desc.append(ctx.tr("rdfToFiles.dialog.description"));
-            desc.append(txtSingleFileOutputSymbolicName);
-            desc.append(".");
-            desc.append(((RDFFormat) selectRdfFormat.getValue()).getDefaultFileExtension());
-        } else {
-            // multiple graphs
-        }
+        desc.append(ctx.tr("rdfToFiles.dialog.description"));
+        desc.append(txtSingleFileOutputSymbolicName);
+        desc.append(".");
+        desc.append(((RDFFormat) selectRdfFormat.getValue()).getDefaultFileExtension());
 
         return desc.toString();
     }

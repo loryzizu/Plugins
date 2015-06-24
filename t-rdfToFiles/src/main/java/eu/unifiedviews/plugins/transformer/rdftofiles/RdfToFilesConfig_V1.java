@@ -4,8 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 import org.openrdf.rio.RDFFormat;
 
-public class RdfToFilesConfig_V1 {
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
 
+public class RdfToFilesConfig_V1 implements VersionedConfig<RdfToFilesConfig_V2> {
     public class GraphToFileInfo {
 
         /**
@@ -114,6 +116,18 @@ public class RdfToFilesConfig_V1 {
 
     public void setGraphToFileInfo(List<GraphToFileInfo> graphToFileInfo) {
         this.graphToFileInfo = graphToFileInfo;
+    }
+
+    @Override
+    public RdfToFilesConfig_V2 toNextVersion() throws DPUConfigException {
+        final RdfToFilesConfig_V2 config = new RdfToFilesConfig_V2();
+
+        config.setGenGraphFile(this.genGraphFile);
+        config.setOutFileName(this.graphToFileInfo.get(0).outFileName);
+        config.setOutGraphName(this.outGraphName);
+        config.setRdfFileFormat(this.rdfFileFormat);
+
+        return config;
     }
 
 }
