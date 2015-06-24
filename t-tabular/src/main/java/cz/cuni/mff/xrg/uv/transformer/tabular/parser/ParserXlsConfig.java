@@ -1,8 +1,9 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.parser;
 
-import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 import java.util.Collections;
 import java.util.List;
+
+import eu.unifiedviews.plugins.transformer.tabular.column.NamedCell_V1;
 
 /**
  * Configuration for {@link ParserXls}.

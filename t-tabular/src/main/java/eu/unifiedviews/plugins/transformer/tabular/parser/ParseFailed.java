@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.uv.transformer.tabular.parser;
+package eu.unifiedviews.plugins.transformer.tabular.parser;
 
 /**
  *

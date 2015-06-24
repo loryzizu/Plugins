@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.column;
 
+import eu.unifiedviews.plugins.transformer.tabular.column.ColumnType;
+
 /**
  * This class is versioned in name because it's used in configuration.
  *

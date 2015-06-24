@@ -1,17 +1,19 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular;
 
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnInfo_V1;
-import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ValueGeneratorReplace;
 import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdfConfig;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserCsvConfig;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserDbfConfig;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserType;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserXlsConfig;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import eu.unifiedviews.plugins.transformer.tabular.column.NamedCell_V1;
 
 /**
  *
