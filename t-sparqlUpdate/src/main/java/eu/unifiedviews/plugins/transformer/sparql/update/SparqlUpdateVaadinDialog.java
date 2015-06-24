@@ -1,9 +1,10 @@
-package cz.cuni.mff.xrg.uv.transformer.sparql.construct;
+package eu.unifiedviews.plugins.transformer.sparql.update;
 
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 
+import cz.cuni.mff.xrg.uv.transformer.sparql.update.SparqlUpdateConfig_V1;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
@@ -11,27 +12,27 @@ import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
  *
  * @author Škoda Petr
  */
-public class SparqlConstructVaadinDialog extends AbstractDialog<SparqlConstructConfig_V1> {
+public class SparqlUpdateVaadinDialog extends AbstractDialog<SparqlUpdateConfig_V1> {
 
     private TextArea txtQuery;
 
     private CheckBox checkPerGraph;
 
-    public SparqlConstructVaadinDialog() {
-        super(SparqlConstruct.class);
+    public SparqlUpdateVaadinDialog() {
+        super(SparqlUpdate.class);
     }
 
     @Override
-    public void setConfiguration(SparqlConstructConfig_V1 c) throws DPUConfigException {
+    public void setConfiguration(SparqlUpdateConfig_V1 c) throws DPUConfigException {
         txtQuery.setValue(c.getQuery());
         checkPerGraph.setValue(c.isPerGraph());
     }
 
     @Override
-    public SparqlConstructConfig_V1 getConfiguration() throws DPUConfigException {
-        final SparqlConstructConfig_V1 c = new SparqlConstructConfig_V1();
+    public SparqlUpdateConfig_V1 getConfiguration() throws DPUConfigException {
+        final SparqlUpdateConfig_V1 c = new SparqlUpdateConfig_V1();
         if (txtQuery.getValue().isEmpty()) {
-            throw new DPUConfigException(ctx.tr("SparqlConstructVaadinDialog.emptyQuery"));
+            throw new DPUConfigException(ctx.tr("sparqlUpdate.dialog.error.emptyQuery"));
         }
         c.setQuery(txtQuery.getValue());
         c.setPerGraph(checkPerGraph.getValue());
@@ -45,12 +46,12 @@ public class SparqlConstructVaadinDialog extends AbstractDialog<SparqlConstructC
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
 
-        checkPerGraph = new CheckBox(ctx.tr("SparqlConstructVaadinDialog.perGraphMode"));
+        checkPerGraph = new CheckBox(ctx.tr("sparqlUpdate.dialog.perGraph"));
         checkPerGraph.setWidth("100%");
         mainLayout.addComponent(checkPerGraph);
         mainLayout.setExpandRatio(checkPerGraph, 0.0f);
 
-        txtQuery = new TextArea(ctx.tr("SparqlConstructVaadinDialog.constructQuery"));
+        txtQuery = new TextArea(ctx.tr("sparqlUpdate.dialog.query"));
         txtQuery.setSizeFull();
         txtQuery.setRequired(true);
         mainLayout.addComponent(txtQuery);
@@ -58,5 +59,4 @@ public class SparqlConstructVaadinDialog extends AbstractDialog<SparqlConstructC
 
         setCompositionRoot(mainLayout);
     }
-
 }

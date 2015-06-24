@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.uv.transformer.xslt;
+package eu.unifiedviews.plugins.transformer.xslt;
 
 import eu.unifiedviews.helpers.dataunit.metadata.MetadataVocabulary;
 

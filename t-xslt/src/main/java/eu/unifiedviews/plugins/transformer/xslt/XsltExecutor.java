@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.uv.transformer.xslt;
+package eu.unifiedviews.plugins.transformer.xslt;
 
 import java.io.File;
 import java.io.StringReader;
@@ -10,6 +10,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.uv.transformer.xslt.XsltConfig_V2;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.UserExecContext;

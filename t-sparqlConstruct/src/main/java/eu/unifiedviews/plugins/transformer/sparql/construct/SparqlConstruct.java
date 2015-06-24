@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.uv.transformer.sparql.construct;
+package eu.unifiedviews.plugins.transformer.sparql.construct;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -21,6 +21,7 @@ import eu.unifiedviews.dpu.DPUException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.uv.transformer.sparql.construct.SparqlConstructConfig_V1;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
