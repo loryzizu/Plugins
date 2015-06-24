@@ -38,6 +38,7 @@ public class RdfToFilesVaadinDialog extends AbstractDialog<RdfToFilesConfig_V2> 
         mainLayout.setWidth("100%");
         mainLayout.setHeight("-1px");
         mainLayout.setSpacing(true);
+        mainLayout.setMargin(true);
 
         buildPanelSingleGraph();
         mainLayout.addComponent(panelSingleGraph);
