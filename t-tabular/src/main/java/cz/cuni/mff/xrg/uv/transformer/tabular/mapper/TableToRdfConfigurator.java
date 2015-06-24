@@ -74,7 +74,13 @@ public class TableToRdfConfigurator {
             //
             final String columnName;
             if (header != null) {
-                columnName = header.get(index);
+                if (header.get(index) != null) {
+                    columnName = header.get(index);
+                } else {
+                    LOG.info("Generated value used for column with 'null' name.");
+                    // use generated one - first is col1, col2 ...
+                    columnName = "col" + Integer.toString(index + 1);
+                }
             } else {
                 // use generated one - first is col1, col2 ... 
                 columnName = "col" + Integer.toString(index + 1);
