@@ -29,7 +29,8 @@
 
 |Name         |Type           |DataUnit      |Description                               |
 |-------------|---------------|--------------|------------------------------------------|
-|filesInput   |i              |FilesDataUnit |Files to upload to specified destination. |
+|input   |i              |FilesDataUnit |Files to upload to specified destination. |
+|output       |o              |FilesDataUnit |Same as input, only Resource.last_modified time updated.|
 
 ***
 
@@ -37,6 +38,7 @@
 
 |Version          |Release notes                |
 |-----------------|-----------------------------|
+|2.1.0            | Update to API 2.1.0. Output data unit is optional         |
 |2.0.1            | fixes in build dependencies |
 |2.0.0            | Update for helpers 2.0.0. Input/output dataUnits names updated. |
 |1.0.0            | N/A                         |

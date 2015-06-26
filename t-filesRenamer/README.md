@@ -39,6 +39,7 @@
 
 |Version    |Release notes                                   |
 |-----------|------------------------------------------------|
+|2.1.0      | Update to API 2.1.0        |
 |2.0.1      | fixes in build dependencies |
 |2.0.0      | Update for new helpers. SPARQL used to transform file name. Broken backward compatibility. Bug fixing, added help info to about tab |
 |1.5.0      | Added support for renaming against the mask.    |                                

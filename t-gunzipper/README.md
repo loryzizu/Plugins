@@ -36,7 +36,7 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|1.0.0-SNAPSHOT   | Initai version             |
+|1.0.0-SNAPSHOT   | Initial version, using API v2.1.0          |
 
 
 ***
