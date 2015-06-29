@@ -1,11 +1,12 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
+
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.*;
-import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;

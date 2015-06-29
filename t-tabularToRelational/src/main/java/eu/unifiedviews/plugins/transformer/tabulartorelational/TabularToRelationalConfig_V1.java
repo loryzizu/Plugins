@@ -1,5 +1,8 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ParserType;
+
 import java.util.ArrayList;
 import java.util.List;
 
