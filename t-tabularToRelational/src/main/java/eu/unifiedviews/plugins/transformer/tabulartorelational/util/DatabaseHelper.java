@@ -1,16 +1,14 @@
-package eu.unifiedviews.plugins.transformer.tabulartorelational;
+package eu.unifiedviews.plugins.transformer.tabulartorelational.util;
 
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.TabularToRelational;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 /**
  * Helping class containing methods to connect to relational dataunit.
@@ -22,7 +20,7 @@ public class DatabaseHelper {
     /**
      * Executes arbitrary update/insert/create query on input dataunit.
      *
-     * @param query Query to execute.
+     * @param query              Query to execute.
      * @param relationalDataUnit On which dataunit should be query executed.
      * @throws DataUnitException
      */

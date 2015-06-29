@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.transformer.tabulartorelational;
+package eu.unifiedviews.plugins.transformer.tabulartorelational.model;
 
 /**
  * Supported input file types.
