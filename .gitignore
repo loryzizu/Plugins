@@ -33,3 +33,6 @@ bin/
 *.jar
 *.ear
 *.orig
+
+build.bat
+eclipse.bat
