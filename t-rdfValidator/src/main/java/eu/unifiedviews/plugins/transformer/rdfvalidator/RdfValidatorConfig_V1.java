@@ -1,12 +1,15 @@
 package eu.unifiedviews.plugins.transformer.rdfvalidator;
 
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
+
 /**
  * DPU's configuration class.
  */
-public class RdfValidatorConfig_V1 {
+public class RdfValidatorConfig_V1 implements VersionedConfig<RdfValidatorConfig_V2> {
     private boolean failExecution = false;
 
-    private String query = "INSERT {?s ?p ?p} WHERE {?s ?p ?o}";
+    private String query = "ASK {?s ?p ?p}";
 
     private boolean perGraph = true;
 
@@ -45,5 +48,13 @@ public class RdfValidatorConfig_V1 {
 
     public void setOutputGraphSymbolicName(String outputGraphSymbolicName) {
         this.outputGraphSymbolicName = outputGraphSymbolicName;
+    }
+
+    @Override
+    public RdfValidatorConfig_V2 toNextVersion() throws DPUConfigException {
+        RdfValidatorConfig_V2 result = new RdfValidatorConfig_V2();
+        result.setFailExecution(failExecution);
+        result.setQuery(query);
+        return result;
     }
 }
