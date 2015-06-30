@@ -36,7 +36,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     private TextField txtKeyColumnName;
 
-    private NativeSelect txtEncoding;
+    private ComboBox txtEncoding;
 
     private TextField txtRowsLimit;
 
@@ -148,12 +148,15 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
                 + " used as subject for rows. This can be changed by checking 'Advanced key column'");
         generalLayout.addComponent(this.txtKeyColumnName);
 
-        this.txtEncoding = new NativeSelect("Encoding");
+        this.txtEncoding = new ComboBox("Encoding");
         for (String encd : encoding) {
             txtEncoding.addItem(encd);
             txtEncoding.setItemCaption(encd, encd);
         }
+        txtEncoding.setTextInputAllowed(true);
+        txtEncoding.setNewItemsAllowed(true);
         txtEncoding.setNullSelectionAllowed(false);
+        txtEncoding.setImmediate(true);
         this.txtEncoding.setRequired(true);
         generalLayout.addComponent(this.txtEncoding);
 
@@ -625,6 +628,9 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         //
         // other data
         //
+        if (!txtEncoding.containsId(c.getEncoding())) {
+            txtEncoding.addItem(c.getEncoding());
+        }
         txtEncoding.setValue(c.getEncoding());
         if (c.getRowsLimit() == null) {
             txtRowsLimit.setValue(null);

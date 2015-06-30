@@ -1,5 +1,10 @@
 package cz.cuni.mff.xrg.uv.transformer.sparql.construct;
 
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.parser.QueryParserUtil;
+
+import com.vaadin.data.Validator;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
@@ -8,10 +13,10 @@ import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 /**
- *
  * @author Škoda Petr
  */
 public class SparqlConstructVaadinDialog extends AbstractDialog<SparqlConstructConfig_V1> {
+    private static final long serialVersionUID = 1L;
 
     private TextArea txtQuery;
 
@@ -33,6 +38,9 @@ public class SparqlConstructVaadinDialog extends AbstractDialog<SparqlConstructC
         if (txtQuery.getValue().isEmpty()) {
             throw new DPUConfigException(ctx.tr("SparqlConstructVaadinDialog.emptyQuery"));
         }
+        if (!txtQuery.isValid()) {
+            throw new DPUConfigException(ctx.tr("sparqlvalidator.invalidQuery"));
+        }
         c.setQuery(txtQuery.getValue());
         c.setPerGraph(checkPerGraph.getValue());
         return c;
@@ -53,10 +61,33 @@ public class SparqlConstructVaadinDialog extends AbstractDialog<SparqlConstructC
         txtQuery = new TextArea(ctx.tr("SparqlConstructVaadinDialog.constructQuery"));
         txtQuery.setSizeFull();
         txtQuery.setRequired(true);
+        txtQuery.addValidator(createSparqlQueryValidator());
+        txtQuery.setImmediate(true);
         mainLayout.addComponent(txtQuery);
         mainLayout.setExpandRatio(txtQuery, 1.0f);
 
         setCompositionRoot(mainLayout);
+    }
+
+    private Validator createSparqlQueryValidator() {
+        Validator validator = new Validator() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void validate(Object value) throws InvalidValueException {
+                final String valueStr = (String) value;
+                if (value == null || valueStr.isEmpty()) {
+                    throw new InvalidValueException(ctx.tr("sparqlvalidator.emptyQuery"));
+                }
+
+                try {
+                    QueryParserUtil.parseQuery(QueryLanguage.SPARQL, valueStr, null);
+                } catch (MalformedQueryException ex) {
+                    throw new InvalidValueException(ctx.tr("sparqlvalidator.invalidQuery") + " " + ex.getMessage());
+                }
+            }
+        };
+        return validator;
     }
 
 }
