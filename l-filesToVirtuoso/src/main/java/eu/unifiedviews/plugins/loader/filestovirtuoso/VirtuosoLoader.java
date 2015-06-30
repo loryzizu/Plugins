@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
@@ -38,6 +39,7 @@ import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
 import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.rdf.RdfConfiguration;
 
 @DPU.AsLoader
 public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
@@ -45,6 +47,10 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
     private static final Logger LOG = LoggerFactory.getLogger(VirtuosoLoader.class);
 
     public static final String PREDICATE_HAS_DISTRIBUTION = "http://comsode.eu/hasDistribution";
+
+    @RdfConfiguration.ContainsConfiguration
+    @DataUnit.AsInput(name = "config", optional = true)
+    public RDFDataUnit rdfConfiguration;
 
     @DataUnit.AsOutput(name = "rdfOutput")
     public WritableRDFDataUnit rdfOutput;
@@ -79,6 +85,9 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
 
     @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
+
+    @ExtensionInitializer.Init
+    public RdfConfiguration _rdfConfiguration;
 
     @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.loader.filestovirtuoso.VirtuosoLoaderConfig__V1")
     public ConfigurationUpdate _ConfigurationUpdate;
