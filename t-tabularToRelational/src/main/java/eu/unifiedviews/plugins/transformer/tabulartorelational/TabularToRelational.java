@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @DPU.AsTransformer
-public class TabularToRelational extends AbstractDpu<TabularToRelationalConfig_V1> {
+public class TabularToRelational extends AbstractDpu<TabularToRelationalConfig_V2> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TabularToRelational.class);
 
@@ -50,7 +50,7 @@ public class TabularToRelational extends AbstractDpu<TabularToRelationalConfig_V
             "UTF-16", "UTF-16BE", "UTF-16LE", "UTF-32", "UTF-32BE", "UTF-32LE", "x-UTF-32BE-BOM", "x-UTF-32LE-BOM", "windows-1251", "windows-1252", "windows-1253", "windows-1254", "windows-1257", "x-IBM737", "x-IBM874", "x-UTF-16LE-BOM" };
 
     public TabularToRelational() {
-        super(TabularToRelationalVaadinDialog.class, ConfigHistory.noHistory(TabularToRelationalConfig_V1.class));
+        super(TabularToRelationalVaadinDialog.class, ConfigHistory.history(TabularToRelationalConfig_V1.class).addCurrent(TabularToRelationalConfig_V2.class));
     }
 
     @Override

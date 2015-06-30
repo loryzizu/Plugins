@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRelationalConfig_V1> {
+public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRelationalConfig_V2> {
 
     private TextField tableNameField;
 
@@ -139,7 +139,7 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
     }
 
     @Override
-    protected void setConfiguration(TabularToRelationalConfig_V1 config) throws DPUConfigException {
+    protected void setConfiguration(TabularToRelationalConfig_V2 config) throws DPUConfigException {
         if (config.getTableName().isEmpty()) {
             tableNameField.setValue(ctx.tr("dialog.tableName.example"));
         } else {
@@ -148,7 +148,7 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         charsetSelect.setValue(config.getEncoding());
         fieldDelimiterField.setValue(config.getFieldDelimiter());
         fieldSeparatorField.setValue(config.getFieldSeparator());
-        hasHeaderCheckbox.setValue(config.isHasHeader());
+        //hasHeaderCheckbox.setValue(config.isHasHeader());
         table.removeAllItems();
         if (config.getColumnMapping() == null || config.getColumnMapping().isEmpty()) { // if config does not contain any mapping, create empty one
             // add first row
@@ -165,7 +165,7 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
     }
 
     @Override
-    protected TabularToRelationalConfig_V1 getConfiguration() throws DPUConfigException {
+    protected TabularToRelationalConfig_V2 getConfiguration() throws DPUConfigException {
         // validation
         try {
             // check table name
@@ -182,12 +182,12 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
             throw new DPUConfigException(e.getMessage());
         }
 
-        TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
+        TabularToRelationalConfig_V2 config = new TabularToRelationalConfig_V2();
         config.setTableName(tableNameField.getValue());
         config.setEncoding(String.valueOf(charsetSelect.getValue()));
         config.setFieldDelimiter(fieldDelimiterField.getValue());
         config.setFieldSeparator(fieldSeparatorField.getValue());
-        config.setHasHeader(hasHeaderCheckbox.getValue());
+        //config.setHasHeader(hasHeaderCheckbox.getValue());
 
         List<ColumnMappingEntry> list = new ArrayList<>();
         for (Iterator i = table.getItemIds().iterator(); i.hasNext(); ) {

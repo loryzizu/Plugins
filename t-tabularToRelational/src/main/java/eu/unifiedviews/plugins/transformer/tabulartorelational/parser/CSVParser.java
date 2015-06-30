@@ -5,7 +5,7 @@ import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
-import eu.unifiedviews.plugins.transformer.tabulartorelational.TabularToRelationalConfig_V1;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.TabularToRelationalConfig_V2;
 import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
 import eu.unifiedviews.plugins.transformer.tabulartorelational.util.DatabaseHelper;
 
@@ -17,7 +17,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class CSVParser extends RelationalParser {
 
-    public CSVParser(UserExecContext ctx, TabularToRelationalConfig_V1 config, WritableRelationalDataUnit outputDataunit) {
+    public CSVParser(UserExecContext ctx, TabularToRelationalConfig_V2 config, WritableRelationalDataUnit outputDataunit) {
         super(ctx, config, outputDataunit);
     }
 
@@ -56,8 +56,9 @@ public class CSVParser extends RelationalParser {
                 processCsvOptions()
         ));
 
-        if (config.isHasHeader()) { // skip header
-            sb.append(" LIMIT NULL OFFSET 1");
+        int skipFirstNRows = config.getDataBegginningRow() - 1;
+        if (skipFirstNRows > 0) { // skip first n rows
+            sb.append(String.format(" LIMIT NULL OFFSET %d", skipFirstNRows));
         }
         sb.append(");");
         return sb.toString();
