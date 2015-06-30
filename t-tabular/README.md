@@ -35,12 +35,12 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
-|2.2.0 | Added possibility to strip null value in header. For XSL: If row is shorter than header then row is expanded. |
-|2.1.0            | Update to API 2.1.0.Combobox for Encoding in Dialog |
-|                 | Fixed bug with :Skip n first lines: for XLS, where empty text box makes configuration invalid. |
+|2.1.0            | For XLS files: Added possibility to strip null value in header. If row is shorter than header then row is expanded. |
+|                 | Updated to API 2.1.0. Combobox for selection of various encodings in DPU's dialog |
+|                 | Fixed bug with :Skip n first lines: for XLS files, where empty text box makes configuration invalid. |
 |                 | Added option "Generate labels". |
 |                 | Fixed bug with wrong initial column. First column wrongly named as "col2" instead of "col1". |
-|2.0.1 | fixes in build dependencies |
+|2.0.1            | fixes in build dependencies |
 |2.0.0            |Replaced with the DPU taken from the repository https://github.com/mff-uk/DPUs.|
 |1.5.0            |N/A                         |
 |1.4.0            |N/A                         |
