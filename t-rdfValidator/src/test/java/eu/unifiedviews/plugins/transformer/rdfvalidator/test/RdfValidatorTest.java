@@ -26,13 +26,236 @@ import eu.unifiedviews.plugins.transformer.rdfvalidator.RdfValidatorConfig_V1;
 public class RdfValidatorTest {
 
     @Test
+    public void testAsk() throws Exception {
+        // Prepare config.
+        RdfValidatorConfig_V1 config = new RdfValidatorConfig_V1();
+        config.setFailExecution(false);
+        config.setOutputGraphSymbolicName("output1");
+        config.setPerGraph(false);
+        config.setQuery("ASK { ?s ?p ?o }");
+
+        // Prepare DPU.
+        RdfValidator rdfDataValidator = new RdfValidator();
+        rdfDataValidator.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
+
+        // Prepare test environment.
+        TestEnvironment environment = new TestEnvironment();
+
+        // Prepare data unit.
+        WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfOutput", false);
+
+        InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("metadata.ttl");
+
+        RepositoryConnection connection = null;
+        try {
+            connection = input.getConnection();
+            URI graph = input.addNewDataGraph("test");
+            connection.add(inputStream, "", RDFFormat.TURTLE, graph);
+            ByteArrayOutputStream inputBos = new ByteArrayOutputStream();
+            connection.export(new TurtleWriter(inputBos), graph);
+            // some triples has been loaded
+            assertTrue(connection.size(graph) > 0);
+            // Run.
+            environment.run(rdfDataValidator);
+
+            // verify result
+            assertTrue(connection.size(graph) == connection.size(RDFHelper.getGraphsURIArray(output)));
+            ByteArrayOutputStream outputBos = new ByteArrayOutputStream();
+            connection.export(new TurtleWriter(outputBos), RDFHelper.getGraphsURIArray(output));
+
+            assertEquals(inputBos.toString("UTF-8"), outputBos.toString("UTF-8"));
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+
+                }
+            }
+            // Release resources.
+            environment.release();
+        }
+    }
+
+    @Test(expected = DPUException.class)
+    public void testAskFailExec() throws Exception {
+        // Prepare config.
+        RdfValidatorConfig_V1 config = new RdfValidatorConfig_V1();
+        config.setFailExecution(true);
+        config.setOutputGraphSymbolicName("output1");
+        config.setPerGraph(false);
+        config.setQuery("ASK { ?s ?p ?o }");
+
+        // Prepare DPU.
+        RdfValidator rdfDataValidator = new RdfValidator();
+        rdfDataValidator.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
+        // Prepare test environment.
+        TestEnvironment environment = new TestEnvironment();
+
+        // Prepare data unit.
+        WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfOutput", false);
+
+        InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("metadata.ttl");
+
+        RepositoryConnection connection = null;
+        try {
+            connection = input.getConnection();
+            URI graph = input.addNewDataGraph("test");
+            connection.add(inputStream, "", RDFFormat.TURTLE, graph);
+            ByteArrayOutputStream inputBos = new ByteArrayOutputStream();
+            connection.export(new TurtleWriter(inputBos), graph);
+            // some triples has been loaded
+            assertTrue(connection.size(graph) > 0);
+            // Run.
+            environment.run(rdfDataValidator);
+
+            // verify result
+            assertTrue(connection.size(graph) == connection.size(RDFHelper.getGraphsURIArray(output)));
+            ByteArrayOutputStream outputBos = new ByteArrayOutputStream();
+            connection.export(new TurtleWriter(outputBos), RDFHelper.getGraphsURIArray(output));
+
+            assertEquals(inputBos.toString("UTF-8"), outputBos.toString("UTF-8"));
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+
+                }
+            }
+            // Release resources.
+            environment.release();
+        }
+    }
+
+    @Test
+    public void testAskPerGraph() throws Exception {
+        // Prepare config.
+        RdfValidatorConfig_V1 config = new RdfValidatorConfig_V1();
+        config.setFailExecution(false);
+        config.setOutputGraphSymbolicName("output1");
+        config.setPerGraph(true);
+        config.setQuery("ASK { ?s ?p ?o }");
+
+        // Prepare DPU.
+        RdfValidator rdfDataValidator = new RdfValidator();
+        rdfDataValidator.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
+
+        // Prepare test environment.
+        TestEnvironment environment = new TestEnvironment();
+
+        // Prepare data unit.
+        WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfOutput", false);
+
+        InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("metadata.ttl");
+
+        RepositoryConnection connection = null;
+        try {
+            connection = input.getConnection();
+            input.addNewDataGraph("testEmpty");
+            URI graph = input.addNewDataGraph("test");
+            connection.add(inputStream, "", RDFFormat.TURTLE, graph);
+            ByteArrayOutputStream inputBos = new ByteArrayOutputStream();
+            connection.export(new TurtleWriter(inputBos), graph);
+            // some triples has been loaded
+            assertTrue(connection.size(graph) > 0);
+            // Run.
+            environment.run(rdfDataValidator);
+
+            // verify result
+            Map<String, RDFDataUnit.Entry> outputGraphs = RDFHelper.getGraphsMap(output);
+
+            assertTrue(connection.size(graph) == connection.size(outputGraphs.get("test").getDataGraphURI()));
+            ByteArrayOutputStream outputBos = new ByteArrayOutputStream();
+            connection.export(new TurtleWriter(outputBos), outputGraphs.get("test").getDataGraphURI());
+
+            assertEquals(inputBos.toString("UTF-8"), outputBos.toString("UTF-8"));
+
+            assertTrue(connection.size(outputGraphs.get("testEmpty").getDataGraphURI()) == 0);
+            assertEquals(2, outputGraphs.keySet().size());
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+
+                }
+            }
+            // Release resources.
+            environment.release();
+        }
+    }
+
+    @Test
+    public void testAskEmptyQuery() throws Exception {
+        // Prepare config.
+        RdfValidatorConfig_V1 config = new RdfValidatorConfig_V1();
+        config.setFailExecution(false);
+        config.setOutputGraphSymbolicName("output1");
+        config.setPerGraph(true);
+        config.setQuery("ASK { ?s ?s ?s }");
+
+        // Prepare DPU.
+        RdfValidator rdfDataValidator = new RdfValidator();
+        rdfDataValidator.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
+
+        // Prepare test environment.
+        TestEnvironment environment = new TestEnvironment();
+
+        // Prepare data unit.
+        WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfOutput", false);
+
+        InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("metadata.ttl");
+
+        RepositoryConnection connection = null;
+        try {
+            connection = input.getConnection();
+            input.addNewDataGraph("testEmpty");
+            URI graph = input.addNewDataGraph("test");
+            connection.add(inputStream, "", RDFFormat.TURTLE, graph);
+            ByteArrayOutputStream inputBos = new ByteArrayOutputStream();
+            connection.export(new TurtleWriter(inputBos), graph);
+            // some triples has been loaded
+            assertTrue(connection.size(graph) > 0);
+            // Run.
+            environment.run(rdfDataValidator);
+
+            // verify result
+            Map<String, RDFDataUnit.Entry> outputGraphs = RDFHelper.getGraphsMap(output);
+
+            assertEquals(0, connection.size(outputGraphs.get("test").getDataGraphURI()));
+            assertTrue(connection.size(outputGraphs.get("testEmpty").getDataGraphURI()) == 0);
+            assertEquals(2, outputGraphs.keySet().size());
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+
+                }
+            }
+            // Release resources.
+            environment.release();
+        }
+    }
+    
+    
+    @Test
     public void test() throws Exception {
         // Prepare config.
         RdfValidatorConfig_V1 config = new RdfValidatorConfig_V1();
         config.setFailExecution(false);
         config.setOutputGraphSymbolicName("output1");
         config.setPerGraph(false);
-        config.setQuery("INSERT {?s ?p ?o } WHERE {?s ?p ?o }");
+        config.setQuery("SELECT { ?s ?p ?o } WHERE {?s ?p ?o }");
 
         // Prepare DPU.
         RdfValidator rdfDataValidator = new RdfValidator();
@@ -86,7 +309,7 @@ public class RdfValidatorTest {
         config.setFailExecution(true);
         config.setOutputGraphSymbolicName("output1");
         config.setPerGraph(false);
-        config.setQuery("INSERT {?s ?p ?o } WHERE {?s ?p ?o }");
+        config.setQuery("SELECT { ?s ?p ?o } WHERE {?s ?p ?o }");
 
         // Prepare DPU.
         RdfValidator rdfDataValidator = new RdfValidator();
@@ -139,7 +362,7 @@ public class RdfValidatorTest {
         config.setFailExecution(false);
         config.setOutputGraphSymbolicName("output1");
         config.setPerGraph(true);
-        config.setQuery("INSERT {?s ?p ?o } WHERE {?s ?p ?o }");
+        config.setQuery("SELECT { ?s ?p ?o } WHERE {?s ?p ?o }");
 
         // Prepare DPU.
         RdfValidator rdfDataValidator = new RdfValidator();
@@ -199,7 +422,7 @@ public class RdfValidatorTest {
         config.setFailExecution(false);
         config.setOutputGraphSymbolicName("output1");
         config.setPerGraph(true);
-        config.setQuery("DELETE {?s ?p ?o } WHERE {?s ?p ?o }");
+        config.setQuery("SELECT {?s ?p ?o } WHERE {?s ?s ?s }");
 
         // Prepare DPU.
         RdfValidator rdfDataValidator = new RdfValidator();
@@ -308,7 +531,7 @@ public class RdfValidatorTest {
         config.setFailExecution(false);
         config.setOutputGraphSymbolicName("");
         config.setPerGraph(false);
-        config.setQuery("INSERT ");
+        config.setQuery("SELECT ");
 
         // Prepare DPU.
         RdfValidator rdfDataValidator = new RdfValidator();
@@ -362,7 +585,7 @@ public class RdfValidatorTest {
         config.setFailExecution(false);
         config.setOutputGraphSymbolicName(null);
         config.setPerGraph(false);
-        config.setQuery("INSERT ");
+        config.setQuery("SELECT ");
 
         // Prepare DPU.
         RdfValidator rdfDataValidator = new RdfValidator();
@@ -416,7 +639,7 @@ public class RdfValidatorTest {
         config.setFailExecution(false);
         config.setOutputGraphSymbolicName(null);
         config.setPerGraph(true);
-        config.setQuery("");
+        config.setQuery("ASK");
 
         // Prepare DPU.
         RdfValidator rdfDataValidator = new RdfValidator();
