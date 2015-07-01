@@ -26,6 +26,7 @@
         <module>t-metadata</module>
         <module>t-rdfMerger</module>
         <module>t-rdfToFiles</module>
+        <module>t-rdfValidator</module>
         <module>t-relational</module>
         <module>t-sparqlConstruct</module>
         <module>t-sparqlSelect</module>
