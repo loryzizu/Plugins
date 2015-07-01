@@ -74,6 +74,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     private CheckBox checkXlsHasHeader;
 
+    private CheckBox checkXlsStripHeader;
+
     /**
      * Layout for basic column mapping.
      */
@@ -279,6 +281,12 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         this.checkXlsHasHeader.setDescription("Uncheck if there is no header in given file. "
                 + "The columns are then accessible under names col0, col1, ..");
         xlsLayout.addComponent(this.checkXlsHasHeader);
+
+        this.checkXlsStripHeader = new CheckBox("Strip header for nulls");
+        this.checkXlsStripHeader.setDescription("If set then trailing null values in header are removed."
+                + "This can be usefull if header is bigger then data, ie. 'Diff number of cells in header' "
+                + "exception is thrown.");
+        xlsLayout.addComponent(this.checkXlsStripHeader);
 
         // add change listener
         this.optionTableType.addValueChangeListener(new Property.ValueChangeListener() {
@@ -488,6 +496,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         txtXlsSheetName.setEnabled(xlsEnabled);
         txtXlsLinesToIgnore.setEnabled(xlsEnabled);
         checkXlsHasHeader.setEnabled(xlsEnabled);
+        checkXlsStripHeader.setEnabled(xlsEnabled);
         for (PropertyNamedCell namedCell : xlsNamedCells) {
             namedCell.setEnabled(xlsEnabled);
         }
@@ -619,11 +628,13 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             txtXlsLinesToIgnore.setValue(c.getLinesToIgnore().toString());
             loadCellMapping(c.getNamedCells());
             checkXlsHasHeader.setValue(c.isHasHeader());
+            checkXlsStripHeader.setValue(c.isStripHeader());
         } else {
             txtXlsSheetName.setValue("");
             txtXlsLinesToIgnore.setValue("0");
             loadCellMapping(Collections.EMPTY_LIST);
             checkXlsHasHeader.setValue(true);
+            checkXlsStripHeader.setValue(false);
         }
         //
         // other data
@@ -718,6 +729,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             storeCellMapping(cnf.getNamedCells());
 
             cnf.setHasHeader(checkXlsHasHeader.getValue());
+            cnf.setStripHeader(checkXlsStripHeader.getValue());
         }
         //
         // other data

@@ -86,13 +86,13 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
         standardFileSystemManager.setClassLoader(standardFileSystemManager.getClass().getClassLoader());
 
         final FileSystemOptions fileSystemOptions = new FileSystemOptions();
-        FtpFileSystemConfigBuilder.getInstance().setDataTimeout(fileSystemOptions, 20000);
+        FtpFileSystemConfigBuilder.getInstance().setDataTimeout(fileSystemOptions, config.getDefaultTimeout());
         FtpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
-        FtpsFileSystemConfigBuilder.getInstance().setDataTimeout(fileSystemOptions, 20000);
+        FtpsFileSystemConfigBuilder.getInstance().setDataTimeout(fileSystemOptions, config.getDefaultTimeout());
         FtpsFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
-        HttpConnectionManagerParams.getDefaultParams().setParameter(HttpConnectionManagerParams.CONNECTION_TIMEOUT, 20000);
-        HttpConnectionManagerParams.getDefaultParams().setParameter(HttpConnectionManagerParams.SO_TIMEOUT, 20000);
-        SftpFileSystemConfigBuilder.getInstance().setTimeout(fileSystemOptions, 20000);
+        HttpConnectionManagerParams.getDefaultParams().setParameter(HttpConnectionManagerParams.CONNECTION_TIMEOUT, config.getDefaultTimeout());
+        HttpConnectionManagerParams.getDefaultParams().setParameter(HttpConnectionManagerParams.SO_TIMEOUT, config.getDefaultTimeout());
+        SftpFileSystemConfigBuilder.getInstance().setTimeout(fileSystemOptions, config.getDefaultTimeout());
         SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
 
         final NumberFormat numberFormat = NumberFormat.getNumberInstance();

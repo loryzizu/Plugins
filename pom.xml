@@ -22,6 +22,7 @@
         <module>t-filesToRdf</module>
         <module>t-filterValidXml</module>
         <module>t-gunzipper</module>
+        <module>t-gzipper</module>
         <module>t-metadata</module>
         <module>t-rdfMerger</module>
         <module>t-rdfToFiles</module>
