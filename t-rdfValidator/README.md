@@ -38,16 +38,8 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|3.0.0              | Select/Ask queries replace old Insert type. Dropped per-graph mode, optional output contains copy of input (instead of invalid triples)         |
-|2.1.0              | Update to API 2.1.0; Localization        |
-|2.0.1              | fixes in build dependencies |
-|2.0.0              | Update for helpers 2.0.0                        |
-|1.6.0              | fixed per graph select                          |
-|1.5.0              | N/A                                             |
-|1.4.0              | N/A                                             |
-|1.3.1              | N/A                                             |
-|1.3.0              | N/A                                             |
-
+|2.0.0              | Select/Ask queries replace old Insert type. Dropped per-graph mode, optional output contains copy of input (instead of invalid triples)         |
+|1.0.0              | Initial release        |
 
 ***
 

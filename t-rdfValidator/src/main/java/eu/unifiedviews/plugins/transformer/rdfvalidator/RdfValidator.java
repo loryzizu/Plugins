@@ -1,5 +1,6 @@
 package eu.unifiedviews.plugins.transformer.rdfvalidator;
 
+import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,6 +39,7 @@ import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 
 @DPU.AsTransformer
 public class RdfValidator extends AbstractDpu<RdfValidatorConfig_V2> {
+    public static final Integer FIRST_N_PROBLEMATIC_MAPPINGS = 100;
 
     private static final Logger LOG = LoggerFactory.getLogger(RdfValidator.class);
 
@@ -92,19 +94,38 @@ public class RdfValidator extends AbstractDpu<RdfValidatorConfig_V2> {
             // Prepare query.
             if (parsedQuery instanceof ParsedTupleQuery) {
                 TupleQuery query;
+                TupleQueryResult result = null;
                 try {
                     query = connection.prepareTupleQuery(QueryLanguage.SPARQL, config.getQuery());
                     query.setDataset(new DatasetBuilder().withDefaultGraphs(graphURIs).build());
-                    TupleQueryResult result = query.evaluate();
+                    result = query.evaluate();
                     if (result.hasNext()) {
+                        StringBuilder sb = new StringBuilder();
+                        int i = 0;
+                        while (result.hasNext() && i < FIRST_N_PROBLEMATIC_MAPPINGS) {
+                            sb.append(result.next().toString());
+                            sb.append(" ; ");
+                        }
+                        sb.delete(sb.length() - 3, sb.length());
+                        String logMessage = sb.toString();
                         if (config.isFailExecution()) {
-                            throw ContextUtils.dpuException(ctx, "error.data.validation");
+                            LOG.error(logMessage);
+                            throw ContextUtils.dpuException(ctx, "error.data.validation.mappings", logMessage);
                         } else {
-                            ContextUtils.sendMessage(ctx, MessageType.WARNING, "error.data.validation", "");
+                            LOG.warn(logMessage);
+                            ContextUtils.sendMessage(ctx, MessageType.WARNING, "error.data.validation.mappings", logMessage);
                         }
                     }
                 } catch (RepositoryException | MalformedQueryException | QueryEvaluationException ex) {
                     throw ContextUtils.dpuException(ctx, "error.query.execution");
+                } finally {
+                    if (result != null) {
+                        try {
+                            result.close();
+                        } catch (QueryEvaluationException ex) {
+                            LOG.warn("Error in close", ex);
+                        }
+                    }
                 }
             } else if (parsedQuery instanceof ParsedBooleanQuery) {
                 BooleanQuery query;

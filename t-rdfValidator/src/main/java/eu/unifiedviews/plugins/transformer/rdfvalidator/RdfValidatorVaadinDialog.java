@@ -1,5 +1,13 @@
 package eu.unifiedviews.plugins.transformer.rdfvalidator;
 
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.parser.ParsedBooleanQuery;
+import org.openrdf.query.parser.ParsedQuery;
+import org.openrdf.query.parser.ParsedTupleQuery;
+import org.openrdf.query.parser.QueryParserUtil;
+
+import com.vaadin.data.Validator;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextArea;
@@ -21,7 +29,7 @@ public class RdfValidatorVaadinDialog extends AbstractDialog<RdfValidatorConfig_
     private ObjectProperty<Boolean> failExecution = new ObjectProperty<Boolean>(Boolean.TRUE);
 
     private ObjectProperty<String> query = new ObjectProperty<String>("");
-
+    TextArea txtQuery ;
     public RdfValidatorVaadinDialog() {
         super(RdfValidator.class);
     }
@@ -35,11 +43,13 @@ public class RdfValidatorVaadinDialog extends AbstractDialog<RdfValidatorConfig_
         mainLayout.setWidth("100%");
         mainLayout.setHeight("100%");
 
-        TextArea txtQuery = new TextArea(ctx.tr("dialog.query"), query);
+        txtQuery= new TextArea(ctx.tr("dialog.query"), query);
         txtQuery.setWidth("100%");
         txtQuery.setSizeFull();
         txtQuery.setNullRepresentation("");
         txtQuery.setNullSettingAllowed(true);
+        txtQuery.setImmediate(true);
+        txtQuery.addValidator(createSparqlQueryValidator());
         mainLayout.addComponent(txtQuery);
         mainLayout.setExpandRatio(txtQuery, 1.0f);
 
@@ -60,9 +70,36 @@ public class RdfValidatorVaadinDialog extends AbstractDialog<RdfValidatorConfig_
 
     @Override
     public RdfValidatorConfig_V2 getConfiguration() throws DPUConfigException {
+        if (!txtQuery.isValid()) {
+            throw new DPUConfigException(ctx.tr("sparqlvalidator.invalidQuery"));
+        }
         final RdfValidatorConfig_V2 c = new RdfValidatorConfig_V2();
         c.setFailExecution(failExecution.getValue());
         c.setQuery(query.getValue());
         return c;
+    }
+
+    private Validator createSparqlQueryValidator() {
+        Validator validator = new Validator() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void validate(Object value) throws InvalidValueException {
+                final String valueStr = (String) value;
+                if (value == null || valueStr.isEmpty()) {
+                    throw new InvalidValueException(ctx.tr("sparqlvalidator.emptyQuery"));
+                }
+
+                try {
+                    ParsedQuery parsedQuery = QueryParserUtil.parseQuery(QueryLanguage.SPARQL, valueStr, null);
+                    if (!(parsedQuery instanceof ParsedBooleanQuery)&&!(parsedQuery instanceof ParsedTupleQuery)) {
+                        throw new InvalidValueException(ctx.tr("error.unsupported.query.type"));
+                    }
+                } catch (MalformedQueryException ex) {
+                    throw new InvalidValueException(ctx.tr("sparqlvalidator.invalidQuery") + " " + ex.getMessage());
+                }
+            }
+        };
+        return validator;
     }
 }
