@@ -15,6 +15,7 @@ import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.helpers.dataunit.files.FilesHelper;
+import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 import eu.unifiedviews.plugins.transformer.gzipper.Gzipper;
 import eu.unifiedviews.plugins.transformer.gzipper.GzipperConfig_V1;
@@ -36,7 +37,7 @@ public class GzipperTest {
         WritableFilesDataUnit filesOutput = environment.createFilesOutput("filesOutput");
         WritableFilesDataUnit filesInput = environment.createFilesInput("filesInput");
 
-        File inputFile = new File(URI.create(filesInput.addNewFile("LICENSE.gz")));
+        File inputFile = new File(URI.create(filesInput.addNewFile("LICENSE")));
         try (FileOutputStream fout = new FileOutputStream(inputFile)) {
             IOUtils.copy(Thread.currentThread().getContextClassLoader().getResourceAsStream("LICENSE"), fout);
         }
@@ -54,6 +55,8 @@ public class GzipperTest {
             byte[] expectedContent = IOUtils.toByteArray(Thread.currentThread().getContextClassLoader().getResourceAsStream("LICENSE"));
 
             Assert.assertArrayEquals(expectedContent, outputContent);
+            
+            Assert.assertEquals("LICENSE.gz", VirtualPathHelpers.getVirtualPath(filesOutput, "LICENSE"));
         } finally {
             // Release resources.
             environment.release();

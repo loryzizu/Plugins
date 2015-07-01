@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,7 @@ import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.copy.CopyHelpers;
 import eu.unifiedviews.helpers.dataunit.files.FilesHelper;
+import eu.unifiedviews.helpers.dataunit.virtualpath.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
@@ -51,11 +53,16 @@ public class Gzipper extends AbstractDpu<GzipperConfig_V1> {
             for (FilesDataUnit.Entry entry : files) {
                 try {
                     File inputFile = new File(URI.create(entry.getFileURIString()));
-                    File outputFile = File.createTempFile("___", inputFile.getName(), new File(URI.create(filesOutput.getBaseFileURIString())));
+                    File outputFile = File.createTempFile("___", inputFile.getName() + ".gz", new File(URI.create(filesOutput.getBaseFileURIString())));
                     try (FileInputStream inputStream = new FileInputStream(inputFile); GZIPOutputStream outputStream = new GZIPOutputStream(new FileOutputStream(outputFile))) {
                         IOUtils.copyLarge(inputStream, outputStream);
                     }
                     CopyHelpers.copyMetadata(entry.getSymbolicName(), filesInput, filesOutput);
+                    String virtualPath = VirtualPathHelpers.getVirtualPath(filesOutput, entry.getSymbolicName());
+                    if (StringUtils.isEmpty(virtualPath)) {
+                        virtualPath = entry.getSymbolicName();
+                    }
+                    VirtualPathHelpers.setVirtualPath(filesOutput, entry.getSymbolicName(), virtualPath + ".gz");
                     filesOutput.updateExistingFileURI(entry.getSymbolicName(), outputFile.toURI().toASCIIString());
                 } catch (IOException ex) {
                     if (skipOnError) {
