@@ -4,17 +4,20 @@ import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnType;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdf;
 import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdfConfigurator;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
 
 /**
@@ -93,6 +96,7 @@ public class ParserXls implements Parser {
         // generate column names
         int startRow = config.numberOfStartLinesToIgnore;
         List<String> columnNames;
+
         if (config.hasHeader) {
             // parse line for header
             final Row row = sheet.getRow(startRow++);
@@ -105,18 +109,35 @@ public class ParserXls implements Parser {
             for (int columnIndex = columnStart; columnIndex < columnEnd; columnIndex++) {
                 final Cell cell = row.getCell(columnIndex);
                 if (cell == null) {
-                    LOG.error("Header cell is null! ({}, {})", startRow - 1, columnIndex);
-                    throw new ParseFailed("Header cell is null!");
+                    // The cell is missing, this happen for example if document is
+                    // exported from gdocs. We just log and use 'null' as cell value.
+                    LOG.info("Header cell is null ({}, {}) on '{}'!", startRow - 1, columnIndex,
+                            wb.getSheetName(sheetIndex));
+                    columnNames.add(null);
                 } else {
                     final String name = this.getCellValue(cell);
                     columnNames.add(name);
                 }
             }
+            if (config.stripHeader) {
+                // Remove trailing null values.
+                int initialSize = columnNames.size();
+                for (int i = columnNames.size() - 1; i > 0; --i) {
+                    if (columnNames.get(i) == null) {
+                        columnNames.remove(i);
+                    } else {
+                        // Non null value.
+                        break;
+                    }
+                }
+                LOG.info("Removal of nulls changed header size from {} to {}",
+                        initialSize, columnNames.size());
+            }
             // global names will be added later
         } else {
             columnNames = null;
         }
-
+        
 
         //
         // prepare static cells
@@ -163,6 +184,8 @@ public class ParserXls implements Parser {
             dataEndAtRow = sheet.getLastRowNum() + 1;
         }
 
+        int skippedLinesCounter = 0;
+        Integer tableHeaderSize = null; // Size of original header from file, used to expand/strip content.
         for (Integer rowNumPerFile = startRow; rowNumPerFile < dataEndAtRow; ++rowNumber, ++rowNumPerFile) {
             if (context.canceled()) {
                 break;
@@ -177,14 +200,13 @@ public class ParserXls implements Parser {
                 continue;
             }
             // We use zero as the first column must be column 1.
-            final int columnStart = 0;
+            final int columnStart = row.getFirstCellNum();
             final int columnEnd = row.getLastCellNum();
             // generate header
             if (!headerGenerated) {
                 headerGenerated = true;
                 // use row data to generate types
-                final List<ColumnType> types = new ArrayList<>(
-                        columnEnd + namedCells.size());
+                final List<ColumnType> types = new ArrayList<>(columnEnd + namedCells.size());
                 for (int columnIndex = columnStart; columnIndex < columnEnd; columnIndex++) {
                     final Cell cell = row.getCell(columnIndex);
                     if (cell == null) {
@@ -193,6 +215,7 @@ public class ParserXls implements Parser {
                     }
                     types.add(getCellType(cell));
                 }
+                // Till now column name can be only set in this method if header is presented.
                 if (columnNames == null) {
                     columnNames = new ArrayList<>(columnEnd);
                     // Generate column names, first column is col1.
@@ -200,6 +223,11 @@ public class ParserXls implements Parser {
                     for (int i = columnStart; i < columnEnd; i++) {
                         columnNames.add("col" + Integer.toString(++columnIndex));
                     }
+                    tableHeaderSize = columnEnd - columnStart;
+                } else {
+                    tableHeaderSize = columnNames.size();
+                    // expand types row. The header might be wider then the first data row.
+                    fitToSize(types, tableHeaderSize);
                 }
                 // add user defined names
                 for (NamedCell_V1 item : config.namedCells) {
@@ -210,12 +238,10 @@ public class ParserXls implements Parser {
                 columnNames.add(SHEET_COLUMN_NAME);
                 types.add(ColumnType.String);
                 // configure
-                TableToRdfConfigurator.configure(tableToRdf, columnNames,
-                        (List) types);
+                TableToRdfConfigurator.configure(tableToRdf, columnNames, (List) types);
             }
             // prepare row
-            final List<String> parsedRow = new ArrayList<>(
-                    columnEnd + namedCells.size());
+            final List<String> parsedRow = new ArrayList<>(columnEnd + namedCells.size());
             // parse columns
             for (int columnIndex = 0; columnIndex < columnEnd; columnIndex++) {
                 final Cell cell = row.getCell(columnIndex);
@@ -225,15 +251,61 @@ public class ParserXls implements Parser {
                     parsedRow.add(getCellValue(cell));
                 }
             }
+            // Check for row null values - this can happen for excel exported from
+            // google docs, where the number oof declared data rows is bigger then it should be
+            // together with fitToSize we would generate non-existing columns. In order to prevent this
+            // we scan an ignore lines with null values only.
+            boolean isEmpty = true;
+            for (Object value : parsedRow) {
+                if (value != null) {
+                    isEmpty = false;
+                    break;
+                }
+            }
+            if (isEmpty) {
+                ++skippedLinesCounter;
+                continue;
+            }
+            // expand row if needed
+            fitToSize(parsedRow, tableHeaderSize);
+
             // add named columns first !!
             parsedRow.addAll(namedCells);
             // add global data
-            parsedRow.add(wb.getSheetName(sheetIndex));
+            parsedRow.add(wb.getSheetName(sheetIndex)); 
             // convert into table
             tableToRdf.paserRow((List) parsedRow, rowNumber);
 
             if ((rowNumPerFile % 1000) == 0) {
                 LOG.debug("Row number {} processed.", rowNumPerFile);
+            }
+        }
+        //
+        if (skippedLinesCounter != 0) {
+            ContextUtils.sendShortInfo(context, "Some lines ({0}) were skipped.", skippedLinesCounter);
+        }
+    }
+
+    /**
+     * Shrink or expand the line as read from the table (no named columns presented).
+     *
+     * @param row
+     * @param size In null no transformation is done. This can be used if row should not be modified.
+     */
+    private void fitToSize(List<?> row, Integer size) {
+        if (size == null) {
+            return;
+        }
+        if (row.size() == size) {
+            // This is ok.
+        } else if (row.size() > size) {
+            // Shrink and drop data. As they are outside the header, named column would get corrupted by them.
+            while (row.size() > size) {
+                row.remove(row.size() - 1);
+            }
+        } else {
+            while (row.size() < size) {
+                row.add(row.size(), null);
             }
         }
     }
@@ -257,15 +329,18 @@ public class ParserXls implements Parser {
                 }
             case Cell.CELL_TYPE_ERROR:
             case Cell.CELL_TYPE_FORMULA:
-                throw new IllegalArgumentException(
-                        "Wrong cell type: " + cell.getCellType());
+                LOG.info("Formula value: {}", cell.getStringCellValue());
+                throw new IllegalArgumentException("Wrong cell type: " + cell.getCellType() +
+                        " on row: " + Integer.toString(cell.getRowIndex()) +
+                        " column: " + Integer.toString(cell.getColumnIndex()));
             case Cell.CELL_TYPE_NUMERIC:
                 return Double.toString(cell.getNumericCellValue());
             case Cell.CELL_TYPE_STRING:
                 return cell.getStringCellValue();
             default:
-                throw new IllegalArgumentException(""
-                        + "Unknown cell type: "  + cell.getCellType());
+                throw new IllegalArgumentException("Unknown cell type: " + cell.getCellType() +
+                        " on row: " + Integer.toString(cell.getRowIndex()) +
+                        " column: " + Integer.toString(cell.getColumnIndex()));
         }
     }
 

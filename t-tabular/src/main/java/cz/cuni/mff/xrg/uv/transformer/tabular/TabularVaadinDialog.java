@@ -1,9 +1,19 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular;
 
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Property;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.TabSheet.Tab;
+
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnInfo_V1;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 import cz.cuni.mff.xrg.uv.transformer.tabular.gui.PropertyGroup;
@@ -12,19 +22,13 @@ import cz.cuni.mff.xrg.uv.transformer.tabular.gui.PropertyNamedCell;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserType;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserXls;
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TabularVaadinDialog.class);
+
+    private String[] encoding = { "UTF-8", "UTF-16", "ISO-8859-1", "windows-1250" };
 
     private OptionGroup optionTableType;
 
@@ -32,7 +36,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     private TextField txtKeyColumnName;
 
-    private TextField txtEncoding;
+    private ComboBox txtEncoding;
 
     private TextField txtRowsLimit;
 
@@ -69,6 +73,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
     private TextField txtXlsLinesToIgnore;
 
     private CheckBox checkXlsHasHeader;
+
+    private CheckBox checkXlsStripHeader;
 
     /**
      * Layout for basic column mapping.
@@ -144,7 +150,15 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
                 + " used as subject for rows. This can be changed by checking 'Advanced key column'");
         generalLayout.addComponent(this.txtKeyColumnName);
 
-        this.txtEncoding = new TextField("Encoding");
+        this.txtEncoding = new ComboBox("Encoding");
+        for (String encd : encoding) {
+            txtEncoding.addItem(encd);
+            txtEncoding.setItemCaption(encd, encd);
+        }
+        txtEncoding.setTextInputAllowed(true);
+        txtEncoding.setNewItemsAllowed(true);
+        txtEncoding.setNullSelectionAllowed(false);
+        txtEncoding.setImmediate(true);
         this.txtEncoding.setRequired(true);
         generalLayout.addComponent(this.txtEncoding);
 
@@ -267,6 +281,12 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         this.checkXlsHasHeader.setDescription("Uncheck if there is no header in given file. "
                 + "The columns are then accessible under names col0, col1, ..");
         xlsLayout.addComponent(this.checkXlsHasHeader);
+
+        this.checkXlsStripHeader = new CheckBox("Strip header for nulls");
+        this.checkXlsStripHeader.setDescription("If set then trailing null values in header are removed."
+                + "This can be usefull if header is bigger then data, ie. 'Diff number of cells in header' "
+                + "exception is thrown.");
+        xlsLayout.addComponent(this.checkXlsStripHeader);
 
         // add change listener
         this.optionTableType.addValueChangeListener(new Property.ValueChangeListener() {
@@ -476,6 +496,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         txtXlsSheetName.setEnabled(xlsEnabled);
         txtXlsLinesToIgnore.setEnabled(xlsEnabled);
         checkXlsHasHeader.setEnabled(xlsEnabled);
+        checkXlsStripHeader.setEnabled(xlsEnabled);
         for (PropertyNamedCell namedCell : xlsNamedCells) {
             namedCell.setEnabled(xlsEnabled);
         }
@@ -607,15 +628,20 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             txtXlsLinesToIgnore.setValue(c.getLinesToIgnore().toString());
             loadCellMapping(c.getNamedCells());
             checkXlsHasHeader.setValue(c.isHasHeader());
+            checkXlsStripHeader.setValue(c.isStripHeader());
         } else {
             txtXlsSheetName.setValue("");
             txtXlsLinesToIgnore.setValue("0");
             loadCellMapping(Collections.EMPTY_LIST);
             checkXlsHasHeader.setValue(true);
+            checkXlsStripHeader.setValue(false);
         }
         //
         // other data
         //
+        if (!txtEncoding.containsId(c.getEncoding())) {
+            txtEncoding.addItem(c.getEncoding());
+        }
         txtEncoding.setValue(c.getEncoding());
         if (c.getRowsLimit() == null) {
             txtRowsLimit.setValue(null);
@@ -703,11 +729,12 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             storeCellMapping(cnf.getNamedCells());
 
             cnf.setHasHeader(checkXlsHasHeader.getValue());
+            cnf.setStripHeader(checkXlsStripHeader.getValue());
         }
         //
         // other data
         //
-        cnf.setEncoding(txtEncoding.getValue());
+        cnf.setEncoding((String) txtEncoding.getValue());
 
         final String rowsLimitStr = txtRowsLimit.getValue();
         if (rowsLimitStr == null || rowsLimitStr.isEmpty()) {
