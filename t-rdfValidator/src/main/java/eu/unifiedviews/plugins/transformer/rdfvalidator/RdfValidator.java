@@ -2,6 +2,7 @@ package eu.unifiedviews.plugins.transformer.rdfvalidator;
 
 import java.io.StringWriter;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,7 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.UnsupportedQueryLanguageException;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.query.parser.ParsedBooleanQuery;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedTupleQuery;
@@ -25,9 +27,11 @@ import org.slf4j.LoggerFactory;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext.MessageType;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.DataUnitUtils;
 import eu.unifiedviews.helpers.dataunit.dataset.DatasetBuilder;
 import eu.unifiedviews.helpers.dataunit.rdf.RDFHelper;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
@@ -36,15 +40,22 @@ import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
 import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlProblemException;
+import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 
 @DPU.AsTransformer
 public class RdfValidator extends AbstractDpu<RdfValidatorConfig_V2> {
     public static final Integer FIRST_N_PROBLEMATIC_MAPPINGS = 100;
 
+    public static final String QUERY_COPY = "INSERT { ?s ?p ?o } WHERE { ?s ?p ?o }";
+
     private static final Logger LOG = LoggerFactory.getLogger(RdfValidator.class);
 
     @DataUnit.AsInput(name = "rdfInput")
     public RDFDataUnit rdfInput;
+
+    @DataUnit.AsOutput(name = "rdfCopyOfInput", optional = true)
+    public WritableRDFDataUnit rdfCopyOfInput;
 
     @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
@@ -142,6 +153,19 @@ public class RdfValidator extends AbstractDpu<RdfValidatorConfig_V2> {
                 } catch (RepositoryException | MalformedQueryException | QueryEvaluationException ex) {
                     throw ContextUtils.dpuException(ctx, "error.query.execution");
                 }
+            }
+
+            if (rdfCopyOfInput != null) {
+                List<RDFDataUnit.Entry> source;
+                try {
+                    source = DataUnitUtils.getMetadataEntries(rdfInput);
+                    final RDFDataUnit.Entry target = DataUnitUtils.getWritableMetadataEntry(rdfCopyOfInput);
+                    final SparqlUtils.SparqlUpdateObject update = SparqlUtils.createInsert(QUERY_COPY, source, target);
+                    SparqlUtils.execute(connection, update);
+                } catch (DataUnitException | SparqlProblemException | RepositoryException | MalformedQueryException | UpdateExecutionException ex) {
+                    throw ContextUtils.dpuException(ctx, "error.data.copy");
+                }
+
             }
         } catch (DataUnitException ex) {
             throw ContextUtils.dpuException(ctx, ex, "error.dataunit");

@@ -5,12 +5,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.StringWriter;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.Rio;
 import org.openrdf.rio.turtle.TurtleWriter;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
@@ -41,6 +44,8 @@ public class RdfValidatorTest {
 
         // Prepare data unit.
         WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
+
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
@@ -141,6 +146,7 @@ public class RdfValidatorTest {
 
         // Prepare data unit.
         WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
@@ -189,6 +195,7 @@ public class RdfValidatorTest {
 
         // Prepare data unit.
         WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
@@ -237,6 +244,7 @@ public class RdfValidatorTest {
 
         // Prepare data unit.
         WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
@@ -285,6 +293,7 @@ public class RdfValidatorTest {
 
         // Prepare data unit.
         WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
@@ -294,13 +303,16 @@ public class RdfValidatorTest {
             connection = input.getConnection();
             URI graph = input.addNewDataGraph("test");
             connection.add(inputStream, "", RDFFormat.TURTLE, graph);
-            ByteArrayOutputStream inputBos = new ByteArrayOutputStream();
-            connection.export(new TurtleWriter(inputBos), graph);
+            StringWriter swInput = new StringWriter();
+            connection.export(Rio.createWriter(RDFFormat.TURTLE, swInput), graph);
             // some triples has been loaded
             assertTrue(connection.size(graph) > 0);
             // Run.
             environment.run(rdfDataValidator);
-
+            
+            StringWriter sw = new StringWriter();
+            connection.export(Rio.createWriter(RDFFormat.TURTLE, sw), RDFHelper.getGraphsURIArray(output));
+            assertEquals(swInput.toString(), sw.toString());
         } finally {
             if (connection != null) {
                 try {
@@ -331,6 +343,7 @@ public class RdfValidatorTest {
 
         // Prepare data unit.
         WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
@@ -378,6 +391,7 @@ public class RdfValidatorTest {
 
         // Prepare data unit.
         WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
@@ -426,6 +440,7 @@ public class RdfValidatorTest {
 
         // Prepare data unit.
         WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
@@ -474,6 +489,7 @@ public class RdfValidatorTest {
 
         // Prepare data unit.
         WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
@@ -569,6 +585,7 @@ public class RdfValidatorTest {
 
         // Prepare data unit.
         WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
@@ -616,6 +633,7 @@ public class RdfValidatorTest {
 
         // Prepare data unit.
         WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
@@ -663,6 +681,7 @@ public class RdfValidatorTest {
 
         // Prepare data unit.
         WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
