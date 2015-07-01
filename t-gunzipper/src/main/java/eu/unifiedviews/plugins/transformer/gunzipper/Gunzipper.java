@@ -67,7 +67,7 @@ public class Gunzipper extends AbstractDpu<GunzipperConfig_V1> {
                     if (StringUtils.isEmpty(virtualPath)) {
                         virtualPath = entry.getSymbolicName();
                     }
-                    VirtualPathHelpers.setVirtualPath(filesOutput, entry.getSymbolicName(), virtualPath.endsWith(".gz") ? virtualPath.substring(0, virtualPath.lastIndexOf('.')) : virtualPath);
+                    VirtualPathHelpers.setVirtualPath(filesOutput, entry.getSymbolicName(), virtualPath.toLowerCase().endsWith(".gz") ? virtualPath.substring(0, virtualPath.lastIndexOf('.')) : virtualPath);
 
                     filesOutput.updateExistingFileURI(entry.getSymbolicName(), outputFile.toURI().toASCIIString());
                 } catch (IOException ex) {
