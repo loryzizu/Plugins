@@ -2,11 +2,13 @@ package eu.unifiedviews.plugins.extractor.filesdownload;
 
 import java.io.IOException;
 import java.net.URI;
+import java.security.GeneralSecurityException;
 import java.text.NumberFormat;
 import java.util.Date;
 
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.AllFileSelector;
@@ -94,6 +96,8 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
         HttpConnectionManagerParams.getDefaultParams().setParameter(HttpConnectionManagerParams.SO_TIMEOUT, config.getDefaultTimeout());
         SftpFileSystemConfigBuilder.getInstance().setTimeout(fileSystemOptions, config.getDefaultTimeout());
         SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
+
+        Protocol.registerProtocol("https", new Protocol("https", (ProtocolSocketFactory) new EasySSL(), 443));
 
         final NumberFormat numberFormat = NumberFormat.getNumberInstance();
         numberFormat.setMaximumFractionDigits(0);

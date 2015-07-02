@@ -56,4 +56,30 @@ public class FilesDownloadTest {
         }
     }
 
+    @Test
+    public void executeSelfSigned() throws Exception {
+        // Prepare config.
+        String uri = "https://www.isvz.cz/ReportingSuite/Explorer/Download/Data/XML/VVZ/2014";
+        FilesDownloadConfig_V1 config = new FilesDownloadConfig_V1();
+        config.getVfsFiles().add(new VfsFile());
+        config.getVfsFiles().get(0).setUri(uri);
+
+        // Prepare DPU.
+        FilesDownload download = new FilesDownload();
+        download.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
+
+        // Prepare test environment.
+        TestEnvironment environment = new TestEnvironment();
+
+        // Prepare data unit.
+        WritableFilesDataUnit filesOutput = environment.createFilesOutput("output");
+
+        try {
+            // Run.
+            environment.run(download);
+        } finally {
+            // Release resources.
+            environment.release();
+        }
+    }
 }
