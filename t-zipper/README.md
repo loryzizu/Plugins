@@ -3,8 +3,8 @@ T-Zipper
 
 ### General
 
-* [About plugin](./src/main/resource/About.md)
-* [O kroku (in Slovak)](./src/main/resource/About_sk.md)
+* [About plugin](./src/main/resources/About.md)
+* [O kroku (in Slovak)](./src/main/resources/About_sk.md)
 
 ### Version history
 

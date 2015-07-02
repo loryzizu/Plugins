@@ -1,4 +1,4 @@
-### Descritpion
+### Description
 
 Zips input files into zip file of given name.
 
