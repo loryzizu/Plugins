@@ -33,9 +33,9 @@ public class GunzipperTest {
         WritableFilesDataUnit filesOutput = environment.createFilesOutput("filesOutput");
         WritableFilesDataUnit filesInput = environment.createFilesInput("filesInput");
         
-        File inputFile = new File(URI.create(filesInput.addNewFile("LICENSE.gz")));
+        File inputFile = new File(URI.create(filesInput.addNewFile("LICENSE.pdf.gz")));
         try (FileOutputStream fout = new FileOutputStream(inputFile)) {
-            IOUtils.copy(Thread.currentThread().getContextClassLoader().getResourceAsStream("LICENSE.gz"), fout);
+            IOUtils.copy(Thread.currentThread().getContextClassLoader().getResourceAsStream("LICENSE.pdf.gz"), fout);
         }
         try {
             // Run.
@@ -47,10 +47,10 @@ public class GunzipperTest {
             
             FilesDataUnit.Entry entry = outputFiles.iterator().next();
             String outputContent = IOUtils.toString(new URI(entry.getFileURIString()), "US-ASCII");
-            String expectedContent = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("LICENSE"), "US-ASCII");
+            String expectedContent = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("LICENSE.pdf"), "US-ASCII");
             
             Assert.assertEquals(expectedContent, outputContent);
-            Assert.assertEquals("LICENSE", VirtualPathHelpers.getVirtualPath(filesOutput, "LICENSE.gz"));
+            Assert.assertEquals("LICENSE.pdf", VirtualPathHelpers.getVirtualPath(filesOutput, "LICENSE.pdf.gz"));
         } finally {
             // Release resources.
             environment.release();

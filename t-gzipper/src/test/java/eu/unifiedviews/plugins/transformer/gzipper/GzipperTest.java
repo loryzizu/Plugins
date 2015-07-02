@@ -37,9 +37,9 @@ public class GzipperTest {
         WritableFilesDataUnit filesOutput = environment.createFilesOutput("filesOutput");
         WritableFilesDataUnit filesInput = environment.createFilesInput("filesInput");
 
-        File inputFile = new File(URI.create(filesInput.addNewFile("LICENSE")));
+        File inputFile = new File(URI.create(filesInput.addNewFile("LICENSE.pdf")));
         try (FileOutputStream fout = new FileOutputStream(inputFile)) {
-            IOUtils.copy(Thread.currentThread().getContextClassLoader().getResourceAsStream("LICENSE"), fout);
+            IOUtils.copy(Thread.currentThread().getContextClassLoader().getResourceAsStream("LICENSE.pdf"), fout);
         }
         try {
             // Run.
@@ -52,11 +52,11 @@ public class GzipperTest {
             FilesDataUnit.Entry entry = outputFiles.iterator().next();
 
             byte[] outputContent = IOUtils.toByteArray(new GZIPInputStream(new FileInputStream(new File(new URI(entry.getFileURIString())))));
-            byte[] expectedContent = IOUtils.toByteArray(Thread.currentThread().getContextClassLoader().getResourceAsStream("LICENSE"));
+            byte[] expectedContent = IOUtils.toByteArray(Thread.currentThread().getContextClassLoader().getResourceAsStream("LICENSE.pdf"));
 
             Assert.assertArrayEquals(expectedContent, outputContent);
             
-            Assert.assertEquals("LICENSE.gz", VirtualPathHelpers.getVirtualPath(filesOutput, "LICENSE"));
+            Assert.assertEquals("LICENSE.pdf.gz", VirtualPathHelpers.getVirtualPath(filesOutput, "LICENSE.pdf"));
         } finally {
             // Release resources.
             environment.release();
