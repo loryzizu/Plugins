@@ -195,7 +195,7 @@ public class RdfValidatorTest {
 
         // Prepare data unit.
         WritableRDFDataUnit input = environment.createRdfInput("rdfInput", false);
-//        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
+        WritableRDFDataUnit output = environment.createRdfOutput("rdfCopyOfInput", false);
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
