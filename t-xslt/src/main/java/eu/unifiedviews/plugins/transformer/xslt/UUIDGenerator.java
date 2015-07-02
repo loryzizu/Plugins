@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.uv.transformer.xslt;
+package eu.unifiedviews.plugins.transformer.xslt;
 
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.lib.ExtensionFunctionCall;

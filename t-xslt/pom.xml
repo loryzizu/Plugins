@@ -16,7 +16,7 @@
 	<description>Description of XSLT.</description>
 
 	<properties>
-		<dpu.package>cz.cuni.mff.xrg.uv.transformer.xslt</dpu.package>
+		<dpu.package>eu.unifiedviews.plugins.transformer.xslt</dpu.package>
 		<dpu.mainClass>Xslt</dpu.mainClass>
 	</properties>
 

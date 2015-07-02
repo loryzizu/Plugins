@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.uv.transformer.tabular.gui;
+package eu.unifiedviews.plugins.transformer.tabular.gui;
 
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.TextField;

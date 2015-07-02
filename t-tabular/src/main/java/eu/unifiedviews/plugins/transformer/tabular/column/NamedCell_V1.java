@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.uv.transformer.tabular.column;
+package eu.unifiedviews.plugins.transformer.tabular.column;
 
 /**
  * Used to specify cell in sheet for xls format.

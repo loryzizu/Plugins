@@ -4,10 +4,7 @@ import cz.cuni.mff.xrg.uv.transformer.tabular.TabularConfig_V2;
 import cz.cuni.mff.xrg.uv.transformer.tabular.TabularOntology;
 import cz.cuni.mff.xrg.uv.transformer.tabular.Utils;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnInfo_V1;
-import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnType;
-import cz.cuni.mff.xrg.uv.transformer.tabular.column.ValueGenerator;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ValueGeneratorReplace;
-import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParseFailed;
 
 import java.util.*;
 
@@ -17,6 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.plugins.transformer.tabular.column.ColumnType;
+import eu.unifiedviews.plugins.transformer.tabular.column.ValueGenerator;
+import eu.unifiedviews.plugins.transformer.tabular.parser.ParseFailed;
 
 /**
  * Configure {@link TableToRdf} class.
@@ -36,7 +36,7 @@ public class TableToRdfConfigurator {
      * @param tableToRdf
      * @param header 
      * @param data Contains first data row, or ColumnType if type is already known.
-     * @throws cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParseFailed
+     * @throws eu.unifiedviews.plugins.transformer.tabular.parser.ParseFailed
      * @throws DPUException
      */
     public static void configure(TableToRdf tableToRdf, List<String> header,

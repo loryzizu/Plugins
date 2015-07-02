@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.uv.transformer.sparql.update;
+package eu.unifiedviews.plugins.transformer.sparql.update;
 
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
@@ -9,6 +9,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 
+import cz.cuni.mff.xrg.uv.transformer.sparql.update.SparqlUpdateConfig_V1;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 

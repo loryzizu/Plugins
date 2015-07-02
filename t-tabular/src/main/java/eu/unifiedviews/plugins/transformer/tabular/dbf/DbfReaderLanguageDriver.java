@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.uv.transformer.tabular.dbf;
+package eu.unifiedviews.plugins.transformer.tabular.dbf;
 
 import java.io.Closeable;
 import java.io.DataInput;

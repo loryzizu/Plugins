@@ -1,11 +1,15 @@
-package cz.cuni.mff.xrg.uv.transformer.tabular.column;
+package eu.unifiedviews.plugins.transformer.tabular.column;
 
-import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParseFailed;
+import cz.cuni.mff.xrg.uv.transformer.tabular.column.ValueGeneratorReplace;
+
 import java.util.List;
 import java.util.Map;
+
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+
+import eu.unifiedviews.plugins.transformer.tabular.parser.ParseFailed;
 
 /**
  * Create value with given type.

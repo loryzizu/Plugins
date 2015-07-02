@@ -1,10 +1,12 @@
-package cz.cuni.mff.xrg.uv.transformer.tabular.gui;
+package eu.unifiedviews.plugins.transformer.tabular.gui;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
+
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnInfo_V1;
-import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnType;
 import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.plugins.transformer.tabular.column.ColumnType;
+
 import java.net.URISyntaxException;
 
 /**

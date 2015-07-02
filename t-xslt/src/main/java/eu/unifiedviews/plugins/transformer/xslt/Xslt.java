@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.uv.transformer.xslt;
+package eu.unifiedviews.plugins.transformer.xslt;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -9,10 +9,11 @@ import java.util.concurrent.TimeUnit;
 
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.uv.transformer.xslt.XsltExecutor.Status;
+import cz.cuni.mff.xrg.uv.transformer.xslt.XsltConfig_V2;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
@@ -28,7 +29,7 @@ import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
 import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 import eu.unifiedviews.helpers.dpu.extension.rdf.RdfConfiguration;
-import eu.unifiedviews.plugins.transformer.xslt.XSLTConfig_V1;
+import eu.unifiedviews.plugins.transformer.xslt.XsltExecutor.Status;
 
 @DPU.AsTransformer
 public class Xslt extends AbstractDpu<XsltConfig_V2> {

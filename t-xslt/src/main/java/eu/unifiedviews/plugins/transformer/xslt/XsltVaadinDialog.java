@@ -1,10 +1,11 @@
-package cz.cuni.mff.xrg.uv.transformer.xslt;
+package eu.unifiedviews.plugins.transformer.xslt;
 
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import cz.cuni.mff.xrg.uv.transformer.xslt.XsltConfig_V2;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 

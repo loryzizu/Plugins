@@ -1,11 +1,13 @@
-package cz.cuni.mff.xrg.uv.transformer.tabular.column;
+package eu.unifiedviews.plugins.transformer.tabular.column;
 
-import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParseFailed;
 import java.util.List;
 import java.util.Map;
+
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+
+import eu.unifiedviews.plugins.transformer.tabular.parser.ParseFailed;
 
 /**
  * Generate value for given template.
@@ -19,7 +21,7 @@ public interface ValueGenerator {
      *
      * @param nameToIndex Mapping from names to indexes in row.
      * @param valueFactory
-     * @throws cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParseFailed
+     * @throws eu.unifiedviews.plugins.transformer.tabular.parser.ParseFailed
      */
     public void compile(Map<String, Integer> nameToIndex, ValueFactory valueFactory) throws ParseFailed;
 

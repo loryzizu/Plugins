@@ -17,7 +17,7 @@
 	<packaging>bundle</packaging>
 
 	<properties>
-		<dpu.package>cz.cuni.mff.xrg.uv.transformer.sparql.construct</dpu.package>
+		<dpu.package>eu.unifiedviews.plugins.transformer.sparql.construct</dpu.package>
 		<dpu.mainClass>SparqlConstruct</dpu.mainClass>
 	</properties>
 
