@@ -46,10 +46,10 @@ public class GunzipperTest {
             Assert.assertEquals(1, outputFiles.size());
             
             FilesDataUnit.Entry entry = outputFiles.iterator().next();
-            byte[] outputContent = FileUtils.readFileToByteArray(new File(new URI(entry.getFileURIString())));
-            byte[] expectedContent = IOUtils.toByteArray(Thread.currentThread().getContextClassLoader().getResourceAsStream("LICENSE"));
+            String outputContent = IOUtils.toString(new URI(entry.getFileURIString()), "US-ASCII");
+            String expectedContent = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("LICENSE"), "US-ASCII");
             
-            Assert.assertArrayEquals(expectedContent, outputContent);
+            Assert.assertEquals(expectedContent, outputContent);
             Assert.assertEquals("LICENSE", VirtualPathHelpers.getVirtualPath(filesOutput, "LICENSE.gz"));
         } finally {
             // Release resources.
