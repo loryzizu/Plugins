@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-pom-dpu</artifactId>
-		<version>2.1.0-SNAPSHOT</version>
+		<version>2.1.0</version>
 		<relativePath />
 	</parent>
 
@@ -14,7 +14,7 @@
 	<artifactId>uv-l-rdfToVirtuoso</artifactId>
 	<name>L-RdfToVirtuoso</name>
 	<description>Loads RDF data to Virtuoso using OpenRDF Repository API (VirtuosoRepository).</description>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>bundle</packaging>
 
 	<properties>
