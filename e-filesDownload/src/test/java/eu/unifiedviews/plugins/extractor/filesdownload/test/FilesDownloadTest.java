@@ -11,6 +11,7 @@ import org.junit.Test;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.files.FilesDataUnit.Entry;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
+import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.files.FilesHelper;
 import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 import eu.unifiedviews.plugins.extractor.filesdownload.FilesDownload;
@@ -59,10 +60,12 @@ public class FilesDownloadTest {
     @Test
     public void executeSelfSigned() throws Exception {
         // Prepare config.
-        String uri = "https://www.isvz.cz/ReportingSuite/Explorer/Download/Data/XML/VVZ/2014";
+        String uri = "https://www.isvz.cz/";
         FilesDownloadConfig_V1 config = new FilesDownloadConfig_V1();
         config.getVfsFiles().add(new VfsFile());
         config.getVfsFiles().get(0).setUri(uri);
+        config.setDefaultTimeout(60000);
+        config.setIgnoreTlsErrors(true);
 
         // Prepare DPU.
         FilesDownload download = new FilesDownload();

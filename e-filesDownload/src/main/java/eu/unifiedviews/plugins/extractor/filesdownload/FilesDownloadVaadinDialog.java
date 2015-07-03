@@ -28,6 +28,8 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
 
     private ObjectProperty<Integer> defaultTimeout = new ObjectProperty<Integer>(0);
 
+    private ObjectProperty<Boolean> ignoreTlsErrors = new ObjectProperty<Boolean>(Boolean.FALSE);
+
     TextField txtDefaultTimeout;
 
     public FilesDownloadVaadinDialog() {
@@ -128,6 +130,10 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
 
         mainLayout.addComponent(txtDefaultTimeout);
 
+        CheckBox chkIgnoreTlsErrors = new CheckBox(ctx.tr("FilesDownloadVaadinDialog.ignoreTlsErrors.caption"), ignoreTlsErrors);
+        chkIgnoreTlsErrors.setDescription(ctx.tr("FilesDownloadVaadinDialog.ignoreTlsErrors.description"));
+        mainLayout.addComponent(chkIgnoreTlsErrors);
+        
         mainLayout.setExpandRatio(table, 1.0f);
         setCompositionRoot(mainLayout);
     }
@@ -157,6 +163,7 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
             throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.getConfiguration.invalid"));
         }
         result.setDefaultTimeout(defaultTimeout.getValue());
+        result.setIgnoreTlsErrors(ignoreTlsErrors.getValue());
         return result;
     }
 
@@ -219,6 +226,7 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
             }
         }
         defaultTimeout.setValue(config.getDefaultTimeout());
+        ignoreTlsErrors.setValue(config.isIgnoreTlsErrors());
     }
 
     @Override
