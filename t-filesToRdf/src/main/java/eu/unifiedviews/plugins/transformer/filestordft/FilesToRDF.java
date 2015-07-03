@@ -70,8 +70,7 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
 
     private static final String DATA_GRAPH_BINDING = "dataGraph";
 
-    private static final String UPDATE_EXISTING_GRAPH_FROM_FILE
-            = "DELETE "
+    private static final String UPDATE_EXISTING_GRAPH_FROM_FILE = "DELETE "
             + "{ "
             + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o "
             + "} "
@@ -98,11 +97,8 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
 
     @Override
     protected void innerExecute() throws DPUException {
-        String shortMessage = this.getClass().getSimpleName() + " starting.";
-        String longMessage = String.format("Configuration: commitSize: %d", config.getCommitSize());
-        ContextUtils.sendInfo(ctx, shortMessage, longMessage);
+        ContextUtils.sendInfo(ctx, "FilesToRDF.execute.starting", "");
 
-        LOG.info(shortMessage + " " + longMessage);
         final URI globalOutputGraphUri;
 
         // Create output graph if we are in M->1 mode.
@@ -130,7 +126,7 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
                 });
 
             } catch (DataUnitException ex) {
-                throw ContextUtils.dpuException(ctx, ex, "Can't create output graph.");
+                throw ContextUtils.dpuException(ctx, ex, "FilesToRDF.execute.exception.outputGraph");
             }
         } else {
             globalOutputGraphUri = null;
@@ -169,7 +165,7 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
                 faultTolerance.execute(new FaultTolerance.Action() {
 
                     @Override
-                    public void action() throws Exception {                        
+                    public void action() throws Exception {
                         updateExistingDataGraphFromFile(entry.getSymbolicName(), outputGraphUri);
                     }
                 });
@@ -213,7 +209,7 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
                             connection.getParserConfig(), connection.getValueFactory());
                     try {
                         loader.load(new File(java.net.URI.create(entry.getFileURIString())), null, format,
-                            rdfInserter, new ParseErrorLogger());
+                                rdfInserter, new ParseErrorLogger());
                     } catch (IOException | RDFHandlerException | RDFParseException ex) {
                         switch (config.getFatalErrorHandling()) {
                             case FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING:
@@ -233,11 +229,11 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
         }
         // Publish messsage.
         if (fileSkipped) {
-            ContextUtils.sendWarn(ctx, "Some files has been skipped during conversion.", "See logs for more details.");
+            ContextUtils.sendWarn(ctx, "FilesToRDF.execute.skipped", "");
         }
     }
 
-    private void updateExistingDataGraphFromFile(String symbolicName, URI newDataGraphURI) throws DataUnitException {
+    private void updateExistingDataGraphFromFile(String symbolicName, URI newDataGraphURI) throws DPUException {
         RepositoryConnection connection = null;
         RepositoryResult<Statement> result = null;
         try {
@@ -245,24 +241,19 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
             connection.begin();
             ValueFactory valueFactory = connection.getValueFactory();
             Literal symbolicNameLiteral = valueFactory.createLiteral(symbolicName);
-            try {
-                Update update = connection.prepareUpdate(QueryLanguage.SPARQL, UPDATE_EXISTING_GRAPH_FROM_FILE);
-                update.setBinding(SYMBOLIC_NAME_BINDING, symbolicNameLiteral);
-                update.setBinding(DATA_GRAPH_BINDING, newDataGraphURI);
+            Update update = connection.prepareUpdate(QueryLanguage.SPARQL, UPDATE_EXISTING_GRAPH_FROM_FILE);
+            update.setBinding(SYMBOLIC_NAME_BINDING, symbolicNameLiteral);
+            update.setBinding(DATA_GRAPH_BINDING, newDataGraphURI);
 
-                update.setDataset(new DatasetBuilder()
-                        .addDefaultGraph(rdfOutput.getMetadataWriteGraphname())
-                        .withInsertGraph(rdfOutput.getMetadataWriteGraphname())
-                        .addDefaultRemoveGraph(rdfOutput.getMetadataWriteGraphname())
-                        .build());
-                update.execute();
-            } catch (MalformedQueryException | UpdateExecutionException ex) {
-                // Not possible
-                throw new DataUnitException(ex);
-            }
+            update.setDataset(new DatasetBuilder()
+                    .addDefaultGraph(rdfOutput.getMetadataWriteGraphname())
+                    .withInsertGraph(rdfOutput.getMetadataWriteGraphname())
+                    .addDefaultRemoveGraph(rdfOutput.getMetadataWriteGraphname())
+                    .build());
+            update.execute();
             connection.commit();
-        } catch (RepositoryException ex) {
-            throw new DataUnitException("Error when adding data graph.", ex);
+        } catch (DataUnitException | RepositoryException | MalformedQueryException | UpdateExecutionException ex) {
+            throw ContextUtils.dpuException(ctx, "FilesToRDF.execute.exception.dataGraph");
         } finally {
             if (connection != null) {
                 try {

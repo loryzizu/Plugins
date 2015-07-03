@@ -20,10 +20,9 @@
 |Parameter                                       |Description                                                                          |
 |------------------------------------------------|-------------------------------------------------------------------------------------|
 |**Tablename:                                    |Name of table that will hold the parsed data.                                        |
-|**Tablename:                                    |Encoding of input file.                                                              |
-|**Rows limit:                                   |Maximum number of processed lines from input file.                                   |
-|**Field delimiter:                              |Field delimiter to use during parsing od CSV file. e.g. '"'.                         |
-|**Fields sepatator:                             |Field separator to use during parsing of CSV file. e.g. ','.                         |
+|**Charset:                                      |Charset of input file.                                                               |
+|**Quote character:                              |Field delimiter to use during parsing od CSV file. e.g. '"'.                         |
+|**Sepatator:                                    |Field separator to use during parsing of CSV file. e.g. ','.                         |
 |**Table of column mappings                      |Name and types of culumns in CSV files. Also marks if column is used as primary key. |
 
 ***
@@ -39,6 +38,7 @@
 
 |Version |Release notes |
 |--------|--------------|
+|2.1.0   | improved user experience; Update to API 2.1.0 |
 |2.0.1   | fixes in build dependencies |
 |2.0.0   | Update to helpers 2.0.0 |
 |1.0.0   | N/A           |                                

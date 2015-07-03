@@ -13,6 +13,8 @@ public class FilesDownloadConfig_V1 implements VersionedConfig<FilesDownloadConf
     private List<VfsFile> vfsFiles = new LinkedList<>();
 
     private boolean softFail = false;
+    
+    private int defaultTimeout = 20000;
 
     public List<VfsFile> getVfsFiles() {
         return vfsFiles;
@@ -28,6 +30,14 @@ public class FilesDownloadConfig_V1 implements VersionedConfig<FilesDownloadConf
 
     public void setSoftFail(boolean softFail) {
         this.softFail = softFail;
+    }
+
+    public int getDefaultTimeout() {
+        return defaultTimeout;
+    }
+
+    public void setDefaultTimeout(int defaultTimeout) {
+        this.defaultTimeout = defaultTimeout;
     }
 
     @Override

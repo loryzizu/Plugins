@@ -1,5 +1,10 @@
 package eu.unifiedviews.plugins.trandformer.sparqlselect;
 
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.parser.QueryParserUtil;
+
+import com.vaadin.data.Validator;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -22,18 +27,22 @@ public class SparqlSelectVaadinDialog extends AbstractDialog<SparqlSelectConfig>
         final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setImmediate(false);
         mainLayout.setSizeFull();
+        mainLayout.setSpacing(true);
+        mainLayout.setMargin(true);
 
         txtTarget = new TextField();
         txtTarget.setWidth("100%");
         txtTarget.setHeight("-1px");
-        txtTarget.setCaption("Target path:");
+        txtTarget.setCaption(ctx.tr("SparqlSelectVaadinDialog.txtTarget"));
         txtTarget.setRequired(true);
         mainLayout.addComponent(txtTarget);
         mainLayout.setExpandRatio(txtTarget, 0);
 
         txtQuery = new TextArea();
         txtQuery.setSizeFull();
-        txtQuery.setCaption("SPARQL query:");
+        txtQuery.setCaption(ctx.tr("SparqlSelectVaadinDialog.txtQuery"));
+        txtQuery.addValidator(createSparqlQueryValidator());
+        txtQuery.setImmediate(true);
         txtTarget.setRequired(true);
         mainLayout.addComponent(txtQuery);
         mainLayout.setExpandRatio(txtQuery, 1);
@@ -50,10 +59,10 @@ public class SparqlSelectVaadinDialog extends AbstractDialog<SparqlSelectConfig>
     @Override
     protected SparqlSelectConfig getConfiguration() throws DPUConfigException {
         if (!txtTarget.isValid()) {
-            throw new DPUConfigException("Target path must be filled.");
+            throw new DPUConfigException(ctx.tr("SparqlSelectVaadinDialog.exception.pathFilled"));
         }
         if (!txtQuery.isValid()) {
-            throw new DPUConfigException("SPARQL query must be filled.");
+            throw new DPUConfigException(ctx.tr("sparqlvalidator.invalidQuery"));
         }
 
         SparqlSelectConfig conf = new SparqlSelectConfig();
@@ -64,12 +73,28 @@ public class SparqlSelectVaadinDialog extends AbstractDialog<SparqlSelectConfig>
 
     @Override
     public String getDescription() {
-        StringBuilder desc = new StringBuilder();
+        return ctx.tr("SparqlSelectVaadinDialog.description", txtTarget.getValue());
+    }
 
-        desc.append("Export data as csv into ");
-        desc.append(txtTarget.getValue());
+    private Validator createSparqlQueryValidator() {
+        Validator validator = new Validator() {
+            private static final long serialVersionUID = 1L;
 
-        return desc.toString();
+            @Override
+            public void validate(Object value) throws InvalidValueException {
+                final String valueStr = (String) value;
+                if (value == null || valueStr.isEmpty()) {
+                    throw new InvalidValueException(ctx.tr("sparqlvalidator.emptyQuery"));
+                }
+
+                try {
+                    QueryParserUtil.parseQuery(QueryLanguage.SPARQL, valueStr, null);
+                } catch (MalformedQueryException ex) {
+                    throw new InvalidValueException(ctx.tr("sparqlvalidator.invalidQuery") + " " + ex.getMessage());
+                }
+            }
+        };
+        return validator;
     }
 
 }

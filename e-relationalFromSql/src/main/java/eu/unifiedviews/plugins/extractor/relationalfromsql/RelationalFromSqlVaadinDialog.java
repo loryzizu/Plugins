@@ -441,7 +441,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
                     window.close();
                     DataPreviewWindow dataPreview = new DataPreviewWindow(getConfigurationInternal(), Integer.parseInt(txtLimit.getValue()));
                     UI.getCurrent().addWindow(dataPreview);
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     showMessage("dialog.errors.preview", Notification.Type.ERROR_MESSAGE);
                 }
             }
@@ -564,7 +564,8 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
     protected RelationalFromSqlConfig_V2 getConfiguration() throws DPUConfigException {
 
         boolean isValid = this.txtDatabaseHost.isValid() && this.txtDatabaseName.isValid() && this.txtDatabasePort.isValid()
-                && this.txtUserName.isValid() && this.txtPassword.isValid() && this.txtTargetTableName.isValid();
+                && this.txtUserName.isValid() && this.txtPassword.isValid() && this.txtTargetTableName.isValid()
+                && this.txtSqlQuery.isValid();
 
         if (SqlDatabase.getDatabaseTypeForDatabaseName((String) this.databaseType.getValue()) == DatabaseType.MSSQL) {
             isValid = isValid && this.txtInstanceName.isValid();

@@ -37,6 +37,10 @@
 
 |Version          |Release notes               |
 |-----------------|----------------------------|
+|2.1.0            | Update to API 2.1.0        |
+|                 | Adde error message in case of SPARQL update query failure. |
+|                 | sk localization |
+|                 | Symbolic name of output is modified |
 |2.0.1            | fixes in build dependencies |
 |2.0.0            | Imported from the repository https://github.com/mff-uk/DPUs, using helpers 2.0.0 |
 

@@ -1,11 +1,11 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.parser;
 
-import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdf;
-import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdfConfigurator;
 import eu.unifiedviews.dpu.DPUContext;
+
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
+
 import org.apache.commons.io.input.BOMInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +14,12 @@ import org.supercsv.prefs.CsvPreference;
 import org.supercsv.quote.QuoteMode;
 import org.supercsv.util.CsvContext;
 
+import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdf;
+import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdfConfigurator;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
+import eu.unifiedviews.plugins.transformer.tabular.parser.ParseFailed;
+import eu.unifiedviews.plugins.transformer.tabular.parser.Parser;
 
 /**
  * Parse csv file.

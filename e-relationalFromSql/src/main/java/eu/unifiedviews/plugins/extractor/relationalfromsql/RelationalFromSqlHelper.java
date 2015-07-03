@@ -34,11 +34,10 @@ public class RelationalFromSqlHelper {
      * @return List of columns
      * @throws SQLException
      */
-    public static List<ColumnDefinition> getTableColumnsFromMetaData(ResultSetMetaData meta) throws SQLException {
+    public static List<ColumnDefinition> getTableColumnsFromMetaData(ResultSetMetaData meta) throws SQLException, SQLTransformException {
         int columnsCount = meta.getColumnCount();
         List<ColumnDefinition> columns = new ArrayList<>();
         Set<String> uniqueColumns = new HashSet<String>();
-        // If result set contains multiple columns with the same name, add index
         for (int i = 1; i <= columnsCount; i++) {
             int type = meta.getColumnType(i);
             String columnLabel = meta.getColumnLabel(i);
@@ -49,13 +48,8 @@ public class RelationalFromSqlHelper {
             if (isSupportedDataType(type, typeName)) {
                 boolean columnNotNull = (meta.isNullable(i) == ResultSetMetaData.columnNoNulls);
                 if (uniqueColumns.contains(columnLabel)) {
-                    int index = 1;
-                    String newLabel = columnLabel + "_" + index;
-                    while (uniqueColumns.contains(newLabel)) {
-                        index++;
-                        newLabel = columnLabel + "_" + index;
-                    }
-                    columnLabel = newLabel;
+                    LOG.error("Multiple occurences of column with the same name: {}, rename column in select via AS keyword!", columnLabel);
+                    throw new SQLTransformException("Multiple column name occurrences'" + columnLabel + "'", SQLTransformException.TransformErrorCode.DUPLICATE_COLUMN_NAME);
                 }
                 uniqueColumns.add(columnLabel);
                 ColumnDefinition column = new ColumnDefinition(columnLabel, typeName, type, columnNotNull, typeClass);
@@ -70,7 +64,6 @@ public class RelationalFromSqlHelper {
 
     private static boolean isSupportedDataType(int type, String typeName) {
         switch (type) {
-            case Types.CLOB:
             case Types.BLOB:
             case Types.BINARY:
             case Types.VARBINARY:

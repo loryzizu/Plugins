@@ -8,7 +8,10 @@ import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.Validator;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -22,6 +25,10 @@ import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfig_V1> {
 
     private final Container container = new BeanItemContainer<>(VfsFile.class);
+
+    private ObjectProperty<Integer> defaultTimeout = new ObjectProperty<Integer>(0);
+
+    TextField txtDefaultTimeout;
 
     public FilesDownloadVaadinDialog() {
         super(FilesDownload.class);
@@ -85,12 +92,13 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
 
                 if (propertyId.equals("uri")) {
                     result.setDescription(ctx.tr("FilesDownloadVaadinDialog.uri.description"));
-                    result.setWidth("400");
                 } else if (propertyId.equals("password")) {
                     result = new PasswordField();
                 } else if (propertyId.equals("fileName")) {
                     result.setDescription(ctx.tr("FilesDownloadVaadinDialog.fileName.description"));
                 }
+
+                result.setWidth("100%");
 
                 return result;
             }
@@ -98,6 +106,28 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
         });
         table.setVisibleColumns("remove", "uri", "username", "password", "fileName");
         mainLayout.addComponent(table);
+
+        txtDefaultTimeout = new TextField(ctx.tr("FilesDownloadVaadinDialog.defaultTimeout.caption"), defaultTimeout);
+        txtDefaultTimeout.setNullRepresentation("");
+        txtDefaultTimeout.setConversionError(ctx.tr("FilesDownloadVaadinDialog.defaultTimeout.conversionError"));
+        txtDefaultTimeout.setImmediate(true);
+        txtDefaultTimeout.setLocale(ctx.getDialogMasterContext().getDialogContext().getLocale());
+        txtDefaultTimeout.addValidator(new Validator() {
+
+            @Override
+            public void validate(Object value) throws InvalidValueException {
+                if (value != null) {
+                    if (value instanceof Integer) {
+                        if (((Integer) value) < 0) {
+                            throw new InvalidValueException(ctx.tr("FilesDownloadVaadinDialog.defaultTimeout.nonnegative"));
+                        }
+                    }
+                }
+            }
+        });
+
+        mainLayout.addComponent(txtDefaultTimeout);
+
         mainLayout.setExpandRatio(table, 1.0f);
         setCompositionRoot(mainLayout);
     }
@@ -123,7 +153,10 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
 
         FilesDownloadConfig_V1 result = new FilesDownloadConfig_V1();
         result.setVfsFiles(vfsFiles);
-
+        if (!txtDefaultTimeout.isValid()) {
+            throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.getConfiguration.invalid"));
+        }
+        result.setDefaultTimeout(defaultTimeout.getValue());
         return result;
     }
 
@@ -185,6 +218,7 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
                 throw new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.setConfiguration.exception"), e);
             }
         }
+        defaultTimeout.setValue(config.getDefaultTimeout());
     }
 
     @Override

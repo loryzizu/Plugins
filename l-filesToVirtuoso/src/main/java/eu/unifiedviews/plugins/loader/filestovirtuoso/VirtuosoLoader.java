@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
@@ -38,6 +39,7 @@ import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
 import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.rdf.RdfConfiguration;
 
 @DPU.AsLoader
 public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
@@ -45,6 +47,10 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
     private static final Logger LOG = LoggerFactory.getLogger(VirtuosoLoader.class);
 
     public static final String PREDICATE_HAS_DISTRIBUTION = "http://comsode.eu/hasDistribution";
+
+    @RdfConfiguration.ContainsConfiguration
+    @DataUnit.AsInput(name = "config", optional = true)
+    public RDFDataUnit rdfConfiguration;
 
     @DataUnit.AsOutput(name = "rdfOutput")
     public WritableRDFDataUnit rdfOutput;
@@ -69,18 +75,6 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
 
     private static final String RUN = "rdf_loader_run()";
 
-    private static final String SELECT_USER = "SELECT U_NAME, U_ID FROM DB.DBA.SYS_USERS WHERE U_NAME LIKE ?";
-
-    private static final String CREATE_USER = "DB.DBA.USER_CREATE (?, ?)";
-
-    private static final String GRANT_USER = "grant SPARQL_UPDATE to ?";
-
-    private static final String GRANT_USER_READ = "DB.DBA.RDF_DEFAULT_USER_PERMS_SET (?, 1)";
-
-    private static final String GRANT_USER_WRITE = "DB.DBA.RDF_GRAPH_USER_PERMS_SET (?, ?, 3)";
-
-    public static final String CONFIGURATION_VIRTUOSO_CREATE_USER = "dpu.l-filesToVirtuoso.create.user";
-
     public static final String CONFIGURATION_VIRTUOSO_USERNAME = "dpu.l-filesToVirtuoso.username";
 
     public static final String CONFIGURATION_VIRTUOSO_PASSWORD = "dpu.l-filesToVirtuoso.password";
@@ -91,6 +85,9 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
 
     @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
+
+    @ExtensionInitializer.Init
+    public RdfConfiguration _rdfConfiguration;
 
     @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.loader.filestovirtuoso.VirtuosoLoaderConfig__V1")
     public ConfigurationUpdate _ConfigurationUpdate;
@@ -118,7 +115,6 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
         if (config.getLoadDirectoryPath() == null || config.getLoadDirectoryPath().isEmpty()) {
             config.setLoadDirectoryPath(virtuosoLoadDirectoryPath);
         }
-        String organization = ctx.getExecMasterContext().getDpuContext().getOrganization();
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.format("Configuration: VirtuosoUrl: %s, username: %s, password: %s, loadDirectoryPath: %s, "
                 + "includeSubdirectories: %s, targetContext: %s, statusUpdateInterval: %s, threadCount: %s",
@@ -271,40 +267,6 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
             resultSetErrorRows.close();
             statementsErrorRows.close();
 
-            if ("true".equalsIgnoreCase(environment.get(CONFIGURATION_VIRTUOSO_CREATE_USER))) {
-                boolean userExists = false;
-                try (PreparedStatement statementSelectUser = connection.prepareStatement(SELECT_USER)) {
-                    statementSelectUser.setString(1, organization);
-                    try (ResultSet resultSetUser = statementSelectUser.executeQuery()) {
-                        userExists = resultSetUser.next();
-                        LOG.info("Executed " + SELECT_USER);
-                    }
-                }
-                if (!userExists) {
-                    try (PreparedStatement statementCreateUser = connection.prepareStatement(CREATE_USER)) {
-                        statementCreateUser.setString(1, organization);
-                        statementCreateUser.setString(2, organization);
-                        statementCreateUser.executeQuery();
-                        LOG.info("Executed " + CREATE_USER);
-                    }
-//                try (PreparedStatement statementGrantUser = connection.prepareStatement(GRANT_USER)) {
-//                    statementGrantUser.setString(1, organization);
-//                    statementGrantUser.executeQuery();
-//                    LOG.info("Executed " + GRANT_USER);
-//                }
-                    try (PreparedStatement statementGrantUserRead = connection.prepareStatement(GRANT_USER_READ)) {
-                        statementGrantUserRead.setString(1, organization);
-                        statementGrantUserRead.executeQuery();
-                        LOG.info("Executed " + GRANT_USER_READ);
-                    }
-                }
-                try (PreparedStatement statementGrantUserWrite = connection.prepareStatement(GRANT_USER_WRITE)) {
-                    statementGrantUserWrite.setString(1, config.getTargetContext());
-                    statementGrantUserWrite.setString(2, organization);
-                    statementGrantUserWrite.executeQuery();
-                    LOG.info("Executed " + GRANT_USER_WRITE);
-                }
-            }
             final String outputSymbolicName = config.getTargetContext();
 
             rdfOutput.addExistingDataGraph(outputSymbolicName, new URIImpl(outputSymbolicName));
