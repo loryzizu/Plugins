@@ -40,6 +40,25 @@
             <artifactId>uv-dpu-helpers</artifactId>
             <scope>compile</scope>
         </dependency>
+        <!-- Dependencies for parsing XLS/XLSX -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.10-FINAL</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.10-FINAL</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Dependency for parsing DBF file -->
+        <dependency>
+            <groupId>org.jamel.dbf</groupId>
+            <artifactId>dbf-reader</artifactId>
+            <version>0.1.0</version>
+        </dependency>
         <!-- UNIT Test dependencies -->
         <dependency>
             <groupId>eu.unifiedviews</groupId>
