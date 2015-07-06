@@ -3,7 +3,9 @@ package eu.unifiedviews.plugins.transformer.tabulartorelational;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ParserType;
 
+import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.*;
@@ -16,6 +18,8 @@ import java.util.regex.Pattern;
 
 public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRelationalConfig_V2> {
 
+    private OptionGroup parserTypeOptionGroup;
+
     private TextField tableNameField;
 
     private NativeSelect charsetSelect;
@@ -24,7 +28,7 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
 
     private TextField fieldSeparatorField;
 
-    private CheckBox hasHeaderCheckbox;
+    private TextField dataBeginningRowField;
 
     private Table table;
 
@@ -32,7 +36,6 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         super(TabularToRelational.class);
     }
 
-    @Override
     protected void buildDialogLayout() {
         final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setImmediate(false);
@@ -61,6 +64,49 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
     private Component buildInputConfigurationLayout() {
         final FormLayout formLayout = new FormLayout();
 
+        BeanItemContainer<ParserType> parserTypesContainer = new BeanItemContainer<ParserType>(ParserType.class, Arrays.asList(ParserType.values()));
+        parserTypeOptionGroup = new OptionGroup(ctx.tr("dialog.parser.type"), parserTypesContainer);
+        parserTypeOptionGroup.setItemCaptionPropertyId("description");
+        parserTypeOptionGroup.setNullSelectionAllowed(false);
+        parserTypeOptionGroup.setImmediate(true);
+        parserTypeOptionGroup.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override public void valueChange(Property.ValueChangeEvent e) {
+                ParserType newParserType = (ParserType) e.getProperty().getValue();
+                switch (newParserType) {
+                    case XLS:
+                        hideComponents(charsetSelect, fieldDelimiterField, fieldSeparatorField);
+                        break;
+                    case CSV:
+                        showComponents(charsetSelect, fieldDelimiterField, fieldSeparatorField);
+                        break;
+                    case DBF:
+                        showComponents(charsetSelect);
+                        hideComponents(fieldDelimiterField, fieldSeparatorField);
+                        break;
+                    default:
+                }
+            }
+        });
+        formLayout.addComponent(parserTypeOptionGroup);
+
+        dataBeginningRowField = new TextField(ctx.tr("dialog.dataBeginningRow"));
+        dataBeginningRowField.setDescription(ctx.tr("dialog.dataBeginningRow.description"));
+        dataBeginningRowField.addValidator(new Validator() {
+            @Override public void validate(Object value) throws Validator.InvalidValueException {
+                try {
+                    Integer number = Integer.valueOf(value.toString());
+                    if (number < 1) {
+                        throw new Validator.InvalidValueException(ctx.tr("dialog.dataBeginningRow.restriction"));
+                    }
+                } catch (NumberFormatException e) {
+                    throw new Validator.InvalidValueException(ctx.tr("dialog.dataBeginningRow.restriction"));
+                }
+
+            }
+        });
+        dataBeginningRowField.setRequired(true);
+        formLayout.addComponent(dataBeginningRowField);
+
         fieldSeparatorField = new TextField(ctx.tr("dialog.fieldSeparator"));
         fieldSeparatorField.setDescription(ctx.tr("dialog.fieldSeparator.description"));
         formLayout.addComponent(fieldSeparatorField);
@@ -75,10 +121,6 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         charsetSelect.setNullSelectionAllowed(false);
         charsetSelect.setImmediate(true);
         formLayout.addComponent(charsetSelect);
-
-        hasHeaderCheckbox = new CheckBox(ctx.tr("dialog.header"));
-        hasHeaderCheckbox.setDescription(ctx.tr("dialog.header.description"));
-        formLayout.addComponent(hasHeaderCheckbox);
 
         return formLayout;
     }
@@ -138,17 +180,17 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         return layout;
     }
 
-    @Override
     protected void setConfiguration(TabularToRelationalConfig_V2 config) throws DPUConfigException {
         if (config.getTableName().isEmpty()) {
             tableNameField.setValue(ctx.tr("dialog.tableName.example"));
         } else {
             tableNameField.setValue(config.getTableName());
         }
+        dataBeginningRowField.setValue(config.getDataBegginningRow().toString());
         charsetSelect.setValue(config.getEncoding());
         fieldDelimiterField.setValue(config.getFieldDelimiter());
         fieldSeparatorField.setValue(config.getFieldSeparator());
-        //hasHeaderCheckbox.setValue(config.isHasHeader());
+        parserTypeOptionGroup.setValue(config.getParserType());
         table.removeAllItems();
         if (config.getColumnMapping() == null || config.getColumnMapping().isEmpty()) { // if config does not contain any mapping, create empty one
             // add first row
@@ -164,10 +206,11 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         }
     }
 
-    @Override
     protected TabularToRelationalConfig_V2 getConfiguration() throws DPUConfigException {
         // validation
         try {
+            // check data begins at row
+            dataBeginningRowField.validate();
             // check table name
             tableNameField.validate();
             // check column names
@@ -187,7 +230,8 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         config.setEncoding(String.valueOf(charsetSelect.getValue()));
         config.setFieldDelimiter(fieldDelimiterField.getValue());
         config.setFieldSeparator(fieldSeparatorField.getValue());
-        //config.setHasHeader(hasHeaderCheckbox.getValue());
+        config.setParserType((ParserType) parserTypeOptionGroup.getValue());
+        config.setDataBegginningRow(Integer.parseInt(dataBeginningRowField.getValue()));
 
         List<ColumnMappingEntry> list = new ArrayList<>();
         for (Iterator i = table.getItemIds().iterator(); i.hasNext(); ) {
@@ -211,5 +255,17 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         Pattern pattern = Pattern.compile("[A-Za-z][A-Za-z0-9_]*");
         Matcher matcher = pattern.matcher(value);
         return matcher.matches();
+    }
+
+    private void showComponents(Component... components) {
+        for (Component component : components) {
+            component.setVisible(true);
+        }
+    }
+
+    private void hideComponents(Component... components) {
+        for (Component component : components) {
+            component.setVisible(false);
+        }
     }
 }

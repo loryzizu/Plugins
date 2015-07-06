@@ -15,6 +15,10 @@ import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
+/**
+ * Parser responsible for reading CSV files.
+ * Uses direct function of H2 database to bulk read from CSV file into database.
+ */
 public class CSVParser extends RelationalParser {
 
     public CSVParser(UserExecContext ctx, TabularToRelationalConfig_V2 config, WritableRelationalDataUnit outputDataunit) {
