@@ -83,15 +83,14 @@ public class DBFParserTest {
             conn = output.getDatabaseConnection();
             stmnt = conn.createStatement();
 
-            rs = stmnt.executeQuery("SELECT * FROM dbf_test_table");
+            rs = stmnt.executeQuery("SELECT * FROM dbf_test_table LIMIT 1");
             StringBuilder sb = new StringBuilder();
             while (rs.next()) {
                 for (int i = 1; i < rs.getMetaData().getColumnCount() + 1; i++) {
                     sb.append(rs.getString(i) + ", ");
                 }
-                sb.append("\n");
             }
-            System.out.println(sb.toString());
+            assertEquals("Ábelová                     , Lučenec           , Banskobystrický, 231.0, ", sb.toString());
         } finally {
             try {
                 if (rs != null) {
