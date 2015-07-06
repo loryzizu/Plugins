@@ -10,7 +10,7 @@
 |**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
 |                              |                                             |
 |**DPU class name:**           |TabularToRelational                          | 
-|**Configuration class name:** |TabularToRelational_V1                       |
+|**Configuration class name:** |TabularToRelational_V2                       |
 |**Dialogue class name:**      |TabularToRelationalVaadinDialog              |
 
 ***
@@ -20,6 +20,8 @@
 |Parameter                                       |Description                                                                          |
 |------------------------------------------------|-------------------------------------------------------------------------------------|
 |**Tablename:                                    |Name of table that will hold the parsed data.                                        |
+|**Filetype:                                     |Type of input file (XLS/X, CVS, DBF).                                                |
+|**Data begins at row:                           |Specifies, at which row of input file begins data part.                              |
 |**Charset:                                      |Charset of input file.                                                               |
 |**Quote character:                              |Field delimiter to use during parsing od CSV file. e.g. '"'.                         |
 |**Sepatator:                                    |Field separator to use during parsing of CSV file. e.g. ','.                         |
@@ -38,7 +40,7 @@
 
 |Version |Release notes |
 |--------|--------------|
-|2.1.0   | improved user experience; Update to API 2.1.0 |
+|2.1.0   | improved user experience; Update to API 2.1.0; added new parsers(XLS, XLSX, DBF) |
 |2.0.1   | fixes in build dependencies |
 |2.0.0   | Update to helpers 2.0.0 |
 |1.0.0   | N/A           |                                
