@@ -38,7 +38,7 @@
 			<version>2.1.0</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
+		<dependency> <!-- Xls. -->
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>3.11</version>
