@@ -13,7 +13,7 @@
 	<artifactId>uv-t-gzipper</artifactId>
 	<description>Transform any file to archive using GZIP compression.</description>
 	<packaging>bundle</packaging>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>T-Gzipper</name>
 
 	<properties>
@@ -42,12 +42,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<scope>provided</scope>
-		</dependency>
-		<!-- UNIT Test dependencies. -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<!-- Core UnifiedViews testing support. -->
 		<dependency>

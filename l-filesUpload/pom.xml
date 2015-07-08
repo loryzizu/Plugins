@@ -12,7 +12,7 @@
 	<artifactId>uv-l-filesUpload</artifactId>
 	<name>L-FilesUpload</name>
 	<description>Uploads list of files. Replaces L-FilesToLocalFS and L-FilesToScp.</description>
-	<version>2.1.0</version>
+	<version>2.1.1-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 	<properties>
@@ -113,12 +113,6 @@
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-helpers</artifactId>
 			<scope>compile</scope>
-		</dependency>
-		<!-- UNIT Test dependencies. -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<!-- Core UnifiedViews testing support. -->
 		<dependency>
