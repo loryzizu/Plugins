@@ -40,7 +40,8 @@
 
 |Version |Release notes |
 |--------|--------------|
-|2.1.0   | improved user experience; Update to API 2.1.0; added new parsers(XLS, XLSX, DBF) |
+|2.2.0   | new config class,  added new parsers(XLS, XLSX, DBF) |
+|2.1.0   | improved user experience; Update to API 2.1.0; |
 |2.0.1   | fixes in build dependencies |
 |2.0.0   | Update to helpers 2.0.0 |
 |1.0.0   | N/A           |                                
