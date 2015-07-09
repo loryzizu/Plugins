@@ -41,18 +41,7 @@
 			<artifactId>uv-dpu-helpers</artifactId>
 			<scope>compile</scope>
 		</dependency>
-		<!-- Core UnifiedViews testing support. -->
-		<dependency>
-			<groupId>eu.unifiedviews</groupId>
-			<artifactId>module-test</artifactId>
-			<scope>test</scope>
-		</dependency>
 		<!-- UNIT Test dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
