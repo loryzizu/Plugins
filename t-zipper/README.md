@@ -1,15 +1,16 @@
 T-Zipper
 ----------
 
-### General
+### Documentation
 
-* [About plugin](./src/main/resources/About.md)
-* [O kroku (in Slovak)](./src/main/resources/About_sk.md)
+* [About plugin](./doc/About.md)
+* [O kroku (in Slovak)](./doc/About_sk.md)
 
 ### Version history
 
 |Version |Release notes |
 |--------|--------------|
+|2.1.1-SNAPSHOT | Improved description (About) |
 |2.0.1   | fixes in build dependencies |
 |2.0.0   | Update for helpers 2.0.0 |
 |1.6.0   | N/A |
