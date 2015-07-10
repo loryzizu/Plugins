@@ -19,7 +19,7 @@
 
 |Parameter                                       |Description                                                              |                                                        
 |------------------------------------------------|-------------------------------------------------------------------------|
-|**Do not prefix symbolic name (checkbox):**     |If checked prevents symbolic names collision if multiple zip files of the same structure are unzipped. Uncheck to avoid symbolic names prefixing. If not sure keep this checkbox checked. |
+|**Duplicate name prevention. (checkbox):**     |If checked prevents symbolic names collision if multiple zip files of the same structure are unzipped. Uncheck to avoid symbolic names prefixing. If not sure keep this checkbox checked. |
 
 ***
 

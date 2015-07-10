@@ -38,7 +38,7 @@ public class UnZipperVaadinDialog extends AbstractDialog<UnZipperConfig_V1> {
     @Override
     protected UnZipperConfig_V1 getConfiguration() throws DPUConfigException {
         final UnZipperConfig_V1 cnf = new UnZipperConfig_V1();
-        cnf.setNotPrefixed(checkNotPrefix.getValue() == null ? false : !checkNotPrefix.getValue());
+        cnf.setNotPrefixed(checkNotPrefix.getValue() == null ? true : !checkNotPrefix.getValue());
         return cnf;
     }
 
