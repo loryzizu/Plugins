@@ -19,7 +19,7 @@
 
 |Parameter                                       |Description                                                              |                                                        
 |------------------------------------------------|-------------------------------------------------------------------------|
-|**Do not prefix symbolic name (checkbox):**     |If checked then output symbolic names of output files are not prefixed with symbolic name of unzipped file. Uncheck to prevent symbolic names collision if multiple zip files with same structure are unzipped. If you do not know, then uncheck this. | 
+|**Do not prefix symbolic name (checkbox):**     |If checked prevents symbolic names collision if multiple zip files of the same structure are unzipped. Uncheck to avoid symbolic names prefixing. If not sure keep this checkbox checked. |
 
 ***
 
