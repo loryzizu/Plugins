@@ -19,7 +19,7 @@
 
 |Parameter                                       |Description                                                              |                                                        
 |------------------------------------------------|-------------------------------------------------------------------------|
-|**Duplicate name prevention. (checkbox):**     |If checked prevents symbolic names collision if multiple zip files of the same structure are unzipped. Uncheck to avoid symbolic names prefixing. If not sure keep this checkbox checked. |
+|**Duplicate name prevention. (checkbox):**     |If checked DPU prevents collision in names of files send on output when multiple zip files with the same/similar structure are unzipped. Uncheck sends on output files names as are in zip files. If not sure keep checked. |
 
 ***
 
