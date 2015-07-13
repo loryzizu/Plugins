@@ -15,6 +15,8 @@ public class FilesDownloadConfig_V1 implements VersionedConfig<FilesDownloadConf
     private boolean softFail = false;
     
     private int defaultTimeout = 20000;
+    
+    private boolean ignoreTlsErrors = false;
 
     public List<VfsFile> getVfsFiles() {
         return vfsFiles;
@@ -38,6 +40,14 @@ public class FilesDownloadConfig_V1 implements VersionedConfig<FilesDownloadConf
 
     public void setDefaultTimeout(int defaultTimeout) {
         this.defaultTimeout = defaultTimeout;
+    }
+    
+    public boolean isIgnoreTlsErrors() {
+        return ignoreTlsErrors;
+    }
+
+    public void setIgnoreTlsErrors(boolean ignoreTlsErrors) {
+        this.ignoreTlsErrors = ignoreTlsErrors;
     }
 
     @Override
