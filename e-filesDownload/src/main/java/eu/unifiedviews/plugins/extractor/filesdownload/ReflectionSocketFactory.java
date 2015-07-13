@@ -42,19 +42,21 @@ import org.apache.commons.httpclient.ConnectTimeoutException;
 
 /**
  * This helper class uses refelction in order to execute Socket methods
- * available in Java 1.4 and above  
+ * available in Java 1.4 and above
  * 
  * @author Oleg Kalnichevski
- * 
  * @since 3.0
  */
 public final class ReflectionSocketFactory {
 
     private static boolean REFLECTION_FAILED = false;
-    
+
     private static Constructor INETSOCKETADDRESS_CONSTRUCTOR = null;
+
     private static Method SOCKETCONNECT_METHOD = null;
+
     private static Method SOCKETBIND_METHOD = null;
+
     private static Class SOCKETTIMEOUTEXCEPTION_CLASS = null;
 
     private ReflectionSocketFactory() {
@@ -63,34 +65,39 @@ public final class ReflectionSocketFactory {
 
     /**
      * This method attempts to execute Socket method available since Java 1.4
-     * using reflection. If the methods are not available or could not be executed
-     * <tt>null</tt> is returned
-     *   
-     * @param socketfactoryName name of the socket factory class
-     * @param host the host name/IP
-     * @param port the port on the host
-     * @param localAddress the local host name/IP to bind the socket to
-     * @param localPort the port on the local machine
-     * @param timeout the timeout value to be used in milliseconds. If the socket cannot be
-     *        completed within the given time limit, it will be abandoned
+     * using reflection. If the methods are not available or could not be executed <tt>null</tt> is returned
      * 
+     * @param socketfactoryName
+     *            name of the socket factory class
+     * @param host
+     *            the host name/IP
+     * @param port
+     *            the port on the host
+     * @param localAddress
+     *            the local host name/IP to bind the socket to
+     * @param localPort
+     *            the port on the local machine
+     * @param timeout
+     *            the timeout value to be used in milliseconds. If the socket cannot be
+     *            completed within the given time limit, it will be abandoned
      * @return a connected Socket
-     * 
-     * @throws IOException if an I/O error occurs while creating the socket
-     * @throws UnknownHostException if the IP address of the host cannot be
-     * determined
-     * @throws ConnectTimeoutException if socket cannot be connected within the
-     *  given time limit
-     * 
+     * @throws IOException
+     *             if an I/O error occurs while creating the socket
+     * @throws UnknownHostException
+     *             if the IP address of the host cannot be
+     *             determined
+     * @throws ConnectTimeoutException
+     *             if socket cannot be connected within the
+     *             given time limit
      */
     public static Socket createSocket(
-        final Object socketfactory, 
-        final String host,
-        final int port,
-        final InetAddress localAddress,
-        final int localPort,
-        int timeout)
-     throws IOException, UnknownHostException, ConnectTimeoutException
+            final Object socketfactory,
+            final String host,
+            final int port,
+            final InetAddress localAddress,
+            final int localPort,
+            int timeout)
+            throws IOException, UnknownHostException, ConnectTimeoutException
     {
         if (REFLECTION_FAILED) {
             //This is known to have failed before. Do not try it again
@@ -107,41 +114,40 @@ public final class ReflectionSocketFactory {
         //  return socket;
         try {
             Class socketfactoryClass = socketfactory.getClass();//Class.forName(socketfactoryName);
-            Method method = socketfactoryClass.getMethod("getDefault", 
-                new Class[] {});
-//            Object socketfactory = method.invoke(null, 
-//                new Object[] {});
-            method = socketfactoryClass.getMethod("createSocket", 
-                new Class[] {});
+            Method method = socketfactoryClass.getMethod("getDefault",
+                    new Class[] {});
+            //            Object socketfactory = method.invoke(null, 
+            //                new Object[] {});
+            method = socketfactoryClass.getMethod("createSocket",
+                    new Class[] {});
             Socket socket = (Socket) method.invoke(socketfactory, new Object[] {});
-            
+
             if (INETSOCKETADDRESS_CONSTRUCTOR == null) {
                 Class addressClass = Class.forName("java.net.InetSocketAddress");
                 INETSOCKETADDRESS_CONSTRUCTOR = addressClass.getConstructor(
-                    new Class[] { InetAddress.class, Integer.TYPE });
+                        new Class[] { InetAddress.class, Integer.TYPE });
             }
-                
+
             Object remoteaddr = INETSOCKETADDRESS_CONSTRUCTOR.newInstance(
-                new Object[] { InetAddress.getByName(host), new Integer(port)});
+                    new Object[] { InetAddress.getByName(host), new Integer(port) });
 
             Object localaddr = INETSOCKETADDRESS_CONSTRUCTOR.newInstance(
-                    new Object[] { localAddress, new Integer(localPort)});
+                    new Object[] { localAddress, new Integer(localPort) });
 
             if (SOCKETCONNECT_METHOD == null) {
-                SOCKETCONNECT_METHOD = Socket.class.getMethod("connect", 
-                    new Class[] {Class.forName("java.net.SocketAddress"), Integer.TYPE});
+                SOCKETCONNECT_METHOD = Socket.class.getMethod("connect",
+                        new Class[] { Class.forName("java.net.SocketAddress"), Integer.TYPE });
             }
 
             if (SOCKETBIND_METHOD == null) {
-                SOCKETBIND_METHOD = Socket.class.getMethod("bind", 
-                    new Class[] {Class.forName("java.net.SocketAddress")});
+                SOCKETBIND_METHOD = Socket.class.getMethod("bind",
+                        new Class[] { Class.forName("java.net.SocketAddress") });
             }
-            SOCKETBIND_METHOD.invoke(socket, new Object[] { localaddr});
-            SOCKETCONNECT_METHOD.invoke(socket, new Object[] { remoteaddr, new Integer(timeout)});
+            SOCKETBIND_METHOD.invoke(socket, new Object[] { localaddr });
+            SOCKETCONNECT_METHOD.invoke(socket, new Object[] { remoteaddr, new Integer(timeout) });
             return socket;
-        }
-        catch (InvocationTargetException e) {
-            Throwable cause = e.getTargetException(); 
+        } catch (InvocationTargetException e) {
+            Throwable cause = e.getTargetException();
             if (SOCKETTIMEOUTEXCEPTION_CLASS == null) {
                 try {
                     SOCKETTIMEOUTEXCEPTION_CLASS = Class.forName("java.net.SocketTimeoutException");
@@ -153,15 +159,14 @@ public final class ReflectionSocketFactory {
             }
             if (SOCKETTIMEOUTEXCEPTION_CLASS.isInstance(cause)) {
                 throw new ConnectTimeoutException(
-                    "The host did not accept the connection within timeout of " 
-                    + timeout + " ms", cause);
+                        "The host did not accept the connection within timeout of "
+                                + timeout + " ms", cause);
             }
             if (cause instanceof IOException) {
-                throw (IOException)cause;
+                throw (IOException) cause;
             }
             return null;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             REFLECTION_FAILED = true;
             return null;
         }

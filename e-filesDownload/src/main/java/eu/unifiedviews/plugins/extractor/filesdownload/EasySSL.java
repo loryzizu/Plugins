@@ -22,6 +22,7 @@ import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 public class EasySSL implements SecureProtocolSocketFactory {
 
     SSLSocketFactory sf;
+
     Exception exception = null;
 
     /**
@@ -30,7 +31,7 @@ public class EasySSL implements SecureProtocolSocketFactory {
     public EasySSL() {
         SSLContext sslContext;
         try {
-            sslContext = SSLContext.getInstance("TLS");    
+            sslContext = SSLContext.getInstance("TLS");
 
             TrustManager[] trustAllCerts = new TrustManager[] {
                     new X509TrustManager() {
@@ -50,10 +51,10 @@ public class EasySSL implements SecureProtocolSocketFactory {
             sslContext.init(null, trustAllCerts, null);
             sf = sslContext.getSocketFactory();//new SSLSocketFactory(sslContext); 
         } catch (KeyManagementException | NoSuchAlgorithmException ex) {
-           exception = ex;
+            exception = ex;
         }
 
-//        super();
+        //        super();
     }
 
     /**
@@ -123,10 +124,10 @@ public class EasySSL implements SecureProtocolSocketFactory {
         } else {
             // To be eventually deprecated when migrated to Java 1.4 or above
             Socket socket = ReflectionSocketFactory.createSocket(
-                sf, host, port, localAddress, localPort, timeout);
+                    sf, host, port, localAddress, localPort, timeout);
             if (socket == null) {
-               socket = ControllerThreadSocketFactory.createSocket(
-                    this, host, port, localAddress, localPort, timeout);
+                socket = ControllerThreadSocketFactory.createSocket(
+                        this, host, port, localAddress, localPort, timeout);
             }
             return socket;
         }
