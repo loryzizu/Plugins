@@ -8,7 +8,7 @@ import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 public class UnZipperVaadinDialog extends AbstractDialog<UnZipperConfig_V1> {
 
-    private CheckBox checkNotPrefix;
+    private CheckBox checkDuplicityAvoid;
     
     public UnZipperVaadinDialog() {
         super(UnZipper.class);
@@ -22,9 +22,9 @@ public class UnZipperVaadinDialog extends AbstractDialog<UnZipperConfig_V1> {
         mainLayout.setWidth("100%");
         mainLayout.setHeight("-1px");
 
-        checkNotPrefix = new CheckBox(ctx.tr("unzipper.dialog.unzip.noprefix"));
-        checkNotPrefix.setDescription(ctx.tr("unzipper.dialog.unzip.noprefix.description"));
-        mainLayout.addComponent(checkNotPrefix);
+        checkDuplicityAvoid = new CheckBox(ctx.tr("unzipper.dialog.unzip.duplicity.avoid"));
+        checkDuplicityAvoid.setDescription(ctx.tr("unzipper.dialog.unzip.duplicity.avoid.description"));
+        mainLayout.addComponent(checkDuplicityAvoid);
 
         setCompositionRoot(mainLayout);
         
@@ -34,7 +34,7 @@ public class UnZipperVaadinDialog extends AbstractDialog<UnZipperConfig_V1> {
     protected void setConfiguration(UnZipperConfig_V1 c) throws DPUConfigException {
         // We have changed the description of filed in user GUI to negation of old description, so we have to negate the result
         // and we do not want to change config class
-        checkNotPrefix.setValue(!c.isNotPrefixed());
+        checkDuplicityAvoid.setValue(!c.isNotPrefixed());
     }
 
     @Override
@@ -42,7 +42,7 @@ public class UnZipperVaadinDialog extends AbstractDialog<UnZipperConfig_V1> {
         final UnZipperConfig_V1 cnf = new UnZipperConfig_V1();
         // We have changed the description of filed in user GUI to negation of old description, so we have to negate the result
         // and we do not want to change config class
-        cnf.setNotPrefixed(checkNotPrefix.getValue() == null ? true : !checkNotPrefix.getValue());
+        cnf.setNotPrefixed(checkDuplicityAvoid.getValue() == null ? true : !checkDuplicityAvoid.getValue());
         return cnf;
     }
 
@@ -50,12 +50,12 @@ public class UnZipperVaadinDialog extends AbstractDialog<UnZipperConfig_V1> {
     public String getDescription() {
         StringBuilder desc = new StringBuilder();
 
-        if (checkNotPrefix.getValue() == true) {
+        if (checkDuplicityAvoid.getValue() == true) {
             // If true then we do not use prefixes.
-            desc.append(ctx.tr("unzipper.dialog.unzip.notprefixed"));
+            desc.append(ctx.tr("unzipper.dialog.unzip.duplicity.avoid"));
         } else {
             // If false prefix is not used.
-            desc.append(ctx.tr("unzipper.dialog.unzip.prefixed"));
+            desc.append(ctx.tr("unzipper.dialog.unzip.duplicity.void"));
         }
 
         return desc.toString();
