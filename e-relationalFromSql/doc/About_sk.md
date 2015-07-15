@@ -15,7 +15,7 @@ Krok podporuje nasledujúce databázy:
 ### Konfiguračné parametre
 
 | Meno | Popis |
-|:----|:----|:----|
+|:----|:----|
 |**Database type:** |Typ databázy: PostgreSQL, Oracle, MySQL, MS SQL |
 |**Database host:** |Database host |
 |**Database port:** |Database port |
