@@ -1,13 +1,13 @@
-package cz.cuni.mff.xrg.uv.extractor.sparqlendpoint;
+package eu.unifiedviews.plugins.extractor.sparqlendpoint;
 
-import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
+
 /**
  * Configuration class for SparqlEndpoint.
  *
  * @author Petr Škoda
  */
-public class SparqlEndpointConfig_V1 implements VersionedConfig<eu.unifiedviews.plugins.extractor.sparqlendpoint.SparqlEndpointConfig_V1> {
+public class SparqlEndpointConfig_V1  implements VersionedConfig<SparqlEndpointConfig_V1> {
 
     private String endpoint = "http://localhost:8890/sparql";
     
@@ -34,11 +34,9 @@ public class SparqlEndpointConfig_V1 implements VersionedConfig<eu.unifiedviews.
     }
 
     @Override
-    public eu.unifiedviews.plugins.extractor.sparqlendpoint.SparqlEndpointConfig_V1 toNextVersion() throws DPUConfigException {
-        eu.unifiedviews.plugins.extractor.sparqlendpoint.SparqlEndpointConfig_V1 c = new eu.unifiedviews.plugins.extractor.sparqlendpoint.SparqlEndpointConfig_V1();
-        c.setEndpoint(endpoint);
-        c.setQuery(query);
-        return c;
+    public SparqlEndpointConfig_V1 toNextVersion() {
+        // This is just a trick to enable use history with non-linear history, ie. many to one history.
+        return this;
     }
 
 }

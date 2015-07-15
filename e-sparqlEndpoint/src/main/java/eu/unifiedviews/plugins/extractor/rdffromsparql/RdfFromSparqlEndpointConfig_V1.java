@@ -2,7 +2,7 @@ package eu.unifiedviews.plugins.extractor.rdffromsparql;
 
 import java.util.List;
 
-import cz.cuni.mff.xrg.uv.extractor.sparqlendpoint.SparqlEndpointConfig_V1;
+import eu.unifiedviews.plugins.extractor.sparqlendpoint.SparqlEndpointConfig_V1;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
 

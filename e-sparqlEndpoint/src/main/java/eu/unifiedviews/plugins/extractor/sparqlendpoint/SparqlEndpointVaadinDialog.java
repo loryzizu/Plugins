@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.uv.extractor.sparqlendpoint;
+package eu.unifiedviews.plugins.extractor.sparqlendpoint;
 
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;

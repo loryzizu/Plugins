@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.uv.extractor.sparqlendpoint;
+package eu.unifiedviews.plugins.extractor.sparqlendpoint;
 
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
@@ -34,31 +34,34 @@ import eu.unifiedviews.plugins.extractor.rdffromsparql.RdfFromSparqlEndpointConf
  */
 @DPU.AsExtractor
 public class SparqlEndpoint extends AbstractDpu<SparqlEndpointConfig_V1> {
-
+    
     private static final Logger LOG = LoggerFactory.getLogger(SparqlEndpoint.class);
-
+    
     @DataUnit.AsOutput(name = "output")
     public WritableRDFDataUnit rdfOutput;
-
+    
     @ExtensionInitializer.Init(param = "rdfOutput")
     public WritableSimpleRdf output;
-
+    
     @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
-
+    
     @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.zipper.ZipperConfig__V1")
     public ConfigurationUpdate _ConfigurationUpdate;
-
-	public SparqlEndpoint() {
-		super(SparqlEndpointVaadinDialog.class, 
-                ConfigHistory.history(RdfFromSparqlEndpointConfig_V1.class).addCurrent(SparqlEndpointConfig_V1.class));
-	}
-		
+    
+    public SparqlEndpoint() {
+        super(SparqlEndpointVaadinDialog.class,
+                ConfigHistory.history(SparqlEndpointConfig_V1.class)
+                .alternative(cz.cuni.mff.xrg.uv.extractor.sparqlendpoint.SparqlEndpointConfig_V1.class)
+                .alternative(RdfFromSparqlEndpointConfig_V1.class)
+                .addCurrent(SparqlEndpointConfig_V1.class));
+    }
+    
     @Override
     protected void innerExecute() throws DPUException {
         // Prepare output.
         final RDFDataUnit.Entry outputEntry = faultTolerance.execute(new FaultTolerance.ActionReturn<RDFDataUnit.Entry>() {
-
+            
             @Override
             public RDFDataUnit.Entry action() throws Exception {
                 return RdfDataUnitUtils.addGraph(rdfOutput, DataUnitUtils.generateSymbolicName(this.getClass()));
@@ -76,7 +79,7 @@ public class SparqlEndpoint extends AbstractDpu<SparqlEndpointConfig_V1> {
         }
         // Execute query.
         faultTolerance.execute(remote, new FaultTolerance.ConnectionAction() {
-
+            
             @Override
             public void action(RepositoryConnection connection) throws Exception {
                 GraphQuery query = connection.prepareGraphQuery(QueryLanguage.SPARQL, config.getQuery());
@@ -100,13 +103,13 @@ public class SparqlEndpoint extends AbstractDpu<SparqlEndpointConfig_V1> {
         output.flushBuffer();
         // Get and print size.
         faultTolerance.execute(rdfOutput, new FaultTolerance.ConnectionAction() {
-
+            
             @Override
             public void action(RepositoryConnection connection) throws Exception {
                 long size = connection.size(outputEntry.getDataGraphURI());
                 ContextUtils.sendShortInfo(ctx, "SparqlEndpoint.exec.extracted", size);
             }
         });
-
+        
     }
 }
