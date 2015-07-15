@@ -16,7 +16,7 @@
     <description>Extract RDF data from remote SPARQL.</description>
 
     <properties>
-        <dpu.package>eu.unifiedviews.plugins.extractor.sparqlendpoint.sparqlendpoint</dpu.package>
+        <dpu.package>eu.unifiedviews.plugins.extractor.sparqlendpoint</dpu.package>
         <dpu.mainClass>SparqlEndpoint</dpu.mainClass>
 
         <!-- We need import on OpenRdf repository as it's somehow missing. -->
