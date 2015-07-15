@@ -10,10 +10,10 @@
     <!-- list of core modules -->
     <modules>
         <!-- EXTRACTORS -->
-		<module>e-sparqlEndpoint</module>
         <module>e-distributionMetadata</module>
         <module>e-filesDownload</module>
         <module>e-relationalFromSql</module>
+        <module>e-sparqlEndpoint</module>
 
         <!-- TRANSFORMERS -->
         <module>t-filesFilter</module>
