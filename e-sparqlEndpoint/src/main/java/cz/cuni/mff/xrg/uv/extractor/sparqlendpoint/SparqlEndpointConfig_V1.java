@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.uv.extractor.sparqlendpoint;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
+
 /**
  * Configuration class for SparqlEndpoint.
  *
@@ -10,7 +11,7 @@ import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
 public class SparqlEndpointConfig_V1 implements VersionedConfig<eu.unifiedviews.plugins.extractor.sparqlendpoint.SparqlEndpointConfig_V1> {
 
     private String endpoint = "http://localhost:8890/sparql";
-    
+
     private String query = "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }";
 
     public SparqlEndpointConfig_V1() {

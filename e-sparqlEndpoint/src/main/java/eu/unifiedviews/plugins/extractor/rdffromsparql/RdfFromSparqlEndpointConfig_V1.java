@@ -283,7 +283,7 @@ public class RdfFromSparqlEndpointConfig_V1 implements VersionedConfig<SparqlEnd
     public SparqlEndpointConfig_V1 toNextVersion() throws DPUConfigException {
         SparqlEndpointConfig_V1 c = new SparqlEndpointConfig_V1();
         c.setEndpoint(this.SPARQL_endpoint);
-        
+
         final StringBuilder builder = new StringBuilder(this.SPARQL_query);
         final StringBuilder fromClause = new StringBuilder();
         if (this.GraphsUri != null && !this.GraphsUri.isEmpty()) {
@@ -291,7 +291,7 @@ public class RdfFromSparqlEndpointConfig_V1 implements VersionedConfig<SparqlEnd
             for (String uri : this.GraphsUri) {
                 builder.append(uri);
                 builder.append("\n");
-            }            
+            }
         }
         if (this.endpointParams != null) {
             if (this.endpointParams.getDefaultGraphURI() != null && !this.endpointParams.getDefaultGraphURI().isEmpty()) {
@@ -300,7 +300,7 @@ public class RdfFromSparqlEndpointConfig_V1 implements VersionedConfig<SparqlEnd
                     fromClause.append(uri);
                     fromClause.append(">\n");
                 }
-            }            
+            }
             if (this.endpointParams.getNamedGraphURI() != null && !this.endpointParams.getNamedGraphURI().isEmpty()) {
                 for (String uri : this.endpointParams.getNamedGraphURI()) {
                     fromClause.append("FROM NAMED <");
@@ -317,7 +317,5 @@ public class RdfFromSparqlEndpointConfig_V1 implements VersionedConfig<SparqlEnd
 
         return c;
     }
-
-    
 
 }

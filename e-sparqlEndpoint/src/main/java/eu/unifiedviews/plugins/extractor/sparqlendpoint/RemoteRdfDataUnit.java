@@ -24,7 +24,7 @@ import eu.unifiedviews.helpers.dpu.extension.ExtensionException;
 
 /**
  * Represents remote RDF repository in form of {@link RDFDataUnit}.
- * 
+ *
  * @author Škoda Petr
  */
 public class RemoteRdfDataUnit implements RDFDataUnit, AutoCloseable, Extension, Extension.Executable {
@@ -43,12 +43,12 @@ public class RemoteRdfDataUnit implements RDFDataUnit, AutoCloseable, Extension,
      *
      */
     private final SPARQLRepository repository;
-    
+
     private final List<RDFDataUnit.Entry> entries;
 
     private boolean closed = false;
 
-    RemoteRdfDataUnit(ExecContext<?> execContext, String endpointUrl, URI ... graphs)
+    RemoteRdfDataUnit(ExecContext<?> execContext, String endpointUrl, URI... graphs)
             throws ExternalError {
         this.execContext = execContext;
         this.repository = new SPARQLRepository(endpointUrl);

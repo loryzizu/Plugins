@@ -16,7 +16,7 @@ import eu.unifiedviews.helpers.dpu.vaadin.validator.UrlValidator;
 public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointConfig_V1> {
 
     private TextField txtEndpoint;
-    
+
     private TextArea txtQuery;
 
     public SparqlEndpointVaadinDialog() {

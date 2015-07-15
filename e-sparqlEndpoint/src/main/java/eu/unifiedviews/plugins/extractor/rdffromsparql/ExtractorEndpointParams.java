@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Specify parameters should be used for target SPARQL endpoint.
- * 
+ *
  * @author Jiri Tomes
  */
 public final class ExtractorEndpointParams {
