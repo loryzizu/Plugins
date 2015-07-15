@@ -37,7 +37,7 @@
 
 |Version          |Release notes                |
 |-----------------|-----------------------------|
-|1.0.1            | Moved from Charles University repository (https://github.com/mff-uk/DPUs/tree/master/dpu). |
+|1.0.0            | Moved from Charles University repository (https://github.com/mff-uk/DPUs/tree/master/dpu). |
 
 
 ***
