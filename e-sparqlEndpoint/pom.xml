@@ -76,6 +76,12 @@
             <version>${sesame.version}</version>
             <type>jar</type>
         </dependency>
+        <!-- Support for query validation. -->
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-queryparser-sparql</artifactId>
+            <version>${sesame.version}</version>
+        </dependency>
         <!-- Test environment. -->
         <dependency>
             <groupId>org.mockito</groupId>

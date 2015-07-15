@@ -1,5 +1,10 @@
 package eu.unifiedviews.plugins.extractor.sparqlendpoint;
 
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.parser.QueryParserUtil;
+
+import com.vaadin.data.Validator;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -34,8 +39,8 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
         if (!txtEndpoint.isValid()) {
             throw new DPUConfigException(ctx.tr("SparqlEndpoint.dialog.error.wrongEndpoint"));
         }
-        if (!txtQuery.isValid() && !ctx.isTemplate()) {
-            throw new DPUConfigException(ctx.tr("SparqlEndpoint.dialog.error.emptyQuery"));
+        if (!txtQuery.isValid()) {
+            throw new DPUConfigException(ctx.tr("SparqlEndpoint.query.invalid"));
         }
         final SparqlEndpointConfig_V1 c = new SparqlEndpointConfig_V1();
 
@@ -64,6 +69,23 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
         txtQuery.setRequired(true);
         mainLayout.addComponent(txtQuery);
         mainLayout.setExpandRatio(txtQuery, 1.0f);
+
+        txtQuery.addValidator(new Validator() {
+
+            @Override
+            public void validate(Object value) throws Validator.InvalidValueException {
+                final String valueStr = (String) value;
+                if (value == null || valueStr.isEmpty()) {
+                    throw new InvalidValueException(ctx.tr("SparqlEndpoint.query.empty"));
+                }
+
+                try {
+                    QueryParserUtil.parseQuery(QueryLanguage.SPARQL, valueStr, null);
+                } catch (MalformedQueryException ex) {
+                    throw new InvalidValueException(ctx.tr("SparqlEndpoint.query.invalid") + " " + ex.getMessage());
+                }
+            }
+        });
 
         setCompositionRoot(mainLayout);
     }
