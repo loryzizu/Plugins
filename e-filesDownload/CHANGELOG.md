@@ -1,15 +1,19 @@
-2.1.0
+v2.1.1-SNAPSHOT
+---
+* Improved description (About)
+
+v2.1.0
 ---
 * Update to API 2.1.0. Timeout value configurable
 
-2.0.1
+v2.0.1
 ---
 * fixes in build dependencies
 
-2.0.0
+v2.0.0
 ---
 * Update to helpers 2.0.0
 
-1.0.0
+v1.0.0
 ---
 * N/A
