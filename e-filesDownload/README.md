@@ -1,50 +1,15 @@
-# E-FilesDownload #
+E-FilesDownload
 ----------
 
-###General###
+### Documentation
 
-|                              |                                                                             |
-|------------------------------|-----------------------------------------------------------------------------|
-|**Name:**                     |E-FilesDownload                                                              |
-|**Description:**              |Downloads list of files. Replaces E-FilesFromLocal and E-HttpDownload.       |
-|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.                |
-|                              |                                                                             |
-|**DPU class name:**           |FilesDownload                                                                | 
-|**Configuration class name:** |FilesDownloadConfig_V1                                                       |
-|**Dialogue class name:**      |FilesDownloadVaadinDialog                                                    |
+* see [Plugin Documentation](./doc/About.md)
+* see [Plugin Documentation](./doc/About_sk.md) (in Slovak)
 
-***
-
-###Configuration parameters###
-
-|Parameter                                       |Description                                                                        |
-|------------------------------------------------|-----------------------------------------------------------------------------------|
-**List of files and directories to extract:***   |If directory is provided then all files and files in subdirectories are extracted. |
-
-***
-
-### Inputs and outputs ###
-
-|Name         |Type           |DataUnit      |Description             |
-|-------------|---------------|--------------|------------------------|
-|output  |o              |FilesDataUnit |Downloaded files.       |
-
-***
-
-### Version history ###
-
-|Version          |Release notes               |
-|-----------------|----------------------------|
-|2.1.0            | Update to API 2.1.0. Timeout value configurable.        |
-|2.0.1            | fixes in build dependencies |
-|2.0.0            | Update to helpers 2.0.0    |
-|1.0.0            | N/A                        |
+#### Technical documentation
 
 
-***
+### Version history
 
-### Developer's notes ###
+* see [Changelog](./CHANGELOG.md)
 
-|Author           |Notes                           |
-|-----------------|--------------------------------|
-|N/A              |N/A                             | 
