@@ -57,7 +57,7 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
         mainLayout.setMargin(true);
         mainLayout.setSpacing(true);
 
-        txtEndpoint = new TextField(ctx.tr("SparqlEndpoint.dialog.endpoit"));
+        txtEndpoint = new TextField(ctx.tr("SparqlEndpoint.dialog.endpoint"));
         txtEndpoint.setWidth("100%");
         txtEndpoint.setRequired(true);
         txtEndpoint.addValidator(new UrlValidator(false));
