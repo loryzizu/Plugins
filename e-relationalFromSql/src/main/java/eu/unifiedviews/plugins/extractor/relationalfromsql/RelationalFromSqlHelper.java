@@ -49,7 +49,8 @@ public class RelationalFromSqlHelper {
                 boolean columnNotNull = (meta.isNullable(i) == ResultSetMetaData.columnNoNulls);
                 if (uniqueColumns.contains(columnLabel)) {
                     LOG.error("Multiple occurences of column with the same name: {}, rename column in select via AS keyword!", columnLabel);
-                    throw new SQLTransformException("Multiple column name occurrences'" + columnLabel + "'", SQLTransformException.TransformErrorCode.DUPLICATE_COLUMN_NAME);
+                    throw new SQLTransformException("Multiple column name occurrences'" + columnLabel + "'",
+                            SQLTransformException.TransformErrorCode.DUPLICATE_COLUMN_NAME);
                 }
                 uniqueColumns.add(columnLabel);
                 ColumnDefinition column = new ColumnDefinition(columnLabel, typeName, type, columnNotNull, typeClass);
@@ -158,7 +159,7 @@ public class RelationalFromSqlHelper {
     public static Connection createConnection(RelationalFromSqlConfig_V2 config) throws SQLException {
 
         try {
-            Class.forName(SqlDatabase.getJdbcDriverNameForDatabase(config.getDatabaseType()));
+            Class.forName(SqlDatabase.getDatabaseInfo(config.getDatabaseType()).getJdbcDriverName());
         } catch (ClassNotFoundException e) {
             throw new SQLException("Failed to load JDBC driver", e);
         }
@@ -198,7 +199,8 @@ public class RelationalFromSqlHelper {
                     connectionProperties.setProperty("trustStorePassword", "changeit");
                 }
             } else if (config.getDatabaseType() == DatabaseType.POSTGRES && bConfigSslTrustStore) {
-                connectionProperties.setProperty("sslfactory", "eu.unifiedviews.plugins.extractor.relationalfromsql.SSLPostgresValidationFactory");
+                connectionProperties.setProperty("sslfactory",
+                        "eu.unifiedviews.plugins.extractor.relationalfromsql.SSLPostgresValidationFactory");
             }
         }
         connection = DriverManager.getConnection(jdbcURL, connectionProperties);
@@ -231,35 +233,36 @@ public class RelationalFromSqlHelper {
             if (config.isUseSSL()) {
                 protocol = "tcps";
             }
-            String url = String.format(SqlDatabase.ORACLE_URL, protocol, config.getDatabaseHost(), config.getDatabasePort(), config.getDatabaseName());
+            String url = String.format(SqlDatabase.ORACLE_URL, protocol, config.getDatabaseHost(), config.getDatabasePort(),
+                    config.getDatabaseName());
             return url;
-        } else {
-            StringBuilder url = new StringBuilder();
-            url.append(SqlDatabase.getJdbcUrlPrefixForDatabase(config.getDatabaseType()));
-            url.append(config.getDatabaseHost());
-            if (config.getDatabasePort() != 0) {
-                url.append(":");
-                url.append(config.getDatabasePort());
-            }
-            if (config.getDatabaseType() == DatabaseType.H2_MEM) {
-                url.append(":");
-            } else if (config.getDatabaseType() == DatabaseType.MSSQL) {
-                url.append(";databaseName=");
-            } else {
-                url.append("/");
-            }
-            url.append(config.getDatabaseName());
-
-            if (config.getDatabaseType() == DatabaseType.MSSQL && config.getInstanceName() != null) {
-                url.append(";instanceName=");
-                url.append(config.getInstanceName());
-            }
-            if (config.isUseSSL() && config.getDatabaseType() == DatabaseType.POSTGRES) {
-                url.append("?ssl=true");
-            }
-
-            return url.toString();
         }
+
+        StringBuilder url = new StringBuilder();
+        url.append(SqlDatabase.getDatabaseInfo(config.getDatabaseType()).getJdbcPrefix());
+        url.append(config.getDatabaseHost());
+        if (config.getDatabasePort() != 0) {
+            url.append(":");
+            url.append(config.getDatabasePort());
+        }
+        if (config.getDatabaseType() == DatabaseType.H2_MEM) {
+            url.append(":");
+        } else if (config.getDatabaseType() == DatabaseType.MSSQL) {
+            url.append(";databaseName=");
+        } else {
+            url.append("/");
+        }
+        url.append(config.getDatabaseName());
+
+        if (config.getDatabaseType() == DatabaseType.MSSQL && config.getInstanceName() != null) {
+            url.append(";instanceName=");
+            url.append(config.getInstanceName());
+        }
+        if (config.isUseSSL() && config.getDatabaseType() == DatabaseType.POSTGRES) {
+            url.append("?ssl=true");
+        }
+
+        return url.toString();
     }
 
     /**
