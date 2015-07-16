@@ -11,5 +11,4 @@ May be used instead of e-RdfFromSparql and also replaces DPU with the same name 
 ### Version history
 
 * see [Changelog](./CHANGELOG.md)
-                    |
 

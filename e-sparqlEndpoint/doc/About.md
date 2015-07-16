@@ -1,6 +1,6 @@
 ### Description
 
-Extracts RDF statements from external SPARQL endpoint into a single output graph.
+Extracts RDF statements from external SPARQL endpoint using SPARQL query defined in configuration into a single output graph.
 
 ### Configuration parameters
 

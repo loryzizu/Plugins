@@ -6,8 +6,8 @@ Extrahuje RDF dáta z externého SPARQL koncového bodu podľa predpisu definova
 
 | Meno | Popis |
 |:----|:----|
-|**Enpoint URL**| URL SPARQL koncového bodu z ktorého sa majú extrahovať dáta|
-|**SPARQL Construct**| SPARQL construct ktorým sa dáta zo SPARQL koncového bodu vyextrahujú|
+|**URL koncového bodu**| URL SPARQL koncového bodu z ktorého sa majú extrahovať dáta|
+|**SPARQL Construct**| SPARQL construct dotaz, ktorým sa dáta zo SPARQL koncového bodu vyextrahujú|
 
 ### Vstupy a výstupy ###
 
