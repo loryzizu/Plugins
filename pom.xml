@@ -43,9 +43,19 @@
         <module>l-filesUpload</module>
         <module>l-rdfToVirtuoso</module>
         <module>l-relationalToSql</module>
-
-
     </modules>
+
+	<profiles>
+		<profile>
+			<id>debian</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<modules>
+				<module>debian</module>
+			</modules>
+		</profile>
+	</profiles>
 
     <repositories>
         <repository>
