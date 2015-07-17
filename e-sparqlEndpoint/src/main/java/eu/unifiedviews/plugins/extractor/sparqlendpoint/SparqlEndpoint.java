@@ -29,7 +29,7 @@ import eu.unifiedviews.plugins.extractor.rdffromsparql.RdfFromSparqlEndpointConf
 
 /**
  * Main data processing unit class.
- *
+ * 
  * @author Petr Škoda
  */
 @DPU.AsExtractor
@@ -46,15 +46,15 @@ public class SparqlEndpoint extends AbstractDpu<SparqlEndpointConfig_V1> {
     @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
 
-    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.zipper.ZipperConfig__V1")
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.extractor.rdffromsparql.RdfFromSparqlEndpointConfig_V1")
     public ConfigurationUpdate _ConfigurationUpdate;
 
     public SparqlEndpoint() {
         super(SparqlEndpointVaadinDialog.class,
                 ConfigHistory.history(SparqlEndpointConfig_V1.class)
-                .alternative(cz.cuni.mff.xrg.uv.extractor.sparqlendpoint.SparqlEndpointConfig_V1.class)
-                .alternative(RdfFromSparqlEndpointConfig_V1.class)
-                .addCurrent(SparqlEndpointConfig_V1.class));
+                        .alternative(cz.cuni.mff.xrg.uv.extractor.sparqlendpoint.SparqlEndpointConfig_V1.class)
+                        .alternative(RdfFromSparqlEndpointConfig_V1.class)
+                        .addCurrent(SparqlEndpointConfig_V1.class));
     }
 
     @Override
