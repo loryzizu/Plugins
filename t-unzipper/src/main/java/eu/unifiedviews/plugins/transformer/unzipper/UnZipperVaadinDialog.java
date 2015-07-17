@@ -52,10 +52,10 @@ public class UnZipperVaadinDialog extends AbstractDialog<UnZipperConfig_V1> {
 
         if (checkDuplicityAvoid.getValue() == true) {
             // If true then we do not use prefixes.
-            desc.append(ctx.tr("unzipper.dialog.unzip.duplicity.avoid"));
+            desc.append(ctx.tr("unzipper.dialog.unzip.duplicity.avoid.on"));
         } else {
             // If false prefix is not used.
-            desc.append(ctx.tr("unzipper.dialog.unzip.duplicity.void"));
+            desc.append(ctx.tr("unzipper.dialog.unzip.duplicity.avoid.off"));
         }
 
         return desc.toString();
