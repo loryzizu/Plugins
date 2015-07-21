@@ -1,4 +1,4 @@
-v2.2.1-SNAPSHOT
+2.1.1-SNAPSHOT
 ---
 * Improved description (About)
 
