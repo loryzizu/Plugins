@@ -183,7 +183,7 @@ public class TableToRdfConfigurator {
                 //     - bug fix
                 continue;
             }
-            LOG.warn("Column '{}' (uri:{}) ignored as does not match original columns.",
+            LOG.error("Column '{}' (uri:{}) ignored as does not match original columns.",
                     key, unused.get(key).getURI());
         }
         //
