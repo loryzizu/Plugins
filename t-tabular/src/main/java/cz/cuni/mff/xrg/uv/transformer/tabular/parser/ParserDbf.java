@@ -76,7 +76,7 @@ public class ParserDbf implements Parser {
         Object[] row = reader.nextRecord();
         List<Object> stringRow = new ArrayList(row.length);
         // configure parser
-        TableToRdfConfigurator.configure(tableToRdf, header, Arrays.asList(row));
+        TableToRdfConfigurator.configure(tableToRdf, header, Arrays.asList(row), 0);
         // go ...
         if (config.rowLimit == null) {
             LOG.debug("Row limit: not used");

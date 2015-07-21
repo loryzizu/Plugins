@@ -227,7 +227,7 @@ public class ParserXls implements Parser {
                     for (int i = 0; i < columnEnd; i++) {
                         columnNames.add("col" + Integer.toString(++columnIndex));
                     }
-                } else {
+                } else {                    
                     // expand types row. The header might be wider then the first data row.
                     fitToSize(types, tableHeaderSize);
                 }
@@ -240,9 +240,9 @@ public class ParserXls implements Parser {
                 columnNames.add(SHEET_COLUMN_NAME);
                 types.add(ColumnType.String);
                 // configure
-                TableToRdfConfigurator.configure(tableToRdf, columnNames, (List) types);
+                TableToRdfConfigurator.configure(tableToRdf, columnNames, (List) types, startRow);
             }
-            // prepare row
+            // Prepare row.
             final List<String> parsedRow = new ArrayList<>(columnEnd + namedCells.size());
             // parse columns
             for (int columnIndex = 0; columnIndex < columnEnd; columnIndex++) {
