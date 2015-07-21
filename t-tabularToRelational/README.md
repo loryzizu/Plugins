@@ -1,10 +1,12 @@
 # T-TabularToRelational #
 ----------
 
+### Documentation
+
 * see [Plugin Documentation](./doc/About.md)
 * see [Plugin Documentation](./doc/About_sk.md) (in Slovak)
 
-#### Technical notes
+### Technical notes
 
 ### Version history
 

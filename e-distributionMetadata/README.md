@@ -6,7 +6,7 @@ E-DistributionMetadata
 * see [Plugin Documentation](./doc/About.md)
 * see [Plugin Documentation](./doc/About_sk.md) (in Slovak)
 
-### Technical documentation
+### Technical notes
 
 ### Version history
 

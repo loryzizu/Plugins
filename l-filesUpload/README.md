@@ -3,14 +3,14 @@
 
 ###Documentation###
 
-see [Plugin Documentation](./doc/About.md)
-see [Plugin Documentation](./doc/About_sk.md) (in Slovak)
+* see [Plugin Documentation](./doc/About.md)
+* see [Plugin Documentation](./doc/About_sk.md) (in Slovak)
 
-####Technical Documentation####
+### Technical notes
 
 * Replaces L-FilesToLocalFS and L-FilesToScp.
 * VirtualPath is required.
 
-### Version history ###
+### Version history
 
-see [Changelog](./CHANGELOG.md)
+* see [Changelog](./CHANGELOG.md)

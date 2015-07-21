@@ -6,7 +6,7 @@ T-Zipper
 * see [Plugin Documentation](./doc/About.md)
 * see [Plugin Documentation](./doc/About_sk.md) (in Slovak)
 
-#### Technical notes
+### Technical notes
 
 VirtualPath is required to be provided on input
 
