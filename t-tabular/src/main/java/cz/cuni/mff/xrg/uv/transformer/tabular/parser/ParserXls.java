@@ -207,7 +207,9 @@ public class ParserXls implements Parser {
                 headerGenerated = true;
                 // use row data to generate types
                 final List<ColumnType> types = new ArrayList<>(columnEnd + namedCells.size());
-                for (int columnIndex = columnStart; columnIndex < columnEnd; columnIndex++) {
+                // If the first column is empty then getFirstCellNum() return ondec of first column with data.
+                // But we want col1 to always start at the first column.
+                for (int columnIndex = 0; columnIndex < columnEnd; columnIndex++) {
                     final Cell cell = row.getCell(columnIndex);
                     if (cell == null) {
                         types.add(null);
@@ -217,15 +219,15 @@ public class ParserXls implements Parser {
                 }
                 // Till now column name can be only set in this method if header is presented.
                 if (columnNames == null) {
+                    LOG.info("Generating column names from: {} to: {}", columnStart, columnEnd);
                     columnNames = new ArrayList<>(columnEnd);
-                    // Generate column names, first column is col1.
+                    // Generate column names, first column is col1. We start from 0 as we always
+                    // want start with left most column. See comment before types generation for more info.
                     int columnIndex = 0;
-                    for (int i = columnStart; i < columnEnd; i++) {
+                    for (int i = 0; i < columnEnd; i++) {
                         columnNames.add("col" + Integer.toString(++columnIndex));
                     }
-                    tableHeaderSize = columnEnd - columnStart;
                 } else {
-                    tableHeaderSize = columnNames.size();
                     // expand types row. The header might be wider then the first data row.
                     fitToSize(types, tableHeaderSize);
                 }
