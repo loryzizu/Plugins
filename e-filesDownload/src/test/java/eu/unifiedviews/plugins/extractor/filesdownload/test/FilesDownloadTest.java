@@ -11,6 +11,7 @@ import org.junit.Test;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.files.FilesDataUnit.Entry;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
+import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.files.FilesHelper;
 import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 import eu.unifiedviews.plugins.extractor.filesdownload.FilesDownload;
@@ -56,4 +57,32 @@ public class FilesDownloadTest {
         }
     }
 
+    @Test
+    public void executeSelfSigned() throws Exception {
+        // Prepare config.
+        String uri = "https://www.isvz.cz/";
+        FilesDownloadConfig_V1 config = new FilesDownloadConfig_V1();
+        config.getVfsFiles().add(new VfsFile());
+        config.getVfsFiles().get(0).setUri(uri);
+        config.setDefaultTimeout(60000);
+        config.setIgnoreTlsErrors(true);
+
+        // Prepare DPU.
+        FilesDownload download = new FilesDownload();
+        download.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
+
+        // Prepare test environment.
+        TestEnvironment environment = new TestEnvironment();
+
+        // Prepare data unit.
+        WritableFilesDataUnit filesOutput = environment.createFilesOutput("output");
+
+        try {
+            // Run.
+            environment.run(download);
+        } finally {
+            // Release resources.
+            environment.release();
+        }
+    }
 }

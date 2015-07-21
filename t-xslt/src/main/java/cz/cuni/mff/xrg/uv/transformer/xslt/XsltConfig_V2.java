@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
+import eu.unifiedviews.plugins.transformer.xslt.XsltVocabulary;
 
 /**
  * 

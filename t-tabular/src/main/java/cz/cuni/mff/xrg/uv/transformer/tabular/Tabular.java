@@ -7,7 +7,9 @@ import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
+
 import java.util.List;
+
 import org.openrdf.model.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,9 @@ import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
 import eu.unifiedviews.helpers.dpu.extension.rdf.simple.WritableSimpleRdf;
+import eu.unifiedviews.plugins.transformer.tabular.TabularVaadinDialog;
+import eu.unifiedviews.plugins.transformer.tabular.parser.ParseFailed;
+import eu.unifiedviews.plugins.transformer.tabular.parser.Parser;
 
 /**
  *

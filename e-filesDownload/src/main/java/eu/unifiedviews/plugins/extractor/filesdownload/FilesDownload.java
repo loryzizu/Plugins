@@ -2,11 +2,13 @@ package eu.unifiedviews.plugins.extractor.filesdownload;
 
 import java.io.IOException;
 import java.net.URI;
+import java.security.GeneralSecurityException;
 import java.text.NumberFormat;
 import java.util.Date;
 
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.AllFileSelector;
@@ -86,14 +88,18 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
         standardFileSystemManager.setClassLoader(standardFileSystemManager.getClass().getClassLoader());
 
         final FileSystemOptions fileSystemOptions = new FileSystemOptions();
-        FtpFileSystemConfigBuilder.getInstance().setDataTimeout(fileSystemOptions, 20000);
+        FtpFileSystemConfigBuilder.getInstance().setDataTimeout(fileSystemOptions, config.getDefaultTimeout());
         FtpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
-        FtpsFileSystemConfigBuilder.getInstance().setDataTimeout(fileSystemOptions, 20000);
+        FtpsFileSystemConfigBuilder.getInstance().setDataTimeout(fileSystemOptions, config.getDefaultTimeout());
         FtpsFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
-        HttpConnectionManagerParams.getDefaultParams().setParameter(HttpConnectionManagerParams.CONNECTION_TIMEOUT, 20000);
-        HttpConnectionManagerParams.getDefaultParams().setParameter(HttpConnectionManagerParams.SO_TIMEOUT, 20000);
-        SftpFileSystemConfigBuilder.getInstance().setTimeout(fileSystemOptions, 20000);
+        HttpConnectionManagerParams.getDefaultParams().setParameter(HttpConnectionManagerParams.CONNECTION_TIMEOUT, config.getDefaultTimeout());
+        HttpConnectionManagerParams.getDefaultParams().setParameter(HttpConnectionManagerParams.SO_TIMEOUT, config.getDefaultTimeout());
+        SftpFileSystemConfigBuilder.getInstance().setTimeout(fileSystemOptions, config.getDefaultTimeout());
         SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fileSystemOptions, false);
+
+        if (config.isIgnoreTlsErrors()) {
+            Protocol.registerProtocol("https", new Protocol("https", (ProtocolSocketFactory) new EasySSL(), 443));
+        }
 
         final NumberFormat numberFormat = NumberFormat.getNumberInstance();
         numberFormat.setMaximumFractionDigits(0);

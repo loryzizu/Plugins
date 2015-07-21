@@ -22,7 +22,6 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.List;
 
-
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.helpers.dataunit.files.FilesDataUnitUtils;
 import eu.unifiedviews.helpers.dataunit.files.FilesVocabulary;
@@ -35,13 +34,18 @@ import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
 import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
+import eu.unifiedviews.helpers.dpu.extension.rdf.RdfConfiguration;
 
 @DPU.AsTransformer
-public class RdfToFiles extends AbstractDpu<RdfToFilesConfig_V1> {
+public class RdfToFiles extends AbstractDpu<RdfToFilesConfig_V2> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RdfToFiles.class);
 
     private static final String FILE_ENCODE = "UTF-8";
+
+    @RdfConfiguration.ContainsConfiguration
+    @DataUnit.AsInput(name = "config", optional = true)
+    public RDFDataUnit rdfConfiguration;
 
     @DataUnit.AsInput(name = "input")
     public RDFDataUnit inRdfData;
@@ -55,10 +59,13 @@ public class RdfToFiles extends AbstractDpu<RdfToFilesConfig_V1> {
     @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.transformer.rdftofiles.RdfToFilesConfig__V1")
     public ConfigurationUpdate _ConfigurationUpdate;
 
+    @ExtensionInitializer.Init
+    public RdfConfiguration _rdfConfiguration;
+
     private RDFFormat rdfFormat;
 
     public RdfToFiles() {
-        super(RdfToFilesVaadinDialog.class, ConfigHistory.noHistory(RdfToFilesConfig_V1.class));
+        super(RdfToFilesVaadinDialog.class, ConfigHistory.history(RdfToFilesConfig_V1.class).addCurrent(RdfToFilesConfig_V2.class));
     }
 
     @Override
@@ -67,31 +74,22 @@ public class RdfToFiles extends AbstractDpu<RdfToFilesConfig_V1> {
         if (rdfFormat == null) {
             throw ContextUtils.dpuException(ctx, "rdfToFiles.error.rdfFortmat.null");
         }
+
         final List<RDFDataUnit.Entry> graphs = FaultToleranceUtils.getEntries(faultTolerance, inRdfData,
                 RDFDataUnit.Entry.class);
 
         // TODO Export metadata graph? DataUnitUtils can be used to obtain entity for metadata.
+        // Create output file.
+        final String outputFileName = config.getOutFileName() + "." + rdfFormat.getDefaultFileExtension();
+        // Prepare output file entity.
+        final FilesDataUnit.Entry outputFile = faultTolerance.execute(new FaultTolerance.ActionReturn<FilesDataUnit.Entry>() {
 
-        if (config.isMergeGraphs()) {
-            final RdfToFilesConfig_V1.GraphToFileInfo info = config.getGraphToFileInfo().get(0);
-            // Create output file.
-            final String outputFileName = info.getOutFileName() + "." + rdfFormat.getDefaultFileExtension();
-            // Prepare output file entity.
-            final FilesDataUnit.Entry outputFile = faultTolerance.execute(new FaultTolerance.ActionReturn<FilesDataUnit.Entry>() {
-
-                @Override
-                public FilesDataUnit.Entry action() throws Exception {
-                    return FilesDataUnitUtils.createFile(outFilesData, outputFileName);
-                }
-            });
-            exportGraph(graphs, outputFile);
-        } else {
-            throw new DPUException("Not implemented!");
-
-            // For each RdfToFilesConfig_V1.GraphToFileInfo we should fild all graphs
-            // that fits inside and then export them.
-            // For matching we can use regular expression on .. something.
-        }
+            @Override
+            public FilesDataUnit.Entry action() throws Exception {
+                return FilesDataUnitUtils.createFile(outFilesData, outputFileName);
+            }
+        });
+        exportGraph(graphs, outputFile);
 
     }
 

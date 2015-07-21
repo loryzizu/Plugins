@@ -1,9 +1,5 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.parser;
 
-import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnType;
-import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
-import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdf;
-import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdfConfigurator;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,13 +8,24 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdf;
+import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdfConfigurator;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
+import eu.unifiedviews.plugins.transformer.tabular.column.ColumnType;
+import eu.unifiedviews.plugins.transformer.tabular.column.NamedCell_V1;
+import eu.unifiedviews.plugins.transformer.tabular.parser.ParseFailed;
+import eu.unifiedviews.plugins.transformer.tabular.parser.Parser;
 
 /**
  *
@@ -80,7 +87,7 @@ public class ParserXls implements Parser {
      * 
      * @param wb
      * @param sheetIndex
-     * @throws cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParseFailed
+     * @throws eu.unifiedviews.plugins.transformer.tabular.parser.ParseFailed
      * @throws DPUException
      */
     public void parseSheet(Workbook wb, Integer sheetIndex) throws ParseFailed, DPUException {
