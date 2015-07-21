@@ -8,6 +8,8 @@ E-FilesDownload
 
 ### Technical notes
 
+*  Replaces E-FilesFromLocal and E-HttpDownload.
+
 ### Version history
 
 * see [Changelog](./CHANGELOG.md)
