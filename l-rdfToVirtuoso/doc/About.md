@@ -1,6 +1,7 @@
 ### Description
 
 Loads RDF graphs to external Virtuoso instance.
+It generates metadata into optional `rdfOutput` about stored graphs, including graph names.
 
 ### Configuration parameters
 
@@ -18,5 +19,5 @@ Loads RDF graphs to external Virtuoso instance.
 
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|rdfInput|i|RDFDataUnit|RDF graphs to be loaded|x|
-|rdfOutput|o|RDFDataUnit|In per-graph mode: RDF graphs from input with CKAN Resource set, with VirtualGraph set to real graph name, where the data were loaded. In single graph mode: One RDF graph with CKAN Resource set, with VirtualGraph set to real graph name, where the data were loaded.||
+|rdfInput  |i| RDFDataUnit | RDF graphs to be loaded |x|
+|rdfOutput |o| RDFDataUnit | Metadata about graphs stored into Virtuoso ||
