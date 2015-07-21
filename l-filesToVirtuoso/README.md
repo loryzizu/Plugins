@@ -8,6 +8,8 @@ L-FilesToVirtuoso
 
 ### Technical notes
 
+* uses Virtuoso internal functions to load directory of RDF data.
+
 ### Version history
 
 * see [Changelog](./CHANGELOG.md)

@@ -7,13 +7,13 @@ It generates metadata into optional `rdfOutput` about stored graphs, including g
 
 | Name | Description |
 |:----|:----|
-|**Virtuoso JDBC URL** |URL for establishing JDBC session with Virtuoso server.|
-|**Username** |Username for Virtuoso server.|
-|**Password** |Password for the username.|
-|**Clear destination graph before loading (checkbox)** |Self-descriptive |
-|**Target Graph**|Target graph URI. May be empty to indicate per-graph loading. In per-graph mode, each graph on input is loaded into separate graph on output, graph name is taken from VirtualGraph, if VirtualGraph is not set, internal RDF store graph name is used.|
-|**Thread count**|How many threads may be used to speed up loading|
-|**Skip file on error (checkbox)**|Do not stop the pipeline when error occurs (if checked).|
+|**Virtuoso JDBC URL** | URL for establishing JDBC session with Virtuoso server |
+|**Username** | Username for Virtuoso server |
+|**Password** | Password for the username |
+|**Clear destination graph before loading (checkbox)** | Self-descriptive |
+|**Target Graph** | Target graph URI. May be empty to indicate per-graph loading. In per-graph mode, each graph on input is loaded into separate graph on output, graph name is taken from VirtualGraph, if VirtualGraph is not set, internal RDF store graph name is used |
+|**Thread count** | How many threads may be used to speed up loading|
+|**Skip file on error (checkbox)** | Do not stop the pipeline when error occurs (if checked) |
 
 ### Inputs and outputs
 

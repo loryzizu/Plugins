@@ -6,9 +6,9 @@ Skomprimuje súbory na vstupe `input` do zip súboru podľa nakonfigurovaného m
 
 | Meno | Popis |
 |:----|:----|:----|
-|**Zip file path/name (with extension):** | Specifies the path/name for the output file to be created. Given path/name must be relative ie. `/data.zip`, `/data/out.zip`. Absolute path like `c:/` must not be used. In case unix system `/dir/data.zip` is interpreted as a relative path. |
+|**Zip file path/name (with extension)** | Specifies the path/name for the output file to be created. Given path/name must be relative ie. `/data.zip`, `/data/out.zip`. Absolute path like `c:/` must not be used. In case unix system `/dir/data.zip` is interpreted as a relative path |
 
-### Vstupy a výstupy ###
+### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
