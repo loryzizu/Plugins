@@ -16,7 +16,7 @@ DPU currently supports these databases:
 
 | Name | Description |
 |:----|:----|
-|**Database type:** |Database type: PostgreSQL, Oracle, MySQL, MS SQL |
+|**Database type:** |Database type: PostgreSQL, MySQL, MS SQL, optionally ORACLE |
 |**Database host:** |Database host |
 |**Database port:** |Database port |
 |**Database name:** |Database name (for ORACLE SID name) |
