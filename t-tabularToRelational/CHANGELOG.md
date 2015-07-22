@@ -3,7 +3,8 @@ T-TabularToRelational
 
 2.2.0-SNAPSHOT
 ---
-* new config class, added new parsers(XLS, XLSX, DBF)
+* improved configuration
+* added new parsers(XLS, XLSX, DBF)
 * Improved description (About)
 
 v2.1.0

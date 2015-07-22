@@ -3,6 +3,7 @@ T-Tabular
 
 v2.1.1-SNAPSHOT
 ---
+* Improved handling of dependency on POI
 * Improved description (About)
 
 v2.1.0

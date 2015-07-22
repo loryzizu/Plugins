@@ -3,6 +3,8 @@ T-FilesFindAndReplace
 
 v2.1.1-SNAPSHOT
 ---
+* bug Fixes
+ * UnifiedViews/Plugins#273
 * Improved description (About)
 
 v2.1.0
