@@ -1,7 +1,7 @@
 ### Description
 
 Loads RDF graphs to external Virtuoso instance.
-It generates metadata into optional `rdfOutput` about stored graphs, including graph names.
+Optionally, it copies input data to optional output data unit `rdfOutput`, including metadata about stored graphs, target graph names.
 
 ### Configuration parameters
 
