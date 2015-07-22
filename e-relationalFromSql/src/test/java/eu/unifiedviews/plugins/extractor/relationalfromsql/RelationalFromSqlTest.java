@@ -32,6 +32,11 @@ public class RelationalFromSqlTest {
 
     private RelationalFromSql dpu;
 
+    // H2 Parameters - used for testing purposes
+    private static final String H2_MEM_JDBC_DRIVER = "org.h2.Driver";
+
+    private static final String H2_MEM_JDBC_URL_PREFIX = "jdbc:h2:";
+
     private static final String DATABASE_URL = "jdbc:h2:mem:db1";
 
     private static final String JDBC_DRIVER = "org.h2.Driver";
@@ -46,7 +51,8 @@ public class RelationalFromSqlTest {
 
     private static final String SELECT_ONE_TABLE_QUERY = "SELECT * FROM " + TABLE_NAME_USERS;
 
-    private static final String SELECT_JOIN_TABLES_QUERY = "SELECT name, surname, city FROM " + TABLE_NAME_USERS + " JOIN " + TABLE_NAME_ADDRESS
+    private static final String SELECT_JOIN_TABLES_QUERY = "SELECT name, surname, city FROM " + TABLE_NAME_USERS + " JOIN "
+            + TABLE_NAME_ADDRESS
             + " ON " + TABLE_NAME_USERS + ".id = " + TABLE_NAME_ADDRESS + ".user_id";
 
     private static final String[] TABLE_USER_COLUMNS = new String[] { "id", "name", "surname", "age" };
@@ -55,7 +61,8 @@ public class RelationalFromSqlTest {
 
     private static final String[] TABLE_ADDRESS_COLUMNS = new String[] { "id", "user_id", "street", "city", "number" };
 
-    private static final String[] TABLE_ADDRESS_COLUMN_TYPES = new String[] { "INTEGER", "INTEGER", "VARCHAR(255)", "VARCHAR(255)", "INTEGER" };
+    private static final String[] TABLE_ADDRESS_COLUMN_TYPES = new String[] { "INTEGER", "INTEGER", "VARCHAR(255)", "VARCHAR(255)",
+            "INTEGER" };
 
     private static final String TARGET_TABLE_NAME = "INTERNAL_TABLE";
 
@@ -69,6 +76,9 @@ public class RelationalFromSqlTest {
 
         this.testEnv = new TestEnvironment();
         this.relationalOutput = this.testEnv.createRelationalOutput("outputTables");
+
+        DatabaseInfo h2Info = new DatabaseInfo("H2 mem", H2_MEM_JDBC_DRIVER, H2_MEM_JDBC_URL_PREFIX, 1254, DatabaseType.H2_MEM);
+        SqlDatabase.getSupportedDatabasesMap().put(DatabaseType.H2_MEM, h2Info);
     }
 
     @After
@@ -323,7 +333,8 @@ public class RelationalFromSqlTest {
 
     }
 
-    private static final void createTable(Connection conn, String tableName, String[] columnNames, String[] columnTypes) throws SQLException {
+    private static final void createTable(Connection conn, String tableName, String[] columnNames, String[] columnTypes)
+            throws SQLException {
         StringBuilder query = new StringBuilder("CREATE TABLE ");
         query.append(tableName);
         query.append(" (");
