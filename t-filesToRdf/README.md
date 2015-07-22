@@ -1,13 +1,13 @@
 T-FilesToRdf
 ----------
 
-###Documentation###
+### Documentation
 
-see [Plugin Documentation](./doc/About.md)
-see [Plugin Documentation](./doc/About_sk.md) (in Slovak)
+* see [Plugin Documentation](./doc/About.md)
+* see [Plugin Documentation](./doc/About_sk.md) (in Slovak)
 
-####Technical Documentation####
+### Technical Documentation
 
-### Version history ###
+### Version history
 
-see [Changelog](./CHANGELOG.md)
+* see [Changelog](./CHANGELOG.md)

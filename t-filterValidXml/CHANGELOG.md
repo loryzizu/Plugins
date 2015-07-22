@@ -1,6 +1,12 @@
+T-FilterValidXml
+----------
+
+v2.1.1-SNAPSHOT
+---
+* Improved description (About)
+
 v2.1.0
 ---
-* improved documentation (About)
 * update to API 2.1.0
 
 v2.0.1

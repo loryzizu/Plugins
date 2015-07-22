@@ -1,6 +1,13 @@
+T-FilesRenamer
+----------
+
+v2.1.1-SNAPSHOT
+---
+* Improved description (About)
+
 v2.1.0
 ---
-* improved description (About)
+* Update to API 2.1.0 
 
 v2.0.1
 ---

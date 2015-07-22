@@ -1,8 +1,14 @@
+T-FilesToRdf
+----------
+
+v2.1.1-SNAPSHOT
+---
+* Improved description (About)
+
 v2.1.0
 ---
 * update to API 2.1.0
 * localization
-* improved description (About)
 
 v2.0.1
 ---
