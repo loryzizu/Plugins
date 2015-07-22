@@ -8,7 +8,7 @@ Zlúči súbory
 |:----|:----|
 |N/A||
 
-### Vstupy a výstupy ###
+### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|

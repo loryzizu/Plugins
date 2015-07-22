@@ -9,14 +9,14 @@ Validates XML inputs in 3 ways:
 
 | Name | Description |
 |:----|:----|
-|**XSD schema**|XSD schema to validate the input files against|
-|**XSLT transformation***|Any output that the XSLT produces is considered an error message causing the validation failed|
-|**Fail pipeline on first validation error**|If first validation error is detected, DPU will stop pipeline|
+|**XSD schema** | XSD schema to validate the input files against|
+|**XSLT transformation** | Any output that the XSLT produces is considered an error message causing the validation failed |
+|**Fail pipeline on first validation error** | If first validation error is detected, DPU will stop pipeline |
 
 ### Inputs and outputs
 
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input|i|FilesDataUnit|List of files to be validated|x|
-|outputValid|o|FilesDataUnit|List of files having passed validation||
-|outputInalid|o|FilesDataUnit|List of files failed validation||
+|input        |i| FilesDataUnit | List of files to be validated |x|
+|outputValid  |o| FilesDataUnit | List of files having passed validation ||
+|outputInalid |o| FilesDataUnit | List of files failed validation ||

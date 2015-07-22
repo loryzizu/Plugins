@@ -6,11 +6,11 @@ Skomprimuje akýkoľvek súbor použitím GZIP kompresie
 
 | Meno | Popis |
 |:----|:----|
-|**N/A**|N/A|
+| N/A | |
 
 ### Vstupy a výstupy ###
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input|i|FilesDataUnit|Jeden alebo viac súborov|x|
-|output|o|FilesDataUnit|Jeden .gz súbor pre každý súbor na vstupe||
+|input  |i| FilesDataUnit | Jeden alebo viac súborov |x|
+|output |o| FilesDataUnit | Jeden .gz súbor pre každý súbor na vstupe ||

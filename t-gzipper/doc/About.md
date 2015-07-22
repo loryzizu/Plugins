@@ -6,11 +6,11 @@ Compresses any file using GZIP compression
 
 | Name | Description |
 |:----|:----|
-|**N/A**|N/A|
+|N/A| |
 
 ### Inputs and outputs
 
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input|i|FilesDataUnit|One or more files|x|
-|output|o|FilesDataUnit|One .gz file per each input file||
+|input  |i| FilesDataUnit | One or more files |x|
+|output |o| FilesDataUnit | One .gz file per each input file ||
