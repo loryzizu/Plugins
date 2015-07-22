@@ -1,3 +1,6 @@
+E-FilesDownload
+----------
+
 v2.1.1-SNAPSHOT
 ---
 * Improved description (About)
@@ -16,4 +19,4 @@ v2.0.0
 
 v1.0.0
 ---
-* N/A
+* Initial version
