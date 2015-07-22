@@ -23,7 +23,8 @@ public class RenamerVaadinDialog extends AbstractDialog<RenamerConfig_V1> {
     protected void buildDialogLayout() {
 
         final VerticalLayout layout = new VerticalLayout();
-        layout.setSizeFull();
+        layout.setWidth("100%");
+        layout.setHeight("-1px");
         layout.setSpacing(true);
         layout.setMargin(true);
 
