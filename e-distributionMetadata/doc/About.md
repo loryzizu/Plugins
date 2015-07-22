@@ -1,6 +1,6 @@
 ### Description
 
-Generates CKAN Resource model for distribution metadata on output.
+Generates CKAN Resource model for distribution metadata on output as graph named "distributionMetadata".
 
 ### Configuration parameters
 
@@ -16,4 +16,4 @@ Generates CKAN Resource model for distribution metadata on output.
 
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|distributionOutput |o |RDFDataUnit | Descriptive data. Resource attached to a graph with symbolic name "distributionMetadata" |x|
+|distributionOutput |o |RDFDataUnit | Descriptive data. Resource attached to a graph defined name "distributionMetadata" |x|
