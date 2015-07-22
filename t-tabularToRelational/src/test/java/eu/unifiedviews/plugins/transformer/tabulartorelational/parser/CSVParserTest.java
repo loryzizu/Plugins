@@ -1,15 +1,23 @@
-package eu.unifiedviews.plugins.transformer.tabulartorelational;
+package eu.unifiedviews.plugins.transformer.tabulartorelational.parser;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.exec.ExecContext;
+import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
 import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.TabularToRelational;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.TabularToRelationalConfig_V2;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ParserType;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.util.DatabaseHelper;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(JUnit4.class)
-public class TabularToRelationalTest {
+public class CSVParserTest {
 
     private TabularToRelational dpu;
 
@@ -44,7 +52,7 @@ public class TabularToRelationalTest {
     @Before
     public void init() throws Exception {
         // prepare DPU
-        TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
+        TabularToRelationalConfig_V2 config = new TabularToRelationalConfig_V2();
 
         dpu = new TabularToRelational();
         dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
@@ -61,7 +69,8 @@ public class TabularToRelationalTest {
 
     @Test
     public void sampleCSVWithEncodingPasses() throws Exception {
-        TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
+        TabularToRelationalConfig_V2 config = new TabularToRelationalConfig_V2();
+        config.setParserType(ParserType.CSV);
         config.setFieldSeparator(";");
         config.setFieldDelimiter("\"");
         config.setEncoding("windows-1250");
@@ -109,7 +118,8 @@ public class TabularToRelationalTest {
 
     @Test
     public void sampleCsvFilePasses() throws Exception {
-        TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
+        TabularToRelationalConfig_V2 config = new TabularToRelationalConfig_V2();
+        config.setParserType(ParserType.CSV);
         config.setTableName("daka_tabulka");
         List<ColumnMappingEntry> list = new ArrayList<>();
         list.add(new ColumnMappingEntry("id", "VARCHAR", true));
@@ -149,8 +159,9 @@ public class TabularToRelationalTest {
 
     @Test
     public void sampleCsvWithHeaderPasses() throws Exception {
-        TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
-        config.setHasHeader(true);
+        TabularToRelationalConfig_V2 config = new TabularToRelationalConfig_V2();
+        config.setParserType(ParserType.CSV);
+        config.setDataBegginningRow(2);
         config.setTableName("test");
         List<ColumnMappingEntry> list = new ArrayList<>();
         list.add(new ColumnMappingEntry("street", "VARCHAR", false));
@@ -201,25 +212,29 @@ public class TabularToRelationalTest {
     }
 
     @Test
-    public void processCsvOptionsTest() {
-        TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
-        assertEquals("charset=UTF-8 fieldDelimiter=\" fieldSeparator=,", TabularToRelational.processCsvOptions(config));
+    public void processCsvOptionsTest() throws DPUConfigException {
+        TabularToRelationalConfig_V2 config = new TabularToRelationalConfig_V2();
+        UserExecContext ctx = new UserExecContext(new ExecContext(dpu));
+        CSVParser parser = new CSVParser(ctx, config, output);
+        assertEquals("charset=UTF-8 fieldDelimiter=\" fieldSeparator=,", parser.processCsvOptions());
 
         config.setEncoding("UTF-16");
         config.setFieldSeparator("|");
         config.setFieldDelimiter("'");
-        assertEquals("charset=UTF-16 fieldDelimiter=' fieldSeparator=|", TabularToRelational.processCsvOptions(config));
+        assertEquals("charset=UTF-16 fieldDelimiter=' fieldSeparator=|", parser.processCsvOptions());
 
         config.setEncoding(null);
         config.setFieldSeparator(null);
         config.setFieldDelimiter(null);
-        assertEquals("", TabularToRelational.processCsvOptions(config));
+        assertEquals("", parser.processCsvOptions());
     }
 
     @Test
     public void prepareCreateTableQueryTest() {
-        TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
-        assertNotNull(TabularToRelational.prepareCreateTableQuery(config));
+        TabularToRelationalConfig_V2 config = new TabularToRelationalConfig_V2();
+        UserExecContext ctx = new UserExecContext(new ExecContext(dpu));
+        CSVParser parser = new CSVParser(ctx, config, output);
+        assertNotNull(parser.buildCreateTableQuery(config.getColumnMapping()));
 
         config.setTableName("test_table");
         config.setFieldSeparator("\"");
@@ -231,7 +246,7 @@ public class TabularToRelationalTest {
         list.add(new ColumnMappingEntry("surname", "VARCHAR(255)", false));
         config.setColumnMapping(list);
 
-        assertEquals("CREATE TABLE test_table (id INT, name VARCHAR(255), surname VARCHAR(255), PRIMARY KEY (id, name));", TabularToRelational.prepareCreateTableQuery(config));
+        assertEquals("CREATE TABLE test_table (id INT, name VARCHAR(255), surname VARCHAR(255), PRIMARY KEY (id, name));", parser.buildCreateTableQuery(config.getColumnMapping()));
     }
 
     private void addFileToInput(final String filename) throws Exception {

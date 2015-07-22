@@ -1,12 +1,17 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ParserType;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class holds configuration of DPU.
  */
-public class TabularToRelationalConfig_V1 {
+public class TabularToRelationalConfig_V1 implements VersionedConfig<TabularToRelationalConfig_V2> {
 
     private String tableName;
 
@@ -132,5 +137,21 @@ public class TabularToRelationalConfig_V1 {
                 ", parserType=" + parserType +
                 ", columnMapping=" + columnMapping +
                 '}';
+    }
+
+    @Override public TabularToRelationalConfig_V2 toNextVersion() throws DPUConfigException {
+        TabularToRelationalConfig_V2 v2 = new TabularToRelationalConfig_V2();
+        v2.setTableName(this.tableName);
+        v2.setParserType(this.parserType);
+        v2.setColumnMapping(this.columnMapping);
+        v2.setEncoding(this.encoding);
+        v2.setFieldDelimiter(this.fieldDelimiter);
+        v2.setFieldSeparator(this.fieldSeparator);
+        if(hasHeader) {
+            v2.setDataBegginningRow(2);
+        } else {
+            v2.setDataBegginningRow(1);
+        }
+        return v2;
     }
 }

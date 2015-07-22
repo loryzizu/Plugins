@@ -1,9 +1,11 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.unused.DataTypeDetector;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +23,10 @@ public class DataTypeDetectorTest {
         entries.add(entry);
         DataTypeDetector detector = new DataTypeDetector(entries);
         // feed detector with samples
-        detector.addSample(new String[]{"-123"});
-        detector.addSample(new String[]{"abc"});
+        detector.addSample(new String[] { "-123" });
+        detector.addSample(new String[] { "abc" });
         detector.addSample(null);
-        detector.addSample(new String[]{});
+        detector.addSample(new String[] {});
 
         System.out.println(detector.getAllPossibleDatatypes("col"));
     }
