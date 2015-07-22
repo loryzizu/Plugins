@@ -1,4 +1,4 @@
-# T-RdfMerger #
+T-RdfMerger
 ----------
 
 ### Documentation

@@ -1,4 +1,4 @@
-# T-RdfMerger #
+T-RdfMerger
 ----------
 
 v2.1.1-SNAPSHOT
