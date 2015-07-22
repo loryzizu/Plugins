@@ -7,9 +7,8 @@ Extracts RDF data from Files (any file format) and adds them to RDF
 | Name | Description |
 |:----|:----|
 |**Commit size**|0 = one file, one transaction, 1 = autocommit connection, n = commit every n triples|
-|**Symbolic name**||
-|**Line format**||
-|**File format**||
+|**What to do if extraction on a single file fail:**|Stop execution OR Skip and continue|
+|**Policy for output symbolic name selection**|Use input files symbolic names OR  Use single fixed symbolic name|
 
 ### Inputs and outputs
 
