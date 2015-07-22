@@ -21,6 +21,7 @@ import eu.unifiedviews.helpers.dpu.vaadin.validator.UrlValidator;
 public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointConfig_V1> {
 
     private TextField txtEndpoint;
+    private TextField txtChunkSize;
 
     private TextArea txtQuery;
 
@@ -32,6 +33,7 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
     public void setConfiguration(SparqlEndpointConfig_V1 c) throws DPUConfigException {
         txtEndpoint.setValue(c.getEndpoint());
         txtQuery.setValue(c.getQuery());
+        txtChunkSize.setValue(String.valueOf(c.getChunkSize()));
     }
 
     @Override
@@ -41,6 +43,9 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
         }
         if (!txtQuery.isValid()) {
             throw new DPUConfigException(ctx.tr("SparqlEndpoint.query.invalid"));
+        }
+        if (!txtChunkSize.isValid()) {
+            throw new DPUConfigException(ctx.tr("SparqlEndpoint.chunkSize.invalid"));
         }
         final SparqlEndpointConfig_V1 c = new SparqlEndpointConfig_V1();
 
@@ -87,6 +92,12 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
             }
         });
 
+
+        txtChunkSize = new TextField(ctx.tr("SparqlEndpoint.dialog.chunksize"));
+        txtChunkSize.setWidth("100%");
+        txtChunkSize.setDescription(ctx.tr("SparqlEndpoint.dialog.chunksize.description"));
+        mainLayout.addComponent(txtChunkSize);
+        
         setCompositionRoot(mainLayout);
     }
 }
