@@ -1,4 +1,6 @@
-package eu.unifiedviews.plugins.transformer.tabulartorelational;
+package eu.unifiedviews.plugins.transformer.tabulartorelational.unused;
+
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -9,8 +11,8 @@ import java.util.regex.Matcher;
 
 /**
  * Detecting of possible SQL datatypes from string input.
- *
  * First feed the instance of the class with sample data, and then get set of all possible data types.
+ * Unused for now, we treat all input as varchar.
  */
 public class DataTypeDetector {
 
@@ -24,7 +26,7 @@ public class DataTypeDetector {
     }
 
     public void addSample(String[] strings) {
-        if(strings == null) {
+        if (strings == null) {
             return;
         }
 
