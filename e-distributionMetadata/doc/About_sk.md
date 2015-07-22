@@ -4,7 +4,7 @@ Generuje metadáta na yáklade konigurácie
 
 ### Konfiguračné parametre
 
-| Name | Description |
+| Meno | Popis |
 |:----|:----|
 |**Nadpis distribúcie** | Meno definované pre distribúciu |
 |**Popis** | Popis distribúcie |
@@ -14,6 +14,6 @@ Generuje metadáta na yáklade konigurácie
 
 ### Vstupy a výstupy
 
-|Name |Type | DataUnit | Description | Mandatory |
+|Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |distributionOutput |o |RDFDataUnit | Metadáta distribúcie. Uložené v grafe s meno "distributionMetadata" |x|
