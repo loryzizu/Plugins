@@ -1,54 +1,13 @@
-# T-SparqlUpdate #
+T-SparqlUpdate
 ----------
 
-###General###
+### Documentation
 
-|                              |                                                                              |
-|------------------------------|------------------------------------------------------------------------------|
-|**Name:**                     |T-SparqlUpdate                                                                |
-|**Description:**              |Transform input using SPARQL construct.                                       |
-|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
-|                              |                                                                              |
-|**DPU class name:**           |SparqlUpdate                                                                  | 
-|**Configuration class name:** |SparqlUpdate_V1                                                               |
-|**Dialogue class name:**      |SparqlUpdateDialog                                                            |
+* see [Plugin Documentation](./doc/About.md)
+* see [Plugin Documentation](./doc/About_sk.md) (in Slovak)
 
-***
+### Technical Documentation
 
-###Configuration parameters###
+### Version history
 
-|Parameter                           |Description                                                              |
-|------------------------------------|-------------------------------------------------------------------------|
-|**Per-graph execution:**            |If checked query is executed per-graph.                                  |
-|**SPARQL update query:**            |SPARQL update query.                                                     |
-
-***
-
-### Inputs and outputs ###
-
-|Name           |Type           |DataUnit           |Description                                  |
-|---------------|---------------|-------------------|---------------------------------------------|
-|input          |i              |RDFDataUnit        |RDF input                                    |
-|output         |o              |RDFDataUnit        |RDF output (transformed)                     |
-
-***
-
-### Version history ###
-
-|Version          |Release notes               |
-|-----------------|----------------------------|
-|2.1.0            | Update to API 2.1.0        |
-|                 | Adde error message in case of SPARQL update query failure. |
-|                 | sk localization |
-|                 | Symbolic name of output is modified |
-|2.0.1            | fixes in build dependencies |
-|2.0.0            | Imported from the repository https://github.com/mff-uk/DPUs, using helpers 2.0.0 |
-
-
-***
-
-### Developer's notes ###
-
-|Author           |Notes                           |
-|-----------------|--------------------------------|
-|N/A              |N/A                             | 
+* see [Changelog](./CHANGELOG.md)
