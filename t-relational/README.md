@@ -1,5 +1,6 @@
 T-Relational
 ----------
+
 ### Documentation
 
 * see [Plugin Documentation](./doc/About.md)
