@@ -6,9 +6,8 @@ Transforms SPARQL SELECT query result to CSV. Does not validate query.
 
 | Name | Description |
 |:----|:----|
-|**Target path*** | Path and target CSV file name |
-|**SPARQL query**| Text area dedicated for SPARQL SELECT query | 
-
+|**Target path***|path and target CSV file name|
+|**SPARQL query**|text area dedicated for SPARQL SELECT query|
 
 ### Inputs and outputs
 
