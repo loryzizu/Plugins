@@ -1,55 +1,15 @@
-# T-Relational #
+T-Relational
 ----------
 
-###General###
+### Documentation
 
-|                              |                                                                              |
-|------------------------------|------------------------------------------------------------------------------|
-|**Name:**                     |T-Relational                                                                  |
-|**Description:**              |Transforms N input tables into 1 output table using SELECT SQL queries        |
-|**Status:**                   |Supported in Plugins v2.X. Updated to use Plugin-DevEnv v2.X.       |
-|                              |                                                                              |
-|**DPU class name:**           |Relational                                                                    | 
-|**Configuration class name:** |RelationalConfig_V1                                                           |
-|**Dialogue class name:**      |RelationalVaadinDialog                                                        |
-|**WARNING:**                  |This DPU is a part of UV optional functionality (relational data) and in      |
-|                              |current implementation it does not fully follow the UV philosophy as user     |
-|                              |has control of physical database tables. See details in DPU class             |
+* see [Plugin Documentation](./doc/About.md)
+* see [Plugin Documentation](./doc/About_sk.md) (in Slovak)
 
-***
+### Technical Documentation
 
-###Configuration parameters###
+* WARNING: This DPU is a part of UV optional functionality (relational data) and in current implementation it does not fully follow the UnifiedViews philosophy as user has control of physical database tables. See details in DPU class
 
-|Parameter                           |Description                                                              |
-|------------------------------------|-------------------------------------------------------------------------|
-|**SQL query:**                      |SQL query to extract data from source database                           |
-**Target table name:**               |Table name used to internally store the extracted data                   |
+### Version history
 
-***
-
-### Inputs and outputs ###
-
-|Name           |Type           |DataUnit           |Description                                  |
-|---------------|---------------|-------------------|---------------------------------------------|
-|inputTables    |i              |RelationalDataUnit |Source database tables                       |
-|outputTable    |o              |RelationalDataUnit |Output (transformed) table                   |
-
-***
-
-### Version history ###
-
-|Version          |Release notes               |
-|-----------------|----------------------------|
-|2.1.0            | Update to API 2.1.0; Fixes of automatic naming of duplicate columns in SQL select        |
-|2.0.1            | fixes in build dependencies |
-|2.0.0            | Update to helpers 2.0.0     |
-|0.9.0            | N/A                         |
-
-
-***
-
-### Developer's notes ###
-
-|Author           |Notes                           |
-|-----------------|--------------------------------|
-|N/A              |N/A                             | 
+* see [Changelog](./CHANGELOG.md)
