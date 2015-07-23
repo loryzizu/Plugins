@@ -7,6 +7,8 @@ Parse tabular file to relational data unit.
 | Name | Description |
 |:----|:----|
 |**Tablename** | Name of table that will hold the parsed data |
+|**Filetype** | Type of input file (XLS/X, CVS, DBF) |
+|**Data begins at row** | Specifies, at which row of input file begins data part |
 |**Charset** | Charset of input file |
 |**Quote character** | Field delimiter to use during parsing od CSV file. e.g. '"' |
 |**Sepatator** | Field separator to use during parsing of CSV file. e.g. ',' |

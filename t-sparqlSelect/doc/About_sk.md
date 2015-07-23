@@ -1,17 +1,17 @@
 ### Popis
 
-Transformuje SPARQL výberový dotaz do CSV súboru (bez validácie)
+Transformuje vstupné dáta pomocou SPARQL SELECT dotazu a výsledok uloží do CSV súboru. Neorbí validáciu dát
 
 ### Konfiguračné parametre
 
 | Meno | Popis |
 |:----|:----|
-|**Cieľová cesta***|cesta a názov cieľového CSV súboru|
-|**SPARQL dotaz**|textové pole určené pre SPARQL dotaz|
+|**Cieľová cesta** | Cesta a názov cieľového CSV súboru |
+|**SPARQL dotaz** | Textové pole určené pre SPARQL dotaz|
 
-### Vstupy a výstupy ###
+### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input|i|RDFDataUnit|RDF graf|x|
-|output|o|FilesDataUnit|CSV súbor obsahujúci výsledky SPARQL výberového dotazu|x|
+|input  |i | RDFDataUnit   | RDF vstupné dáta |x|
+|output |o | FilesDataUnit | CSV súbor obsahujúci výsledok z SPARQL SELECT dotazu |x|

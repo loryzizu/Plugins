@@ -1,16 +1,16 @@
 ### Popis
 
-Zlučuje RDF dáta v reálnom čase
+Zlúči RDF dáta
 
 ### Konfiguračné parametre
 
 | Meno | Popis |
 |:----|:----|
-|**N/A**|N/A|
+|N/A||
 
-### Vstupy a výstupy ###
+### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|rdfInput|i|RDFDataUnit|Dátová jednotka, kam používateľ pripojí všetky vstupy, ktoré majú byť zlúčené||
-|rdfOutput|o|RDFDataUnit|Dátová jednotka s výstupov všetkých vstupných grafov||
+|rdfInput  |i| RDFDataUnit | Dátová jednotka, kam používateľ zapojí všetky vstupy, ktoré majú byť zlúčené |x|
+|rdfOutput |o| RDFDataUnit | Dátová jednotka, kam sa pošle zlúčené grafy ||

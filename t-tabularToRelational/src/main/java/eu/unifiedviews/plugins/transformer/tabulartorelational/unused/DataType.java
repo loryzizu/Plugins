@@ -1,10 +1,9 @@
-package eu.unifiedviews.plugins.transformer.tabulartorelational;
+package eu.unifiedviews.plugins.transformer.tabulartorelational.unused;
 
 import java.util.regex.Pattern;
 
 /**
  * Enum containing supported datatype.
- *
  * When adding new supported type, add its regex into constructor.
  */
 public enum DataType {

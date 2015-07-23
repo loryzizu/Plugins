@@ -1,8 +1,14 @@
+T-SPARQLSelect
+----------
+
+v2.1.1-SNAPSHOT
+---
+* Improved description (About)
+
 v2.1.0
 ---
-* update to API 2.1.0
-* EN and SK localization
-* improved documentation
+* Update to API 2.1.0
+* sk and en localization
 
 v2.0.1
 ---
@@ -10,20 +16,21 @@ v2.0.1
 
 v2.0.0
 ---
-* update to helpers 2.0.0
+* Updated to helpers 2.0.0
 
 v1.5.0
 ---
-* N/A
+* N/A 
 
 v1.4.0
 ---
-* N/A
+* N/A 
 
 v1.3.1
 ---
-* N/A
+* N/A 
 
 v1.0.0
 ---
-* N/A
+* Initial version
+

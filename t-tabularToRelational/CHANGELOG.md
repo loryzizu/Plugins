@@ -1,5 +1,10 @@
-2.1.1-SNAPSHOT
+T-TabularToRelational
+----------
+
+2.2.0-SNAPSHOT
 ---
+* improved configuration
+* added new parsers(XLS, XLSX, DBF)
 * Improved description (About)
 
 v2.1.0

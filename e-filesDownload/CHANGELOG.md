@@ -1,5 +1,9 @@
+E-FilesDownload
+----------
+
 v2.1.1-SNAPSHOT
 ---
+* support for ignore TLS errors
 * Improved description (About)
 
 v2.1.0
@@ -16,4 +20,4 @@ v2.0.0
 
 v1.0.0
 ---
-* N/A
+* Initial version

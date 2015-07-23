@@ -1,17 +1,17 @@
 ### Popis
 
-Transformuje vstup použitím SPARQL konštrukcie
+Transformuje vstupné dáta pomocou SPARQL UPDATE dotazu
 
 ### Konfiguračné parametre
 
 | Meno | Popis |
 |:----|:----|
-|**Per-graph vykonávanie**|ak je aktívne dotaz sa vykoná systémom per-graph|
-|**SPARQL aktualizačný dotaz**|SPARQL aktualizačný dotaz|
+|**Púšťanie dotazov po grafoch** | k zaškrtnuté, dotazy sú púšťané po grafoch |
+|**SPARQL dotaz typu UPDATE** | SPARQL dotaz typu UPDATE |
 
-### Vstupy a výstupy ###
+### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input|i|RDFDataUnit|RDF vstup|x|
-|output|o|RDFDataUnit|transformovaný RDF výstup|x|
+|input  |i | RDFDataUnit | RDF vstupné dáta |x|
+|output |o | RDFDataUnit | RDF výstupné (transformované) dáta |x|

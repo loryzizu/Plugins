@@ -1,24 +1,30 @@
+T-RdfToFiles
+----------
+
+v2.1.1-SNAPSHOT
+---
+* Improved description (About)
+
 v2.1.0
 ---
-* added support for RDF configuration
-* migration to new configuration version
-* update to API 2.1.0
+* Added support for RDF configuration.
+* Migration to new configuration version as the old contains unused field
+* Update to API 2.1.0
 * SK localization
-* minor typos
-* improved description
+* Minor typos
 
 v2.0.1
 ---
-* fixes in build dependencies
+* Fixes in build dependencies
 
 v2.0.0
 ---
-* update for helpers 2.0.0
-* added statement-based progress log
+* Update for helpers 2.0.0
+* Added statement-based progress log
 
 v1.5.1
 ---
-* fixed per-graph select
+* Fixed per graph select
 
 v1.5.0
 ---

@@ -6,7 +6,7 @@ UnZips input file into files based on zip content.
 
 | Name | Description |
 |:----|:----|
-|**Do not prefix symbolic name (checkbox)** | If checked then output symbolic names of output files are not prefixed with symbolic name of unzipped file. Uncheck to prevent symbolic names collision if multiple zip files with same structure are unzipped. If you do not know, then uncheck this |
+|**Duplicate name prevention (checkbox)** | If checked DPU prevents collision in names of files send on output when multiple zip files with the same/similar structure are unzipped.<br>Uncheck sends on output files names as are in zip files.<br>If not sure keep checked |
 
 ### Inputs and outputs
 

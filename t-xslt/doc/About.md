@@ -1,6 +1,6 @@
 ### Description
 
-Does XSL Transformation over files and outputs Files
+Does XSL Transformation over input files, using single static template. It outputs Files.
 
 DPU supports random UUID generation using ```randomUUID()``` function in namespace ```uuid-functions```. Example of usage:
 ```xml

@@ -1,4 +1,4 @@
-# L-FilesUpload #
+L-FilesUpload
 ----------
 
 ###Documentation###

@@ -1,15 +1,22 @@
+T-RdfMerger
+----------
+
+v2.1.1-SNAPSHOT
+---
+* Improved description (About)
+
 v2.1.0
 ---
 * update to API 2.1.0
-* improved documentation
 
 v2.0.1
 ---
-* fixed in build dependencies
+* fixes in build dependencies
 
 v2.0.0
 ---
-* SPARQL is used to copy metadata
+* update to helpers 2.0.0
+* SPARQL is used to copy metadata.
 * DPU moved from Core to Plugins repositoory
 
 v1.6.0

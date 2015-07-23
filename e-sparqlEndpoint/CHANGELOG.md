@@ -1,3 +1,6 @@
+E-SparqlEndpoint
+----------
+
 v1.0.0-SNAPSHOT
 ---
 * Improved description (About)

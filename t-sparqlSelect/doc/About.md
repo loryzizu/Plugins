@@ -1,6 +1,6 @@
 ### Description
 
-Transforms SPARQL SELECT query result to CSV (without validation)
+Transforms SPARQL SELECT query result to CSV. Does not validate query.
 
 ### Configuration parameters
 
@@ -13,5 +13,5 @@ Transforms SPARQL SELECT query result to CSV (without validation)
 
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input|i|RDFDataUnit|RDF graph|x|
-|output|o|FilesDataUnit|CSV file containing SPARQL SELECT query result|x|
+|input  |i | RDFDataUnit   | RDF graph |x|
+|output |o | FilesDataUnit | CSV file containing SPARQL SELECT query result |x|

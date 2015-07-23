@@ -1,19 +1,19 @@
 ### Popis
 
-Konvertuje RDF grafy na súbory
+Transformuje RDF grafy do súborov
 
 ### Konfiguračné parametre
 
 | Meno | Popis |
 |:----|:----|
-|**RDF formát (zoznam)**|<UL><LI>Turtle</LI><LI>RDF/XML</LI><LI>N-Triples</LI><LI>N3</LI><LI>RDFa</LI></UL>|
-|**Generuj súbor grafu (checkbox)**|Vyžaduje sa súbor grafu?|
-|**Meno výstupného grafu**|v prípade, že je vyžadovaný|
-|**Cesta k súboru/názov bez prípony**|intuitívne|
+|**Formát súboru pre RDF dáta (list)** | Formát súboru na výstupe:<BR>- Turtle<BR>- RDF/XML<BR>- N-Triples<BR>- N3<BR>- RDFa |
+|**Vygenerovať súbor .graph s názvom výstupného grafu (checkbox)** | Je potrebý grafový súbor? |
+|**Názov výstupného grafu** | Názov výstupného grafu (ak je genrovaný grafový súbor) |
+|**Názov výstupného súboru (bez prípony, príponu určuje výstupný formát)** | zrejmé |
 
-### Vstupy a výstupy ###
+### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input|i|RDFDataUnit|RDF graf|x|
-|output|o|FilesDataUnit|Súbor obsahujúci RDF trojice|x|
+|input  |i| RDFDataUnit   | RDF grafuy |x|
+|output |o| FilesDataUnit |Súbory obsahujúce RDF triple |x|

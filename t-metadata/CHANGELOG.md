@@ -1,15 +1,25 @@
+T-Metadata
+----------
+
+v2.1.1-SNAPSHOT
+---
+* Improved description (About)
+
 v2.1.0
 ---
-* update to API 2.1.0
-* improved description
+* Update to API 2.1.0
 
 v2.0.1
 ---
-* fixed in build dependencies
+* fixes in build dependencies
 
 v2.0.0
 ---
-* update for helpers 2.0.0
+* Update for helpers 2.0.0
+
+v1.4.0
+---
+* N/A
 
 v1.4.1
 ---
@@ -26,3 +36,4 @@ v1.3.1
 v1.0.0
 ---
 * N/A
+

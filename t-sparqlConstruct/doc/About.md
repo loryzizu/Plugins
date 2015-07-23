@@ -6,8 +6,8 @@ Transform input using SPARQL construct
 
 | Name | Description |
 |:----|:----|
-|**Per-graph execution**|if checked query is executed per-graph|
-|**SPARQL construct query**|SPARQL construct query|
+|**Per-graph execution** | If checked query is executed per-graph |
+|**SPARQL construct query** | SPARQL construct query |
 
 ### Inputs and outputs
 

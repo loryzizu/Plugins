@@ -1,8 +1,11 @@
-v2.1.1-SNAPSHOT
+E-DistributionMetadata
+----------
+
+v2.0.1-SNAPSHOT
 ---
 * Improved description (About)
 
-v2.0.0-SNAPSHOT
+v2.0.0
 ---
 * Adopted by UV/Plugins
 

@@ -6,11 +6,11 @@ Extrahuje súbory komprimované metódou GZIP
 
 | Meno | Popis |
 |:----|:----|
-|**N/A**|N/A|
+|N/A | |
 
 ### Vstupy a výstupy ###
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|filesInput|i|FilesDataUnit|Dátová jednotka so súbormi, ktoré majú byť extrahované|x|
-|filesOutput|o|FilesDataUnit|Dátová jednotka s extrahovanými súbormi||
+|filesInput  |i| FilesDataUnit | Dátová jednotka so súbormi, ktoré majú byť extrahované |x|
+|filesOutput |o| FilesDataUnit | Dátová jednotka s extrahovanými súbormi ||
