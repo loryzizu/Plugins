@@ -1,15 +1,25 @@
 package eu.unifiedviews.plugins.extractor.relationalfromsql;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class contains database engines specific configuration parameters
  */
 public class SqlDatabase {
+
+    private static Logger LOG = LoggerFactory.getLogger(SqlDatabase.class);
+
+    private static String SUPPORTED_DB_PROPERTY_FORMAT = "db.type.%s.enabled";
 
     // PostgreSQL parameters
     private static final String POSTGRES_NAME = "PostgreSQL";
@@ -30,7 +40,7 @@ public class SqlDatabase {
     private static final int MYSQL_DEFAULT_PORT = 3306;
 
     // MS SQL parameters
-    private static final String MSSQL_NAME = "MS SQL";
+    private static final String MSSQL_NAME = "MSSQL";
 
     private static final String MSSQL_JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 
@@ -49,108 +59,65 @@ public class SqlDatabase {
 
     private static final int ORACLE_DEFAULT_PORT = 1521;
 
-    // H2 Parameters - used for testing purposes
-    private static final String H2_MEM_JDBC_DRIVER = "org.h2.Driver";
-
-    private static final String H2_MEM_JDBC_URL_PREFIX = "jdbc:h2:";
-
     public enum DatabaseType {
         POSTGRES, MSSQL, MYSQL, ORACLE, H2_MEM;
     }
 
-    private static Map<String, DatabaseType> namesToType;
+    private static DatabaseInfo postgresInfo = new DatabaseInfo(POSTGRES_NAME, POSTGRES_JDBC_DRIVER, POSTGRES_JDBC_URL_PREFIX,
+            POSTGRES_DEFAULT_PORT, DatabaseType.POSTGRES);
 
-    private static Map<DatabaseType, String> typesToName;
+    private static DatabaseInfo mysqlInfo = new DatabaseInfo(MYSQL_NAME, MYSQL_JDBC_DRIVER, MYSQL_JDBC_URL_PREFIX, MYSQL_DEFAULT_PORT,
+            DatabaseType.MYSQL);
 
-    private static Map<DatabaseType, String> jdbcDriverNames;
+    private static DatabaseInfo oracleInfo = new DatabaseInfo(ORACLE_NAME, ORACLE_JDBC_DRIVER, ORACLE_JDBC_URL_PREFIX, ORACLE_DEFAULT_PORT,
+            DatabaseType.ORACLE);
 
-    private static Map<DatabaseType, String> jdbcUrlPrefixes;
+    private static DatabaseInfo mssqlInfo = new DatabaseInfo(MSSQL_NAME, MSSQL_JDBC_DRIVER, MSSQL_JDBC_URL_PREFIX, MSSQL_DEFAULT_PORT,
+            DatabaseType.MSSQL);
 
-    private static Map<DatabaseType, Integer> defaultDatabasePorts;
+    private static List<DatabaseInfo> allDatabases;
 
-    private static List<String> supportedDatabaseNames;
+    private static Map<DatabaseType, DatabaseInfo> supportedDatabases;
 
     static {
-        initNamesToType();
-        initJdbcDriverNames();
-        initJdbcUrlPrefixes();
-        initDefaultDatabasePorts();
-        initTypesToName();
-        initSupportedDatabaseNames();
+        allDatabases = Arrays.asList(new DatabaseInfo[] { postgresInfo, mysqlInfo, oracleInfo, mssqlInfo });
+        initSupportedDatabases();
     }
 
-    private static void initNamesToType() {
-        namesToType = new HashMap<>();
-        namesToType.put(POSTGRES_NAME, DatabaseType.POSTGRES);
-        namesToType.put(MYSQL_NAME, DatabaseType.MYSQL);
-        namesToType.put(MSSQL_NAME, DatabaseType.MSSQL);
-        namesToType.put(ORACLE_NAME, DatabaseType.ORACLE);
+    private static void initSupportedDatabases() {
+        supportedDatabases = new HashMap<>();
+        Properties dbProperties = getProperties();
+        for (DatabaseInfo dbInfo : allDatabases) {
+            String dbProperty = String.format(SUPPORTED_DB_PROPERTY_FORMAT, dbInfo.getDatabaseName());
+            if (dbProperties.getProperty(dbProperty) != null && Boolean.parseBoolean(dbProperties.getProperty(dbProperty))) {
+                supportedDatabases.put(dbInfo.getDatabaseType(), dbInfo);
+            }
+        }
     }
 
-    private static void initTypesToName() {
-        typesToName = new HashMap<>();
-        typesToName.put(DatabaseType.POSTGRES, POSTGRES_NAME);
-        typesToName.put(DatabaseType.MYSQL, MYSQL_NAME);
-        typesToName.put(DatabaseType.MSSQL, MSSQL_NAME);
-        typesToName.put(DatabaseType.ORACLE, ORACLE_NAME);
+    public static DatabaseInfo getDatabaseInfo(DatabaseType databaseType) {
+        return supportedDatabases.get(databaseType);
     }
 
-    private static void initJdbcDriverNames() {
-        jdbcDriverNames = new HashMap<>();
-        jdbcDriverNames.put(DatabaseType.POSTGRES, POSTGRES_JDBC_DRIVER);
-        jdbcDriverNames.put(DatabaseType.MYSQL, MYSQL_JDBC_DRIVER);
-        jdbcDriverNames.put(DatabaseType.ORACLE, ORACLE_JDBC_DRIVER);
-        jdbcDriverNames.put(DatabaseType.MSSQL, MSSQL_JDBC_DRIVER);
-        jdbcDriverNames.put(DatabaseType.H2_MEM, H2_MEM_JDBC_DRIVER);
+    public static Collection<DatabaseInfo> getSupportedDatabases() {
+        return supportedDatabases.values();
     }
 
-    private static void initJdbcUrlPrefixes() {
-        jdbcUrlPrefixes = new HashMap<>();
-        jdbcUrlPrefixes.put(DatabaseType.POSTGRES, POSTGRES_JDBC_URL_PREFIX);
-        jdbcUrlPrefixes.put(DatabaseType.MYSQL, MYSQL_JDBC_URL_PREFIX);
-        jdbcUrlPrefixes.put(DatabaseType.ORACLE, ORACLE_JDBC_URL_PREFIX);
-        jdbcUrlPrefixes.put(DatabaseType.MSSQL, MSSQL_JDBC_URL_PREFIX);
-        jdbcUrlPrefixes.put(DatabaseType.H2_MEM, H2_MEM_JDBC_URL_PREFIX);
+    public static Map<DatabaseType, DatabaseInfo> getSupportedDatabasesMap() {
+        return supportedDatabases;
     }
 
-    private static void initDefaultDatabasePorts() {
-        defaultDatabasePorts = new HashMap<>();
-        defaultDatabasePorts.put(DatabaseType.POSTGRES, POSTGRES_DEFAULT_PORT);
-        defaultDatabasePorts.put(DatabaseType.MYSQL, MYSQL_DEFAULT_PORT);
-        defaultDatabasePorts.put(DatabaseType.MSSQL, MSSQL_DEFAULT_PORT);
-        defaultDatabasePorts.put(DatabaseType.ORACLE, ORACLE_DEFAULT_PORT);
-    }
+    private static Properties getProperties() {
+        Properties props = new Properties();
+        ClassLoader loader = RelationalFromSql.class.getClassLoader();
+        try (InputStream stream = loader.getResourceAsStream("db.properties")) {
+            props.load(stream);
+        } catch (IOException e) {
+            LOG.error("Failed to load db properties", e);
+        }
 
-    private static void initSupportedDatabaseNames() {
-        supportedDatabaseNames = new ArrayList<>();
-        supportedDatabaseNames.add(POSTGRES_NAME);
-        supportedDatabaseNames.add(MYSQL_NAME);
-        supportedDatabaseNames.add(MSSQL_NAME);
-        supportedDatabaseNames.add(ORACLE_NAME);
-    }
+        return props;
 
-    public static DatabaseType getDatabaseTypeForDatabaseName(String dbName) {
-        return namesToType.get(dbName);
-    }
-
-    public static String getJdbcDriverNameForDatabase(DatabaseType dbType) {
-        return jdbcDriverNames.get(dbType);
-    }
-
-    public static String getJdbcUrlPrefixForDatabase(DatabaseType dbType) {
-        return jdbcUrlPrefixes.get(dbType);
-    }
-
-    public static Set<String> getDatabaseTypeNames() {
-        return namesToType.keySet();
-    }
-
-    public static int getDefaultDatabasePort(DatabaseType dbType) {
-        return defaultDatabasePorts.get(dbType);
-    }
-
-    public static String getDatabaseNameForDatabaseType(DatabaseType dbType) {
-        return typesToName.get(dbType);
     }
 
 }

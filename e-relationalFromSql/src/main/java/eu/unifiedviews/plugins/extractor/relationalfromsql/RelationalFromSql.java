@@ -75,7 +75,7 @@ public class RelationalFromSql extends AbstractDpu<RelationalFromSqlConfig_V2> {
         LOG.info(shortMessage + " " + longMessage);
 
         try {
-            Class.forName(SqlDatabase.getJdbcDriverNameForDatabase(this.config.getDatabaseType()));
+            Class.forName(SqlDatabase.getDatabaseInfo(this.config.getDatabaseType()).getJdbcDriverName());
         } catch (ClassNotFoundException e) {
             throw ContextUtils.dpuException(ctx, e, "errors.driver.loadfailed");
         }
@@ -239,7 +239,8 @@ public class RelationalFromSql extends AbstractDpu<RelationalFromSqlConfig_V2> {
         return bTableExists;
     }
 
-    private void fillInsertData(PreparedStatement ps, List<ColumnDefinition> columns, ResultSet rs) throws SQLException, DataUnitException {
+    private static void fillInsertData(PreparedStatement ps, List<ColumnDefinition> columns, ResultSet rs) throws SQLException,
+            DataUnitException {
         int index = 1;
         for (ColumnDefinition column : columns) {
             Object sourceValue = rs.getObject(column.getColumnName());
