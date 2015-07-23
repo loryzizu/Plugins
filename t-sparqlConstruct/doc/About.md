@@ -13,5 +13,5 @@ Transform input using SPARQL construct
 
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input  |i| RDFDataUnit | RDF input |x|
-|output |o| RDFDataUnit | RDF output (transformed) |x|
+|input|i|RDFDataUnit|RDF input|x|
+|output|o|RDFDataUnit|transformed RDF output|x|

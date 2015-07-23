@@ -1,6 +1,6 @@
 ### Popis
 
-Validuje RDF dáta
+Overuje RDF dáta
 
 ### Konfiguračné parametre
 
