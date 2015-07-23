@@ -17,7 +17,7 @@ v2.0.0
 ---
 * update to helpers 2.0.0
 * SPARQL is used to copy metadata.
-* moved to plugins repository
+* DPU moved from Core to Plugins repositoory
 
 v1.6.0
 ---
@@ -36,5 +36,9 @@ v1.4.0
 * N/A
 
 v1.3.1
+---
+* N/A
+
+v1.3.0
 ---
 * N/A

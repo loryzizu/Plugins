@@ -6,8 +6,8 @@ Transformuje vstupné dáta pomocou SPARQL SELECT dotazu a výsledok uloží do 
 
 | Meno | Popis |
 |:----|:----|
-|**Target path*** | Path and target CSV file name |
-|**SPARQL query**| Text area dedicated for SPARQL SELECT query | 
+|**Cieľová cesta** | Cesta a názov cieľového CSV súboru |
+|**SPARQL dotaz** | Textové pole určené pre SPARQL dotaz|
 
 ### Vstupy a výstupy
 
