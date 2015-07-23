@@ -1,35 +1,34 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
-import com.vaadin.data.Validator;
-import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.data.validator.IntegerRangeValidator;
-import com.vaadin.ui.*;
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.localization.Messages;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ParserType;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.ui.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
+public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRelationalConfig_V2> {
 
-public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRelationalConfig_V1> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(TabularToRelationalVaadinDialog.class);
+    private OptionGroup parserTypeOptionGroup;
 
     private TextField tableNameField;
 
-    private TextField encodingField;
-
-    private ObjectProperty<Integer> rowLimitProperty;
-
-    private TextField rowLimitField;
+    private NativeSelect charsetSelect;
 
     private TextField fieldDelimiterField;
 
     private TextField fieldSeparatorField;
+
+    private TextField dataBeginningRowField;
 
     private Table table;
 
@@ -37,18 +36,21 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         super(TabularToRelational.class);
     }
 
-    @Override
     protected void buildDialogLayout() {
-        VerticalLayout mainLayout = new VerticalLayout();
+        final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setImmediate(false);
         mainLayout.setWidth("100%");
         mainLayout.setHeight("-1px");
         mainLayout.setSpacing(true);
-        mainLayout.setMargin(false);
+        mainLayout.setMargin(true);
 
-        mainLayout.addComponent(buildFormLayout());
-        mainLayout.addComponent(buildTableLayout());
-        mainLayout.addComponent(buildButtonsLayout());
+        final Label inputConfigurationsLabel = new Label(ctx.tr("dialog.configuration.input"));
+        mainLayout.addComponent(inputConfigurationsLabel);
+        mainLayout.addComponent(buildInputConfigurationLayout());
+
+        final Label outputConfigurationsLabel = new Label(ctx.tr("dialog.configuration.output"));
+        mainLayout.addComponent(outputConfigurationsLabel);
+        mainLayout.addComponent(buildOutputConfigurationLayout());
 
         Panel panel = new Panel();
         panel.setSizeFull();
@@ -59,59 +61,99 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         setCompositionRoot(panel);
     }
 
+    private Component buildInputConfigurationLayout() {
+        final FormLayout formLayout = new FormLayout();
 
-    private Component buildFormLayout() {
-        final FormLayout layout = new FormLayout();
-        layout.setSizeFull();
-        layout.setSpacing(true);
+        BeanItemContainer<ParserType> parserTypesContainer = new BeanItemContainer<ParserType>(ParserType.class, Arrays.asList(ParserType.values()));
+        parserTypeOptionGroup = new OptionGroup(ctx.tr("dialog.parser.type"), parserTypesContainer);
+        parserTypeOptionGroup.setItemCaptionPropertyId("description");
+        parserTypeOptionGroup.setNullSelectionAllowed(false);
+        parserTypeOptionGroup.setImmediate(true);
+        parserTypeOptionGroup.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override public void valueChange(Property.ValueChangeEvent e) {
+                ParserType newParserType = (ParserType) e.getProperty().getValue();
+                switch (newParserType) {
+                    case XLS:
+                        hideComponents(charsetSelect, fieldDelimiterField, fieldSeparatorField);
+                        break;
+                    case CSV:
+                        showComponents(charsetSelect, fieldDelimiterField, fieldSeparatorField);
+                        break;
+                    case DBF:
+                        showComponents(charsetSelect);
+                        hideComponents(fieldDelimiterField, fieldSeparatorField);
+                        break;
+                    default:
+                }
+            }
+        });
+        formLayout.addComponent(parserTypeOptionGroup);
+
+        dataBeginningRowField = new TextField(ctx.tr("dialog.dataBeginningRow"));
+        dataBeginningRowField.setDescription(ctx.tr("dialog.dataBeginningRow.description"));
+        dataBeginningRowField.addValidator(new Validator() {
+            @Override public void validate(Object value) throws Validator.InvalidValueException {
+                try {
+                    Integer number = Integer.valueOf(value.toString());
+                    if (number < 1) {
+                        throw new Validator.InvalidValueException(ctx.tr("dialog.dataBeginningRow.restriction"));
+                    }
+                } catch (NumberFormatException e) {
+                    throw new Validator.InvalidValueException(ctx.tr("dialog.dataBeginningRow.restriction"));
+                }
+
+            }
+        });
+        dataBeginningRowField.setRequired(true);
+        formLayout.addComponent(dataBeginningRowField);
+
+        fieldSeparatorField = new TextField(ctx.tr("dialog.fieldSeparator"));
+        fieldSeparatorField.setDescription(ctx.tr("dialog.fieldSeparator.description"));
+        formLayout.addComponent(fieldSeparatorField);
+
+        fieldDelimiterField = new TextField(ctx.tr("dialog.fieldDelimiter"));
+        fieldDelimiterField.setDescription(ctx.tr("dialog.fieldDelimiter.description"));
+        formLayout.addComponent(fieldDelimiterField);
+
+        final BeanItemContainer<String> container = new BeanItemContainer<String>(String.class, Arrays.asList(TabularToRelational.CHARSETS));
+        charsetSelect = new NativeSelect(ctx.tr("dialog.charset"), container);
+        charsetSelect.setDescription(ctx.tr("dialog.charset.description"));
+        charsetSelect.setNullSelectionAllowed(false);
+        charsetSelect.setImmediate(true);
+        formLayout.addComponent(charsetSelect);
+
+        return formLayout;
+    }
+
+    private Component buildOutputConfigurationLayout() {
+        final FormLayout formLayout = new FormLayout();
 
         tableNameField = new TextField(ctx.tr("dialog.tablename"));
         tableNameField.setRequired(true);
+        tableNameField.setImmediate(true);
         tableNameField.addValidator(new Validator() {
-            @Override public void validate(Object value) throws InvalidValueException {
-                if(!(value instanceof String && isTableNameValid((String) value))) throw new InvalidValueException(ctx.tr("dialog.tablename.restriction"));
+            @Override public void validate(Object value) throws Validator.InvalidValueException {
+                if (!(value instanceof String && isNameValid((String) value)))
+                    throw new Validator.InvalidValueException(ctx.tr("dialog.tablename.restriction"));
             }
         });
         tableNameField.setRequiredError(ctx.tr("dialog.tablename.required"));
         tableNameField.setDescription(ctx.tr("dialog.tablename.description") + " " + ctx.tr("dialog.tablename.restriction"));
-        layout.addComponent(tableNameField);
+        formLayout.addComponent(tableNameField);
 
-        encodingField = new TextField(ctx.tr("dialog.encoding"));
-        encodingField.setDescription(ctx.tr("dialog.encoding.description"));
-        layout.addComponent(encodingField);
-
-        rowLimitProperty = new ObjectProperty<>(0);
-        rowLimitField = new TextField(ctx.tr("dialog.rowsLimit"), rowLimitProperty);
-        rowLimitField.setRequired(true);
-        rowLimitField.setRequiredError(ctx.tr("dialog.rowsLimit.required"));
-        rowLimitField.addValidator(new IntegerRangeValidator(ctx.tr("dialog.rowsLimit.validator"), 1 , Integer.MAX_VALUE));
-        rowLimitField.setDescription(ctx.tr("dialog.rowsLimit.description"));
-        layout.addComponent(rowLimitField);
-
-        fieldDelimiterField = new TextField(ctx.tr("dialog.fieldDelimiter"));
-        fieldDelimiterField.setDescription(ctx.tr("dialog.fieldDelimiter.description"));
-        layout.addComponent(fieldDelimiterField);
-
-        fieldSeparatorField = new TextField(ctx.tr("dialog.fieldSeparator"));
-        fieldSeparatorField.setDescription(ctx.tr("dialog.fieldSeparator.description"));
-        layout.addComponent(fieldSeparatorField);
-
-        return layout;
-    }
-
-    private Component buildTableLayout() {
-        table = new Table();
+        table = new Table(ctx.tr("table.label"));
         table.setPageLength(7);
-
         table.addContainerProperty("name", String.class, null);
-        table.addContainerProperty("type", String.class, null);
         table.addContainerProperty("primaryKey", CheckBox.class, null);
-
-        table.setColumnHeaders(ctx.tr("table.name"), ctx.tr("table.type"), ctx.tr("table.primary.key"));
-
+        table.setColumnHeaders(ctx.tr("table.name"), ctx.tr("table.primary.key"));
+        table.setDescription(ctx.tr("table.desciption"));
         table.setImmediate(true);
         table.setEditable(true);
-        return table;
+        formLayout.addComponent(table);
+
+        formLayout.addComponent(buildButtonsLayout());
+
+        return formLayout;
     }
 
     private Component buildButtonsLayout() {
@@ -120,7 +162,7 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         Button addRowButton = new Button("+");
         addRowButton.addClickListener(new Button.ClickListener() {
             @Override public void buttonClick(Button.ClickEvent clickEvent) {
-                table.addItem(new Object[] {"", "", new CheckBox()}, (Integer) table.lastItemId() + 1);
+                table.addItem(new Object[] { "", new CheckBox() }, (Integer) table.lastItemId() + 1);
             }
         });
         layout.addComponent(addRowButton);
@@ -138,57 +180,66 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         return layout;
     }
 
-    @Override
-    protected void setConfiguration(TabularToRelationalConfig_V1 config) throws DPUConfigException {
-        if(config.getTableName().isEmpty()) {
+    protected void setConfiguration(TabularToRelationalConfig_V2 config) throws DPUConfigException {
+        if (config.getTableName().isEmpty()) {
             tableNameField.setValue(ctx.tr("dialog.tableName.example"));
         } else {
             tableNameField.setValue(config.getTableName());
         }
-        encodingField.setValue(config.getEncoding());
+        dataBeginningRowField.setValue(config.getDataBegginningRow().toString());
+        charsetSelect.setValue(config.getEncoding());
         fieldDelimiterField.setValue(config.getFieldDelimiter());
         fieldSeparatorField.setValue(config.getFieldSeparator());
-        rowLimitProperty.setValue(config.getRowsLimit());
-
+        parserTypeOptionGroup.setValue(config.getParserType());
         table.removeAllItems();
-        if(config.getColumnMapping() == null || config.getColumnMapping().isEmpty()) { // if config does not contain any mapping, create empty one
+        if (config.getColumnMapping() == null || config.getColumnMapping().isEmpty()) { // if config does not contain any mapping, create empty one
             // add first row
-            table.addItem(new Object[] { "", "", new CheckBox()}, 0);
+            table.addItem(new Object[] { "", new CheckBox() }, 0);
         } else {
             for (ColumnMappingEntry entry : config.getColumnMapping()) {
                 CheckBox primaryKeyCheckBox = new CheckBox();
                 primaryKeyCheckBox.setValue(entry.isPrimaryKey());
-                Object[] row = new Object[] { entry.getColumnName(), entry.getDataType(), primaryKeyCheckBox };
+                Object[] row = new Object[] { entry.getColumnName(), primaryKeyCheckBox };
                 Integer id = (table.lastItemId() == null) ? 0 : (Integer) table.lastItemId() + 1;
                 table.addItem(row, id);
             }
         }
     }
 
-    @Override
-    protected TabularToRelationalConfig_V1 getConfiguration() throws DPUConfigException {
+    protected TabularToRelationalConfig_V2 getConfiguration() throws DPUConfigException {
         // validation
         try {
+            // check data begins at row
+            dataBeginningRowField.validate();
+            // check table name
             tableNameField.validate();
-            rowLimitField.validate();
-        } catch(Validator.InvalidValueException e) {
+            // check column names
+            for (Iterator i = table.getItemIds().iterator(); i.hasNext(); ) {
+                Integer id = (Integer) i.next();
+                String value = (String) table.getContainerProperty(id, "name").getValue();
+                if (!isNameValid(value)) {
+                    throw new DPUConfigException(ctx.tr("dialog.tablecolumn.restriction"));
+                }
+            }
+        } catch (Validator.InvalidValueException e) {
             throw new DPUConfigException(e.getMessage());
         }
 
-        TabularToRelationalConfig_V1 config = new TabularToRelationalConfig_V1();
+        TabularToRelationalConfig_V2 config = new TabularToRelationalConfig_V2();
         config.setTableName(tableNameField.getValue());
-        config.setEncoding(encodingField.getValue());
+        config.setEncoding(String.valueOf(charsetSelect.getValue()));
         config.setFieldDelimiter(fieldDelimiterField.getValue());
         config.setFieldSeparator(fieldSeparatorField.getValue());
-        config.setRowsLimit(rowLimitProperty.getValue());
+        config.setParserType((ParserType) parserTypeOptionGroup.getValue());
+        config.setDataBegginningRow(Integer.parseInt(dataBeginningRowField.getValue()));
 
         List<ColumnMappingEntry> list = new ArrayList<>();
-        for(Iterator i = table.getItemIds().iterator(); i.hasNext();){
+        for (Iterator i = table.getItemIds().iterator(); i.hasNext(); ) {
             Integer id = (Integer) i.next();
 
             ColumnMappingEntry entry = new ColumnMappingEntry();
             entry.setColumnName((String) table.getContainerProperty(id, "name").getValue());
-            entry.setDataType((String) table.getContainerProperty(id, "type").getValue());
+            entry.setDataType("VARCHAR"); // we have decided that we will force the type to varchar only
             entry.setPrimaryKey(((CheckBox) table.getContainerProperty(id, "primaryKey").getValue()).getValue());
 
             list.add(entry);
@@ -197,11 +248,24 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         return config;
     }
 
-    private boolean isTableNameValid(String value) {
-        String regex = "[A-Z_]+";
-        if(value == null || !value.matches(regex)) {
+    private boolean isNameValid(String value) {
+        if (value == null || value.isEmpty()) {
             return false;
         }
-        return true;
+        Pattern pattern = Pattern.compile("[A-Za-z][A-Za-z0-9_]*");
+        Matcher matcher = pattern.matcher(value);
+        return matcher.matches();
+    }
+
+    private void showComponents(Component... components) {
+        for (Component component : components) {
+            component.setVisible(true);
+        }
+    }
+
+    private void hideComponents(Component... components) {
+        for (Component component : components) {
+            component.setVisible(false);
+        }
     }
 }

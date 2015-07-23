@@ -1,17 +1,19 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular;
 
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnInfo_V1;
-import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ValueGeneratorReplace;
 import cz.cuni.mff.xrg.uv.transformer.tabular.mapper.TableToRdfConfig;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserCsvConfig;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserDbfConfig;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserType;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserXlsConfig;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import eu.unifiedviews.plugins.transformer.tabular.column.NamedCell_V1;
 
 /**
  *
@@ -123,7 +125,7 @@ public class TabularConfig_V2 {
     private String xlsSheetName = null;
 
     /**
-     * If checked same row counter is used for all files. 
+     * If checked same row counter is used for all files. Used only for xsls.
      */
     private boolean staticRowCounter = false;
 
@@ -148,6 +150,11 @@ public class TabularConfig_V2 {
      * Generate RDF.LABEL for columns from colum name.
      */
     private boolean generateLabels = false;
+
+    /**
+     * If set then trailing null values in header are ignored.
+     */
+    private boolean stripHeader = false;
 
     public TabularConfig_V2() {
     }
@@ -336,6 +343,14 @@ public class TabularConfig_V2 {
         this.generateLabels = generateLabels;
     }
 
+    public boolean isStripHeader() {
+        return stripHeader;
+    }
+
+    public void setStripHeader(boolean stripHeader) {
+        this.stripHeader = stripHeader;
+    }
+
     public TableToRdfConfig getTableToRdfConfig() {
         return new TableToRdfConfig(keyColumn, baseURI, columnsInfo,
                 generateNew, rowsClass, ignoreBlankCells, columnsInfoAdv,
@@ -359,7 +374,7 @@ public class TabularConfig_V2 {
         return new ParserXlsConfig(xlsSheetName, linesToIgnore, hasHeader,
                 namedCells, 
                 rowsLimit == null || rowsLimit == -1 ? null : rowsLimit,
-                staticRowCounter);
+                staticRowCounter, stripHeader);
     }
 
 }

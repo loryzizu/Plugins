@@ -1,9 +1,10 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.mapper;
 
 import cz.cuni.mff.xrg.uv.transformer.tabular.TabularOntology;
-import cz.cuni.mff.xrg.uv.transformer.tabular.column.ValueGenerator;
+
 import java.util.List;
 import java.util.Map;
+
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dpu.extension.rdf.simple.WritableSimpleRdf;
+import eu.unifiedviews.plugins.transformer.tabular.column.ValueGenerator;
 
 /**
  * Parse table data into rdf. Before usage this class must be configured by

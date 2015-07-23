@@ -5,7 +5,9 @@ import java.util.Map;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
+
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.FormLayout;
@@ -43,7 +45,7 @@ public class FilesFindAndReplaceVaadinDialog extends AbstractDialog<FilesFindAnd
         mainLayout.setSpacing(true);
 
         encodingSelect = new NativeSelect(ctx.tr("dialog.tlfs.encoding"));
-        for(Encoding encoding : Encoding.values()) {
+        for (Encoding encoding : Encoding.values()) {
             encodingSelect.addItem(encoding);
             encodingSelect.setItemCaption(encoding, encoding.getCharset());
         }
@@ -78,7 +80,9 @@ public class FilesFindAndReplaceVaadinDialog extends AbstractDialog<FilesFindAnd
         Encoding encoding = (Encoding) encodingSelect.getValue();
         conf.setEncoding(encoding);
         Map<String, String> map = new HashMap<String, String>();
-        map.put(StringEscapeUtils.unescapeJava(search.getValue()), StringEscapeUtils.unescapeJava(replace.getValue()));
+        if (StringUtils.isNotBlank(search.getValue())) {
+            map.put(StringEscapeUtils.unescapeJava(search.getValue()), StringEscapeUtils.unescapeJava(replace.getValue()));
+        }
         conf.setPatterns(map);
 
         return conf;

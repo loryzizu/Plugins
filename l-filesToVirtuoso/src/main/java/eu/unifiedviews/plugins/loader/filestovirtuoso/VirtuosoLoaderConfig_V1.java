@@ -1,6 +1,8 @@
 package eu.unifiedviews.plugins.loader.filestovirtuoso;
 
+import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
 
+@EntityDescription.Entity(type = "http://unifiedviews.eu/ontology/dpu/filesToVirtuoso/Config")
 public class VirtuosoLoaderConfig_V1 {
 
     private String virtuosoUrl = "";
@@ -15,8 +17,10 @@ public class VirtuosoLoaderConfig_V1 {
 
     private boolean includeSubdirectories = true;
 
+    @EntityDescription.Property(uri = "http://unifiedviews.eu/ontology/dpu/filesToVirtuoso/config/fileName")
     private String loadFilePattern = "%";
 
+    @EntityDescription.Property(uri = "http://unifiedviews.eu/ontology/dpu/filesToVirtuoso/config/graphUri")
     private String targetContext = "";
 
 //    private String targetTempContext = "";

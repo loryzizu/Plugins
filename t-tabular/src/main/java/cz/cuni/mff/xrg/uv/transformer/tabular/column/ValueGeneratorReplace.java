@@ -1,12 +1,19 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.column;
 
 import cz.cuni.mff.xrg.uv.transformer.tabular.Utils;
-import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParseFailed;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
+
+import eu.unifiedviews.plugins.transformer.tabular.column.ValueGenerator;
+import eu.unifiedviews.plugins.transformer.tabular.column.ValueGeneratorString;
+import eu.unifiedviews.plugins.transformer.tabular.column.ValueGeneratorTyped;
+import eu.unifiedviews.plugins.transformer.tabular.column.ValueGeneratorUri;
+import eu.unifiedviews.plugins.transformer.tabular.parser.ParseFailed;
 
 /**
  *
