@@ -4,6 +4,7 @@ T-UnZipper
 v2.1.1-SNAPSHOT
 ---
 * Improved description (About)
+* Dialog updated to be more user friendly
 
 v2.1.0
 ---
