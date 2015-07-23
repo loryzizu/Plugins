@@ -1,6 +1,6 @@
 ### Description
 
-Transform input using SPARQL construct
+Transforms input using SPARQL construct
 
 ### Configuration parameters
 
