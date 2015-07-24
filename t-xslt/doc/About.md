@@ -30,4 +30,32 @@ DPU supports random UUID generation using ```randomUUID()``` function in namespa
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |files  |i| FilesDataUnit | File to be transformed  |x|
 |files  |o| FilesDataUnit | Transformed file of given type |x|
-|config |i| RDFDataUnit | Configuration (template parameters) ||
+|config |i| RDFDataUnit | Dynamic DPU configuration, see Advanced configuration ||
+
+### Advanced configuration
+
+It is also possible to dynamically configure the DPU over its input `config` using RDF data.
+
+Configuration samples:
+
+```turtle
+<http://localhost/resource/config> 
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://linked.opendata.cz/ontology/uv/dpu/xslt/Config>;
+    <http://linked.opendata.cz/ontology/uv/dpu/xslt/fileInfo> <http://localhost/resource/fileInfo/0>;
+    <http://linked.opendata.cz/ontology/uv/dpu/xslt/outputFileExtension> “.ttl”.
+```
+
+```turtle
+<http://localhost/resource/fileInfo/0>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://linked.opendata.cz/ontology/uv/dpu/xslt/FileInfo>;
+    <http://linked.opendata.cz/ontology/uv/dpu/xslt/param> <http://localhost/resource/param/0>;
+    <http://unifiedviews.eu/DataUnit/MetadataDataUnit/symbolicName> “smlouva.ttl”.
+```
+
+```turtle
+<http://localhost/resource/param/0>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://linked.opendata.cz/ontology/uv/dpu/xslt/Param>;
+    <http://linked.opendata.cz/ontology/uv/dpu/xslt/param/name> “paramName”;
+    <http://linked.opendata.cz/ontology/uv/dpu/xslt/param/value> “paramValue”.
+```
+
