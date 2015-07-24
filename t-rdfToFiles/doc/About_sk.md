@@ -17,3 +17,18 @@ Transformuje RDF grafy do súborov
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |input  |i| RDFDataUnit   | RDF grafuy |x|
 |output |o| FilesDataUnit |Súbory obsahujúce RDF triple |x|
+|config |i| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | |
+
+### Pokročilá konfigurácia
+
+Krok je možné nakonfigurovať aj dznamicky cez vstup `config` pomocou RDF dát.
+
+Vzor konfigurácie:
+
+````turtle
+<http://localhost/resources/configuration>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://unifiedviews.eu/ontology/dpu/rdfToFiles/Config>;
+    <http://unifiedviews.eu/ontology/dpu/rdfToFiles/config/fileFormat> "TriG";
+    <http://unifiedviews.eu/ontology/dpu/rdfToFiles/config/outputUri> "http://output-graph/name";
+    <http://unifiedviews.eu/ontology/dpu/rdfToFiles/config/outputFile> "graph-output-file".
+```
