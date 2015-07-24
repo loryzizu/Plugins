@@ -23,7 +23,7 @@ Transformuje RDF grafy do súborov
 
 Krok je možné nakonfigurovať aj dznamicky cez vstup `config` pomocou RDF dát.
 
-Vyor konfigurácie:
+Vzor konfigurácie:
 
 ````turtle
 <http://localhost/resources/configuration>

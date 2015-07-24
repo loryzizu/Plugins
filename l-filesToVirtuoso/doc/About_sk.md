@@ -28,7 +28,7 @@ Nahrá RDF dáta do Virtuoso.
 
 Krok je možné nakonfigurovať aj dznamicky cez vstup `config` pomocou RDF dát.
 
-Vyor konfigurácie:
+Vzor konfigurácie:
 
 ````turtle
 <http://localhost/resource/config	
