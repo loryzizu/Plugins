@@ -22,4 +22,17 @@ Nahrá RDF dáta do Virtuoso.
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|TODO: provide Name, Dataunit and Description of input |i |  |  | |
+|config |i| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | |
+
+### Pokročilá konfigurácia
+
+Krok je možné nakonfigurovať aj dznamicky cez vstup `config` pomocou RDF dát.
+
+Vzor konfigurácie:
+
+````turtle
+<http://localhost/resource/config	
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://unifiedviews.eu/ontology/dpu/filesToVirtuoso/Config>;
+    <http://unifiedviews.eu/ontology/dpu/filesToVirtuoso/config/fileName> "dataset.trig";
+    <http://unifiedviews.eu/ontology/dpu/filesToVirtuoso/config/graphUri> "http://dataset".
+```

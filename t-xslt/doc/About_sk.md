@@ -1,10 +1,11 @@
-### Description
+### Popis
 
-Does XSL Transformation over input files, using single static template. It outputs Files.
+Vykoná XSL Transformáciu vstupných súborov na `files` vstupe s vzužitím statického predpisu xslt.
+Tranformované súbory dá na výstup files`.
 
-DPU supports random UUID generation using `randomUUID()` function in namespace `uuid-functions`.
+V XSLT je podporované generovanie náhodných UUID pomocou `randomUUID()` funkcie v mennom priestore `uuid-functions`.
 
-Example of usage:
+Príklad použitia:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -18,28 +19,28 @@ Example of usage:
 </xsl:stylesheet>
 ```
 
-### Configuration parameters
+### Konfiguračné parametre
 
 | Name | Description |
 |:----|:----|
-| **Skip file on error** | If selected and transformation fail, then the file is skipped and the execution continues |
-| **File extension** | If provided then file extension in virtual path is set to given value.<br>If no virtual path is set for some file then error message is logged and no virtual path is set |
-| **Number of extra threads** | How many additional workers should be spawn. Remember that higher number of workers may speed up transformation but will also result in greater memory consumption.<br>This option should work better with files that takes longer to transform. One worker thread is always spawned even if the value is zero |
-| **XSLT template** | Template used during transformation |
+| **Preskoč súbor ak sa vyskytne chyba** | Pri zaškrtnutej voľbe sa v prípade chyby pri transformácii súboru daná transformácia skončí a pokračuje sa naďaľším súborom. Inak sa transformácia zastaví |
+| **Prípona výstupného súboru** | Pridá uvedenú príponu ku menu vstupného súboru pre výstupný súbor |
+| **Number of extra threads** | Počet vlákien použitých pri transformácii. Ak sa nastaví 0, spustí sa jedno vlákno rovnako ako pri 1.<br>Toto nastavenie je užitočné pri transformáciác, ktoré trvajú dlhší čas.<br>Viac vlákien však znamená nielen zvýšenie rýchlosti, ale aj zvýšenie spotreby pamäte, takže treba zvážiť vhodné nastavenie |
+| **XSLT šablóna** | XSLT šablóna použitá na tranformáciu |
 
-### Inputs and outputs
+### Vstupy a výstupy
 
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|files  |i| FilesDataUnit | File to be transformed  |x|
-|files  |o| FilesDataUnit | Transformed file of given type |x|
-|config |i| RdfDataUnit | Dynamic DPU configuration, see Advanced configuration ||
+|files  |i| FilesDataUnit | Súbory určené na transformáciu  |x|
+|files  |o| FilesDataUnit | Transformované súbory |x|
+|config |i| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | |
 
-### Advanced configuration
+### Pokročilá konfigurácia
 
-It is also possible to dynamically configure the DPU over its input `config` using RDF data.
+Krok je možné nakonfigurovať aj dznamicky cez vstup `config` pomocou RDF dát.
 
-Configuration samples:
+Vzor konfigurácie:
 
 ```turtle
 <http://localhost/resource/config> 
@@ -61,4 +62,3 @@ Configuration samples:
     <http://linked.opendata.cz/ontology/uv/dpu/xslt/param/name> “paramName”;
     <http://linked.opendata.cz/ontology/uv/dpu/xslt/param/value> “paramValue”.
 ```
-
