@@ -17,14 +17,18 @@ Transforms RDF graphs into files
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |input  |i| RDFDataUnit   | RDF graph |x|
 |output |o| FilesDataUnit | File containing RDF triples |x|
-|config |i| RdfDataUnit | Dynamic DPU configuration | |
+|config |i| RdfDataUnit | Dynamic DPU configuration, see Advanced configuration | |
 
-### Advanced dynamic configuration over input RDF data unit
+### Advanced configuration
 
-It is also possible to dynamically configure the DPU over its input configurational RDF data unit. Configuration sample:
+It is also possible to dynamically configure the DPU over its input `config` using RDF data.
 
-    <http://localhost/resources/configuration>
-        <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://unifiedviews.eu/ontology/dpu/rdfToFiles/Config>;
-        <http://unifiedviews.eu/ontology/dpu/rdfToFiles/config/fileFormat> "TriG";
-        <http://unifiedviews.eu/ontology/dpu/rdfToFiles/config/outputUri> "http://output-graph/name";
-        <http://unifiedviews.eu/ontology/dpu/rdfToFiles/config/outputFile> "graph-output-file".
+Configuration samples:
+
+```turtle
+<http://localhost/resources/configuration>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://unifiedviews.eu/ontology/dpu/rdfToFiles/Config>;
+    <http://unifiedviews.eu/ontology/dpu/rdfToFiles/config/fileFormat> "TriG";
+    <http://unifiedviews.eu/ontology/dpu/rdfToFiles/config/outputUri> "http://output-graph/name";
+    <http://unifiedviews.eu/ontology/dpu/rdfToFiles/config/outputFile> "graph-output-file".
+```
