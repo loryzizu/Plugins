@@ -23,3 +23,15 @@ Loads RDF data (graphs) into Virtuoso
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |TODO: provide Name, Dataunit and Description of input |i |  |  | |
+|config |i| RdfDataUnit | Dynamic DPU configuration | |
+
+### Advanced dynamic configuration over input RDF data unit
+
+It is also possible to dynamically configure the DPU over its input configurational RDF data unit. Configuration sample:
+
+    <http://localhost/resource/config	
+        <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://unifiedviews.eu/ontology/dpu/filesToVirtuoso/Config>;
+        <http://unifiedviews.eu/ontology/dpu/filesToVirtuoso/config/fileName> "dataset.trig";
+        <http://unifiedviews.eu/ontology/dpu/filesToVirtuoso/config/graphUri> "http://dataset".
+
+
