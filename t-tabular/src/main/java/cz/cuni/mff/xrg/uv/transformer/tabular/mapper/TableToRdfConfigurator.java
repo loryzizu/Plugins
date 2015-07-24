@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.mapper;
 
 import cz.cuni.mff.xrg.uv.transformer.tabular.TabularConfig_V2;
-import cz.cuni.mff.xrg.uv.transformer.tabular.TabularOntology;
 import cz.cuni.mff.xrg.uv.transformer.tabular.Utils;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnInfo_V1;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ValueGeneratorReplace;
@@ -36,11 +35,12 @@ public class TableToRdfConfigurator {
      * @param tableToRdf
      * @param header 
      * @param data Contains first data row, or ColumnType if type is already known.
+     * @param numberOfLeadingEmpty Number of leading empty columns, this is useful for xsl-like.
      * @throws eu.unifiedviews.plugins.transformer.tabular.parser.ParseFailed
      * @throws DPUException
      */
     public static void configure(TableToRdf tableToRdf, List<String> header,
-            List<Object> data) throws ParseFailed, DPUException {
+            List<Object> data, int numberOfLeadingEmpty) throws ParseFailed, DPUException {
         // initial checks
         if (data == null) {
             throw new ParseFailed("First data row is null!");
@@ -127,11 +127,16 @@ public class TableToRdfConfigurator {
                 columnInfo.setURI(prepareAsUri(columnInfo.getURI(), config));
             }
             if (columnInfo.getType() == ColumnType.Auto) {
-                if (config.autoAsStrings) {
+                if (index < numberOfLeadingEmpty) {
+                    // This is empty leading column, we use string without warning.
                     columnInfo.setType(ColumnType.String);
                 } else {
-                    columnInfo.setType(guessType(columnName, data.get(index),
-                            columnInfo.isUseTypeFromDfb()));
+                    if (config.autoAsStrings) {
+                        columnInfo.setType(ColumnType.String);
+                    } else {
+                        columnInfo.setType(guessType(columnName, data.get(index),
+                                columnInfo.isUseTypeFromDfb()));
+                    }
                 }
             }
             //
@@ -183,7 +188,7 @@ public class TableToRdfConfigurator {
                 //     - bug fix
                 continue;
             }
-            LOG.warn("Column '{}' (uri:{}) ignored as does not match original columns.",
+            LOG.error("Column '{}' (uri:{}) ignored as does not match original columns.",
                     key, unused.get(key).getURI());
         }
         //
