@@ -13,11 +13,11 @@ Downloads files based on provided list. Individual files and also name of direct
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |output |o| FilesDataUnit | Downloaded files |x|
-|config |i| RdfDataUnit | Dynamic DPU configuration | |
+|config |i| RdfDataUnit | Dynamic DPU configuration, see Advanced configuration | |
 
 ### Advanced configuration
 
-It is also possible to dynamically configure the DPU over its input configurational RDF data unit.
+It is also possible to dynamically configure the DPU over its input `config` using RDF data.
 Configuration sample:
 ```xml
     <http://localhost/resource/config> 
