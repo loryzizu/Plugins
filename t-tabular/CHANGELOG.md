@@ -1,7 +1,7 @@
 T-Tabular
 ----------
 
-v2.2.1
+v2.2.0
 ---
 * Fixed bug with missing trailing columns in xls-like files with empty leading columns and header autogeneration
 * Added possibility to strip null value in header
