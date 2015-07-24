@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.parser;
 
-import eu.unifiedviews.dpu.DPUContext;
-
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
@@ -104,7 +102,7 @@ public class ParserCsv implements Parser {
             }
 
             // configure parser
-            TableToRdfConfigurator.configure(tableToRdf, header, (List) row);
+            TableToRdfConfigurator.configure(tableToRdf, header, (List) row, 0);
             // go ...
             if (config.rowLimit == null) {
                 LOG.debug("Row limit: not used");
