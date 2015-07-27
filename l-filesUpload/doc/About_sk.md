@@ -10,6 +10,17 @@ Nahrá zoznam súborov na definované miesto.
 |**Používateľské meno** | Používateľské meno na cieľovom hoste|
 |**Heslo** | Heslo príslušné k používateľskému menu|
 
+#### Príklady konfigurácie URI ####
+
+```INI
+file:///home/používateľ/adresár
+/home/používateľ/adresár
+file://///server/adresár/podadresár
+https://server:port/adresár
+ftps://server:port/adresár
+sftp://server:port/adresár
+```
+
 ### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |

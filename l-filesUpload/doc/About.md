@@ -10,6 +10,17 @@ Uploads list of files to defined location.
 |**Username** | Username for destination host |
 |**Password** | Password for the username |
 
+#### Configuration URI Examples ####
+
+```INI
+file:///home/user/folder
+/home/user/folder
+file://///server/folder/subfolder
+https://server:port/folder
+ftps://server:port/folder
+sftp://server:port/folder
+```
+
 ### Inputs and outputs
 
 |Name |Type | DataUnit | Description | Mandatory |
