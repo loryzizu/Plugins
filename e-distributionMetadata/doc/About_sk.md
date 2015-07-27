@@ -10,7 +10,7 @@ Generuje metadáta na yáklade konigurácie
 |**Popis** | Popis distribúcie |
 |**Formát** | Formát súboru distribúcie |
 |**MIME type** | Média typ distribúcie ako je definované IANA |
-|**Vydané** | Dátum a čas formálneho vydania (resp. publikovania) distribúcie |
+|**Dátum vytvorenia** | Dátum a čas formálneho vytvorenia (resp. publikovania) distribúcie |
 
 ### Vstupy a výstupy
 
