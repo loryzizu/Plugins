@@ -10,7 +10,7 @@ Nahrá zoznam súborov na definované miesto.
 |**Používateľské meno** | Používateľské meno na cieľovom hoste|
 |**Heslo** | Heslo príslušné k používateľskému menu|
 
-#### Príklady konfigurácie URI ####
+#### Príklady platnej cieľovej adresy ####
 
 ```INI
 file:///home/používateľ/adresár
