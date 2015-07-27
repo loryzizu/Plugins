@@ -6,11 +6,11 @@ Uploads list of files to defined location.
 
 | Name | Description |
 |:----|:----|
-|**Destination directory absolute path** | Destination path for files to upload |
+|**Destination directory absolute path** | Destination path for files to upload. For examples of destination paths, see below |
 |**Username** | Username for destination host |
 |**Password** | Password for the username |
 
-#### Configuration URI Examples ####
+#### Examples of valid destination paths ####
 
 ```INI
 file:///home/user/folder
