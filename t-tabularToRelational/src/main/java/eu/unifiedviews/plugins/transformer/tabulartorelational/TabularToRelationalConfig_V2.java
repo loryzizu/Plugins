@@ -27,7 +27,7 @@ public class TabularToRelationalConfig_V2 {
 
     public TabularToRelationalConfig_V2() {
         // default values
-        this.tableName = "test";
+        this.tableName = "";
         this.encoding = "UTF-8";
         this.fieldDelimiter = "\"";
         this.fieldSeparator = ",";
