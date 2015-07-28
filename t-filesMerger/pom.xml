@@ -11,8 +11,8 @@
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-t-filesMerger</artifactId>
 	<name>T-FilesMerger</name>
-	<description></description>
-	<version>2.1.1-SNAPSHOT</version>
+	<description />
+	<version>2.1.2-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 	<properties>
