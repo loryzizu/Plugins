@@ -1,6 +1,10 @@
 T-Tabular
 ----------
 
+v2.2.1
+---
+* Fixed bug with wrongly moved NamedCell_V1 class causing corruption of tabular configuration for xls files with named cells.
+
 v2.2.0
 ---
 * Fixed bug with missing trailing columns in xls-like files with empty leading columns and header autogeneration
