@@ -23,7 +23,7 @@ import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserType;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserXls;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
-import eu.unifiedviews.plugins.transformer.tabular.column.NamedCell_V1;
+import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 import eu.unifiedviews.plugins.transformer.tabular.gui.PropertyGroup;
 import eu.unifiedviews.plugins.transformer.tabular.gui.PropertyGroupAdv;
 import eu.unifiedviews.plugins.transformer.tabular.gui.PropertyNamedCell;
