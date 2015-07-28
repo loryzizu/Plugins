@@ -1,20 +1,20 @@
 package eu.unifiedviews.plugins.loader.relationaltosql;
 
 public class RelationalToSqlConfig_V1 {
+    
+    private String databaseURL = " jdbc:postgresql://localhost:5432/test";
 
-    private String databaseURL;
+    private String userName = "test";
 
-    private String userName;
+    private String userPassword = "test";
 
-    private String userPassword;
+    private String tableNamePrefix = "_prefix";
 
-    private String tableNamePrefix;
+    private boolean dropTargetTable = false;
 
-    private boolean dropTargetTable;
+    private boolean clearTargetTable = true;
 
-    private boolean clearTargetTable;
-
-    private boolean useSSL;
+    private boolean useSSL = false;
 
     //TODO: For now only PostgreSQL is supported. Maybe database type can be user defined
     private String jdbcDriverName = "org.postgresql.Driver";
