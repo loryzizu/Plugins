@@ -4,9 +4,9 @@ import java.util.List;
 
 public class RelationalConfig_V1 {
 
-    private String targetTableName = "test";
+    private String targetTableName;
 
-    private String sqlQuery = "select * from test";
+    private String sqlQuery;
 
     private List<String> primaryKeyColumns;
 
