@@ -6,23 +6,23 @@ import eu.unifiedviews.plugins.extractor.relationalfromsql.SqlDatabase.DatabaseT
 
 public class RelationalFromSqlConfig_V2 {
 
-    private String databaseHost;
+    private String databaseHost = "localhost";
 
-    private int databasePort;
+    private int databasePort = 5432;
 
-    private String databaseName;
+    private String databaseName = "test";
 
-    private DatabaseType databaseType;
+    private DatabaseType databaseType = DatabaseType.POSTGRES;
 
-    private String userName;
+    private String userName = "test";
 
-    private String userPassword;
+    private String userPassword = "test";
 
-    private boolean useSSL;
+    private boolean useSSL = false;
 
-    private String sqlQuery;
+    private String sqlQuery = "select * from test";
 
-    private String targetTableName;
+    private String targetTableName = "test";
 
     private List<String> primaryKeyColumns;
 
