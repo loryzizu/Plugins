@@ -105,6 +105,7 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
             }
         });
         dataBeginningRowField.setRequired(true);
+        dataBeginningRowField.setImmediate(true);
         formLayout.addComponent(dataBeginningRowField);
 
         fieldSeparatorField = new TextField(ctx.tr("dialog.fieldSeparator"));
@@ -209,10 +210,6 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
     protected TabularToRelationalConfig_V2 getConfiguration() throws DPUConfigException {
         // validation
         try {
-            // check data begins at row
-            dataBeginningRowField.validate();
-            // check table name
-            tableNameField.validate();
             // check column names
             for (Iterator i = table.getItemIds().iterator(); i.hasNext(); ) {
                 Integer id = (Integer) i.next();
