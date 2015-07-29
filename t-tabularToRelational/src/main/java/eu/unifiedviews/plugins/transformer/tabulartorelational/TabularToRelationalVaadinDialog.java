@@ -1,20 +1,21 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
-import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
-import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
-import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ParserType;
-
-import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.ui.*;
+
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ParserType;
 
 public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRelationalConfig_V2> {
 
@@ -36,6 +37,7 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         super(TabularToRelational.class);
     }
 
+    @Override
     protected void buildDialogLayout() {
         final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setImmediate(false);
@@ -70,7 +72,8 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         parserTypeOptionGroup.setNullSelectionAllowed(false);
         parserTypeOptionGroup.setImmediate(true);
         parserTypeOptionGroup.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override public void valueChange(Property.ValueChangeEvent e) {
+            @Override
+            public void valueChange(Property.ValueChangeEvent e) {
                 ParserType newParserType = (ParserType) e.getProperty().getValue();
                 switch (newParserType) {
                     case XLS:
@@ -92,7 +95,8 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         dataBeginningRowField = new TextField(ctx.tr("dialog.dataBeginningRow"));
         dataBeginningRowField.setDescription(ctx.tr("dialog.dataBeginningRow.description"));
         dataBeginningRowField.addValidator(new Validator() {
-            @Override public void validate(Object value) throws Validator.InvalidValueException {
+            @Override
+            public void validate(Object value) throws Validator.InvalidValueException {
                 try {
                     Integer number = Integer.valueOf(value.toString());
                     if (number < 1) {
@@ -133,7 +137,8 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         tableNameField.setRequired(true);
         tableNameField.setImmediate(true);
         tableNameField.addValidator(new Validator() {
-            @Override public void validate(Object value) throws Validator.InvalidValueException {
+            @Override
+            public void validate(Object value) throws Validator.InvalidValueException {
                 if (!(value instanceof String && isNameValid((String) value)))
                     throw new Validator.InvalidValueException(ctx.tr("dialog.tablename.restriction"));
             }
@@ -162,7 +167,8 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         layout.setSpacing(true);
         Button addRowButton = new Button("+");
         addRowButton.addClickListener(new Button.ClickListener() {
-            @Override public void buttonClick(Button.ClickEvent clickEvent) {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
                 table.addItem(new Object[] { "", new CheckBox() }, (Integer) table.lastItemId() + 1);
             }
         });
@@ -170,7 +176,8 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
 
         Button removeRowButton = new Button("-");
         removeRowButton.addClickListener(new Button.ClickListener() {
-            @Override public void buttonClick(Button.ClickEvent clickEvent) {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
                 if (table.size() > 1) {
                     table.removeItem(table.lastItemId());
                 }
@@ -181,6 +188,7 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         return layout;
     }
 
+    @Override
     protected void setConfiguration(TabularToRelationalConfig_V2 config) throws DPUConfigException {
         if (config.getTableName().isEmpty()) {
             tableNameField.setValue(ctx.tr("dialog.tableName.example"));
@@ -207,21 +215,8 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         }
     }
 
+    @Override
     protected TabularToRelationalConfig_V2 getConfiguration() throws DPUConfigException {
-        // validation
-        try {
-            // check column names
-            for (Iterator i = table.getItemIds().iterator(); i.hasNext(); ) {
-                Integer id = (Integer) i.next();
-                String value = (String) table.getContainerProperty(id, "name").getValue();
-                if (!isNameValid(value)) {
-                    throw new DPUConfigException(ctx.tr("dialog.tablecolumn.restriction"));
-                }
-            }
-        } catch (Validator.InvalidValueException e) {
-            throw new DPUConfigException(e.getMessage());
-        }
-
         TabularToRelationalConfig_V2 config = new TabularToRelationalConfig_V2();
         config.setTableName(tableNameField.getValue());
         config.setEncoding(String.valueOf(charsetSelect.getValue()));
@@ -231,7 +226,7 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         config.setDataBegginningRow(Integer.parseInt(dataBeginningRowField.getValue()));
 
         List<ColumnMappingEntry> list = new ArrayList<>();
-        for (Iterator i = table.getItemIds().iterator(); i.hasNext(); ) {
+        for (Iterator i = table.getItemIds().iterator(); i.hasNext();) {
             Integer id = (Integer) i.next();
 
             ColumnMappingEntry entry = new ColumnMappingEntry();
