@@ -174,7 +174,7 @@ public class SparqlLimitOffsetRewriterTest {
         }
         List<String> result1 = new ArrayList<>(varCollector.getVars().keySet());
         Collections.sort(result1);
-        Assert.assertEquals("[]", StringUtils.join(result1));
+        Assert.assertEquals("[label, village]", StringUtils.join(result1));
     }
     
     @Test
