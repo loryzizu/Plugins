@@ -23,7 +23,7 @@ import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
 import eu.unifiedviews.plugins.transformer.tabular.column.ColumnType;
-import eu.unifiedviews.plugins.transformer.tabular.column.NamedCell_V1;
+import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 import eu.unifiedviews.plugins.transformer.tabular.parser.ParseFailed;
 import eu.unifiedviews.plugins.transformer.tabular.parser.Parser;
 

@@ -4,7 +4,7 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.TextField;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.plugins.transformer.tabular.column.NamedCell_V1;
+import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 
 /**
  * Component for {@link NamedCell_V1}.
