@@ -74,17 +74,18 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
 
         this.databaseType = new NativeSelect();
         this.databaseType.setCaption(ctx.tr("dialog.extractdb.dbtype"));
-        this.databaseType.addItems(SqlDatabase.getDatabaseTypeNames());
+        this.databaseType.addItems(SqlDatabase.getSupportedDatabases());
         this.databaseType.setNullSelectionAllowed(false);
         this.databaseType.setImmediate(true);
-        String defaultDbName = SqlDatabase.getDatabaseNameForDatabaseType(DatabaseType.POSTGRES);
-        this.databaseType.select(defaultDbName);
+        DatabaseInfo defaultDb = SqlDatabase.getDatabaseInfo(DatabaseType.POSTGRES);
+        this.databaseType.select(defaultDb);
         this.databaseType.addValueChangeListener(createDatabaseTypeChangeListener());
         this.mainLayout.addComponent(this.databaseType);
 
         this.txtDatabaseHost = new TextField();
         this.txtDatabaseHost.setCaption(ctx.tr("dialog.extractdb.dbhost"));
         this.txtDatabaseHost.setRequired(true);
+        this.txtDatabaseHost.setImmediate(true);
         this.txtDatabaseHost.setNullRepresentation("");
         this.txtDatabaseHost.setWidth("100%");
         this.mainLayout.addComponent(this.txtDatabaseHost);
@@ -92,12 +93,14 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         this.txtDatabasePort = new TextField();
         this.txtDatabasePort.setCaption(ctx.tr("dialog.extractdb.dbport"));
         this.txtDatabasePort.setRequired(true);
+        this.txtDatabasePort.setImmediate(true);
         this.txtDatabasePort.setWidth("100%");
         this.mainLayout.addComponent(this.txtDatabasePort);
 
         this.txtDatabaseName = new TextField();
         this.txtDatabaseName.setCaption(ctx.tr("dialog.extractdb.dbname"));
         this.txtDatabaseName.setRequired(true);
+        this.txtDatabaseName.setImmediate(true);
         this.txtDatabaseName.setNullRepresentation("");
         this.txtDatabaseName.setWidth("100%");
         this.mainLayout.addComponent(this.txtDatabaseName);
@@ -105,6 +108,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         this.txtInstanceName = new TextField();
         this.txtInstanceName.setCaption(ctx.tr("dialog.extractdb.instance"));
         this.txtInstanceName.setNullRepresentation("");
+        this.txtInstanceName.setImmediate(true);
         this.txtInstanceName.setWidth("100%");
         this.txtInstanceName.setVisible(false);
         this.mainLayout.addComponent(this.txtInstanceName);
@@ -112,6 +116,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         this.txtUserName = new TextField();
         this.txtUserName.setCaption(ctx.tr("dialog.extractdb.username"));
         this.txtUserName.setRequired(true);
+        this.txtUserName.setImmediate(true);
         this.txtUserName.setNullRepresentation("");
         this.txtUserName.setWidth("100%");
         this.mainLayout.addComponent(this.txtUserName);
@@ -119,6 +124,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         this.txtPassword = new PasswordField();
         this.txtPassword.setCaption(ctx.tr("dialog.extractdb.password"));
         this.txtPassword.setRequired(true);
+        this.txtPassword.setImmediate(true);
         this.txtPassword.setNullRepresentation("");
         this.txtPassword.setWidth("100%");
         this.mainLayout.addComponent(this.txtPassword);
@@ -152,6 +158,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         this.txtTargetTableName.setCaption(ctx.tr("dialog.extractdb.targettable"));
         this.txtTargetTableName.setDescription(ctx.tr("dialog.extractdb.tabledescr"));
         this.txtTargetTableName.setRequired(true);
+        this.txtTargetTableName.setImmediate(true);
         this.txtTargetTableName.setNullRepresentation("");
         this.txtTargetTableName.setWidth("100%");
         this.mainLayout.addComponent(this.txtTargetTableName);
@@ -212,17 +219,15 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
             @SuppressWarnings("unqualified-field-access")
             @Override
             public void valueChange(ValueChangeEvent event) {
-                String databaseName = (String) databaseType.getValue();
-                int portForSelectedDbType = SqlDatabase.getDefaultDatabasePort(SqlDatabase.getDatabaseTypeForDatabaseName(databaseName));
-                DatabaseType dbType = SqlDatabase.getDatabaseTypeForDatabaseName(databaseName);
-                txtDatabasePort.setValue(String.valueOf(portForSelectedDbType));
-                if (dbType == DatabaseType.ORACLE) {
+                DatabaseInfo dbInfo = (DatabaseInfo) databaseType.getValue();
+                txtDatabasePort.setValue(String.valueOf(dbInfo.getDefaultPort()));
+                if (dbInfo.getDatabaseType() == DatabaseType.ORACLE) {
                     txtDatabaseName.setCaption(ctx.tr("dialog.extractdb.dbsid"));
                 } else {
                     txtDatabaseName.setCaption(ctx.tr("dialog.extractdb.dbname"));
                 }
 
-                if (dbType == DatabaseType.MSSQL) {
+                if (dbInfo.getDatabaseType() == DatabaseType.MSSQL) {
                     txtInstanceName.setVisible(true);
                 } else {
                     txtInstanceName.setVisible(false);
@@ -381,7 +386,8 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
                 DatabaseTable table = (DatabaseTable) tableSelect.getValue();
                 try {
                     if (checkConnectionParametersInput()) {
-                        List<String> tableColumns = RelationalFromSqlHelper.getColumnsForTable(getConfigurationInternal(), table.getTableName());
+                        List<String> tableColumns = RelationalFromSqlHelper.getColumnsForTable(getConfigurationInternal(),
+                                table.getTableName());
                         String query = RelationalFromSqlHelper.generateSelectForTable(table, tableColumns);
                         RelationalFromSqlVaadinDialog.this.txtSqlQuery.setValue(query);
                     } else {
@@ -526,7 +532,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         config.setSqlQuery(this.txtSqlQuery.getValue());
         config.setTargetTableName(this.txtTargetTableName.getValue());
         config.setPrimaryKeyColumns(getPrimaryKeyColumns());
-        config.setDatabaseType(SqlDatabase.getDatabaseTypeForDatabaseName((String) this.databaseType.getValue()));
+        config.setDatabaseType(((DatabaseInfo) this.databaseType.getValue()).getDatabaseType());
         config.setTruststoreLocation(this.txtTruststoreLocation.getValue());
         config.setTruststorePassword(this.txtTruststorePassword.getValue());
 
@@ -536,15 +542,15 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
     @Override
     protected void setConfiguration(RelationalFromSqlConfig_V2 config) throws DPUConfigException {
         if (config.getDatabaseType() != null) {
-            this.databaseType.select(SqlDatabase.getDatabaseNameForDatabaseType(config.getDatabaseType()));
+            this.databaseType.select(SqlDatabase.getDatabaseInfo(config.getDatabaseType()));
         } else {
-            this.databaseType.select(SqlDatabase.getDatabaseNameForDatabaseType(DatabaseType.POSTGRES));
+            this.databaseType.select(SqlDatabase.getDatabaseInfo(DatabaseType.POSTGRES));
         }
         this.txtDatabaseHost.setValue(config.getDatabaseHost());
         if (config.getDatabasePort() != 0) {
             this.txtDatabasePort.setValue(String.valueOf(config.getDatabasePort()));
         } else {
-            int defaultPort = SqlDatabase.getDefaultDatabasePort(DatabaseType.POSTGRES);
+            int defaultPort = SqlDatabase.getDatabaseInfo(DatabaseType.POSTGRES).getDefaultPort();
             this.txtDatabasePort.setValue(String.valueOf(defaultPort));
         }
         this.txtDatabaseName.setValue(config.getDatabaseName());
@@ -563,11 +569,9 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
     @Override
     protected RelationalFromSqlConfig_V2 getConfiguration() throws DPUConfigException {
 
-        boolean isValid = this.txtDatabaseHost.isValid() && this.txtDatabaseName.isValid() && this.txtDatabasePort.isValid()
-                && this.txtUserName.isValid() && this.txtPassword.isValid() && this.txtTargetTableName.isValid()
-                && this.txtSqlQuery.isValid();
+        boolean isValid = true;
 
-        if (SqlDatabase.getDatabaseTypeForDatabaseName((String) this.databaseType.getValue()) == DatabaseType.MSSQL) {
+        if (((DatabaseInfo) this.databaseType.getValue()).getDatabaseType() == DatabaseType.MSSQL) {
             isValid = isValid && this.txtInstanceName.isValid();
         }
         if (!isValid) {
@@ -585,7 +589,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         config.setTargetTableName(this.txtTargetTableName.getValue());
         config.setPrimaryKeyColumns(getPrimaryKeyColumns());
         config.setIndexedColumns(getIndexedColumns());
-        config.setDatabaseType(SqlDatabase.getDatabaseTypeForDatabaseName((String) this.databaseType.getValue()));
+        config.setDatabaseType(((DatabaseInfo) this.databaseType.getValue()).getDatabaseType());
         config.setInstanceName(this.txtInstanceName.getValue());
         config.setTruststoreLocation(this.txtTruststoreLocation.getValue());
         config.setTruststorePassword(this.txtTruststorePassword.getValue());

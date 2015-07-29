@@ -1,4 +1,11 @@
-###Build warning###
+###Build information###
+
+By default, this DPU is built with support of PostgreSQL, MySQL and MS SQL databases.
+To enable optional databases (for now ORACLE), Maven profiles must be executed and manual steps executed
+
+***
+
+####ORACLE database support####
 As Oracle license does not allow to distribute Oracle JDBC driver and it is not published in any public 
 Maven repository (and it cannot be), one needs to manually install ojdbc7.jar into local Maven repository to be able to build this DPU.
 
@@ -20,4 +27,6 @@ To install JAR to your local repository, use following command:
 
 	mvn install:install-file -Dfile=<dir>/ojdbc7.jar -DgroupId=com.oracle -DartifactId=ojdbc7 -Dversion=12.1.0.2.0 -Dpackaging=jar
 
-***
+When Oracle JDBC driver installed, DPU can be built with "oracle" profile, e.g.:
+
+	mvn clean install -U -Poracle
