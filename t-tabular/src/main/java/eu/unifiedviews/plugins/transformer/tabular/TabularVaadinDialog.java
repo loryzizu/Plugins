@@ -392,7 +392,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         // -------------------------------------------------------------
         // top layout with configuration
         final HorizontalLayout configLayout = new HorizontalLayout();
-        configLayout.setWidth("100%");
+        configLayout.setWidth("-1px");
         configLayout.setHeight("-1px");
         configLayout.setSpacing(true);
 
