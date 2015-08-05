@@ -21,7 +21,7 @@
 
 		<!-- We need import on OpenRdf repository as it's somehow missing. -->
 		<osgi.import.package>org.openrdf.repository,</osgi.import.package>
-		<embed.transitive>true</embed.transitive>
+<!-- 		<embed.transitive>true</embed.transitive> -->
 	</properties>
 
 	<dependencies>
@@ -116,16 +116,19 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
 			<version>2.4.4</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
 			<version>2.4.4</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.4.4</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency> <!-- Required by sesame-queryresultio-text. -->
 			<groupId>com.opencsv</groupId>
