@@ -17,13 +17,12 @@ import com.vaadin.ui.TabSheet.Tab;
 import cz.cuni.mff.xrg.uv.transformer.tabular.Tabular;
 import cz.cuni.mff.xrg.uv.transformer.tabular.TabularConfig_V2;
 import cz.cuni.mff.xrg.uv.transformer.tabular.TabularOntology;
-import cz.cuni.mff.xrg.uv.transformer.tabular.TabularConfig_V2.AdvanceMapping;
 import cz.cuni.mff.xrg.uv.transformer.tabular.column.ColumnInfo_V1;
+import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserType;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserXls;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
-import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 import eu.unifiedviews.plugins.transformer.tabular.gui.PropertyGroup;
 import eu.unifiedviews.plugins.transformer.tabular.gui.PropertyGroupAdv;
 import eu.unifiedviews.plugins.transformer.tabular.gui.PropertyNamedCell;
@@ -599,9 +598,6 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         // save uri
         //
         String uriStr = c.getBaseURI();
-        if (!uriStr.endsWith("/")) {
-            uriStr = uriStr + "/";
-        }
         try {
             new java.net.URI(uriStr);
         } catch (URISyntaxException ex) {
