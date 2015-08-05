@@ -2,7 +2,6 @@ package eu.unifiedviews.plugins.extractor.sparqlendpoint;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -10,8 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import net.fortytwo.sesametools.StatementComparator;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +37,11 @@ import org.openrdf.sail.memory.MemoryStore;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.helpers.dataunit.rdf.RDFHelper;
+import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
 
 public class SparqlLimitOffsetJenaRewriterTest {
     static class BNodeIgnoreStatementComparator implements Comparator<Statement> {
@@ -226,6 +228,7 @@ public class SparqlLimitOffsetJenaRewriterTest {
     static Map<String, String> queries = new LinkedHashMap<>();
 
     static int[] expSizes = { 100, 100, 100, 10, 101, 10, 148 };
+    static int[] limSizes = { 100, 100, 100, 10, 100, 10, 100 };
 
     static Pattern anonStripper = Pattern.compile("(_anon-)(.{36})");
 
@@ -343,7 +346,7 @@ public class SparqlLimitOffsetJenaRewriterTest {
             System.out.println("Query" + (i + 1) + ":" + qc);
             System.out.println("Expected" + (i + 1) + ":" + qcExpected);
 
-            String rewritten = QueryPagingRewriter2.rewriteQuery(query, expSizes[i], 0);
+            String rewritten = QueryPagingRewriter2.rewriteQuery(query, limSizes[i], 0);
             Query qcRewritten = QueryFactory.create(rewritten);
             System.out.println("Rewritten" + (i + 1) + ":" + qcRewritten);
 
@@ -355,13 +358,13 @@ public class SparqlLimitOffsetJenaRewriterTest {
             StatementCollector scExp = new StatementCollector();
             graphQueryExp.evaluate(scExp);
             List<Statement> resultStatementsExp = new ArrayList<>(scExp.getStatements());
-            Collections.<Statement> sort(resultStatementsExp, new StatementComparator());
+            Collections.<Statement> sort(resultStatementsExp, new BNodeIgnoreStatementComparator());
 
             GraphQuery graphQueryRew = sparqlCon.prepareGraphQuery(QueryLanguage.SPARQL, rewritten);
             StatementCollector scRew = new StatementCollector();
             graphQueryRew.evaluate(scRew);
             List<Statement> resultStatementsRew = new ArrayList<>(scRew.getStatements());
-            Collections.<Statement> sort(resultStatementsRew, new StatementComparator());
+            Collections.<Statement> sort(resultStatementsRew, new BNodeIgnoreStatementComparator());
             Assert.assertEquals(expSizes[i], resultStatementsExp.size());
 
             Assert.assertEquals(resultStatementsExp.size(), resultStatementsRew.size());
@@ -391,14 +394,14 @@ public class SparqlLimitOffsetJenaRewriterTest {
             while (resultExp.hasNext()) {
                 resultStatementsExp.add(resultExp.next());
             }
-            Collections.<Statement> sort(resultStatementsExp, new StatementComparator());
+            Collections.<Statement> sort(resultStatementsExp, new BNodeIgnoreStatementComparator());
 
             RepositoryResult<Statement> resultRew = memCon.getStatements(null, null, null, false, uriRew);
             resultStatementsRew = new ArrayList<>();
             while (resultRew.hasNext()) {
                 resultStatementsRew.add(resultRew.next());
             }
-            Collections.<Statement> sort(resultStatementsRew, new StatementComparator());
+            Collections.<Statement> sort(resultStatementsRew, new BNodeIgnoreStatementComparator());
             Assert.assertEquals(resultStatementsExp.size(), resultStatementsRew.size());
             itExp = resultStatementsExp.iterator();
             itRew = resultStatementsRew.iterator();
@@ -410,4 +413,49 @@ public class SparqlLimitOffsetJenaRewriterTest {
             i++;
         }
     }
+
+    @Test
+    public void executeDPUTest() throws Exception {
+        // Prepare config.
+        SparqlEndpointConfig_V1 config = new SparqlEndpointConfig_V1();
+        config.setChunkSize(null);
+        config.setEndpoint("http://dbpedia.org/sparql");
+        config.setQuery(query4);
+        // Prepare config.
+        SparqlEndpointConfig_V1 configSlice = new SparqlEndpointConfig_V1();
+        configSlice.setChunkSize(5);
+        configSlice.setEndpoint("http://dbpedia.org/sparql");
+        configSlice.setQuery(query4);
+
+        // Spa DPU.
+        SparqlEndpoint dpu = new SparqlEndpoint();
+        dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
+        SparqlEndpoint dpuSlice = new SparqlEndpoint();
+        dpuSlice.configure((new ConfigurationBuilder()).setDpuConfiguration(configSlice).toString());
+
+        // Prepare test environment.
+        TestEnvironment environment = new TestEnvironment();
+        TestEnvironment environmentSlice = new TestEnvironment();
+        // Prepare data unit.
+        WritableRDFDataUnit output = environment.createRdfOutput("output", false);
+        // Prepare data unit.
+        WritableRDFDataUnit outputSlice = environmentSlice.createRdfOutput("output", false);
+
+        try {
+            RepositoryConnection connection = output.getConnection();
+            RepositoryConnection connectionSlice = outputSlice.getConnection();
+            // Run.
+            environment.run(dpu);
+            environmentSlice.run(dpuSlice);
+            connection = output.getConnection();
+            System.out.println(connection.size(RDFHelper.getGraphsURIArray(output)));
+            Assert.assertEquals(connection.size(RDFHelper.getGraphsURIArray(output)), connectionSlice.size(RDFHelper.getGraphsURIArray(outputSlice)));
+
+        } finally {
+            // Release resources.
+            environment.release();
+            environmentSlice.release();
+        }
+    }
+
 }

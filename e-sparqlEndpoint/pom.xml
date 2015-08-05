@@ -21,6 +21,7 @@
 
 		<!-- We need import on OpenRdf repository as it's somehow missing. -->
 		<osgi.import.package>org.openrdf.repository,</osgi.import.package>
+		<embed.transitive>true</embed.transitive>
 	</properties>
 
 	<dependencies>
@@ -28,14 +29,16 @@
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>
 			<version>2.13.0</version>
+			<scope>provided</scope>
 		</dependency>
 
+		
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.clerezza.ext</groupId> -->
+		<!-- <artifactId>org.apache.jena.jena-arq</artifactId> -->
+		<!-- <version>2.11.1_1</version> -->
+		<!-- </dependency> -->
 
-		<dependency>
-			<groupId>net.fortytwo.sesametools</groupId>
-			<artifactId>repository-sail</artifactId>
-			<version>1.9.1-SNAPSHOT</version>
-		</dependency>
 		<!-- UnifiedViews helpers. -->
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
