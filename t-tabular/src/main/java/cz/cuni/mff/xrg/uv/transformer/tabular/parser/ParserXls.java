@@ -23,7 +23,7 @@ import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
 import eu.unifiedviews.plugins.transformer.tabular.column.ColumnType;
-import eu.unifiedviews.plugins.transformer.tabular.column.NamedCell_V1;
+import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 import eu.unifiedviews.plugins.transformer.tabular.parser.ParseFailed;
 import eu.unifiedviews.plugins.transformer.tabular.parser.Parser;
 
@@ -214,7 +214,9 @@ public class ParserXls implements Parser {
                 headerGenerated = true;
                 // use row data to generate types
                 final List<ColumnType> types = new ArrayList<>(columnEnd + namedCells.size());
-                for (int columnIndex = columnStart; columnIndex < columnEnd; columnIndex++) {
+                // If the first column is empty then getFirstCellNum() return ondec of first column with data.
+                // But we want col1 to always start at the first column.
+                for (int columnIndex = 0; columnIndex < columnEnd; columnIndex++) {
                     final Cell cell = row.getCell(columnIndex);
                     if (cell == null) {
                         types.add(null);
@@ -224,15 +226,15 @@ public class ParserXls implements Parser {
                 }
                 // Till now column name can be only set in this method if header is presented.
                 if (columnNames == null) {
+                    LOG.info("Generating column names from: {} to: {}", columnStart, columnEnd);
                     columnNames = new ArrayList<>(columnEnd);
-                    // Generate column names, first column is col1.
+                    // Generate column names, first column is col1. We start from 0 as we always
+                    // want start with left most column. See comment before types generation for more info.
                     int columnIndex = 0;
-                    for (int i = columnStart; i < columnEnd; i++) {
+                    for (int i = 0; i < columnEnd; i++) {
                         columnNames.add("col" + Integer.toString(++columnIndex));
                     }
-                    tableHeaderSize = columnEnd - columnStart;
-                } else {
-                    tableHeaderSize = columnNames.size();
+                } else {                    
                     // expand types row. The header might be wider then the first data row.
                     fitToSize(types, tableHeaderSize);
                 }
@@ -245,9 +247,9 @@ public class ParserXls implements Parser {
                 columnNames.add(SHEET_COLUMN_NAME);
                 types.add(ColumnType.String);
                 // configure
-                TableToRdfConfigurator.configure(tableToRdf, columnNames, (List) types);
+                TableToRdfConfigurator.configure(tableToRdf, columnNames, (List) types, startRow);
             }
-            // prepare row
+            // Prepare row.
             final List<String> parsedRow = new ArrayList<>(columnEnd + namedCells.size());
             // parse columns
             for (int columnIndex = 0; columnIndex < columnEnd; columnIndex++) {

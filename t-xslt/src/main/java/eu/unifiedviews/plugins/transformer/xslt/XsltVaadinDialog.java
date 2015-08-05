@@ -1,6 +1,7 @@
 package eu.unifiedviews.plugins.transformer.xslt;
 
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -69,16 +70,19 @@ public class XsltVaadinDialog extends AbstractDialog<XsltConfig_V2> {
         mainLayout.addComponent(this.checkSkipFileOnError);
         mainLayout.setExpandRatio(this.checkSkipFileOnError, 0.0f);
 
+        HorizontalLayout textLine = new HorizontalLayout();
+        textLine.setWidth("100%");
+
         this.txtOutputExtension = new TextField(ctx.tr("xslt.dialog.template.output.extension"));
-        this.txtOutputExtension.setWidth("100%");
+        this.txtOutputExtension.setWidth("50%");
         this.txtOutputExtension.setDescription(ctx.tr("xslt.dialog.template.output.extension.desc"));
-        mainLayout.addComponent(this.txtOutputExtension);
-        mainLayout.setExpandRatio(this.txtOutputExtension, 0.0f);
+        textLine.addComponent(this.txtOutputExtension);
 
         this.txtNumberOfExtraThreads = new TextField(ctx.tr("xslt.dialog.extraThreads"));
-        this.txtNumberOfExtraThreads.setWidth("100%");
-        mainLayout.addComponent(this.txtNumberOfExtraThreads);
-        mainLayout.setExpandRatio(this.txtNumberOfExtraThreads, 0.0f);
+        this.txtNumberOfExtraThreads.setWidth("50%");
+        textLine.addComponent(this.txtNumberOfExtraThreads);
+
+        mainLayout.addComponent(textLine);
 
         this.txtTemplate = new TextArea(ctx.tr("xslt.dialog.template"));
         this.txtTemplate.setSizeFull();

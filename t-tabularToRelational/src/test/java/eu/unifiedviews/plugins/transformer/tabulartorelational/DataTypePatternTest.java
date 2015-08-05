@@ -1,5 +1,7 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
+import eu.unifiedviews.plugins.transformer.tabulartorelational.unused.DataType;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
