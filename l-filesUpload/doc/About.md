@@ -6,9 +6,20 @@ Uploads list of files to defined location.
 
 | Name | Description |
 |:----|:----|
-|**Destination directory absolute path** | Destination path for files to upload |
+|**Destination directory absolute path** | Destination path for files to upload. For examples of destination paths, see below |
 |**Username** | Username for destination host |
 |**Password** | Password for the username |
+
+#### Examples of valid destination paths ####
+
+```INI
+file:///home/user/folder
+/home/user/folder
+file://///server/folder/subfolder
+https://server:port/folder
+ftps://server:port/folder
+sftp://server:port/folder
+```
 
 ### Inputs and outputs
 

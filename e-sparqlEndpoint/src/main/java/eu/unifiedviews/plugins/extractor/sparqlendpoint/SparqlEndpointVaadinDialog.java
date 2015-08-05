@@ -51,7 +51,7 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
 
         c.setEndpoint(txtEndpoint.getValue());
         c.setQuery(txtQuery.getValue());
-
+        c.setChunkSize(Integer.valueOf(txtChunkSize.getValue()));
         return c;
     }
 
