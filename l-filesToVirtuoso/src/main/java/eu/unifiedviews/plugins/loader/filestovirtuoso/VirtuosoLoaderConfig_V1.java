@@ -5,11 +5,11 @@ import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
 @EntityDescription.Entity(type = "http://unifiedviews.eu/ontology/dpu/filesToVirtuoso/Config")
 public class VirtuosoLoaderConfig_V1 {
 
-    private String virtuosoUrl = "";
+    private String virtuosoUrl = "jdbc:virtuoso://localhost:1111/charset=UTF-8/";
 
-    private String username = "";
+    private String username = "dba";
 
-    private String password = "";
+    private String password = "dba";
 
     private boolean clearDestinationGraph = false;
 

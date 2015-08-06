@@ -86,10 +86,9 @@ public class VirtuosoLoaderVaadinDialog extends AbstractDialog<VirtuosoLoaderCon
         mainLayout.addComponent(passwordField);
         mainLayout.addComponent(new CheckBox(CLEAR_DESTINATION_GRAPH_LABEL, clearDestinationGraph));
         mainLayout.addComponent(createTextField(LOAD_DIRECTORY_PATH_LABEL, loadDirectoryPath));
-        mainLayout.addComponent(createTextField(INCLUDE_SUBDIRECTORIES_LABEL, includeSubdirectories));
+        mainLayout.addComponent(new CheckBox(INCLUDE_SUBDIRECTORIES_LABEL, includeSubdirectories));
         mainLayout.addComponent(createTextField(LOAD_FILE_PATTERN_LABEL, loadFilePattern));
         mainLayout.addComponent(createTextField(TARGET_CONTEXT_LABEL, targetContext));
-//        mainLayout.addComponent(createTextField(TARGET_TEMP_CONTEXT_LABEL, targetTempContext));
         mainLayout.addComponent(createTextField(STATUS_UPDATE_INTERVAL_LABEL, statusUpdateInterval));
         mainLayout.addComponent(createTextField(THREAD_COUNT_LABEL, threadCount));
         mainLayout.addComponent(new CheckBox(SKIP_ON_ERROR_LABEL, skipOnError));
