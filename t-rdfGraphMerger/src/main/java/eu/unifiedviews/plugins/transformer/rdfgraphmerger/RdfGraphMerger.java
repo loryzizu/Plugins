@@ -5,15 +5,18 @@ import java.util.Date;
 import java.util.List;
 
 import org.openrdf.repository.RepositoryConnection;
-import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.rdf.RdfDataUnitUtils;
+import eu.unifiedviews.helpers.dataunit.resource.Resource;
+import eu.unifiedviews.helpers.dataunit.resource.ResourceHelpers;
+import eu.unifiedviews.helpers.dataunit.virtualgraph.VirtualGraphHelpers;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
 import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
 import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
@@ -24,23 +27,23 @@ import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 @DPU.AsTransformer
 public class RdfGraphMerger extends AbstractDpu<RdfGraphMergerConfig_V1> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(RdfGraphMerger.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RdfGraphMerger.class);
 
     private static final String COPY_QUERY = "INSERT { ?s ?p ?o } WHERE { ?s ?p ?o }";
 
     @DataUnit.AsInput(name = "input")
     public RDFDataUnit rdfInput;
-    
+
     @DataUnit.AsOutput(name = "output", optional = true)
     public WritableRDFDataUnit rdfOutput;
 
     @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
 
-	public RdfGraphMerger() {
-		super(RdfGraphMergerVaadinDialog.class, ConfigHistory.noHistory(RdfGraphMergerConfig_V1.class));
-	}
-		
+    public RdfGraphMerger() {
+        super(RdfGraphMergerVaadinDialog.class, ConfigHistory.noHistory(RdfGraphMergerConfig_V1.class));
+    }
+
     @Override
     protected void innerExecute() throws DPUException {
         // Get list of input graphs.
@@ -69,10 +72,24 @@ public class RdfGraphMerger extends AbstractDpu<RdfGraphMergerConfig_V1> {
                 }
             });
         }
+        faultTolerance.execute(new FaultTolerance.ActionReturn<Boolean>() {
+
+            @Override
+            public Boolean action() throws Exception {
+                Resource resource = ResourceHelpers.getResource(rdfOutput, outputEntry.getSymbolicName());
+                Date now = new Date();
+                resource.setLast_modified(now);
+                resource.setCreated(now);
+                ResourceHelpers.setResource(rdfOutput, outputEntry.getSymbolicName(), resource);
+                if (config.getVirtualGraph() != null) {
+                    VirtualGraphHelpers.setVirtualGraph(rdfOutput, outputEntry.getSymbolicName(), config.getVirtualGraph().toString());
+                }
+                return Boolean.TRUE;
+            }
+        });
     }
 
     /**
-     *
      * @return New and unique output graph name.
      */
     private String generateOutputSymbolicName() {

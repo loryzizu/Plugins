@@ -22,7 +22,13 @@ import eu.unifiedviews.helpers.dpu.vaadin.validator.UrlValidator;
  */
 public class RdfGraphMergerVaadinDialog extends AbstractDialog<RdfGraphMergerConfig_V1> {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2412930986305283577L;
+
     BeanFieldGroup<RdfGraphMergerConfig_V1> binder;
+
     public RdfGraphMergerVaadinDialog() {
         super(RdfGraphMerger.class);
     }
