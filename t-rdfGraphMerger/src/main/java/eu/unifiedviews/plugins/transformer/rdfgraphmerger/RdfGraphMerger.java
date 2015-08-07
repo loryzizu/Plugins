@@ -31,7 +31,7 @@ public class RdfGraphMerger extends AbstractDpu<RdfGraphMergerConfig_V1> {
     @DataUnit.AsInput(name = "input")
     public RDFDataUnit rdfInput;
     
-    @DataUnit.AsOutput(name = "output")
+    @DataUnit.AsOutput(name = "output", optional = true)
     public WritableRDFDataUnit rdfOutput;
 
     @ExtensionInitializer.Init
