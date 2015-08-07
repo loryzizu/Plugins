@@ -16,8 +16,8 @@
     <description>Merge multiple input graphs into one new graph.</description>
 	
     <properties>
-        <dpu.package>cz.cuni.mff.xrg.uv.transformer.graphmerge</dpu.package>
-        <dpu.mainClass>GraphMerge</dpu.mainClass>
+        <dpu.package>eu.unifiedviews.plugins.transformer.rdfgraphmerger</dpu.package>
+        <dpu.mainClass>RdfGraphMerger</dpu.mainClass>
     </properties>
 
     <dependencies>

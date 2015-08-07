@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.uv.transformer.graphmerge;
+package eu.unifiedviews.plugins.transformer.rdfgraphmerger;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -22,9 +22,9 @@ import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
 import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 
 @DPU.AsTransformer
-public class GraphMerge extends AbstractDpu<GraphMergeConfig_V1> {
+public class RdfGraphMerger extends AbstractDpu<RdfGraphMergerConfig_V1> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GraphMerge.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RdfGraphMerger.class);
 
     private static final String COPY_QUERY = "INSERT { ?s ?p ?o } WHERE { ?s ?p ?o }";
 
@@ -37,8 +37,8 @@ public class GraphMerge extends AbstractDpu<GraphMergeConfig_V1> {
     @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
 
-	public GraphMerge() {
-		super(GraphMergeVaadinDialog.class, ConfigHistory.noHistory(GraphMergeConfig_V1.class));
+	public RdfGraphMerger() {
+		super(RdfGraphMergerVaadinDialog.class, ConfigHistory.noHistory(RdfGraphMergerConfig_V1.class));
 	}
 		
     @Override
