@@ -11,8 +11,8 @@ Loads RDF data (graphs) into Virtuoso
 |**Password** | Password for the username |
 |**Clear destination graph before loading (checkbox)** | Self-descriptive |
 |**Directory to load path** | Path to directory to be loaded |
-|**Include subdirectories (checkbox)** | Self-descriptive |
-|**File name pattern** | A pattern for file names to be included according to SQL standard (characters string is symbolized as '%') |
+|**Include subdirectories (checkbox)** | If checked, subdirectories are also loaded to Virtuoso |
+|**File name pattern** | A pattern for file names to be included according to SQL standard (characters string is symbolized as ‘%’). For example ‘%.ttl’ |
 |**Target Graph** | Target graph URI |
 |**Update status interval (s)** | Time period between status updates (in seconds) |
 |**Thread count** | Number of concurrently running processes |
