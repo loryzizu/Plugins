@@ -6,7 +6,7 @@ Zlúči vstupné grafy do jedného výstupného grafu
 
 | Meno | Popis |
 |:----|:----|
-|Názov grafu| Názov výstupného grafu, tento sa použije v iných krokoch (napríklad pri načítaní grafu do externé úložiska)|
+|Názov výstupného grafu| Názov výstupného grafu, tento sa použije v iných krokoch (napríklad pri načítaní grafu do externé úložiska)|
 
 ### Vstupy a výstupy
 
