@@ -61,7 +61,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     private CheckBox checkGenerateTableClass;
 
-    private CheckBox checkGenerateLabels ;
+    private CheckBox checkGenerateLabels;
 
     private TextField txtCsvQuoteChar;
 
@@ -142,7 +142,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         this.txtBaseUri.setRequiredError("Resource URI base must be supplied.");
         this.txtBaseUri.setDescription(
                 "This value is used as base URI for automatic column property generation "
-                + "and also to create absolute URI if relative uri is provided in 'Property URI' column.");
+                        + "and also to create absolute URI if relative uri is provided in 'Property URI' column.");
         generalLayout.addComponent(this.txtBaseUri);
 
         this.txtKeyColumnName = new TextField("Key column");
@@ -197,7 +197,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         this.checkStaticRowCounter = new CheckBox("Use static row counter");
         this.checkStaticRowCounter.setDescription(
                 "If checked and multiple files are precessed, then those files share the same row counter."
-                + "The process can be viewsed as if files are appended before parsing.");
+                        + "The process can be viewsed as if files are appended before parsing.");
         checkLayout.addComponent(checkStaticRowCounter);
 
         this.checkAdvancedKeyColumn = new CheckBox("Advanced key column");
@@ -213,8 +213,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         this.checkTableSubject = new CheckBox("Generate subject for table");
         this.checkTableSubject.setDescription(
                 "If checked then a subject for each table that point to all rows in given table is created. "
-                + "Used predicate is '" + TabularOntology.TABLE_HAS_ROW + "'. By predicate '" + TabularOntology.TABLE_SYMBOLIC_NAME + "'."
-                + "Symbolic name of source file is also attached.");
+                        + "Used predicate is '" + TabularOntology.TABLE_HAS_ROW + "'. By predicate '" + TabularOntology.TABLE_SYMBOLIC_NAME + "'."
+                        + "Symbolic name of source file is also attached.");
         checkLayout.addComponent(this.checkTableSubject);
 
         this.checkAutoAsString = new CheckBox("Auto type as string");
@@ -368,8 +368,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         Tab tabAdv = propertiesTab.addTab(this.advancedLayout, "Advanced - experimental functionality!");
         tabAdv.setDescription(
                 "Templates based on http://w3c.github.io/csvw/csv2rdf/#. If { or } is part of column name"
-                + "then before use they must be escaped ie. \\{ or \\} should be used."
-                + "Use \"...\" to denote literal and <...>  to denote uri. '...' then represent the content of literal/uri.");
+                        + "then before use they must be escaped ie. \\{ or \\} should be used."
+                        + "Use \"...\" to denote literal and <...>  to denote uri. '...' then represent the content of literal/uri.");
         Tab tabXls = propertiesTab.addTab(this.xlsStaticLayout, "Xls mapping");
         tabXls.setDescription(
                 "Can be used for static mapping of cells to named cells. Named cells are accesible as extension in every row.");
@@ -483,7 +483,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     /**
      * Based on given type update properties.
-     *
+     * 
      * @param value
      */
     private void setControllStates(ParserType value) {
@@ -507,7 +507,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     /**
      * Add new line (component) into tab "Simple" mapping.
-     *
+     * 
      * @param name
      * @param setting
      */
@@ -522,7 +522,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     /**
      * Add new line (component) into tab "Advanced" mapping.
-     *
+     * 
      * @param uri
      * @param template
      */
@@ -537,7 +537,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     /**
      * Add new line into "xls" mapping.
-     *
+     * 
      * @param name
      * @param column
      * @param row
@@ -553,7 +553,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     /**
      * Parse given string and use it to set column (properties) names. Original data are lost.
-     *
+     * 
      * @param str
      */
     private void importColumnNames(String str, String separator) {
@@ -598,6 +598,12 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         // save uri
         //
         String uriStr = c.getBaseURI();
+
+        if (!uriStr.endsWith("/") && !uriStr.endsWith("#")) {
+            //uri does not end with "/" or "#", add "/" automatically
+            uriStr = uriStr + "/";
+        }
+
         try {
             new java.net.URI(uriStr);
         } catch (URISyntaxException ex) {
