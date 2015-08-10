@@ -1,6 +1,6 @@
 ### Popis
 
-Transformuje vstupné dáta pomocou SPARQL SELECT dotazu a výsledok uloží do CSV súboru. Neorbí validáciu dát
+Transformuje vstupné dáta pomocou SPARQL SELECT dotazu a výsledok uloží do CSV súboru. Nerobí validáciu dát.
 
 ### Konfiguračné parametre
 

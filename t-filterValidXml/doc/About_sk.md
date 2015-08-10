@@ -9,8 +9,8 @@ Validuje XML vstupy tromi spôsobmi:
 
 | Meno | Popis |
 |:----|:----|
-|**XSD schéma** | XSD schéma, voči ktorej sa vstupné XML súbory porovnávajú |
-|**XSLT transformácia** | Každý výstupný súbor, ktorý XSLT vytvorí je považovaný za chybovú správu spôsobujúcu zlyhanie validácie |
+|**XSD schéma** | XSD schéma, voči ktorej sa vstupné XML súbory validujú |
+|**XSLT transformácia** | Prázdny výstup XSLT transformácie znamená bezchybnú validáciu. Hociaký neprázdny výstup znamená chybu pri validácii, pričom výstup zároveň obsahuje informáciu o konkrétnej chybe, ktorá ho spôsobila.|
 |**Zlyhanie procesu pri prvej validačnej chybe** | Pri prvom výskyte chyby validácie DPU zastaví vykonávanie procesu |
 
 ### Vstupy a výstupy ###

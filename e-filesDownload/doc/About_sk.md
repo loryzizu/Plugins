@@ -1,23 +1,24 @@
 ### Popis
 
-Stiahne súbory podľa zoznamu definovaného v konfigurácii. Je možné stiahnuť samostatné súborz alebo aj celé adresáre.
+Stiahne súbory podľa zoznamu definovaného v konfigurácii. Je možné stiahnuť samostatné súbory alebo aj celé adresáre.
 
 ### Konfiguračné parametre
 
 | Meno | Popis |
 |:----|:----|
-|**Zoznam súborov a adresárov na extrakciu** | Keď sa uvedie adresár, všetky súbory v adresári a jeho podadresároch sa stiahnu |
+|**Zoznam súborov a adresárov na extrakciu** | Keď sa uvedie adresár, stiahnu sa všetky súbory v adresári a jeho podadresároch |
 
 ### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|output |o| FilesDataUnit | Stiahnuté súbory |x|
-|config |i| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | |
+|config |vstup| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | |
+|output |výstup| FilesDataUnit | Stiahnuté súbory |áno|
+
 
 ### Pokročilá konfigurácia
 
-Krok je možné nakonfigurovať aj dznamicky cez vstup `config` pomocou RDF dát.
+Krok je možné nakonfigurovať aj dynamicky cez vstup `config` pomocou RDF dát.
 
 Vzor konfigurácie:
 

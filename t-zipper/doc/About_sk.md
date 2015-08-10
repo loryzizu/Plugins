@@ -1,16 +1,16 @@
 ### Popis
 
-Skomprimuje súbory na vstupe `input` do zip súboru podľa nakonfigurovaného mena a tento da na vústup `output`.
+Skomprimuje súbory na vstupe `input` do zip súboru podľa nakonfigurovaného mena a tento dá na výstup `output`.
 
 ### Konfiguračné parametre
 
 | Meno | Popis |
 |:----|:----|:----|
-|**Zip file path/name (with extension)** | Specifies the path/name for the output file to be created. Given path/name must be relative ie. `/data.zip`, `/data/out.zip`. Absolute path like `c:/` must not be used. In case unix system `/dir/data.zip` is interpreted as a relative path |
+|**Zip súbor cesta/názov (s príponou)** |  Špecifikuje cestu s názvom výstupného zip súboru. Cesta s názvom musí byť relatívna, napr. /subor1.zip, /adresar1/subor2.zip. Absolútna cesta ako napr. C:/ nemôže byť použitá. V prípade systémov UNIX /adresar1/subor2.zip je braná ako relatívna cesta.|
 
 ### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input   |i| FilesDataUnit | List of files to zip |x|
-|output  |o| FilesDataUnit | Name of zip file |x|
+|input   |i| FilesDataUnit | Zoznam súborov na zbalenie do zipu. |x|
+|output  |o| FilesDataUnit | Zip súbor |x|
