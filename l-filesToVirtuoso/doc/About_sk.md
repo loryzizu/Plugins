@@ -11,8 +11,8 @@ Nahrá RDF dáta do Virtuoso.
 |**Heslo** | Heslo príslušné užívateľskému menu |
 |**Vyčistenie cieľového grafu pred nahrávaním (checkbox)** | Inuitívne|
 |**Cesta k nahrávanému priečinku** | Cesta k nahrávanému priečinku |
-|**Vrátane podadresárov** | Boolean hodnota (acceptsakceptuje 'true' alebo 'false') |
-|**Vzor mena súboru** | Vzor pre názvy súborov, ktoré budú nahrávané |
+|**Vrátane podadresárov (checkbox)** | Ak je checkbox zaškrtnutý, na Virtuoso sa nahrá aj obsah podadresárov |
+|**Vzor mena súboru** | Vzor pre názvy súborov, ktoré budú nahrávané podľa normy SQL (reťazec znakov nahrádza symbol '%'). Napr. '%.ttl' |
 |**Cieľový graf** | URI cieľového grafu |
 |**Interval aktualizácie stavu (s)** | Časový úsek medzi dvoma aktualizáciami stavov (v sekundách) |
 |**Počet vlákien** | |
