@@ -76,6 +76,15 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
         super(RdfToVirtuosoVaadinDialog.class, ConfigHistory.noHistory(RdfToVirtuosoConfig_V1.class));
     }
 
+    /**
+     * Execute the main part - loading of data into virtuoso using supplied config instance
+     * 
+     * This method is public, since it is used from at least one outside place https://github.com/OpenDataNode/UVPlugin-rdfToVirtuosoAndCkan
+     * Please take this into account when changing method interface.
+     * @param ctx context 
+     * @param config DPU configuration
+     * @throws DPUException
+     */
     public void outerExecute(UserExecContext ctx, RdfToVirtuosoConfig_V1 config) throws DPUException {
         Map<String, String> environment = ctx.getExecMasterContext().getDpuContext().getEnvironment();
         String virtuosoJdbcUrl = environment.get(CONFIGURATION_VIRTUOSO_JDBC_URL);
