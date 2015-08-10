@@ -9,7 +9,7 @@
     </parent>
 
     <groupId>eu.unifiedviews.plugins</groupId>
-    <artifactId>e-sparqlEndpoint</artifactId>
+    <artifactId>uv-e-sparqlEndpoint</artifactId>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>E-SparqlEndpoint</name>
