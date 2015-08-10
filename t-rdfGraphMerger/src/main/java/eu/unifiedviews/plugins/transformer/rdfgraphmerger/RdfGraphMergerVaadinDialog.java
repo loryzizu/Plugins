@@ -1,16 +1,8 @@
 package eu.unifiedviews.plugins.transformer.rdfgraphmerger;
 
-import java.lang.reflect.Field;
-import java.net.URI;
-
-import com.vaadin.data.Validatable;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.AbstractTextField;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.DateField;
-import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
@@ -21,6 +13,7 @@ import eu.unifiedviews.helpers.dpu.vaadin.validator.UrlValidator;
  * DPU's configuration dialog.
  */
 public class RdfGraphMergerVaadinDialog extends AbstractDialog<RdfGraphMergerConfig_V1> {
+    public static final String VIRTUAL_GRAPH_FIELD_NAME = "virtualGraph";
 
     /**
      * 
@@ -58,6 +51,8 @@ public class RdfGraphMergerVaadinDialog extends AbstractDialog<RdfGraphMergerCon
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setImmediate(true);
         mainLayout.setWidth("100%");
+
+        mainLayout.setMargin(true);
         mainLayout.setHeight(null);
 
         // top-level component properties
@@ -66,37 +61,18 @@ public class RdfGraphMergerVaadinDialog extends AbstractDialog<RdfGraphMergerCon
         binder = new BeanFieldGroup<RdfGraphMergerConfig_V1>(RdfGraphMergerConfig_V1.class);
         RdfGraphMergerConfig_V1 config = new RdfGraphMergerConfig_V1();
         binder.setItemDataSource(config);
-        for (Field f : RdfGraphMergerConfig_V1.class.getDeclaredFields()) {
-            Component component = null;
-            if ("description".equals(f.getName())) {
-                component = binder.buildAndBind(ctx.tr(this.getClass().getSimpleName() + "." + f.getName() + ".caption"), f.getName(), TextArea.class);
-            } else {
-                component = binder.buildAndBind(ctx.tr(this.getClass().getSimpleName() + "." + f.getName() + ".caption"), f.getName());
-            }
-            component.setSizeFull();
-            if (AbstractTextField.class.isAssignableFrom(component.getClass())) {
-                ((AbstractTextField) component).setInputPrompt(ctx.tr(this.getClass().getSimpleName() + "." + f.getName() + ".inputPrompt"));
-                ((AbstractTextField) component).setNullRepresentation("");
-                if (URI.class.isAssignableFrom(f.getType())) {
-                    ((AbstractTextField) component).setConverter(new StringToUriConverter());
-                    ((AbstractTextField) component).setConversionError(ctx.tr(this.getClass().getSimpleName() + ".exception.uri.conversion"));
-                }
-            }
+        TextField component = new TextField(ctx.tr(this.getClass().getSimpleName() + "." + VIRTUAL_GRAPH_FIELD_NAME + ".caption"));
+        binder.bind(component, VIRTUAL_GRAPH_FIELD_NAME);
+        component.setSizeFull();
+        component.setInputPrompt(ctx.tr(this.getClass().getSimpleName() + "." + VIRTUAL_GRAPH_FIELD_NAME + ".inputPrompt"));
+        component.setNullRepresentation("");
+        component.setConverter(new StringToUriConverter());
+        component.setConversionError(ctx.tr(this.getClass().getSimpleName() + ".exception.uri.conversion"));
+        component.addValidator(new UrlValidator(true, ctx.getDialogMasterContext().getDialogContext().getLocale()));
+        component.setImmediate(true);
+        component.setLocale(ctx.getDialogMasterContext().getDialogContext().getLocale());
 
-            if (Validatable.class.isAssignableFrom(component.getClass())) {
-                if (URI.class.isAssignableFrom(f.getType())) {
-                    ((Validatable) component).addValidator(new UrlValidator(true, ctx.getDialogMasterContext().getDialogContext().getLocale()));
-                }
-            }
-            if (AbstractComponent.class.isAssignableFrom(component.getClass())) {
-                ((AbstractComponent) component).setImmediate(true);
-                ((AbstractComponent) component).setLocale(ctx.getDialogMasterContext().getDialogContext().getLocale());
-            }
-            if (DateField.class.isAssignableFrom(component.getClass())) {
-                ((DateField) component).setParseErrorMessage(ctx.tr(this.getClass().getSimpleName() + ".exception.date.conversion"));
-            }
-            mainLayout.addComponent(component);
-        }
+        mainLayout.addComponent(component);
         setCompositionRoot(mainLayout);
     }
 
