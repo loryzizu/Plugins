@@ -166,15 +166,13 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
                 if (isFile) {
                     // Get file name.
                     final String fileName;
-                    if (StringUtils.isNotBlank(vfsFile.getUri())) {
-                        fileName = DigestUtils.shaHex(vfsFile.getUri()) + vfsFile.getFileName();
+                    if (StringUtils.isNotBlank(vfsFile.getFileName())) {
+                        fileName = vfsFile.getFileName();
                     } else {
-                        try {
-                            fileName = fileObject.getName().getPathDecoded();
-                        } catch (FileSystemException ex) {
-                            throw ContextUtils.dpuException(ctx, ex, "FilesDownload.execute.exception");
-                        }
+                        //in this case file name is not available from config dialog
+                        fileName = DigestUtils.shaHex(vfsFile.getUri());
                     }
+                    LOG.debug("Filename is: {}", fileName);
                     // Prepare new output file record.
                     final FilesDataUnit.Entry destinationFile = faultTolerance.execute(new FaultTolerance.ActionReturn<FilesDataUnit.Entry>() {
 
