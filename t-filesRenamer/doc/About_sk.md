@@ -1,6 +1,6 @@
 ### Popis
 
-Premenovanie súborov
+Premenuje súbory
 
 ### Konfiguračné parametre
 
@@ -13,5 +13,5 @@ Premenovanie súborov
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|inFilesData  |i| FilesDataUnit | Meno súboru, ktoré as má zmeniť |x|
-|outFilesData |o| FilesDataUnit | Zmenené meno súboru |x|
+|inFilesData  |i| FilesDataUnit | Súbory, ktoré majú byť premenované |x|
+|outFilesData |o| FilesDataUnit | Premenované súbory |x|

@@ -1,6 +1,6 @@
 ### Popis
 
-Extrahuje RDF dáta z externého SPARQL koncového bodu podľa predpisu definovaného v konfigurácii a výsledok vo forme RDF zašle na výstup `output`.
+Stiahne RDF dáta z externého SPARQL koncového bodu podľa predpisu definovaného v konfigurácii a výsledok vo forme RDF zašle na výstup `output`.
 
 ### Konfiguračné parametre
 

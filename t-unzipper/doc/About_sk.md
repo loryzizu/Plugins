@@ -1,16 +1,16 @@
 ### Description
 
-Extrahuje súbory komprimované metódou ZIP
+Rozbalí súbory komprimované metódou ZIP.
 
 ### Configuration parameters
 
 | Name | Description |
 |:----|:----|
-|**Preskoč súbory, ktorých spracovanie skončilo chybou (checkbox)** | Ake je zaškrtnuté, DPU zabráni prípadnej kolízii mien súborov v prípade extrahovania z viacerých zip súborov uložených v rovnakej alebo podobnej štruktúre.<br>Ak nie je zaškrtnuté, na výstup sa pošlú súbory s menami ako sú v zip súbore.<br>V prípade nejasností, nechajte voľbu zaškrtnutú |
+|**Prevencia duplicitných názvov** | Ak je zaškrtnuté, je pred názov súboru z archívu pridaný náhodný reťazec, čím sa predíde duplicitným názvom v procese v prípade, že by existoval v procese nejaký iný súbor s rovnakým menom.
 
 ### Inputs and outputs
 
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input  |i| FilesDataUnit | Súbory na extrakciu |x|
-|output |o| FilesDataUnit | Extrahované súbory |x|
+|input  |i| FilesDataUnit | Súbory na rozbalenie |x|
+|output |o| FilesDataUnit | Rozbalené súbory |x|
