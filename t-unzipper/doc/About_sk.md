@@ -12,5 +12,5 @@ Rozbalí súbory komprimované metódou ZIP.
 
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input  |i| FilesDataUnit | Súbory na rozbalenie |x|
-|output |o| FilesDataUnit | Rozbalené súbory |x|
+|input  |vstup| FilesDataUnit | Súbory na rozbalenie |áno|
+|output |výstup| FilesDataUnit | Rozbalené súbory |áno|

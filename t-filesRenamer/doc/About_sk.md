@@ -13,5 +13,5 @@ Premenuje súbory
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|inFilesData  |i| FilesDataUnit | Súbory, ktoré majú byť premenované |x|
-|outFilesData |o| FilesDataUnit | Premenované súbory |x|
+|inFilesData  |vstup| FilesDataUnit | Súbory, ktoré majú byť premenované |áno|
+|outFilesData |výstup| FilesDataUnit | Premenované súbory |áno|

@@ -12,5 +12,5 @@ Skomprimuje súbory na vstupe `input` do zip súboru podľa nakonfigurovaného m
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input   |i| FilesDataUnit | Zoznam súborov na zbalenie do zipu. |x|
-|output  |o| FilesDataUnit | Zip súbor |x|
+|input   |vstup| FilesDataUnit | Zoznam súborov na zbalenie do zipu. |áno|
+|output  |výstup| FilesDataUnit | Zip súbor |áno|

@@ -15,9 +15,9 @@ Transformuje RDF grafy do súborov
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input  |i| RDFDataUnit   | RDF grafy |x|
-|output |o| FilesDataUnit |Súbory obsahujúce RDF dáta |x|
-|config |i| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | |
+|input  |vstup| RDFDataUnit   | RDF grafy |áno|
+|output |výstup| FilesDataUnit |Súbory obsahujúce RDF dáta |áno|
+|config |vstup| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | |
 
 ### Pokročilá konfigurácia
 

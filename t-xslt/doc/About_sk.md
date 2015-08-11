@@ -32,9 +32,9 @@ Príklad použitia:
 
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|files  |i| FilesDataUnit | Súbory určené na transformáciu  |x|
-|files  |o| FilesDataUnit | Transformované súbory |x|
-|config |i| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | |
+|files  |vstup| FilesDataUnit | Súbory určené na transformáciu  |áno|
+|files  |výstup| FilesDataUnit | Transformované súbory |áno|
+|config |vstup| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | |
 
 ### Pokročilá konfigurácia
 

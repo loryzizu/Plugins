@@ -13,5 +13,5 @@ Transformuje N vstupných tabuliek do jednej výstupnej tabuľky pomocout SQL SE
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|inputTables |i| RelationalDataUnit | Vstupné tabuľky |x|
-|outputTable |o| RelationalDataUnit | Výstupná tabuľka |x|
+|inputTables |vstup| RelationalDataUnit | Vstupné tabuľky |áno|
+|outputTable |výstup| RelationalDataUnit | Výstupná tabuľka |áno|

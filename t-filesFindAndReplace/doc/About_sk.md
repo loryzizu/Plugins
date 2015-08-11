@@ -14,5 +14,5 @@ Nájde a nahradí reťazce (vzory) v súboroch
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|filesInput  |i| FilesDataUnit | Vstupné súbory, ktoré je potrebné upraviť |x|
-|filesOutput |o| FilesDataUnit | Upravené súbory s nahradenými raťazcami |x|
+|filesInput  |vstup| FilesDataUnit | Vstupné súbory, ktoré je potrebné upraviť |áno|
+|filesOutput |výstup| FilesDataUnit | Upravené súbory s nahradenými raťazcami |áno|

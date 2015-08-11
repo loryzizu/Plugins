@@ -14,5 +14,5 @@ Získa RDF dáta zo súborov ľubovoľného RDF formátu
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|filesInput |i| FilesDataUnit | Vstupné súbory s dátami |x|
-|rdfOutput  |o| RDFDataUnit | Získané RDF dáta |x|
+|filesInput |vstup| FilesDataUnit | Vstupné súbory s dátami |áno|
+|rdfOutput  |výstup| RDFDataUnit | Získané RDF dáta |áno|

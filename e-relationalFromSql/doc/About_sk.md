@@ -35,4 +35,4 @@ Krok podporuje nasledujúce databázy:
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:---|:---:|:---:|:---|:---:|
-|outputTables |o| RelationalDataUnit | Naplnené databázové tabuľky |x|
+|outputTables |výstup| RelationalDataUnit | Naplnené databázové tabuľky |áno|

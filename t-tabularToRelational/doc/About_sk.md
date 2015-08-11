@@ -18,5 +18,5 @@ Načíta súbor s tabuľovými dátami vo formáte CSV, XLS, XLSX alebo DBF a v�
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input  |i| FilesDataUnit | Zoznam súborov, z ktorých majú byť načítané tabuľkové dáta |x|
-|output |o| RelationalDataUnit| Výstupná tabuľka/tabuľky | x|
+|input  |vstup| FilesDataUnit | Zoznam súborov, z ktorých majú byť načítané tabuľkové dáta |áno|
+|output |výstup| RelationalDataUnit| Výstupná tabuľka/tabuľky |áno|

@@ -13,5 +13,5 @@ Stiahne RDF dáta z externého SPARQL koncového bodu podľa predpisu definovan�
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|output |o| RdfDataUnit | Extrahované dáta vo forme RDF |x|
+|output |výstup| RdfDataUnit | Extrahované dáta vo forme RDF |áno|
 

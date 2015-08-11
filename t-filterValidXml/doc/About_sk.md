@@ -17,6 +17,6 @@ Validuje XML vstupy tromi spôsobmi:
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input        |i| FilesDataUnit | Zoznam súborov určených na validáciu |x|
-|outputValid  |o| FilesDataUnit | Zoznam súborov, ktoré vyhovujú validačným kritériám ||
-|outputInalid |o| FilesDataUnit | Zoznam súborov nevyhovujúcich validačným kritériám ||
+|input        |vstup| FilesDataUnit | Zoznam súborov určených na validáciu |áno|
+|outputValid  |výstup| FilesDataUnit | Zoznam súborov, ktoré vyhovujú validačným kritériám ||
+|outputInalid |výstup| FilesDataUnit | Zoznam súborov nevyhovujúcich validačným kritériám ||
