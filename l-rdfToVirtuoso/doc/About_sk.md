@@ -20,4 +20,4 @@ Do voliteľného výstupu `rdfOutput` generuje metadáta o grafoch uložených d
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |rdfInput  |vstup| RDFDataUnit | RDF grafy určené na nahratie |áno|
-|rdfOutput |výstup| RDFDataUnit | Metadáta o grafoch uložených do Virtuoso ||
+|rdfOutput |výstup| RDFDataUnit | Metadáta o grafoch uložených do Virtuoso | |

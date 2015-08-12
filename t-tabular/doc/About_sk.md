@@ -6,7 +6,7 @@ Konvertuje tabulárne dáta na RDF dáta
 
 | Meno | Popis |
 |:----|:----|
-|N/A||
+|N/A| |
 
 ### Vstupy a výstupy
 

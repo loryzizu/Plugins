@@ -37,4 +37,4 @@ Vygeneruje metadáta zo zadaného vstupu
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |data|vstup|RDFDataUnit|Dáta, ktoré majú byť opísané|áno|
-|metadata|výstup|RDFDataUnit|Opisné dáta||
+|metadata|výstup|RDFDataUnit|Opisné dáta| |

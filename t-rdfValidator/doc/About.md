@@ -14,4 +14,4 @@ Validates RDF data
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |rdfInput |i| RDFDataUnit | Input RDF to be validated |x|
-|rdfOutput|o| RDFDataUnit | Copy of rdfInput data ||
+|rdfOutput|o| RDFDataUnit | Copy of rdfInput data | |

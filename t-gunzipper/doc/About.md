@@ -13,4 +13,4 @@ Unzips GZIP files
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |filesInput  |i| FilesDataUnit | DataUnit to that will contain files to extract |x|
-|filesOutput |o| FilesDataUnit | DataUnit containing extracted files ||
+|filesOutput |o| FilesDataUnit | DataUnit containing extracted files | |
