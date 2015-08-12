@@ -2,10 +2,10 @@ package eu.unifiedviews.plugins.extractor.filesdownload;
 
 import java.io.IOException;
 import java.net.URI;
-import java.security.GeneralSecurityException;
 import java.text.NumberFormat;
 import java.util.Date;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
@@ -169,12 +169,10 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
                     if (StringUtils.isNotBlank(vfsFile.getFileName())) {
                         fileName = vfsFile.getFileName();
                     } else {
-                        try {
-                            fileName = fileObject.getName().getPathDecoded();
-                        } catch (FileSystemException ex) {
-                            throw ContextUtils.dpuException(ctx, ex, "FilesDownload.execute.exception");
-                        }
+                        //in this case file name is not available from config dialog
+                        fileName = DigestUtils.sha1Hex(vfsFile.getUri());
                     }
+                    LOG.debug("Filename is: {}", fileName);
                     // Prepare new output file record.
                     final FilesDataUnit.Entry destinationFile = faultTolerance.execute(new FaultTolerance.ActionReturn<FilesDataUnit.Entry>() {
 
