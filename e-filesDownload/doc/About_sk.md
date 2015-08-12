@@ -6,7 +6,10 @@ Stiahne súbory podľa zoznamu definovaného v konfigurácii. Je možné stiahnu
 
 | Meno | Popis |
 |:----|:----|
-|**Zoznam súborov a adresárov na extrakciu** | Keď sa uvedie adresár, stiahnu sa všetky súbory v adresári a jeho podadresároch |
+|**Zoznam súborov a adresárov na stiahnutie** | Keď je uvedený adresár, stiahnu sa všetky súbory v adresári a jeho podadresároch.|
+Ak je zadaný názov každého sťahovaného vstupu, tento názov sa použije na vnútornú identifikáciu daného súboru v ďalšom pokračovaní procesu a tiež ako názov
+virtuálnej cesty (cieľové umiestnenie súboru pri nahrávaní mimo UnifiedViews na konci procesu). Ak vás nezaujíma vnútorné pomenovanie súboru alebo názov virtuálnej cesty, napr.
+v prípadoch keď potrebujete iba prechádzať stiahnuté súbory v pokračovaní procesu tým istým spôsobom, nie je potrebné špecifikovať meno súboru.
 
 ### Vstupy a výstupy
 
