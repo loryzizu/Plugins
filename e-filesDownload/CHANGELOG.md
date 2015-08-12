@@ -1,7 +1,11 @@
 E-FilesDownload
 ----------
 
-v2.1.1-SNAPSHOT
+v2.1.2-SNAPSHOT
+---
+* configurable allowed protocols
+
+v2.1.1
 ---
 * support for ignore TLS errors
 * Improved description (About)

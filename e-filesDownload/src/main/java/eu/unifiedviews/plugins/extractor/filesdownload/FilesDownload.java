@@ -3,8 +3,10 @@ package eu.unifiedviews.plugins.extractor.filesdownload;
 import java.io.IOException;
 import java.net.URI;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -124,7 +126,9 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
             }
 
             if (!checkURIProtocolSupported(vfsFile.getUri())) {
-                ContextUtils.sendShortWarn(this.ctx, "FilesDownload.execute.unsupported", vfsFile.getUri());
+                ContextUtils.sendWarn(this.ctx, "FilesDownload.protocol.not.supported", "FilesDownload.protocol.not.supported.long",
+                        vfsFile.getUri(),
+                        getSupportedProtocols());
                 continue;
             }
 
@@ -237,6 +241,22 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
         }
 
         return supportedSet.contains(scheme);
+    }
+
+    private List<String> getSupportedProtocols() {
+        Map<String, String> environment = this.ctx.getExecMasterContext().getDpuContext().getEnvironment();
+        String supportedProtocols = environment.get(FilesDownload.SUPPORTED_PROTOCOLS);
+        if (StringUtils.isEmpty(supportedProtocols)) {
+            return null;
+        }
+
+        String[] supportedProtocolsArray = supportedProtocols.trim().split(",");
+        List<String> protocols = new ArrayList<>();
+        for (String protocol : supportedProtocolsArray) {
+            protocols.add(protocol);
+        }
+
+        return protocols;
     }
 
 }
