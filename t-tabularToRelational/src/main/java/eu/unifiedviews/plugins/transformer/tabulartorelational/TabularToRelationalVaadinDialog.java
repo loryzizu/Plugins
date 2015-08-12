@@ -1,20 +1,21 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
-import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
-import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
-import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ParserType;
-
-import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.ui.*;
+
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ParserType;
 
 public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRelationalConfig_V2> {
 
@@ -249,12 +250,12 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
     }
 
     private boolean isNameValid(String value) {
-        if (value == null || value.isEmpty()) {
+        if (value == null) {
             return false;
         }
         Pattern pattern = Pattern.compile("[A-Za-z][A-Za-z0-9_]*");
         Matcher matcher = pattern.matcher(value);
-        return matcher.matches();
+        return matcher.matches() || value.isEmpty();
     }
 
     private void showComponents(Component... components) {

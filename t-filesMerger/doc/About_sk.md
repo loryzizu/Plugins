@@ -1,6 +1,6 @@
 ### Popis
 
-Zlúči súbory
+Zjednotí dátové jednotky su súbormi do jednej.
 
 ### Konfiguračné parametre
 
@@ -12,5 +12,5 @@ Zlúči súbory
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|filesInput  |i| FilesDataUnit | Dátová jednotka, kam používateľ zapojí všetky súbory, ktoré majú byť zlúčené |x|
-|filesOutput |o| FilesDataUnit | Dátová jednotka, kam sa pošle výstupný zlúčený súbor ||
+|filesInput  |vstup| FilesDataUnit | Dátová jednotka so súbormi |áno|
+|filesOutput |výstup| FilesDataUnit | Dátová jednotka obsahujúca súbory zo všetkých vstupných dátových jednotiek. ||

@@ -25,6 +25,7 @@
         <module>t-gunzipper</module>
         <module>t-gzipper</module>
         <module>t-metadata</module>
+        <module>t-rdfGraphMerger</module>
         <module>t-rdfMerger</module>
         <module>t-rdfToFiles</module>
         <module>t-rdfValidator</module>

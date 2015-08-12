@@ -1,6 +1,6 @@
 ### Popis
 
-Extrahuje RDF dáta z externého SPARQL koncového bodu podľa predpisu definovaného v konfigurácii a výsledok vo forme RDF zašle na výstup `output`.
+Stiahne RDF dáta z externého SPARQL koncového bodu podľa predpisu definovaného v konfigurácii a výsledok vo forme RDF zašle na výstup `output`.
 
 ### Konfiguračné parametre
 
@@ -13,5 +13,5 @@ Extrahuje RDF dáta z externého SPARQL koncového bodu podľa predpisu definova
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|output |o| RdfDataUnit | Extrahované dáta vo forme RDF |x|
+|output |výstup| RdfDataUnit | Extrahované dáta vo forme RDF |áno|
 

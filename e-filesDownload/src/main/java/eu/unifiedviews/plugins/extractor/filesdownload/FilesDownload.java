@@ -170,7 +170,7 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
                         fileName = vfsFile.getFileName();
                     } else {
                         //in this case file name is not available from config dialog
-                        fileName = DigestUtils.shaHex(vfsFile.getUri());
+                        fileName = DigestUtils.sha1Hex(vfsFile.getUri());
                     }
                     LOG.debug("Filename is: {}", fileName);
                     // Prepare new output file record.

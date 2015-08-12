@@ -18,4 +18,4 @@ Nahrá vstup z internej databázovej tabuľky do vzdialenej SQL databázy (v sú
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|inTablesData |i| RelationalDataUnit | Dáta z databázovej tabuľky |x|
+|inTablesData |vstup| RelationalDataUnit | Dáta z databázovej tabuľky |áno|
