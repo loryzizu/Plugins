@@ -62,7 +62,7 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FilesDownload.class);
 
-    public static final String SUPPORTED_PROTOCOLS = "dpu.uv-e-filesDownload.supported.protocols";
+    public static final String SUPPORTED_PROTOCOLS = "dpu.uv-e-filesDownload.allowed.protocols";
 
     @RdfConfiguration.ContainsConfiguration
     @DataUnit.AsInput(name = "config", optional = true)
