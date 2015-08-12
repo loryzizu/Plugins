@@ -2,9 +2,11 @@ package eu.unifiedviews.plugins.extractor.filesdownload;
 
 import java.io.IOException;
 import java.net.URI;
-import java.security.GeneralSecurityException;
 import java.text.NumberFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.protocol.Protocol;
@@ -20,6 +22,7 @@ import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs2.cache.NullFilesCache;
 import org.apache.commons.vfs2.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
+import org.apache.commons.vfs2.provider.UriParser;
 import org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.ftps.FtpsFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
@@ -55,6 +58,8 @@ import eu.unifiedviews.plugins.extractor.httpdownload.HttpDownloadConfig_V1;
 public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FilesDownload.class);
+
+    public static final String SUPPORTED_PROTOCOLS = "dpu.uv-e-filesDownload.supported.protocols";
 
     @RdfConfiguration.ContainsConfiguration
     @DataUnit.AsInput(name = "config", optional = true)
@@ -117,6 +122,12 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
             if (ctx.canceled()) {
                 throw ContextUtils.dpuExceptionCancelled(ctx);
             }
+
+            if (!checkURIProtocolSupported(vfsFile.getUri())) {
+                ContextUtils.sendShortWarn(this.ctx, "FilesDownload.execute.unsupported", vfsFile.getUri());
+                continue;
+            }
+
             // If user name is not blank, then we prepare for autentification.
             if (StringUtils.isNotBlank(vfsFile.getUsername())) {
                 final StaticUserAuthenticator staticUserAuthenticator;
@@ -205,6 +216,27 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
                 }
             }
         }
+    }
+
+    private boolean checkURIProtocolSupported(String uri) {
+        Map<String, String> environment = this.ctx.getExecMasterContext().getDpuContext().getEnvironment();
+        String supportedProtocols = environment.get(SUPPORTED_PROTOCOLS);
+        if (StringUtils.isEmpty(supportedProtocols)) {
+            return true;
+        }
+
+        final String scheme = UriParser.extractScheme(uri);
+        String[] supportedSchemes = supportedProtocols.trim().split(",");
+        Set<String> supportedSet = new HashSet<>();
+        for (String s : supportedSchemes) {
+            supportedSet.add(s);
+        }
+
+        if (StringUtils.isEmpty(scheme) && !supportedSet.contains("file")) {
+            return false;
+        }
+
+        return supportedSet.contains(scheme);
     }
 
 }
