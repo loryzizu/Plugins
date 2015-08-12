@@ -1,6 +1,6 @@
 ### Popis
 
-Transformuje vstupné dáta pomocou SPARQL SELECT dotazu a výsledok uloží do CSV súboru. Neorbí validáciu dát
+Transformuje vstupné dáta pomocou SPARQL SELECT dotazu a výsledok uloží do CSV súboru. Nerobí validáciu dát.
 
 ### Konfiguračné parametre
 
@@ -13,5 +13,5 @@ Transformuje vstupné dáta pomocou SPARQL SELECT dotazu a výsledok uloží do 
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input  |i | RDFDataUnit   | RDF vstupné dáta |x|
-|output |o | FilesDataUnit | CSV súbor obsahujúci výsledok z SPARQL SELECT dotazu |x|
+|input  |vstup| RDFDataUnit   | RDF vstupné dáta |áno|
+|output |výstup| FilesDataUnit | CSV súbor obsahujúci výsledok z SPARQL SELECT dotazu |áno|

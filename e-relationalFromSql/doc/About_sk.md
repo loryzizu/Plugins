@@ -1,10 +1,10 @@
 ### Popis
 
-Načíta dáta z externej relačnej databázy do internej databázy,
+Načíta relačné dáta (tabuľku) z externej relačnej databázy.
 
 Používa sa na načítanie dát z relačnej databázy pomocou SQL dotazov a následné uloženie do internej dátovej hrany určenej pre relačné dáta.
-Tento Krok umožňuje vzužiť niektoré vlastnosti pre načítanie dát z databázy: zoznam tabuliek v zdrojovej databáze, generovanie SELECT dotazu pre zvolenú tabuľku, preview údajov.
-Podporované je aj bezpečné spojenie do zdrojovej databázy cez SSL.
+Tento Krok umožňuje využiť niektoré vlastnosti pre načítanie dát z databázy: zoznam tabuliek v zdrojovej databáze, generovanie SELECT dotazu pre zvolenú tabuľku, preview údajov.
+Podporované je aj bezpečné pripojenie do externej databázy cez SSL.
 
 Krok podporuje nasledujúce databázy:
 * PostgreSQL
@@ -35,4 +35,4 @@ Krok podporuje nasledujúce databázy:
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:---|:---:|:---:|:---|:---:|
-|outputTables |o| RelationalDataUnit | Naplnené databázové tabuľky |x|
+|outputTables |výstup| RelationalDataUnit | Naplnené databázové tabuľky |áno|

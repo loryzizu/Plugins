@@ -1,9 +1,11 @@
 package eu.unifiedviews.plugins.loader.filestovirtuoso;
 
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
 import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
 
 @EntityDescription.Entity(type = "http://unifiedviews.eu/ontology/dpu/filesToVirtuoso/Config")
-public class VirtuosoLoaderConfig_V1 {
+public class VirtuosoLoaderConfig_V1 implements VersionedConfig<VirtuosoLoaderConfig_V2> {
 
     private String virtuosoUrl = "";
 
@@ -23,14 +25,14 @@ public class VirtuosoLoaderConfig_V1 {
     @EntityDescription.Property(uri = "http://unifiedviews.eu/ontology/dpu/filesToVirtuoso/config/graphUri")
     private String targetContext = "";
 
-//    private String targetTempContext = "";
+    //    private String targetTempContext = "";
 
     private long statusUpdateInterval = 60L;
 
     private int threadCount = 1;
 
     private boolean skipOnError = false;
-    
+
     public VirtuosoLoaderConfig_V1() {
     }
 
@@ -120,6 +122,32 @@ public class VirtuosoLoaderConfig_V1 {
 
     public void setSkipOnError(boolean skipOnError) {
         this.skipOnError = skipOnError;
+    }
+
+    @Override
+    public VirtuosoLoaderConfig_V2 toNextVersion() throws DPUConfigException {
+
+        final VirtuosoLoaderConfig_V2 config = new VirtuosoLoaderConfig_V2();
+        if (!virtuosoUrl.isEmpty()) {
+            config.setVirtuosoUrl(virtuosoUrl);
+        }
+        if (!username.isEmpty()) {
+            config.setUsername(username);
+        }
+        if (!password.isEmpty()) {
+            config.setPassword(password);
+        }
+        config.setClearDestinationGraph(clearDestinationGraph);
+        config.setLoadDirectoryPath(loadDirectoryPath);
+        config.setIncludeSubdirectories(includeSubdirectories);
+        config.setLoadFilePattern(loadFilePattern);
+        config.setTargetContext(targetContext);
+        config.setStatusUpdateInterval(statusUpdateInterval);
+        config.setThreadCount(threadCount);
+        config.setSkipOnError(skipOnError);
+
+        return config;
+
     }
 
 }
