@@ -158,6 +158,8 @@ public class TabularConfig_V2 {
 
     /**
      * If true then string values are trimmed before used.
+     *
+     * WARNING: This field is in fact used not only for dbf, but in global scope.
      */
     private boolean dbfTrimString = false;
 
@@ -367,7 +369,8 @@ public class TabularConfig_V2 {
     public TableToRdfConfig getTableToRdfConfig() {
         return new TableToRdfConfig(keyColumn, baseURI, columnsInfo,
                 generateNew, rowsClass, ignoreBlankCells, columnsInfoAdv,
-                advancedKeyColumn, generateRowTriple, autoAsStrings, generateTableClass, generateLabels);
+                advancedKeyColumn, generateRowTriple, autoAsStrings, 
+                generateTableClass, generateLabels, dbfTrimString);
     }
 
     public ParserCsvConfig getParserCsvConfig() {
@@ -380,7 +383,7 @@ public class TabularConfig_V2 {
     public ParserDbfConfig getParserDbfConfig() {
         return new ParserDbfConfig(encoding,
                 rowsLimit == null || rowsLimit == -1 ? null : rowsLimit,
-                staticRowCounter, dbfTrimString);
+                staticRowCounter);
     }
 
     public ParserXlsConfig getParserXlsConfig() {

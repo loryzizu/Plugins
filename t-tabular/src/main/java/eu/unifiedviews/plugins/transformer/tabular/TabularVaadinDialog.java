@@ -79,7 +79,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     private CheckBox checkXlsStripHeader;
 
-    private CheckBox checkDbfTrimString;
+    private CheckBox checkTrimString;
 
     /**
      * Layout for basic column mapping.
@@ -126,7 +126,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         // ------------------------ General ------------------------
         final VerticalLayout generalLayout = new VerticalLayout();
         generalLayout.setImmediate(true);
-        generalLayout.setWidth("100%");
+        generalLayout.setWidth("350px");
         generalLayout.setHeight("-1px");
 
         this.optionTableType = new OptionGroup("Choose the input type:");
@@ -181,12 +181,11 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         generalLayout.addComponent(this.txtRowsClass);
 
         // area with check boxes
-        GridLayout checkLayout = new GridLayout(3, 1);
+        GridLayout checkLayout = new GridLayout(5, 1);
         checkLayout.setWidth("100%");
         checkLayout.setHeight("-1px");
         checkLayout.setSpacing(true);
-        generalLayout.addComponent(checkLayout);
-
+        
         this.checkGenerateNew = new CheckBox("Full column mapping");
         this.checkGenerateNew.setDescription("If true then default mapping is generated for every column.");
         checkLayout.addComponent(this.checkGenerateNew);
@@ -233,6 +232,11 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         this.checkGenerateLabels.setDescription(
                 "If checked then rdfs:labels are generated to column URIs, as the value original column name is used. If file does not contain header then data from first row are used. Does not generate labels for advanced mapping.");
         checkLayout.addComponent(this.checkGenerateLabels);
+
+        this.checkTrimString = new CheckBox("Remove trailing spaces");
+        this.checkTrimString.setDescription("If checked then for every loaded string the leading and "
+                + "trailing spaces are removed before the value is futher processed.");
+        checkLayout.addComponent(this.checkTrimString);
 
         // -------------------------- CSV ----------------------------
         final FormLayout csvLayout = new FormLayout();
@@ -311,10 +315,6 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         dbfLayout.setHeight("-1px");
         dbfLayout.addComponent(new Label("DBF specific settings"));
 
-        this.checkDbfTrimString = new CheckBox("Remove trailing spaces");
-        this.checkDbfTrimString.setDescription("If checked then for every loaded string the leading and "
-                + "trailing spaces are removed before the value is futher processed.");
-        dbfLayout.addComponent(this.checkDbfTrimString);
 
         // --------------------- Mapping - simple ---------------------
         this.basicLayout = new GridLayout(5, 1);
@@ -409,6 +409,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         mainLayout.setHeight("-1px");
         mainLayout.setMargin(true);
         mainLayout.addComponent(configLayout);
+        mainLayout.addComponent(checkLayout);
         mainLayout.setExpandRatio(configLayout, 0.0f);
 
         mainLayout.addComponent(new Label("Mapping"));
@@ -520,8 +521,6 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         for (PropertyNamedCell namedCell : xlsNamedCells) {
             namedCell.setEnabled(xlsEnabled);
         }
-
-        checkDbfTrimString.setEnabled(dbfEnabled);
     }
 
     /**
@@ -661,11 +660,6 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             checkXlsHasHeader.setValue(true);
             checkXlsStripHeader.setValue(false);
         }
-        if (c.getTableType() == ParserType.DBF) {
-            checkDbfTrimString.setValue(c.isDbfTrimString());
-        } else {
-            checkDbfTrimString.setValue(false);
-        }
         //
         // other data
         //
@@ -689,6 +683,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         checkAutoAsString.setValue(c.isAutoAsStrings());
         checkGenerateTableClass.setValue(c.isGenerateTableClass());
         checkGenerateLabels.setValue(c.isGenerateLabels());
+        checkTrimString.setValue(c.isDbfTrimString());
         //
         // enable/disable controlls
         //
@@ -760,8 +755,6 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
             cnf.setHasHeader(checkXlsHasHeader.getValue());
             cnf.setStripHeader(checkXlsStripHeader.getValue());
-        } else if (value == ParserType.DBF) {
-            cnf.setDbfTrimString(checkDbfTrimString.getValue());
         }
         //
         // other data
@@ -789,6 +782,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         cnf.setAutoAsStrings(checkAutoAsString.getValue());
         cnf.setGenerateTableClass(checkGenerateTableClass.getValue());
         cnf.setGenerateLabels(checkGenerateLabels.getValue());
+        cnf.setDbfTrimString(checkTrimString.getValue());
 
         final String rowsClass = txtRowsClass.getValue();
         if (rowsClass == null || rowsClass.isEmpty()) {
