@@ -12,5 +12,5 @@ Zlúči vstupné grafy do jedného výstupného grafu
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input  |i| RDFDataUnit | Dátová jednotka, kam používateľ zapojí všetky grafy, ktoré majú byť zlúčené |x|
-|output |o| RDFDataUnit | Dátová jednotka, kam sa pošle výstupný zlúčený grah ||
+|input  |vstup| RDFDataUnit | Dátová jednotka, kam používateľ zapojí všetky grafy, ktoré majú byť zlúčené |áno|
+|output |výstup| RDFDataUnit | Dátová jednotka, kam sa pošle výstupný zlúčený grah | |

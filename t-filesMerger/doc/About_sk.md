@@ -1,6 +1,6 @@
 ### Popis
 
-Zjednotí dátové jednotky su súbormi do jednej.
+Zjednotí dátové jednotky so súbormi do jednej.
 
 ### Konfiguračné parametre
 
