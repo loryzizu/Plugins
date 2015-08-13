@@ -33,7 +33,7 @@ Example of usage:
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |files  |i| FilesDataUnit | File to be transformed  |x|
 |files  |o| FilesDataUnit | Transformed file of given type |x|
-|config |i| RdfDataUnit | Dynamic DPU configuration, see Advanced configuration ||
+|config |i| RdfDataUnit | Dynamic DPU configuration, see Advanced configuration | |
 
 ### Advanced configuration
 

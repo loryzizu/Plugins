@@ -1,6 +1,6 @@
 ### Popis
 
-Generuje metadáta na yáklade konigurácie
+Generuje metadáta na základe konfigurácie
 
 ### Konfiguračné parametre
 
@@ -16,4 +16,4 @@ Generuje metadáta na yáklade konigurácie
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|distributionOutput |o |RDFDataUnit | Metadáta distribúcie. Uložené v grafe s meno "distributionMetadata" |x|
+|distributionOutput |výstup |RDFDataUnit | Metadáta distribúcie. Uložené v grafe s menom "distributionMetadata" |áno|

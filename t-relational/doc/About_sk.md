@@ -1,17 +1,17 @@
 ### Popis
 
-Transformuje N vstupných tabuliek do jednej výstupnej tabuľky pomocout SELECT dotayu
+Transformuje N vstupných tabuliek do jednej výstupnej tabuľky pomocout SQL SELECT dotazu
 
 ### Konfiguračné parametre
 
 | Meno | Popis |
 |:----|:----|
-|**SQL SELECT dotaz** | SQL SELECT dotaz na extrahovanie dát zo zdrojovej databázy |
-|**Meno cieľovej tabuľky** | Meno tabuľky kam sa uložia interne extrahované dáta |
+|**SQL SELECT dotaz** | SQL SELECT dotaz na získanie/transformáciu dát zo vstupných tabuliek |
+|**Meno cieľovej tabuľky** | Meno tabuľky, kam sa uloží výstup SQL dotazu |
 
 ### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|inputTables |i| RelationalDataUnit | Ydrojové databázové tabuľky |x|
-|outputTable |o| RelationalDataUnit | Výstupná (transformovaná) tabuľka |x|
+|inputTables |vstup| RelationalDataUnit | Vstupné tabuľky |áno|
+|outputTable |výstup| RelationalDataUnit | Výstupná tabuľka |áno|

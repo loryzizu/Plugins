@@ -13,4 +13,4 @@ Compresses any file using GZIP compression
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |input  |i| FilesDataUnit | One or more files |x|
-|output |o| FilesDataUnit | One .gz file per each input file ||
+|output |o| FilesDataUnit | One .gz file per each input file | |
