@@ -1,6 +1,11 @@
 T-Tabular
 ----------
 
+v2.3.0
+---
+* Space trailing is now accessible for all input types.
+* Dialog layout update, to provide more space for check boxes.
+
 v2.2.1
 ---
 * For DBF: Added possibility to trim trailing and leading spaces from values, dialog adjustments.
