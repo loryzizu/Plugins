@@ -1,7 +1,11 @@
 T-FilesRenamer
 ----------
 
-v2.1.1-SNAPSHOT
+v2.1.2
+---
+* Update to UnifiedViews Plugins-DevEnv 2.1.2
+
+v2.1.1
 ---
 * Improved description (About)
 
