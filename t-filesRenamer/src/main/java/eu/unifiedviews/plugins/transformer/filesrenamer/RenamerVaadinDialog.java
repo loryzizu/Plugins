@@ -1,5 +1,6 @@
 package eu.unifiedviews.plugins.transformer.filesrenamer;
 
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
@@ -12,6 +13,8 @@ public class RenamerVaadinDialog extends AbstractDialog<RenamerConfig_V1> {
 
     private TextField txtValue;
 
+    private CheckBox checkUseAdvanced;
+
     public RenamerVaadinDialog() {
         super(Renamer.class);
     }
@@ -20,7 +23,8 @@ public class RenamerVaadinDialog extends AbstractDialog<RenamerConfig_V1> {
     protected void buildDialogLayout() {
 
         final VerticalLayout layout = new VerticalLayout();
-        layout.setSizeFull();
+        layout.setWidth("100%");
+        layout.setHeight("-1px");
         layout.setSpacing(true);
         layout.setMargin(true);
 
@@ -32,6 +36,11 @@ public class RenamerVaadinDialog extends AbstractDialog<RenamerConfig_V1> {
         txtValue.setWidth("100%");
         layout.addComponent(txtValue);
 
+        checkUseAdvanced = new CheckBox(ctx.tr("renamer.dialog.advancedMode"));
+        checkUseAdvanced.setWidth("100%");
+        checkUseAdvanced.setDescription(ctx.tr("renamer.dialog.advancedMode.desc"));
+        layout.addComponent(checkUseAdvanced);
+
         setCompositionRoot(layout);
     }
 
@@ -39,6 +48,7 @@ public class RenamerVaadinDialog extends AbstractDialog<RenamerConfig_V1> {
     public void setConfiguration(RenamerConfig_V1 config) throws DPUConfigException {
         txtPattern.setValue(config.getPattern());
         txtValue.setValue(config.getReplaceText());
+        checkUseAdvanced.setValue(config.isUseAdvanceReplace());
 
     }
 
@@ -48,6 +58,7 @@ public class RenamerVaadinDialog extends AbstractDialog<RenamerConfig_V1> {
 
         c.setReplaceText(txtValue.getValue());
         c.setPattern(txtPattern.getValue());
+        c.setUseAdvanceReplace(checkUseAdvanced.getValue());
 
         return c;
     }
