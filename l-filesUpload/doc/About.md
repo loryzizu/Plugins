@@ -26,4 +26,4 @@ sftp://server:port/folder
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |input  |i| FilesDataUnit| Files to upload to specified destination |x|
-|output |o| FilesDataUnit| Same as input, only Resource.last_modified time updated ||
+|output |o| FilesDataUnit| Same as input, only Resource.last_modified time updated | |

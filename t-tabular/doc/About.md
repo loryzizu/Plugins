@@ -6,7 +6,7 @@ Converts tabular data into RDF data
 
 | Name | Description |
 |:----|:----|
-|N/A||
+|N/A| |
 
 ### Inputs and outputs
 

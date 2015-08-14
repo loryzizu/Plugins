@@ -12,11 +12,14 @@ public class ParserDbfConfig {
 
     final boolean checkStaticRowCounter;
 
+    final boolean trimStringValues;
+
     public ParserDbfConfig(String encoding, Integer rowLimit,
-            boolean checkStaticRowCounter) {
+            boolean checkStaticRowCounter, boolean trimStringValues) {
         this.encoding = encoding;
         this.rowLimit = rowLimit;
         this.checkStaticRowCounter = checkStaticRowCounter;
+        this.trimStringValues = trimStringValues;
     }
 
 }
