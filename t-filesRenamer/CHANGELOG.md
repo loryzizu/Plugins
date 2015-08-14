@@ -5,6 +5,13 @@ v2.2.0-SNAPSHOT
 ---
 * Added support for advanced query
 * Dialog layout update (size is -1 not 100%)
+
+v2.1.2
+---
+* Update to UnifiedViews Plugins-DevEnv 2.1.2
+
+v2.1.1
+---
 * Improved description (About)
 
 v2.1.0
