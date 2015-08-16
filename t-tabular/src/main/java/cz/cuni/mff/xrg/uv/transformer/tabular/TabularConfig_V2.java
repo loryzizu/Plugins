@@ -163,6 +163,8 @@ public class TabularConfig_V2 {
      */
     private boolean dbfTrimString = false;
 
+    private boolean xlsAdvancedDoubleParser = false;
+
     public TabularConfig_V2() {
     }
 
@@ -366,6 +368,14 @@ public class TabularConfig_V2 {
         this.dbfTrimString = dbfTrimString;
     }
 
+    public boolean isXlsAdvancedDoubleParser() {
+        return xlsAdvancedDoubleParser;
+    }
+
+    public void setXlsAdvancedDoubleParser(boolean xlsAdvancedDoubleParser) {
+        this.xlsAdvancedDoubleParser = xlsAdvancedDoubleParser;
+    }
+
     public TableToRdfConfig getTableToRdfConfig() {
         return new TableToRdfConfig(keyColumn, baseURI, columnsInfo,
                 generateNew, rowsClass, ignoreBlankCells, columnsInfoAdv,
@@ -390,7 +400,7 @@ public class TabularConfig_V2 {
         return new ParserXlsConfig(xlsSheetName, linesToIgnore, hasHeader,
                 namedCells, 
                 rowsLimit == null || rowsLimit == -1 ? null : rowsLimit,
-                staticRowCounter, stripHeader);
+                staticRowCounter, stripHeader, xlsAdvancedDoubleParser);
     }
 
 }

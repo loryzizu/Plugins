@@ -79,6 +79,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     private CheckBox checkXlsStripHeader;
 
+    private CheckBox checkXlsAdvancedDoubleParser;
+
     private CheckBox checkTrimString;
 
     /**
@@ -296,6 +298,12 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
                 + "This can be usefull if header is bigger then data, ie. 'Diff number of cells in header' "
                 + "exception is thrown.");
         xlsLayout.addComponent(this.checkXlsStripHeader);
+
+        this.checkXlsAdvancedDoubleParser = new CheckBox("Use advanced parser for 'double'");
+        this.checkXlsAdvancedDoubleParser.setDescription("In xls a integer, dlouble and date are all "
+                + "represented in a same way. This option enabled advanced detection of integers and dates "
+                + "based on value and formating.");
+        xlsLayout.addComponent(checkXlsAdvancedDoubleParser);
 
         // add change listener
         this.optionTableType.addValueChangeListener(new Property.ValueChangeListener() {
@@ -518,6 +526,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         txtXlsLinesToIgnore.setEnabled(xlsEnabled);
         checkXlsHasHeader.setEnabled(xlsEnabled);
         checkXlsStripHeader.setEnabled(xlsEnabled);
+        checkXlsAdvancedDoubleParser.setEnabled(xlsEnabled);
         for (PropertyNamedCell namedCell : xlsNamedCells) {
             namedCell.setEnabled(xlsEnabled);
         }
@@ -653,12 +662,14 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             loadCellMapping(c.getNamedCells());
             checkXlsHasHeader.setValue(c.isHasHeader());
             checkXlsStripHeader.setValue(c.isStripHeader());
+            checkXlsAdvancedDoubleParser.setValue(c.isXlsAdvancedDoubleParser());
         } else {
             txtXlsSheetName.setValue("");
             txtXlsLinesToIgnore.setValue("0");
             loadCellMapping(Collections.EMPTY_LIST);
             checkXlsHasHeader.setValue(true);
             checkXlsStripHeader.setValue(false);
+            checkXlsAdvancedDoubleParser.setValue(false);
         }
         //
         // other data
@@ -755,6 +766,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
             cnf.setHasHeader(checkXlsHasHeader.getValue());
             cnf.setStripHeader(checkXlsStripHeader.getValue());
+            cnf.setXlsAdvancedDoubleParser(checkXlsAdvancedDoubleParser.getValue());
         }
         //
         // other data
