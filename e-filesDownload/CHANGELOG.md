@@ -3,7 +3,11 @@ E-FilesDownload
 
 v2.1.3-SNAPSHOT
 ---
-* configurable allowed protocols
+* Allowed protocols may be configured, so that only certain protocols are allowed 
+
+v2.1.2
+---
+* Update to API 2.1.2
 
 v2.1.2
 ---
