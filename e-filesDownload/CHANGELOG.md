@@ -1,7 +1,11 @@
 E-FilesDownload
 ----------
 
-v2.1.1-SNAPSHOT
+v2.1.2
+---
+* Update to API 2.1.2
+
+v2.1.1
 ---
 * support for ignore TLS errors
 * Improved description (About)
