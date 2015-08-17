@@ -260,7 +260,7 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V2> {
                             resultSetErrorRows.getString(1), resultSetErrorRows.getString(8));
                 } else {
                     ContextUtils.sendError(ctx, longMessage, "Error processing file {},error {}",
-                            resultSetErrorRows.getString(1), resultSetErrorRows.getString(8), "");
+                            resultSetErrorRows.getString(1), resultSetErrorRows.getString(8));
 
                 }
             }
