@@ -47,12 +47,12 @@ public class Renamer extends AbstractDpu<RenamerConfig_V1> {
     /**
      * Next query creates new virtual paths.
      * %s - regular expression pattern
-     * %s - value to replace
+     * %s - value to replace, use directly in the string
      */
     private static final String SPARQL_CREATE_VIRTUAL_PATH
             = "INSERT { ?s <" + RenamerVocabulary.TEMP_VIRTUAL_PATH + "> ?valueNew } \n"
             + "WHERE { ?s <" + FilesVocabulary.UV_VIRTUAL_PATH + "> ?value. \n"
-            + "BIND ( REPLACE(?value, \"%s\", \"%s\", \"i\") "
+            + "BIND ( REPLACE(?value, \"%s\", %s, \"i\") "
             + "AS ?valueNew)\n"
             + "} ";
 
@@ -111,8 +111,16 @@ public class Renamer extends AbstractDpu<RenamerConfig_V1> {
 
         executeInsert(String.format(SPARQL_CREATE_NEW_SYMBOLIC_NAME, suffix), source, target);
         
-        executeInsert(String.format(SPARQL_CREATE_VIRTUAL_PATH, config.getPattern(), config.getReplaceText()),
-                source, target);
+        // Escape value if advance option is not used.
+        final String replaceText;
+        if (config.isUseAdvanceReplace()) {
+            replaceText = config.getReplaceText();
+        } else {
+            replaceText = "\"" + config.getReplaceText() + "\"";
+        }
+        
+        executeInsert(String.format(SPARQL_CREATE_VIRTUAL_PATH, config.getPattern(), replaceText), source,
+                target);
         
         executeDeleteInsert(SPARQL_REPLACE, Arrays.asList(target), target);
     }

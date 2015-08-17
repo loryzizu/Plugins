@@ -256,11 +256,11 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V2> {
             ResultSet resultSetErrorRows = statementsErrorRows.executeQuery();
             while (resultSetErrorRows.next()) {
                 if (config.isSkipOnError()) {
-                    ContextUtils.sendShortWarn(ctx, longMessage, "Error processing file %s,error %s",
+                    ContextUtils.sendShortWarn(ctx, longMessage, "Error processing file {0},error {1}",
                             resultSetErrorRows.getString(1), resultSetErrorRows.getString(8));
                 } else {
-                    ContextUtils.sendError(ctx, longMessage, "Error processing file %s,error %s",
-                            resultSetErrorRows.getString(1), resultSetErrorRows.getString(8), "");
+                    ContextUtils.sendError(ctx, longMessage, "Error processing file {0},error {1}",
+                            resultSetErrorRows.getString(1), resultSetErrorRows.getString(8));
 
                 }
             }

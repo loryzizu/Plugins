@@ -1,9 +1,13 @@
 E-FilesDownload
 ----------
 
-v2.1.2-SNAPSHOT
+v2.1.3-SNAPSHOT
 ---
 * configurable allowed protocols
+
+v2.1.2
+---
+* Update to API 2.1.2
 
 v2.1.1
 ---
