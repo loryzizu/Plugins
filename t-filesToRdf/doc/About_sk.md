@@ -1,12 +1,12 @@
 ### Popis
 
-Získa RDF dáta so súborov ľubovoľného formátu a pridá ich do RDF
+Získa RDF dáta zo súborov ľubovoľného RDF formátu
 
 ### Konfiguračné parametre
 
 | Meno | Popis |
 |:----|:----|
-|**Veľkosť transakcie** | 0 = jeden súbor, jedna transakcia, 1 = automatické pridanie spojenia, n = pridá každých n trojíc |
+|**Veľkosť transakcie** | 0 znamená, že na spracovanie každého súboru sa použije separátna transakcia. 1 znamená automatický commit každej databázovej operácie (autocommit). 2 a viac znamená, že v transakcii sa spracuje daný počet RDF trojíc. |
 |**Čo robiť keď zlyhá transformácia jedného súboru** | Zastaviť vykonávanie alebo pokračovať a preskočiť na ďaľší súbor |
 |**Ako vyberať symbolické meno výstupu** | Použiť symbolické mená vstupných súborov alebo použiť jedno pevné symbolické meno |
 
@@ -14,5 +14,5 @@ Získa RDF dáta so súborov ľubovoľného formátu a pridá ich do RDF
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|filesInput |i| FilesDataUnit | Vstupný súbor s dátami |x|
-|rdfOutput  |o| RDFDataUnit | Získané RDF dáta |x|
+|filesInput |vstup| FilesDataUnit | Vstupné súbory s dátami |áno|
+|rdfOutput  |výstup| RDFDataUnit | Získané RDF dáta |áno|

@@ -241,12 +241,12 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
     }
 
     private boolean isNameValid(String value) {
-        if (value == null || value.isEmpty()) {
+        if (value == null) {
             return false;
         }
         Pattern pattern = Pattern.compile("[A-Za-z][A-Za-z0-9_]*");
         Matcher matcher = pattern.matcher(value);
-        return matcher.matches();
+        return matcher.matches() || value.isEmpty();
     }
 
     private void showComponents(Component... components) {

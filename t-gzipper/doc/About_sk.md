@@ -12,5 +12,5 @@ Skomprimuje akýkoľvek súbor použitím GZIP kompresie
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input  |i| FilesDataUnit | Jeden alebo viac súborov |x|
-|output |o| FilesDataUnit | Jeden .gz súbor pre každý súbor na vstupe ||
+|input  |vstup| FilesDataUnit | Jeden alebo viac súborov |áno|
+|output |výstup| FilesDataUnit | Jeden .gz súbor pre každý súbor na vstupe ||

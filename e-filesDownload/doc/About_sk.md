@@ -1,23 +1,27 @@
 ### Popis
 
-Stiahne súbory podľa zoznamu definovaného v konfigurácii. Je možné stiahnuť samostatné súborz alebo aj celé adresáre.
+Stiahne súbory podľa zoznamu definovaného v konfigurácii. Je možné stiahnuť samostatné súbory alebo aj celé adresáre.
 
 ### Konfiguračné parametre
 
 | Meno | Popis |
 |:----|:----|
-|**Zoznam súborov a adresárov na extrakciu** | Keď sa uvedie adresár, všetky súbory v adresári a jeho podadresároch sa stiahnu |
+|**Zoznam súborov a adresárov na stiahnutie** | Keď je uvedený adresár, stiahnu sa všetky súbory v adresári a jeho podadresároch.|
+Ak je zadaný názov každého sťahovaného vstupu, tento názov sa použije na vnútornú identifikáciu daného súboru v ďalšom pokračovaní procesu a tiež ako názov
+virtuálnej cesty (cieľové umiestnenie súboru pri nahrávaní mimo UnifiedViews na konci procesu). Ak vás nezaujíma vnútorné pomenovanie súboru alebo názov virtuálnej cesty, napr.
+v prípadoch keď potrebujete iba prechádzať stiahnuté súbory v pokračovaní procesu tým istým spôsobom, nie je potrebné špecifikovať meno súboru.
 
 ### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|output |o| FilesDataUnit | Stiahnuté súbory |x|
-|config |i| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | |
+|config |vstup| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | |
+|output |výstup| FilesDataUnit | Stiahnuté súbory |áno|
+
 
 ### Pokročilá konfigurácia
 
-Krok je možné nakonfigurovať aj dznamicky cez vstup `config` pomocou RDF dát.
+Krok je možné nakonfigurovať aj dynamicky cez vstup `config` pomocou RDF dát.
 
 Vzor konfigurácie:
 

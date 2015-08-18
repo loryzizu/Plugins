@@ -25,5 +25,5 @@ sftp://server:port/adresár
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input  |i| FilesDataUnit | Súbory na nahratie do cieľového adresáru |x|
-|output |o| FilesDataUnit | Rovnaké ako vstup, len s aktualizáciou času poslednej modifikácie (Resource.last_modified time) ||
+|input  |vstup| FilesDataUnit | Súbory na nahratie do cieľového adresáru |áno|
+|output |výstup| FilesDataUnit | Rovnaké ako vstup, len s aktualizáciou času poslednej modifikácie (Resource.last_modified time) ||

@@ -13,7 +13,7 @@ import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class VirtuosoLoaderVaadinDialog extends AbstractDialog<VirtuosoLoaderConfig_V1> {
+public class VirtuosoLoaderVaadinDialog extends AbstractDialog<VirtuosoLoaderConfig_V2> {
 
     private static final long serialVersionUID = -5666075836909428L;
 
@@ -57,7 +57,7 @@ public class VirtuosoLoaderVaadinDialog extends AbstractDialog<VirtuosoLoaderCon
 
     private ObjectProperty<String> targetContext = new ObjectProperty<String>("");
 
-//    private ObjectProperty<String> targetTempContext = new ObjectProperty<String>("");
+    //    private ObjectProperty<String> targetTempContext = new ObjectProperty<String>("");
 
     private ObjectProperty<Long> statusUpdateInterval = new ObjectProperty<Long>(60L);
 
@@ -86,10 +86,9 @@ public class VirtuosoLoaderVaadinDialog extends AbstractDialog<VirtuosoLoaderCon
         mainLayout.addComponent(passwordField);
         mainLayout.addComponent(new CheckBox(CLEAR_DESTINATION_GRAPH_LABEL, clearDestinationGraph));
         mainLayout.addComponent(createTextField(LOAD_DIRECTORY_PATH_LABEL, loadDirectoryPath));
-        mainLayout.addComponent(createTextField(INCLUDE_SUBDIRECTORIES_LABEL, includeSubdirectories));
+        mainLayout.addComponent(new CheckBox(INCLUDE_SUBDIRECTORIES_LABEL, includeSubdirectories));
         mainLayout.addComponent(createTextField(LOAD_FILE_PATTERN_LABEL, loadFilePattern));
         mainLayout.addComponent(createTextField(TARGET_CONTEXT_LABEL, targetContext));
-//        mainLayout.addComponent(createTextField(TARGET_TEMP_CONTEXT_LABEL, targetTempContext));
         mainLayout.addComponent(createTextField(STATUS_UPDATE_INTERVAL_LABEL, statusUpdateInterval));
         mainLayout.addComponent(createTextField(THREAD_COUNT_LABEL, threadCount));
         mainLayout.addComponent(new CheckBox(SKIP_ON_ERROR_LABEL, skipOnError));
@@ -104,7 +103,7 @@ public class VirtuosoLoaderVaadinDialog extends AbstractDialog<VirtuosoLoaderCon
     }
 
     @Override
-    public void setConfiguration(VirtuosoLoaderConfig_V1 conf) throws DPUConfigException {
+    public void setConfiguration(VirtuosoLoaderConfig_V2 conf) throws DPUConfigException {
         virtuosoUrl.setValue(conf.getVirtuosoUrl());
         username.setValue(conf.getUsername());
         password.setValue(conf.getPassword());
@@ -113,15 +112,15 @@ public class VirtuosoLoaderVaadinDialog extends AbstractDialog<VirtuosoLoaderCon
         includeSubdirectories.setValue(conf.isIncludeSubdirectories());
         loadFilePattern.setValue(conf.getLoadFilePattern());
         targetContext.setValue(conf.getTargetContext());
-//        targetTempContext.setValue(conf.getTargetTempContext());
+        //        targetTempContext.setValue(conf.getTargetTempContext());
         statusUpdateInterval.setValue(conf.getStatusUpdateInterval());
         threadCount.setValue(conf.getThreadCount());
         skipOnError.setValue(conf.isSkipOnError());
     }
 
     @Override
-    public VirtuosoLoaderConfig_V1 getConfiguration() throws DPUConfigException {
-        VirtuosoLoaderConfig_V1 conf = new VirtuosoLoaderConfig_V1();
+    public VirtuosoLoaderConfig_V2 getConfiguration() throws DPUConfigException {
+        VirtuosoLoaderConfig_V2 conf = new VirtuosoLoaderConfig_V2();
         conf.setVirtuosoUrl(virtuosoUrl.getValue());
         conf.setUsername(username.getValue());
         conf.setPassword(password.getValue());
@@ -130,7 +129,7 @@ public class VirtuosoLoaderVaadinDialog extends AbstractDialog<VirtuosoLoaderCon
         conf.setIncludeSubdirectories(includeSubdirectories.getValue());
         conf.setLoadFilePattern(loadFilePattern.getValue());
         conf.setTargetContext(targetContext.getValue());
-//        conf.setTargetTempContext(targetTempContext.getValue());
+        //        conf.setTargetTempContext(targetTempContext.getValue());
         conf.setStatusUpdateInterval(statusUpdateInterval.getValue());
         conf.setThreadCount(threadCount.getValue());
         conf.setSkipOnError(skipOnError.getValue());
