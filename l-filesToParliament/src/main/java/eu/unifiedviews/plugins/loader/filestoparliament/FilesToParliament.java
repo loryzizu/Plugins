@@ -128,6 +128,11 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
         final String globalOutGraph = org.apache.commons.lang3.StringUtils.isEmpty(config.getTargetGraphName()) ? null : config.getTargetGraphName();
         try {
             client = HttpClients.createDefault();
+            if (globalOutGraph != null && config.isClearDestinationGraph()) {
+                LOG.info("Clearing destination graph");
+                sendClear(ctx, config.getEndpointURL() + "sparql", client, globalOutGraph);
+                LOG.info("Cleared destination graph");
+            }
             for (FilesDataUnit.Entry entry : FilesHelper.getFiles(filesInput)) {
                 String filename = VirtualPathHelpers.getVirtualPath(filesInput, entry.getSymbolicName());
                 if (StringUtils.isEmpty(filename)) {
@@ -144,7 +149,7 @@ public class FilesToParliament extends AbstractDpu<FilesToParliamentConfig_V1> {
                 } else {
                     outGraph = globalOutGraph;
                 }                
-                if (config.isClearDestinationGraph()) {
+                if (globalOutGraph == null && config.isClearDestinationGraph()) {
                     LOG.info("Clearing destination graph");
                     sendClear(ctx, config.getEndpointURL() + "sparql", client, outGraph);
                     LOG.info("Cleared destination graph");

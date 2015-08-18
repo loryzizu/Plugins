@@ -13,5 +13,5 @@ Transformuje vstupné dáta pomocou SPARQL construct dotazu
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input  |i| RDFDataUnit | RDF vstupné dáta |x|
-|output |o| RDFDataUnit | RDF výstupné (transformované) dáta |x|
+|input  |vstup| RDFDataUnit | RDF vstupné dáta |áno|
+|output |výstup| RDFDataUnit | RDF výstupné (transformované) dáta |áno|

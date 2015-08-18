@@ -6,7 +6,10 @@ Downloads files based on provided list. Individual files and also name of direct
 
 | Name | Description |
 |:----|:----|
-|**List of files and directories to extract** | If directory is provided then all files and files in subdirectories are extracted |
+|**List of files and directories to extract** | If directory is provided then all files and files in subdirectories are extracted. 
+If filename is specified for each downloaded entry, such filename is then used to internally identify the given file further on the pipeline and also such value is used as the value of 
+VirtualPath (target location of the file when loaded outside of UnifiedViews at the end of pipeline). If you do not care about the internal name of the file or value of VirtualPath, e.g., 
+in cases where you just need to iterate over downloaded files later on process every downloaded file in the same way,  you do not need to specify filename. |
 
 ### Inputs and outputs
 

@@ -12,5 +12,5 @@ Extrahuje súbory komprimované metódou GZIP
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|filesInput  |i| FilesDataUnit | Dátová jednotka so súbormi, ktoré majú byť extrahované |x|
-|filesOutput |o| FilesDataUnit | Dátová jednotka s extrahovanými súbormi ||
+|filesInput  |vstup| FilesDataUnit | Dátová jednotka so súbormi, ktoré majú byť extrahované |áno|
+|filesOutput |výstup| FilesDataUnit | Dátová jednotka s extrahovanými súbormi ||

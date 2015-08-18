@@ -14,4 +14,4 @@ Nahrá zoznam súborov na úložisko Parliament prostredníctvom hromadného HTT
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|filesInput |i| FilesDataUnit | Súbory určené na nahranie na určený cieľ |x|
+|filesInput |vstup| FilesDataUnit | Súbory určené na nahranie na určený cieľ |áno|

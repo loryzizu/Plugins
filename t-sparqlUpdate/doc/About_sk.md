@@ -6,12 +6,12 @@ Transformuje vstupné dáta pomocou SPARQL UPDATE dotazu
 
 | Meno | Popis |
 |:----|:----|
-|**Púšťanie dotazov po grafoch** | k zaškrtnuté, dotazy sú púšťané po grafoch |
+|**Púšťanie dotazov po grafoch** | ak zaškrtnuté, dotazy sú púšťané po grafoch |
 |**SPARQL dotaz typu UPDATE** | SPARQL dotaz typu UPDATE |
 
 ### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|input  |i | RDFDataUnit | RDF vstupné dáta |x|
-|output |o | RDFDataUnit | RDF výstupné (transformované) dáta |x|
+|input  |vstup| RDFDataUnit | RDF vstupné dáta |áno|
+|output |výstup| RDFDataUnit | RDF výstupné (transformované) dáta |áno|
