@@ -57,12 +57,14 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         this.txtDatabaseURL.setCaption(ctx.tr("dialog.dbload.dbURL"));
         this.txtDatabaseURL.setRequired(true);
         this.txtDatabaseURL.setNullRepresentation("");
+        this.txtDatabaseURL.setImmediate(true);
         this.txtDatabaseURL.setWidth("100%");
         this.mainLayout.addComponent(this.txtDatabaseURL);
 
         this.txtUserName = new TextField();
         this.txtUserName.setCaption(ctx.tr("dialog.dbload.username"));
         this.txtUserName.setRequired(true);
+        this.txtUserName.setImmediate(true);
         this.txtUserName.setNullRepresentation("");
         this.txtUserName.setWidth("100%");
         this.mainLayout.addComponent(this.txtUserName);
@@ -70,6 +72,7 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         this.txtPassword = new PasswordField();
         this.txtPassword.setCaption(ctx.tr("dialog.dbload.password"));
         this.txtPassword.setRequired(true);
+        this.txtPassword.setImmediate(true);
         this.txtPassword.setNullRepresentation("");
         this.txtPassword.setWidth("100%");
         this.mainLayout.addComponent(this.txtPassword);
@@ -92,6 +95,7 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         this.txtTableName.setCaption(ctx.tr("dialog.dbload.tablename"));
         this.txtTableName.setRequired(true);
         this.txtTableName.setNullRepresentation("");
+        this.txtTableName.setImmediate(true);
         this.txtTableName.setWidth("100%");
         this.txtTableName.setDescription(ctx.tr("dialog.dbload.tooltip.tablename"));
 
@@ -170,12 +174,6 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
     @Override
     protected RelationalToSqlConfig_V1 getConfiguration() throws DPUConfigException {
         RelationalToSqlConfig_V1 config = new RelationalToSqlConfig_V1();
-
-        final boolean isValid = this.txtDatabaseURL.isValid() && this.txtUserName.isValid() && this.txtPassword.isValid()
-                && this.txtTableName.isValid();
-        if (!isValid) {
-            throw new DPUConfigException(ctx.tr("errors.dialog.missing"));
-        }
 
         config.setDatabaseURL(this.txtDatabaseURL.getValue());
         config.setUserName(this.txtUserName.getValue());
