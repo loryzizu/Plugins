@@ -12,7 +12,7 @@
 	<artifactId>uv-t-filesMerger</artifactId>
 	<name>T-FilesMerger</name>
 	<description />
-	<version>2.1.2-SNAPSHOT</version>
+	<version>2.1.2</version>
 	<packaging>bundle</packaging>
 
 	<properties>

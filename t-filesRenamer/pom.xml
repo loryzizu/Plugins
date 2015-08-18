@@ -12,7 +12,7 @@
 	<artifactId>uv-t-filesRenamer</artifactId>
 	<name>T-FilesRenamer</name>
 	<description>Rename files</description>
-	<version>2.1.2-SNAPSHOT</version>
+	<version>2.1.2</version>
 	<packaging>bundle</packaging>
 
 	<properties>
