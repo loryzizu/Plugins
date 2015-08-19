@@ -6,11 +6,11 @@ Konvertuje tabulárne dáta na RDF dáta
 
 | Meno | Popis |
 |:----|:----|
-|N/A| |
+|N/A|&nbsp;|
 
 ### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|table           |vstup| FilesDataUnit| Vstupný súbor s tabulárnymi dátami |áno|
+|table |vstup| FilesDataUnit| Vstupný súbor s tabulárnymi dátami |áno|
 |triplifiedTable |výstup| RDFDataUnit  | RDF dáta na výstupe |áno|
