@@ -2,24 +2,20 @@ package eu.unifiedviews.plugins.extractor.filesdownload;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.ControllerThreadSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 
-public class EasySSL implements SecureProtocolSocketFactory {
+public class TLS12 implements SecureProtocolSocketFactory {
 
     SSLSocketFactory sf;
 
@@ -28,33 +24,16 @@ public class EasySSL implements SecureProtocolSocketFactory {
     /**
      * Constructor for SSLProtocolSocketFactory.
      */
-    public EasySSL() {
+    public TLS12() {
         SSLContext sslContext;
         try {
             sslContext = SSLContext.getInstance("TLSv1.2");
 
-            TrustManager[] trustAllCerts = new TrustManager[] {
-                    new X509TrustManager() {
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return null;
-                        }
-
-                        public void checkClientTrusted(
-                                java.security.cert.X509Certificate[] certs, String authType) {
-                        }
-
-                        public void checkServerTrusted(
-                                java.security.cert.X509Certificate[] certs, String authType) {
-                        }
-                    }
-            };
-            sslContext.init(null, trustAllCerts, null);
-            sf = sslContext.getSocketFactory();//new SSLSocketFactory(sslContext); 
+            sslContext.init(null, null, null);
+            sf = sslContext.getSocketFactory(); 
         } catch (KeyManagementException | NoSuchAlgorithmException ex) {
             exception = ex;
         }
-
-        //        super();
     }
 
     /**
