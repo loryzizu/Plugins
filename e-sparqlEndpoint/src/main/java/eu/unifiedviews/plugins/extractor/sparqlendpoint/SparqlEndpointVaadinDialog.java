@@ -4,7 +4,6 @@ import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.parser.QueryParserUtil;
 
-import com.sun.nio.sctp.Notification;
 import com.vaadin.data.Validator;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
 import com.vaadin.ui.ComboBox;
@@ -18,7 +17,7 @@ import eu.unifiedviews.helpers.dpu.vaadin.validator.UrlValidator;
 
 /**
  * Vaadin configuration dialog for SparqlEndpoint.
- *
+ * 
  * @author Petr Škoda
  */
 public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointConfig_V1> {
@@ -118,11 +117,11 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
         cmbChunkSize.setNullSelectionAllowed(true);
         cmbChunkSize.setNewItemsAllowed(true);
         cmbChunkSize.setNewItemHandler(new NewItemHandler() {
-            
+
             @Override
             public void addNewItem(String newItemCaption) {
                 try {
-                    Integer newItem =Integer.valueOf(newItemCaption);
+                    Integer newItem = Integer.valueOf(newItemCaption);
                     cmbChunkSize.getContainerDataSource().addItem(newItem);
                     cmbChunkSize.select(newItem);
                 } catch (NumberFormatException ex) {
