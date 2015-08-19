@@ -165,6 +165,11 @@ public class TabularConfig_V2 {
 
     private boolean xlsAdvancedDoubleParser = false;
 
+    /**
+     * If true only info log instead of error in case of missing named column.
+     */
+    private boolean ignoreMissingColumn = false;
+
     public TabularConfig_V2() {
     }
 
@@ -376,11 +381,19 @@ public class TabularConfig_V2 {
         this.xlsAdvancedDoubleParser = xlsAdvancedDoubleParser;
     }
 
+    public boolean isIgnoreMissingColumn() {
+        return ignoreMissingColumn;
+    }
+
+    public void setIgnoreMissingColumn(boolean ignoreMissingColumn) {
+        this.ignoreMissingColumn = ignoreMissingColumn;
+    }
+
     public TableToRdfConfig getTableToRdfConfig() {
         return new TableToRdfConfig(keyColumn, baseURI, columnsInfo,
                 generateNew, rowsClass, ignoreBlankCells, columnsInfoAdv,
                 advancedKeyColumn, generateRowTriple, autoAsStrings, 
-                generateTableClass, generateLabels, dbfTrimString);
+                generateTableClass, generateLabels, dbfTrimString, ignoreMissingColumn);
     }
 
     public ParserCsvConfig getParserCsvConfig() {

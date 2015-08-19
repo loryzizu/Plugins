@@ -83,6 +83,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     private CheckBox checkTrimString;
 
+    private CheckBox checkIgnoreMissingColumns;
+
     /**
      * Layout for basic column mapping.
      */
@@ -239,6 +241,11 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         this.checkTrimString.setDescription("If checked then for every loaded string the leading and "
                 + "trailing spaces are removed before the value is futher processed.");
         checkLayout.addComponent(this.checkTrimString);
+
+        this.checkIgnoreMissingColumns = new CheckBox("Ignore missing columns");
+        this.checkIgnoreMissingColumns.setDescription("If checked and named column is missing only "
+                + "info level log is used instead of error level.");
+        checkLayout.addComponent(this.checkIgnoreMissingColumns);
 
         // -------------------------- CSV ----------------------------
         final FormLayout csvLayout = new FormLayout();
@@ -695,6 +702,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         checkGenerateTableClass.setValue(c.isGenerateTableClass());
         checkGenerateLabels.setValue(c.isGenerateLabels());
         checkTrimString.setValue(c.isDbfTrimString());
+        checkIgnoreMissingColumns.setValue(c.isIgnoreMissingColumn());
         //
         // enable/disable controlls
         //
@@ -795,6 +803,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         cnf.setGenerateTableClass(checkGenerateTableClass.getValue());
         cnf.setGenerateLabels(checkGenerateLabels.getValue());
         cnf.setDbfTrimString(checkTrimString.getValue());
+        cnf.setIgnoreMissingColumn(checkIgnoreMissingColumns.getValue());
 
         final String rowsClass = txtRowsClass.getValue();
         if (rowsClass == null || rowsClass.isEmpty()) {

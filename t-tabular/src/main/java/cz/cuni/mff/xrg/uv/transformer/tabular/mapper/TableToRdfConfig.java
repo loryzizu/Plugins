@@ -59,12 +59,15 @@ public class TableToRdfConfig {
 
     final boolean trimString;
 
+    final boolean ignoreMissingColumn;
+
     public TableToRdfConfig(String keyColumnName, String baseURI,
             Map<String, ColumnInfo_V1> columnsInfo, boolean generateNew,
             String rowsClass, boolean ignoreBlankCells,
             List<TabularConfig_V2.AdvanceMapping> columnsInfoAdv,
             boolean advancedKeyColumn, boolean generateRowTriple, boolean autoAsStrings,
-            boolean generateTableRowClass, boolean generateLabels, boolean trimString) {
+            boolean generateTableRowClass, boolean generateLabels, boolean trimString,
+            boolean ignoreMissingColumn) {
         this.keyColumn = keyColumnName;
         this.baseURI = baseURI;
         this.columnsInfo = columnsInfo != null ? columnsInfo :
@@ -80,6 +83,7 @@ public class TableToRdfConfig {
         this.generateTableClass = generateTableRowClass;
         this.generateLabels = generateLabels;
         this.trimString = trimString;
+        this.ignoreMissingColumn = ignoreMissingColumn;
     }
 
 }

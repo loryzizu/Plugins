@@ -6,6 +6,7 @@ v2.3.0
 * Space trailing is now accessible for all input types.
 * Dialog layout update, to provide more space for check boxes.
 * For XSL: Option to use advanced value detection for better handling of integers and dates.
+* Added option for ignoring missing 'named' column (info log message is used instead of error).
 
 v2.2.2
 ---
