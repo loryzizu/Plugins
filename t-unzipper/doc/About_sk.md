@@ -1,16 +1,16 @@
-### Description
+### Popis
 
-Rozbalí súbory komprimované metódou ZIP.
+Rozbalí vstupný súbor komprimovaný metódou ZIP na jednotlivé súbory.
 
-### Configuration parameters
+### Konfiguračné parametre
 
-| Name | Description |
+| Názov | Popis |
 |:----|:----|
-|**Prevencia duplicitných názvov** | Ak je zaškrtnuté, je pred názov súboru z archívu pridaný náhodný reťazec, čím sa predíde duplicitným názvom v procese v prípade, že by existoval v procese nejaký iný súbor s rovnakým menom.
+|**Prevencia duplicitných názvov** | Ak je zaškrtnuté, DPU zabráni kolízii názvov súborov na výstupe v prípade, že je rozbalených viac súborov s rovnakou alebo podobnou štruktúrou.<br/>Odznačenie pošle na výstup súbory pomenované rovnako, ako sú uložené v yip súboroch.<br/>V prípade pochybností ponechajte zaškrtnuté.|
 
-### Inputs and outputs
+### Vstupy a výstupy
 
-|Name |Type | DataUnit | Description | Mandatory |
+|Názov |Typ | Dátová jednotka | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |input  |vstup| FilesDataUnit | Súbory na rozbalenie |áno|
 |output |výstup| FilesDataUnit | Rozbalené súbory |áno|

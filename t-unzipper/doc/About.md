@@ -6,7 +6,7 @@ UnZips input file into files based on zip content.
 
 | Name | Description |
 |:----|:----|
-|**Duplicate name prevention (checkbox)** | If checked DPU prevents collision in names of files send on output when multiple zip files with the same/similar structure are unzipped.<br>Uncheck sends on output files names as are in zip files.<br>If not sure keep checked |
+|**Duplicate name prevention (checkbox)** | If checked DPU prevents collision in file names sent to output when multiple zip files with the same/similar structure are unzipped.<br/>Unchecked outputs files names as stored in zip files.<br/>If not sure keep checked.|
 
 ### Inputs and outputs
 
