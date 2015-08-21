@@ -26,6 +26,7 @@ Loads RDF data (graphs) into Virtuoso
 
 The input for this DPU (the RDF data itself) has to be specified as a directory on local disc. All files in this directory must be either application/rdf+xml or text/turtle (filenames suffix .rdf or .ttl repspectively). Pipeline designer has to move the files into this directory before the loader is executed. This can be achieved by using l-filesUpload with 'run after' edge to this DPU. This will make sure, that loader is running at the time, when files are at the correct place.
 Example pipeline design:
+
     --------------------      ----------------      -----------------                     ---------------------
     |                  |      |              |      |               |                     |                   |
     | e-sparqlEndpoint | ---> | t-rdfToFiles | ---> | l-filesUpload | --run after edge--> | l-FilesToVirtuoso |

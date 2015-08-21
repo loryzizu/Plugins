@@ -28,6 +28,7 @@ Vstup tohto kroku (RDF dáta) sú súbory, ktoré sa musia nachádzať v nahráv
 application/rdf+xml alebo text/turtle (prípony .rdf resp. .ttl). Užívateľ musí zabezpečiť spustenie tohto kroku až po tom, čo je priečinok naplnený súbormi.
 To je možné dosiahnuť zaradením l-filesUpload s 'spustiť po' hranou na toto DPU.  
 Príklad transformácie:
+
     --------------------      ----------------      -----------------                       ---------------------
     |                  |      |              |      |               |                       |                   |
     | e-sparqlEndpoint | ---> | t-rdfToFiles | ---> | l-filesUpload | --spustiť po hrana--> | l-FilesToVirtuoso |
