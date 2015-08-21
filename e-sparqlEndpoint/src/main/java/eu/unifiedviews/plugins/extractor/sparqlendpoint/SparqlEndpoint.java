@@ -82,7 +82,7 @@ public class SparqlEndpoint extends AbstractDpu<SparqlEndpointConfig_V1> {
 
             @Override
             public void action(RepositoryConnection connection) throws Exception {
-                if (config.getChunkSize() == null) {
+                if (config.getChunkSize() == null || config.getChunkSize() == -1) {
                     GraphQuery query = connection.prepareGraphQuery(QueryLanguage.SPARQL, config.getQuery());
                     LOG.info("Executing query.");
                     GraphQueryResult result = query.evaluate();
