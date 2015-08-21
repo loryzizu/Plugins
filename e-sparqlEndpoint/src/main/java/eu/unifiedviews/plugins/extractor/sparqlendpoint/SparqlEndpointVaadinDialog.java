@@ -39,6 +39,9 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
         if (c.getChunkSize() == null) {
             cmbChunkSize.select(new Integer(-1));
         } else {
+            if (!cmbChunkSize.containsId(c.getChunkSize())) {
+                cmbChunkSize.addItem(c.getChunkSize());
+            }
             cmbChunkSize.select(c.getChunkSize());
         }
     }
