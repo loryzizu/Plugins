@@ -144,6 +144,9 @@ public class Relational extends AbstractDpu<RelationalConfig_V1> {
                 LOG.debug("No primary keys defined, nothing to do");
             } else {
                 LOG.debug("Going to create primary keys for table {}", targetTableName);
+                for (String primaryKey : this.config.getPrimaryKeyColumns()) {
+                    executeSqlQueryInInternalDatabaseAsAdmin(DatabaseHelper.createAlterColumnSetNotNullQuery(targetTableName, primaryKey));
+                }
                 String alterTablesQuery = DatabaseHelper.createPrimaryKeysQuery(targetTableName, this.config.getPrimaryKeyColumns());
                 executeSqlQueryInInternalDatabaseAsAdmin(alterTablesQuery);
             }

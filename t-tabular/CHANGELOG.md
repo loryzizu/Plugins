@@ -1,6 +1,10 @@
 T-Tabular
 ----------
 
+v2.2.2
+---
+* For DBF: Added possibility to trim trailing and leading spaces from values, dialog adjustments.
+
 v2.2.1
 ---
 * Fixed bug with wrongly moved NamedCell_V1 class causing corruption of tabular configuration for xls files with named cells.

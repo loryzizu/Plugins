@@ -9,7 +9,7 @@ This repository is used for source code of general purpose UnifiedViews Plugins 
 
 ## Build notes
 
-Due to licensing of Oracle JDBC driver, when this optional feature is requested, follow steps in [e-relationalFromSql/BUILD.md](./e-relationalFromSql/BUILD.md)
+Due to licensing of Oracle JDBC driver, it is necessary to install manualy this driver, see details in [e-relationalFromSql/BUILD.md](./e-relationalFromSql/BUILD.md)
 
 ## Downloads
 

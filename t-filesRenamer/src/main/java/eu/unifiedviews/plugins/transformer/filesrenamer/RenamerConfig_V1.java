@@ -6,6 +6,8 @@ public class RenamerConfig_V1 {
     
     private String replaceText = "ttl";
 
+    private boolean useAdvanceReplace = false;
+
     public RenamerConfig_V1() {
     }
 
@@ -25,4 +27,12 @@ public class RenamerConfig_V1 {
         this.replaceText = replaceText;
     }
 
+    public boolean isUseAdvanceReplace() {
+        return useAdvanceReplace;
+    }
+
+    public void setUseAdvanceReplace(boolean useAdvanceReplace) {
+        this.useAdvanceReplace = useAdvanceReplace;
+    }
+    
 }

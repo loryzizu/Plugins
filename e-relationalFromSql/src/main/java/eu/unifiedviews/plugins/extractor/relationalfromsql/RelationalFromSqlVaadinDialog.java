@@ -85,6 +85,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         this.txtDatabaseHost = new TextField();
         this.txtDatabaseHost.setCaption(ctx.tr("dialog.extractdb.dbhost"));
         this.txtDatabaseHost.setRequired(true);
+        this.txtDatabaseHost.setImmediate(true);
         this.txtDatabaseHost.setNullRepresentation("");
         this.txtDatabaseHost.setWidth("100%");
         this.mainLayout.addComponent(this.txtDatabaseHost);
@@ -92,12 +93,14 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         this.txtDatabasePort = new TextField();
         this.txtDatabasePort.setCaption(ctx.tr("dialog.extractdb.dbport"));
         this.txtDatabasePort.setRequired(true);
+        this.txtDatabasePort.setImmediate(true);
         this.txtDatabasePort.setWidth("100%");
         this.mainLayout.addComponent(this.txtDatabasePort);
 
         this.txtDatabaseName = new TextField();
         this.txtDatabaseName.setCaption(ctx.tr("dialog.extractdb.dbname"));
         this.txtDatabaseName.setRequired(true);
+        this.txtDatabaseName.setImmediate(true);
         this.txtDatabaseName.setNullRepresentation("");
         this.txtDatabaseName.setWidth("100%");
         this.mainLayout.addComponent(this.txtDatabaseName);
@@ -105,6 +108,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         this.txtInstanceName = new TextField();
         this.txtInstanceName.setCaption(ctx.tr("dialog.extractdb.instance"));
         this.txtInstanceName.setNullRepresentation("");
+        this.txtInstanceName.setImmediate(true);
         this.txtInstanceName.setWidth("100%");
         this.txtInstanceName.setVisible(false);
         this.mainLayout.addComponent(this.txtInstanceName);
@@ -112,6 +116,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         this.txtUserName = new TextField();
         this.txtUserName.setCaption(ctx.tr("dialog.extractdb.username"));
         this.txtUserName.setRequired(true);
+        this.txtUserName.setImmediate(true);
         this.txtUserName.setNullRepresentation("");
         this.txtUserName.setWidth("100%");
         this.mainLayout.addComponent(this.txtUserName);
@@ -119,6 +124,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         this.txtPassword = new PasswordField();
         this.txtPassword.setCaption(ctx.tr("dialog.extractdb.password"));
         this.txtPassword.setRequired(true);
+        this.txtPassword.setImmediate(true);
         this.txtPassword.setNullRepresentation("");
         this.txtPassword.setWidth("100%");
         this.mainLayout.addComponent(this.txtPassword);
@@ -152,6 +158,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
         this.txtTargetTableName.setCaption(ctx.tr("dialog.extractdb.targettable"));
         this.txtTargetTableName.setDescription(ctx.tr("dialog.extractdb.tabledescr"));
         this.txtTargetTableName.setRequired(true);
+        this.txtTargetTableName.setImmediate(true);
         this.txtTargetTableName.setNullRepresentation("");
         this.txtTargetTableName.setWidth("100%");
         this.mainLayout.addComponent(this.txtTargetTableName);
@@ -562,9 +569,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
     @Override
     protected RelationalFromSqlConfig_V2 getConfiguration() throws DPUConfigException {
 
-        boolean isValid = this.txtDatabaseHost.isValid() && this.txtDatabaseName.isValid() && this.txtDatabasePort.isValid()
-                && this.txtUserName.isValid() && this.txtPassword.isValid() && this.txtTargetTableName.isValid()
-                && this.txtSqlQuery.isValid();
+        boolean isValid = true;
 
         if (((DatabaseInfo) this.databaseType.getValue()).getDatabaseType() == DatabaseType.MSSQL) {
             isValid = isValid && this.txtInstanceName.isValid();

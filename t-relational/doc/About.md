@@ -1,17 +1,17 @@
 ### Description
 
-Transforms N input tables into 1 output table using SELECT SQL queries
+Transforms N input tables into 1 output table using SQL SELECT query
 
 ### Configuration parameters
 
 | Name | Description |
 |:----|:----|
-|**SQL query** | SQL query to extract data from source database |
-|**Target table name** | Table name used to internally store the extracted data |
+|**SQL query** | SQL SELECT query to extract/join/transform data from input tables |
+|**Target table name** | Name of output table - the table where the results of sql query will be stored |
 
 ### Inputs and outputs
 
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|inputTables |i| RelationalDataUnit | Source database tables |x|
-|outputTable |o| RelationalDataUnit | Output (transformed) table |x|
+|inputTables |i| RelationalDataUnit | Input tables |x|
+|outputTable |o| RelationalDataUnit | Output table |x|

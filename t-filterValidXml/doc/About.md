@@ -18,5 +18,5 @@ Validates XML inputs in 3 ways:
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |input        |i| FilesDataUnit | List of files to be validated |x|
-|outputValid  |o| FilesDataUnit | List of files having passed validation ||
-|outputInalid |o| FilesDataUnit | List of files failed validation ||
+|outputValid  |o| FilesDataUnit | List of files having passed validation | |
+|outputInalid |o| FilesDataUnit | List of files failed validation | |

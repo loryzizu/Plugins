@@ -42,7 +42,7 @@ import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 import eu.unifiedviews.helpers.dpu.extension.rdf.RdfConfiguration;
 
 @DPU.AsLoader
-public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
+public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V2> {
 
     private static final Logger LOG = LoggerFactory.getLogger(VirtuosoLoader.class);
 
@@ -89,11 +89,11 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
     @ExtensionInitializer.Init
     public RdfConfiguration _rdfConfiguration;
 
-    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.loader.filestovirtuoso.VirtuosoLoaderConfig__V1")
+    @ExtensionInitializer.Init(param = "eu.unifiedviews.plugins.loader.filestovirtuoso.VirtuosoLoaderConfig__V2")
     public ConfigurationUpdate _ConfigurationUpdate;
 
     public VirtuosoLoader() {
-        super(VirtuosoLoaderVaadinDialog.class, ConfigHistory.noHistory(VirtuosoLoaderConfig_V1.class));
+        super(VirtuosoLoaderVaadinDialog.class, ConfigHistory.history(VirtuosoLoaderConfig_V1.class).addCurrent(VirtuosoLoaderConfig_V2.class));
     }
 
     @Override
@@ -256,11 +256,11 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V1> {
             ResultSet resultSetErrorRows = statementsErrorRows.executeQuery();
             while (resultSetErrorRows.next()) {
                 if (config.isSkipOnError()) {
-                    ContextUtils.sendShortWarn(ctx, longMessage, "Error processing file %s,error %s",
+                    ContextUtils.sendShortWarn(ctx, longMessage, "Error processing file {0},error {1}",
                             resultSetErrorRows.getString(1), resultSetErrorRows.getString(8));
                 } else {
-                    ContextUtils.sendError(ctx, longMessage, "Error processing file %s,error %s",
-                            resultSetErrorRows.getString(1), resultSetErrorRows.getString(8), "");
+                    ContextUtils.sendError(ctx, longMessage, "Error processing file {0},error {1}",
+                            resultSetErrorRows.getString(1), resultSetErrorRows.getString(8));
 
                 }
             }

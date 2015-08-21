@@ -49,6 +49,7 @@ public class RelationalVaadinDialog extends AbstractDialog<RelationalConfig_V1> 
         this.txtSqlQuery.setCaption(ctx.tr("dialog.dbtransform.query"));
         this.txtSqlQuery.setRequired(true);
         this.txtSqlQuery.setNullRepresentation("");
+        this.txtSqlQuery.setImmediate(true);
         this.txtSqlQuery.setWidth("100%");
         this.txtSqlQuery.setHeight("150px");
         this.txtSqlQuery.addValidator(createQueryValidator());
@@ -59,6 +60,7 @@ public class RelationalVaadinDialog extends AbstractDialog<RelationalConfig_V1> 
         this.txtTargetTableName.setDescription(ctx.tr("dialog.dbtransform.tabledescr"));
         this.txtTargetTableName.setRequired(true);
         this.txtTargetTableName.setNullRepresentation("");
+        this.txtTargetTableName.setImmediate(true);
         this.txtTargetTableName.setWidth("100%");
         this.mainLayout.addComponent(this.txtTargetTableName);
 
@@ -134,17 +136,6 @@ public class RelationalVaadinDialog extends AbstractDialog<RelationalConfig_V1> 
     @Override
     protected RelationalConfig_V1 getConfiguration() throws DPUConfigException {
         RelationalConfig_V1 config = new RelationalConfig_V1();
-        boolean isValid = this.txtTargetTableName.isValid();
-        if (!isValid) {
-            throw new DPUConfigException(ctx.tr("errors.dialog.missing"));
-        }
-        try {
-            this.txtSqlQuery.validate();
-        } catch (EmptyValueException e) {
-            throw new DPUConfigException(ctx.tr("errors.dialog.missing"));
-        } catch (InvalidValueException e) {
-            throw new DPUConfigException(e.getMessage());
-        }
         config.setTargetTableName(this.txtTargetTableName.getValue());
 
         config.setSqlQuery(this.txtSqlQuery.getValue());
