@@ -41,6 +41,9 @@ public class QueryPagingRewriter2 {
         for (com.hp.hpl.jena.sparql.core.Var var : vars) {
             q.addResultVar(var.getName());
         }
+        for (com.hp.hpl.jena.sparql.core.Var var : vars) {
+            q.addOrderBy(var.getVarName(), Query.ORDER_ASCENDING);
+        }
         
         Query w = QueryFactory.make();
         w.setQueryConstructType();
@@ -48,9 +51,6 @@ public class QueryPagingRewriter2 {
         w.setQueryPattern(new ElementSubQuery(q));
         w.setLimit(limit);
         w.setOffset(offset);
-        for (com.hp.hpl.jena.sparql.core.Var var : vars) {
-            w.addOrderBy(var.getVarName(), Query.ORDER_ASCENDING);
-        }
         return w.toString(Syntax.syntaxSPARQL_10);
     }
 }

@@ -415,7 +415,7 @@ public class SparqlLimitOffsetJenaRewriterTest {
     }
 
     @Test
-    public void executeDPUTest() throws Exception {
+    public void executeDPUTest4() throws Exception {
         // Prepare config.
         SparqlEndpointConfig_V1 config = new SparqlEndpointConfig_V1();
         config.setChunkSize(null);
@@ -450,6 +450,49 @@ public class SparqlLimitOffsetJenaRewriterTest {
             connection = output.getConnection();
             System.out.println(connection.size(RDFHelper.getGraphsURIArray(output)));
             Assert.assertEquals(connection.size(RDFHelper.getGraphsURIArray(output)), connectionSlice.size(RDFHelper.getGraphsURIArray(outputSlice)));
+
+        } finally {
+            // Release resources.
+            environment.release();
+            environmentSlice.release();
+        }
+    }
+    
+    @Test
+    public void executeDPUTest1() throws Exception {
+        // Prepare config.
+        SparqlEndpointConfig_V1 config = new SparqlEndpointConfig_V1();
+        config.setChunkSize(null);
+        config.setEndpoint("http://dbpedia.org/sparql");
+        config.setQuery(query1);
+        // Prepare config.
+        SparqlEndpointConfig_V1 configSlice = new SparqlEndpointConfig_V1();
+        configSlice.setChunkSize(5000);
+        configSlice.setEndpoint("http://dbpedia.org/sparql");
+        configSlice.setQuery(query1);
+
+        // Spa DPU.
+        SparqlEndpoint dpu = new SparqlEndpoint();
+        dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
+        SparqlEndpoint dpuSlice = new SparqlEndpoint();
+        dpuSlice.configure((new ConfigurationBuilder()).setDpuConfiguration(configSlice).toString());
+
+        // Prepare test environment.
+        TestEnvironment environment = new TestEnvironment();
+        TestEnvironment environmentSlice = new TestEnvironment();
+        // Prepare data unit.
+        WritableRDFDataUnit output = environment.createRdfOutput("output", false);
+        // Prepare data unit.
+        WritableRDFDataUnit outputSlice = environmentSlice.createRdfOutput("output", false);
+
+        try {
+            RepositoryConnection connection = output.getConnection();
+            RepositoryConnection connectionSlice = outputSlice.getConnection();
+            // Run.
+            environment.run(dpu);
+            environmentSlice.run(dpuSlice);
+            connection = output.getConnection();
+            System.out.println(connection.size(RDFHelper.getGraphsURIArray(output)));
 
         } finally {
             // Release resources.
