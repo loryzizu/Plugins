@@ -11,7 +11,13 @@ import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.syntax.ElementSubQuery;
 
+/**
+ * Rewrites the queries as specified in https://github.com/UnifiedViews/Plugins/issues/241
+ * 
+ * @author Michal Klempa
+ */
 public class QueryPagingRewriter2 {
+
     public static List<String> getCollectedVars(String query) {
         Query qc = QueryFactory.create(query);
         System.out.println("QueryB:" + qc);
@@ -30,13 +36,13 @@ public class QueryPagingRewriter2 {
         }
         return result;
     }
-    
+
     public static String rewriteQuery(String query, long limit, long offset) {
         Query qc = QueryFactory.create(query);
         List<Var> vars = qc.getProjectVars();
-        
+
         Query q = QueryFactory.make();
-        q.setQueryPattern(qc.getQueryPattern());     
+        q.setQueryPattern(qc.getQueryPattern());
         q.setQuerySelectType();
         for (com.hp.hpl.jena.sparql.core.Var var : vars) {
             q.addResultVar(var.getName());
@@ -44,7 +50,7 @@ public class QueryPagingRewriter2 {
         for (com.hp.hpl.jena.sparql.core.Var var : vars) {
             q.addOrderBy(var.getVarName(), Query.ORDER_ASCENDING);
         }
-        
+
         Query w = QueryFactory.make();
         w.setQueryConstructType();
         w.setConstructTemplate(qc.getConstructTemplate());

@@ -31,6 +31,7 @@ import eu.unifiedviews.plugins.extractor.rdffromsparql.RdfFromSparqlEndpointConf
  * Main data processing unit class.
  * 
  * @author Petr Škoda
+ * @author Michal Klempa
  */
 @DPU.AsExtractor
 public class SparqlEndpoint extends AbstractDpu<SparqlEndpointConfig_V1> {
@@ -100,6 +101,7 @@ public class SparqlEndpoint extends AbstractDpu<SparqlEndpointConfig_V1> {
                     }
                 } else {
                     String origQuery = config.getQuery();
+                    LOG.debug("Original query: {}", origQuery);
                     boolean returnedSomeTriples = true;
                     long offset = 0;
                     long limit = config.getChunkSize();

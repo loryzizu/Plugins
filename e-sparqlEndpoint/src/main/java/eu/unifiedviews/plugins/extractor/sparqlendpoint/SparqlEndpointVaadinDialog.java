@@ -19,6 +19,7 @@ import eu.unifiedviews.helpers.dpu.vaadin.validator.UrlValidator;
  * Vaadin configuration dialog for SparqlEndpoint.
  * 
  * @author Petr Škoda
+ * @author Michal Klempa
  */
 public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointConfig_V1> {
 

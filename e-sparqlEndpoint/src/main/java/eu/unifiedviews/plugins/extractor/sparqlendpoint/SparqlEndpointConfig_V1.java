@@ -4,8 +4,9 @@ import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
 
 /**
  * Configuration class for SparqlEndpoint.
- *
+ * 
  * @author Petr Škoda
+ * @author Michal Klempa
  */
 public class SparqlEndpointConfig_V1 implements VersionedConfig<SparqlEndpointConfig_V1> {
 
