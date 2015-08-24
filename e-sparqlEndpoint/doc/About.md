@@ -2,7 +2,7 @@
 
 Extracts RDF statements from external SPARQL endpoint using SPARQL Construct query defined in configuration into a single output graph. 
 
-The given query can be automatically rewritten so that results are chunked in order to avoid timeouts, result sets max rows limitations, etc.
+The given query can be automatically rewritten so that results are chunked in order to avoid timeouts, result sets max rows limitations, etc. While rewriting, the outer most ORDER BY and LIMIT are thrown away.
 
 ### Configuration parameters
 

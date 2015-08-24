@@ -1,0 +1,15 @@
+PREFIX dbo: <http://dbpedia.org/ontology/>
+
+CONSTRUCT {
+  ?s ?p ?o .
+}
+WHERE {
+  {
+    SELECT DISTINCT ?s
+    WHERE {
+       ?s a dbo:Village .
+    }
+    LIMIT 500
+  }
+  ?s ?p ?o .
+}

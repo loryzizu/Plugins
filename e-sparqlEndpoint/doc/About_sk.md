@@ -1,7 +1,7 @@
 ### Popis
 
 Stiahne RDF dáta z externého SPARQL koncového bodu podľa predpisu definovaného v konfigurácii a výsledok vo forme RDF zašle na výstup `output`.
-Dopyt je možné prepísať tak, aby sa koncový bod dopytoval po dávkach.
+Dopyt je možné prepísať tak, aby sa koncový bod dopytoval po dávkach. V tomto režime sa ignoruje vonkajší ORDER BY a LIMIT.
 
 ### Konfiguračné parametre
 

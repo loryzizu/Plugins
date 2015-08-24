@@ -31,6 +31,14 @@ public class QueryPagingRewriter2 {
         return result;
     }
     
+    public static boolean hasLimit(String query) {
+        return QueryFactory.create(query).hasLimit();
+    }
+    
+    public static boolean isOrdered(String query) {
+        return QueryFactory.create(query).isOrdered();
+    }
+    
     public static String rewriteQuery(String query, long limit, long offset) {
         Query qc = QueryFactory.create(query);
         List<Var> vars = qc.getProjectVars();

@@ -105,6 +105,12 @@ public class SparqlEndpoint extends AbstractDpu<SparqlEndpointConfig_V1> {
                     long limit = config.getChunkSize();
                     long counter = 0;
                     while (returnedSomeTriples) {
+                        if (QueryPagingRewriter2.hasLimit(origQuery)) {
+                            ContextUtils.sendWarn(ctx, "SparqlEndpoint.exec.hasLimit", "SparqlEndpoint.exec.hasLimit");
+                        }
+                        if (QueryPagingRewriter2.isOrdered(origQuery)) {
+                            ContextUtils.sendWarn(ctx, "SparqlEndpoint.exec.isOrdered", "SparqlEndpoint.exec.isOrdered");
+                        }
                         returnedSomeTriples = false;
                         String querySlice = QueryPagingRewriter2.rewriteQuery(origQuery, limit, offset);
                         LOG.debug("Sliced query " + querySlice);

@@ -207,6 +207,9 @@ public class SparqlLimitOffsetJenaRewriterTest {
 
     static String query5;
 
+    static String query6;
+
+    static String query7;
     static String queryA;
 
     static String queryB;
@@ -221,14 +224,18 @@ public class SparqlLimitOffsetJenaRewriterTest {
 
     static String result5;
 
+    static String result6;
+
+    static String result7;
     static String resultA;
 
     static String resultB;
 
     static Map<String, String> queries = new LinkedHashMap<>();
 
-    static int[] expSizes = { 100, 100, 100, 10, 101, 10, 148 };
-    static int[] limSizes = { 100, 100, 100, 10, 100, 10, 100 };
+    static int[] expSizes = { 100, 100, 100, 10, 101, 100,100,10, 148 };
+
+    static int[] limSizes = { 100, 100, 100, 10, 100, 100, 100,10, 100 };
 
     static Pattern anonStripper = Pattern.compile("(_anon-)(.{36})");
 
@@ -239,6 +246,8 @@ public class SparqlLimitOffsetJenaRewriterTest {
         query3 = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("query3.txt"));
         query4 = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("query4.txt"));
         query5 = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("query5.txt"));
+        query6 = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("query6.txt"));
+        query7 = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("query7.txt"));
         queryA = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("queryA.txt"));
         queryB = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("queryB.txt"));
         result1 = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("result1.txt"));
@@ -246,6 +255,8 @@ public class SparqlLimitOffsetJenaRewriterTest {
         result3 = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("result3.txt"));
         result4 = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("result4.txt"));
         result5 = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("result5.txt"));
+        result6 = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("result6.txt"));
+        result7 = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("result7.txt"));
         resultA = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("resultA.txt"));
         resultB = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("resultB.txt"));
         queries.put(query1, result1);
@@ -253,6 +264,8 @@ public class SparqlLimitOffsetJenaRewriterTest {
         queries.put(query3, result3);
         queries.put(query4, result4);
         queries.put(query5, result5);
+        queries.put(query6, result6);
+        queries.put(query7, result7);
         queries.put(queryA, resultA);
         queries.put(queryB, resultB);
 
@@ -457,7 +470,7 @@ public class SparqlLimitOffsetJenaRewriterTest {
             environmentSlice.release();
         }
     }
-    
+
     @Test
     public void executeDPUTest1() throws Exception {
         // Prepare config.
