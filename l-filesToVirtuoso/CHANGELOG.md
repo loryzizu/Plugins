@@ -1,7 +1,13 @@
 L-FilesToVirtuoso
 ----------
 
-v2.1.1-SNAPSHOT
+v2.0.2
+---
+* Fixed documentation (About)
+* Update to API 2.1.2 (properly displayed about tab in UTF-8 encoding)
+* Dialog Screen Update
+
+v2.1.1
 ---
 * Improved description (About)
 

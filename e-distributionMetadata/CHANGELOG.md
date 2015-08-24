@@ -1,7 +1,12 @@
 E-DistributionMetadata
 ----------
 
-v2.0.1-SNAPSHOT
+v2.0.2
+---
+* Fixed documentation (About_sk)
+* Update to API 2.1.2 (properly displayed about tab in UTF-8 encoding)
+
+v2.0.1
 ---
 * Improved description (About)
 
