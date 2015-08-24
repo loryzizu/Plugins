@@ -210,6 +210,7 @@ public class SparqlLimitOffsetJenaRewriterTest {
     static String query6;
 
     static String query7;
+
     static String queryA;
 
     static String queryB;
@@ -227,15 +228,16 @@ public class SparqlLimitOffsetJenaRewriterTest {
     static String result6;
 
     static String result7;
+
     static String resultA;
 
     static String resultB;
 
     static Map<String, String> queries = new LinkedHashMap<>();
 
-    static int[] expSizes = { 100, 100, 100, 10, 101, 100,100,10, 148 };
+    static int[] expSizes = { 100, 100, 100, 10, 101, 100, 100, 10, 148 };
 
-    static int[] limSizes = { 100, 100, 100, 10, 100, 100, 100,10, 100 };
+    static int[] limSizes = { 100, 100, 100, 10, 100, 100, 100, 10, 100 };
 
     static Pattern anonStripper = Pattern.compile("(_anon-)(.{36})");
 
