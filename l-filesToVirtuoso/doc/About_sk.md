@@ -2,6 +2,19 @@
 
 Nahrá RDF dáta do Virtuoso.
 
+Vstup tohto kroku (RDF dáta) sú súbory, ktoré sa musia nachádzať v nahrávanom priečiku na lokálnom disku.
+Všetky súbory musia byť vo formátoch `application/rdf+xml` alebo `text/turtle` (prípony `.rdf` resp. `.ttl`).
+
+Užívateľ musí zabezpečiť spustenie tohto kroku až po tom, čo je priečinok naplnený súbormi.
+To je možné dosiahnuť zaradením l-filesUpload s 'spustiť po' hranou na toto DPU.  
+Príklad transformácie:
+
+    --------------------      ----------------      -----------------                       ---------------------
+    |                  |      |              |      |               |                       |                   |
+    | e-sparqlEndpoint | ---> | t-rdfToFiles | ---> | l-filesUpload | --spustiť po hrana--> | l-FilesToVirtuoso |
+    |                  |      |              |      |               |                       |                   |
+    --------------------      ----------------      -----------------                       ---------------------
+
 ### Konfiguračné parametre
 
 | Meno | Popis |
@@ -26,7 +39,7 @@ Nahrá RDF dáta do Virtuoso.
 
 ### Pokročilá konfigurácia
 
-Krok je možné nakonfigurovať aj dznamicky cez vstup `config` pomocou RDF dát.
+Krok je možné nakonfigurovať aj dynamicky cez vstup `config` pomocou RDF dát.
 
 Vzor konfigurácie:
 
