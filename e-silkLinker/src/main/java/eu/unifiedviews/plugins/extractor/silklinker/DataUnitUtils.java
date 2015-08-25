@@ -21,12 +21,12 @@ public class DataUnitUtils {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(
             DataUnitUtils.class);
 
-//        public static void printBytes(byte[] array, String name) {
-//            for (int k = 0; k < array.length; k++) {
-//                System.out.println(name + "[" + k + "]:" + array[k]);
-//            }
-//        }
-//        
+    //        public static void printBytes(byte[] array, String name) {
+    //            for (int k = 0; k < array.length; k++) {
+    //                System.out.println(name + "[" + k + "]:" + array[k]);
+    //            }
+    //        }
+    //        
     /**
      * Stores string to a file
      * 
@@ -139,27 +139,5 @@ public class DataUnitUtils {
             log.debug("Dir {} NOT created, could have already exist", file);
         }
     }
-
-//        /**
-//         * Encodes string with 
-//         * @param literalValue
-//         * @param escapedMappings
-//         * @return 
-//         */
-//  public static String encode(String literalValue, String escapedMappings) {
-//      String val = literalValue;
-//      String[] split = escapedMappings.split("\\s*");
-//      for (String s : split) {
-//          String[] keyAndVal = s.split(":");
-//          if (keyAndVal.length == 2) {
-//              val = val.replaceAll(keyAndVal[0], keyAndVal[1]);
-//
-//          } else {
-//              log.warn("Wrong format of escaped character mappings, skipping the mapping");
-//
-//          }
-//      }
-//      return val;
-//  }
 
 }
