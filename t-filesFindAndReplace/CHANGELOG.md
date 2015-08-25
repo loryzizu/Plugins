@@ -1,7 +1,12 @@
 T-FilesFindAndReplace
 ----------
 
-v2.1.1-SNAPSHOT
+v2.1.2
+---
+* Fixed documentation (About)
+* Update to API 2.1.2 (properly displayed about tab in UTF-8 encoding)
+
+v2.1.1
 ---
 * bug Fixes
  * UnifiedViews/Plugins#273

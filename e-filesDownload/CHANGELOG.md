@@ -7,7 +7,9 @@ v2.1.3-SNAPSHOT
 
 v2.1.2
 ---
-* Update to API 2.1.2
+* Update to API 2.1.2 (properly displayed about tab in UTF-8 encoding)
+* Fixed documentation (About)
+
 
 v2.1.1
 ---
