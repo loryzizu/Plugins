@@ -39,36 +39,6 @@
             <artifactId>uv-dpu-helpers</artifactId>
             <scope>compile</scope>
         </dependency>
-
-
-        <!--
-        <dependency>
-            <groupId>de.fuberlin.wiwiss.silk</groupId>
-            <artifactId>silk-singlemachine</artifactId>
-            <version>2.5.3</version>
-            <type>jar</type>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-log4j12</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>de.fuberlin.wiwiss.silk</groupId>
-            <artifactId>silk-core</artifactId>
-            <version>2.5.3</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>org.eclipse.osgi</artifactId>
-            <version>3.9.0.v20130305-2200</version>
-            <scope>provided</scope>
-        </dependency>
-                -->
     </dependencies>
 
         <repositories>
