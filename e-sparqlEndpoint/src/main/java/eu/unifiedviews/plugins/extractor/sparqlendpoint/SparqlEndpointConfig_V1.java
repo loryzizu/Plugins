@@ -8,7 +8,7 @@ import eu.unifiedviews.helpers.dpu.config.VersionedConfig;
  */
 public class SparqlEndpointConfig_V1 implements VersionedConfig<SparqlEndpointConfig_V1> {
 
-    private String endpoint = "http://localhreost:8890/sparql";
+    private String endpoint = "http://localhost:8890/sparql";
 
     private String query = "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }";
 

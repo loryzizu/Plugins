@@ -5,8 +5,6 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.parser.QueryParserUtil;
 
 import com.vaadin.data.Validator;
-import com.vaadin.ui.AbstractSelect.NewItemHandler;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
