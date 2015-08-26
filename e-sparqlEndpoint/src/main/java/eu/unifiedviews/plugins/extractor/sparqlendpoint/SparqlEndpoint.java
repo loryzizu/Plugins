@@ -29,7 +29,6 @@ import eu.unifiedviews.plugins.extractor.rdffromsparql.RdfFromSparqlEndpointConf
 
 /**
  * Main data processing unit class.
- * 
  */
 @DPU.AsExtractor
 public class SparqlEndpoint extends AbstractDpu<SparqlEndpointConfig_V1> {
@@ -81,56 +80,19 @@ public class SparqlEndpoint extends AbstractDpu<SparqlEndpointConfig_V1> {
 
             @Override
             public void action(RepositoryConnection connection) throws Exception {
-                if (config.getChunkSize() == null || config.getChunkSize() == -1) {
-                    GraphQuery query = connection.prepareGraphQuery(QueryLanguage.SPARQL, config.getQuery());
-                    LOG.info("Executing query.");
-                    GraphQueryResult result = query.evaluate();
-                    LOG.info("Storing result.");
-                    long counter = 0;
-                    while (result.hasNext()) {
-                        final Statement st = result.next();
-                        // Add to out output.
-                        output.add(st.getSubject(), st.getPredicate(), st.getObject());
-                        // Print info.
-                        ++counter;
-                        if (counter % 100000 == 0) {
-                            LOG.info("{} triples extracted", counter);
-                        }
-                    }
-                } else {
-                    String origQuery = config.getQuery();
-                    LOG.debug("Original query: {}", origQuery);
-                    boolean returnedSomeTriples = true;
-                    long offset = 0;
-                    long limit = config.getChunkSize();
-                    long counter = 0;
-                    if (QueryPagingRewriter2.hasLimit(origQuery)) {
-                        ContextUtils.sendWarn(ctx, "SparqlEndpoint.exec.hasLimit", "SparqlEndpoint.exec.hasLimit");
-                    }
-                    if (QueryPagingRewriter2.isOrdered(origQuery)) {
-                        ContextUtils.sendWarn(ctx, "SparqlEndpoint.exec.isOrdered", "SparqlEndpoint.exec.isOrdered");
-                    }
-                    while (returnedSomeTriples) {
-                        returnedSomeTriples = false;
-                        String querySlice = QueryPagingRewriter2.rewriteQuery(origQuery, limit, offset);
-                        LOG.debug("Sliced query " + querySlice);
-                        GraphQuery query = connection.prepareGraphQuery(QueryLanguage.SPARQL,
-                                querySlice);
-                        LOG.info("Executing query.");
-                        GraphQueryResult result = query.evaluate();
-                        LOG.info("Storing result.");
-                        while (result.hasNext()) {
-                            returnedSomeTriples = true;
-                            final Statement st = result.next();
-                            // Add to out output.
-                            output.add(st.getSubject(), st.getPredicate(), st.getObject());
-                            // Print info.
-                            ++counter;
-                            if (counter % 100000 == 0) {
-                                LOG.info("{} triples extracted", counter);
-                            }
-                        }
-                        offset += limit;
+                GraphQuery query = connection.prepareGraphQuery(QueryLanguage.SPARQL, config.getQuery());
+                LOG.info("Executing query.");
+                GraphQueryResult result = query.evaluate();
+                LOG.info("Storing result.");
+                long counter = 0;
+                while (result.hasNext()) {
+                    final Statement st = result.next();
+                    // Add to out output.
+                    output.add(st.getSubject(), st.getPredicate(), st.getObject());
+                    // Print info.
+                    ++counter;
+                    if (counter % 100000 == 0) {
+                        LOG.info("{} triples extracted", counter);
                     }
                 }
             }
