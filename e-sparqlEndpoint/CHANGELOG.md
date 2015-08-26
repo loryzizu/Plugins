@@ -1,10 +1,14 @@
 E-SparqlEndpoint
 ----------
 
-v1.1.0
+v1.0.2
 ---
-* Added support for chunked queries. The given query can be rewritten so that results are chunked in order to avoid timeouts, result sets max rows limitations, etc.
-* Changed artifactId from e-sparqlEndpoint to uv-e-sparqlEndpoint, which causes also change in the name of the DPU's JAR file.
+* Version of parent pom is 2.1.3
+
+v1.0.1
+---
+* Fixed documentation (About)
+* Update to API 2.1.2 (properly displayed about tab in UTF-8 encoding)
 
 v1.0.0
 ---
