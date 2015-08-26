@@ -21,7 +21,6 @@
 
         <!-- We need import on OpenRdf repository as it's somehow missing. -->
         <osgi.import.package>org.openrdf.repository,</osgi.import.package>
-    <!-- 		<embed.transitive>true</embed.transitive> -->
     </properties>
 
     <dependencies>
