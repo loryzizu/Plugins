@@ -1,9 +1,9 @@
 E-SparqlEndpoint
 ----------
 
-v1.1.0
+v1.0.2
 ---
-* Added support for chunked queries. The given query can be rewritten so that results are chunked in order to avoid timeouts, result sets max rows limitations, etc.
+* Version of parent pom is 2.1.3
 
 v1.0.1
 ---

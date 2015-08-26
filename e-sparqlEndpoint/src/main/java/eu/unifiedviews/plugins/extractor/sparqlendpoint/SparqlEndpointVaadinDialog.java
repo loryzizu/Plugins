@@ -5,8 +5,6 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.parser.QueryParserUtil;
 
 import com.vaadin.data.Validator;
-import com.vaadin.ui.AbstractSelect.NewItemHandler;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -23,8 +21,6 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
 
     private TextField txtEndpoint;
 
-    private ComboBox cmbChunkSize;
-
     private TextArea txtQuery;
 
     public SparqlEndpointVaadinDialog() {
@@ -35,14 +31,6 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
     public void setConfiguration(SparqlEndpointConfig_V1 c) throws DPUConfigException {
         txtEndpoint.setValue(c.getEndpoint());
         txtQuery.setValue(c.getQuery());
-        if (c.getChunkSize() == null) {
-            cmbChunkSize.select(new Integer(-1));
-        } else {
-            if (!cmbChunkSize.containsId(c.getChunkSize())) {
-                cmbChunkSize.addItem(c.getChunkSize());
-            }
-            cmbChunkSize.select(c.getChunkSize());
-        }
     }
 
     @Override
@@ -53,18 +41,9 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
         if (!txtQuery.isValid()) {
             throw new DPUConfigException(ctx.tr("SparqlEndpoint.query.invalid"));
         }
-        if (!cmbChunkSize.isValid()) {
-            throw new DPUConfigException(ctx.tr("SparqlEndpoint.chunkSize.invalid"));
-        }
         final SparqlEndpointConfig_V1 c = new SparqlEndpointConfig_V1();
 
         c.setEndpoint(txtEndpoint.getValue());
-        c.setQuery(txtQuery.getValue());
-        if (-1 == (Integer) cmbChunkSize.getValue()) {
-            c.setChunkSize(null);
-        } else {
-            c.setChunkSize((Integer) cmbChunkSize.getValue());
-        }
         return c;
     }
 
@@ -104,37 +83,6 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
                 }
             }
         });
-
-        cmbChunkSize = new ComboBox(ctx.tr("SparqlEndpoint.dialog.chunksize"));
-        cmbChunkSize.addItem(new Integer(-1));
-        cmbChunkSize.setNullSelectionItemId(new Integer(-1));
-        cmbChunkSize.setItemCaption(new Integer(-1), ctx.tr("SparqlEndpoint.dialog.chunksize.disabled"));
-        cmbChunkSize.addItem(new Integer(1000));
-        cmbChunkSize.addItem(new Integer(5000));
-        cmbChunkSize.addItem(new Integer(10000));
-        cmbChunkSize.addItem(new Integer(50000));
-        cmbChunkSize.addItem(new Integer(10000));
-        cmbChunkSize.addItem(new Integer(100000));
-        cmbChunkSize.addItem(new Integer(500000));
-        cmbChunkSize.setWidth("30%");
-        cmbChunkSize.setDescription(ctx.tr("SparqlEndpoint.dialog.chunksize.description"));
-        cmbChunkSize.setImmediate(true);
-        cmbChunkSize.setInvalidAllowed(false);
-        cmbChunkSize.setNullSelectionAllowed(true);
-        cmbChunkSize.setNewItemsAllowed(true);
-        cmbChunkSize.setNewItemHandler(new NewItemHandler() {
-
-            @Override
-            public void addNewItem(String newItemCaption) {
-                try {
-                    Integer newItem = Integer.valueOf(newItemCaption);
-                    cmbChunkSize.getContainerDataSource().addItem(newItem);
-                    cmbChunkSize.select(newItem);
-                } catch (NumberFormatException ex) {
-                }
-            }
-        });
-        mainLayout.addComponent(cmbChunkSize);
 
         setCompositionRoot(mainLayout);
     }
