@@ -56,7 +56,7 @@ public class SilkLinkerVaadinDialog extends AbstractDialog<SilkLinkerConfig_V1> 
         mainLayout.setImmediate(false);
         mainLayout.setWidth("100%");
         mainLayout.setHeight("100%");
-        mainLayout.setMargin(false);
+        mainLayout.setMargin(true);
         //mainLayout.setSpacing(true);
 
         // top-level component properties
