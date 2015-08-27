@@ -5,6 +5,7 @@ v2.2.0-SNAPSHOT
 ---
 * Added support for advanced query
 * Dialog layout update (size is -1 not 100%)
+* Update to helpers 2.1.3
 
 v2.1.2
 ---

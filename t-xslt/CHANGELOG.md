@@ -1,6 +1,10 @@
 T-Xslt
 ----------
 
+v2.2.3-SNAPSHOT
+---
+* Update to helpers 2.1.3
+
 v2.2.2
 ---
 * Fixed documentation (About)
