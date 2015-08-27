@@ -1,6 +1,10 @@
 T-Gunzipper
 ----------
 
+v1.0.3-SNAPSHOT
+---
+* Update to helpers 2.1.3
+
 v1.0.2
 ---
 * Fixed documentation (About)
