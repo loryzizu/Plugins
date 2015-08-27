@@ -8,7 +8,8 @@ v2.2.0-SNAPSHOT
 
 v2.1.2
 ---
-* Update to UnifiedViews Plugins-DevEnv 2.1.2
+* Fixed documentation (About)
+* Update to API 2.1.2 (properly displayed about tab in UTF-8 encoding)
 
 v2.1.1
 ---

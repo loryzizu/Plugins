@@ -107,6 +107,8 @@ public class FilesDownload extends AbstractDpu<FilesDownloadConfig_V1> {
 
         if (config.isIgnoreTlsErrors()) {
             Protocol.registerProtocol("https", new Protocol("https", (ProtocolSocketFactory) new EasySSL(), 443));
+        } else {
+            Protocol.registerProtocol("https", new Protocol("https", (ProtocolSocketFactory) new TLS12(), 443));
         }
 
         final NumberFormat numberFormat = NumberFormat.getNumberInstance();
