@@ -3,6 +3,7 @@ T-UnZipper
 
 v2.1.3-SNAPSHOT
 ---
+* Added examples into documentation (About)
 * Update to helpers 2.1.3
 
 v2.1.2
