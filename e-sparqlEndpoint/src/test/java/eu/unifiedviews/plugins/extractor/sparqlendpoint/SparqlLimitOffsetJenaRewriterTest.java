@@ -1,5 +1,6 @@
 package eu.unifiedviews.plugins.extractor.sparqlendpoint;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +32,9 @@ import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.repository.sparql.SPARQLRepository;
 import org.openrdf.repository.util.RDFInserter;
+import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.sail.memory.MemoryStore;
 
@@ -39,6 +42,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.helpers.dataunit.rdf.RDFHelper;
 import eu.unifiedviews.helpers.dpu.test.config.ConfigurationBuilder;
@@ -508,7 +512,8 @@ public class SparqlLimitOffsetJenaRewriterTest {
             environmentSlice.run(dpuSlice);
             connection = output.getConnection();
             System.out.println(connection.size(RDFHelper.getGraphsURIArray(output)));
-
+            System.out.println(connection.size(RDFHelper.getGraphsURIArray(outputSlice)));
+            Assert.assertEquals(connection.size(RDFHelper.getGraphsURIArray(output)), connection.size(RDFHelper.getGraphsURIArray(outputSlice)));
         } finally {
             // Release resources.
             environment.release();
