@@ -44,6 +44,11 @@
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
+            <artifactId>uv-e-sparqlEndpoint</artifactId>
+            <version>1.0.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-l-filesToParliament</artifactId>
             <version>1.0.3-SNAPSHOT</version>
         </dependency>
