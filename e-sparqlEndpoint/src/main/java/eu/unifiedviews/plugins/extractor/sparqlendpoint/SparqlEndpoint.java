@@ -29,8 +29,6 @@ import eu.unifiedviews.plugins.extractor.rdffromsparql.RdfFromSparqlEndpointConf
 
 /**
  * Main data processing unit class.
- * 
- * @author Petr Škoda
  */
 @DPU.AsExtractor
 public class SparqlEndpoint extends AbstractDpu<SparqlEndpointConfig_V1> {

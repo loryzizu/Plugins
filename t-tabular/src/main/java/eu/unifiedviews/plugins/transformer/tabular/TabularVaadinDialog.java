@@ -79,6 +79,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     private CheckBox checkXlsStripHeader;
 
+    private CheckBox checkDbfTrimString;
+
     /**
      * Layout for basic column mapping.
      */
@@ -301,6 +303,19 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             }
         });
 
+        // DBF
+        final FormLayout dbfLayout = new FormLayout();
+        dbfLayout.setImmediate(true);
+        dbfLayout.setSpacing(true);
+        dbfLayout.setWidth("100%");
+        dbfLayout.setHeight("-1px");
+        dbfLayout.addComponent(new Label("DBF specific settings"));
+
+        this.checkDbfTrimString = new CheckBox("Remove trailing spaces");
+        this.checkDbfTrimString.setDescription("If checked then for every loaded string the leading and "
+                + "trailing spaces are removed before the value is futher processed.");
+        dbfLayout.addComponent(this.checkDbfTrimString);
+
         // --------------------- Mapping - simple ---------------------
         this.basicLayout = new GridLayout(5, 1);
         this.basicLayout.setWidth("100%");
@@ -377,12 +392,13 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         // -------------------------------------------------------------
         // top layout with configuration
         final HorizontalLayout configLayout = new HorizontalLayout();
-        configLayout.setWidth("100%");
+        configLayout.setWidth("-1px");
         configLayout.setHeight("-1px");
         configLayout.setSpacing(true);
 
         configLayout.addComponent(generalLayout);
         configLayout.addComponent(csvLayout);
+        configLayout.addComponent(dbfLayout);
         configLayout.addComponent(xlsLayout);
 
         // main layout for whole dialog
@@ -489,6 +505,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
     private void setControllStates(ParserType value) {
         boolean csvEnabled = value == ParserType.CSV;
         boolean xlsEnabled = value == ParserType.XLS;
+        boolean dbfEnabled = value == ParserType.DBF;
 
         txtCsvQuoteChar.setEnabled(csvEnabled);
         txtCsvDelimeterChar.setEnabled(csvEnabled);
@@ -503,6 +520,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         for (PropertyNamedCell namedCell : xlsNamedCells) {
             namedCell.setEnabled(xlsEnabled);
         }
+
+        checkDbfTrimString.setEnabled(dbfEnabled);
     }
 
     /**
@@ -642,6 +661,11 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             checkXlsHasHeader.setValue(true);
             checkXlsStripHeader.setValue(false);
         }
+        if (c.getTableType() == ParserType.DBF) {
+            checkDbfTrimString.setValue(c.isDbfTrimString());
+        } else {
+            checkDbfTrimString.setValue(false);
+        }
         //
         // other data
         //
@@ -736,6 +760,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
             cnf.setHasHeader(checkXlsHasHeader.getValue());
             cnf.setStripHeader(checkXlsStripHeader.getValue());
+        } else if (value == ParserType.DBF) {
+            cnf.setDbfTrimString(checkDbfTrimString.getValue());
         }
         //
         // other data

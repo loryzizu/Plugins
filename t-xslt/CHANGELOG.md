@@ -1,7 +1,17 @@
 T-Xslt
 ----------
 
-v2.2.1-SNAPSHOT
+v2.2.3-SNAPSHOT
+---
+* Update to helpers 2.1.3
+
+v2.2.2
+---
+* Fixed documentation (About)
+* Update to API 2.1.2 (properly displayed about tab in UTF-8 encoding)
+* Save space in dialog
+
+v2.2.1
 ---
 * Improved description (About)
 

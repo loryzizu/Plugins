@@ -1,7 +1,16 @@
 E-SparqlEndpoint
 ----------
 
-v1.0.0-SNAPSHOT
+v1.0.2-SNAPSHOT
+---
+* Update to helpers 2.1.3
+
+v1.0.1
+---
+* Fixed documentation (About)
+* Update to API 2.1.2 (properly displayed about tab in UTF-8 encoding)
+
+v1.0.0
 ---
 * Improved description (About)
 * Added RDF validation

@@ -13,4 +13,4 @@ Merges RDF input graphs into single RDF output graph (all triples from input gra
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |input  |i| RDFDataUnit | DataUnit to which user connects all inputs which has to be merged |x|
-|output |o| RDFDataUnit | DataUnit which outputs RDF graph, which contains all triples from input graphs ||
+|output |o| RDFDataUnit | DataUnit which outputs RDF graph, which contains all triples from input graphs | |

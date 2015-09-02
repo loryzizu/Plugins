@@ -94,7 +94,12 @@ public class ParserDbf implements Parser {
             for (Object item : row) {
                 if (item instanceof byte[]) {
                     try {
-                        stringRow.add(new String((byte [])item, config.encoding));
+                        final String newString = new String((byte [])item, config.encoding);
+                        if (config.trimStringValues) {
+                            stringRow.add(newString.trim());
+                        } else {
+                            stringRow.add(newString);
+                        }
                     } catch (UnsupportedEncodingException ex) {
                         // terminate DPU as this can not be handled
                         throw new RuntimeException(ex);

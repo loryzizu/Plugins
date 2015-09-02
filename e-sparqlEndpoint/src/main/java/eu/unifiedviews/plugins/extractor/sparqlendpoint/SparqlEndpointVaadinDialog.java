@@ -15,8 +15,7 @@ import eu.unifiedviews.helpers.dpu.vaadin.validator.UrlValidator;
 
 /**
  * Vaadin configuration dialog for SparqlEndpoint.
- *
- * @author Petr Škoda
+ * 
  */
 public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointConfig_V1> {
 
@@ -46,7 +45,6 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
 
         c.setEndpoint(txtEndpoint.getValue());
         c.setQuery(txtQuery.getValue());
-
         return c;
     }
 

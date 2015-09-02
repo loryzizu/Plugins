@@ -14,4 +14,4 @@ Zvaliduje RDF dáta
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |rdfInput |vstup| RDFDataUnit | Vstupné RDF dáta na zvalidovanie |áno|
-|rdfOutput|výstup| RDFDataUnit | Kópia rdfInput dát ||
+|rdfOutput|výstup| RDFDataUnit | Kópia rdfInput dát | |
