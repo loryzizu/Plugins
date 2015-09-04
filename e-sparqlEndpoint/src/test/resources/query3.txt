@@ -1,0 +1,8 @@
+PREFIX dbo:  <http://dbpedia.org/ontology/>
+
+CONSTRUCT {
+  _:village a dbo:Village .
+}
+WHERE {
+  ?village a dbo:Village .
+}
