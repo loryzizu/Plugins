@@ -34,6 +34,8 @@ public class DistributionMetadataVaadinDialog extends AbstractDialog<Distributio
         mainLayout.setImmediate(true);
         mainLayout.setWidth("100%");
         mainLayout.setHeight(null);
+        mainLayout.setSpacing(true);
+        mainLayout.setMargin(true);
 
         // top-level component properties
         setWidth("100%");
