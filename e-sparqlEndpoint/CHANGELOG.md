@@ -7,7 +7,7 @@ v1.1.0
 
 v1.0.2
 ---
-* Version of parent pom is 2.1.3
+* Update to helpers 2.1.3
 
 v1.0.1
 ---

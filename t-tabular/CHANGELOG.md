@@ -1,9 +1,10 @@
 T-Tabular
 ----------
 
-v2.2.2
+v2.2.2-SNAPSHOT
 ---
 * For DBF: Added possibility to trim trailing and leading spaces from values, dialog adjustments.
+* Update to helpers 2.1.3
 
 v2.2.1
 ---
