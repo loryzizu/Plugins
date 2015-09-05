@@ -1,13 +1,13 @@
 ### Popis
 
-Transformuje vstupné dáta pomocou SPARQL UPDATE dotazu
+Transformuje vstupné dáta pomocou aktualizačného SPARQL dotazu
 
 ### Konfiguračné parametre
 
 | Meno | Popis |
 |:----|:----|
 |**Púšťanie dotazov po grafoch** | ak zaškrtnuté, dotazy sú púšťané po grafoch |
-|**SPARQL dotaz typu UPDATE** | SPARQL dotaz typu UPDATE |
+|**SPARQL aktualizačný dotaz** | Textové pole určené pre SPARQL aktualizačný dotaz |
 
 ### Vstupy a výstupy
 
