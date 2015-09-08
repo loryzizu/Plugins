@@ -10,6 +10,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
@@ -116,7 +117,12 @@ public class RelationalToRdfVaadinDialog extends AbstractDialog<RelationalToRdfC
         this.basicLayout.setColumnExpandRatio(4, 0.7f);
 
         addSimplePropertyMapping(null, null);
-        this.mainLayout.addComponent(this.basicLayout);
+
+        final TabSheet propertiesTab = new TabSheet();
+        propertiesTab.setSizeFull();
+
+        propertiesTab.addTab(this.basicLayout, this.ctx.tr("dialog.mapping.simple"));
+        this.mainLayout.addComponent(propertiesTab);
 
         final Button btnAddMapping = new Button(this.ctx.tr("dialog.mapping.button.add"));
         btnAddMapping.addClickListener(new Button.ClickListener() {
@@ -242,6 +248,15 @@ public class RelationalToRdfVaadinDialog extends AbstractDialog<RelationalToRdfC
         // column mapping
         //
         storeColumnMapping(config.getColumnsInfo());
+
+        config.setGenerateNew(this.checkGenerateNew.getValue());
+        config.setIgnoreBlankCells(this.checkIgnoreBlankCell.getValue());
+        config.setAdvancedKeyColumn(this.checkAdvancedKeyColumn.getValue());
+        config.setGenerateRowTriple(this.checkGenerateRowTriple.getValue());
+        config.setUseTableSubject(this.checkTableSubject.getValue());
+        config.setAutoAsStrings(this.checkAutoAsString.getValue());
+        config.setGenerateTableClass(this.checkGenerateTableClass.getValue());
+        config.setGenerateLabels(this.checkGenerateLabels.getValue());
 
         final String rowsClass = this.txtRowsClass.getValue();
         if (rowsClass == null || rowsClass.isEmpty()) {
