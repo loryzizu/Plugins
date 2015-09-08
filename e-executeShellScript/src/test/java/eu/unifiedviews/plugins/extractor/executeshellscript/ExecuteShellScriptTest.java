@@ -1,8 +1,7 @@
 package eu.unifiedviews.plugins.extractor.executeshellscript;
 
-import eu.unifiedviews.plugins.extractor.executeshellscript.ExecuteShellScriptConfig_V1;
-import eu.unifiedviews.plugins.extractor.executeshellscript.ExecuteShellScript;
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -29,13 +28,11 @@ public class ExecuteShellScriptTest {
             file = Thread.currentThread().getContextClassLoader().getResource("pokus.sh");
         }
         File f = new File(file.toURI());
-        config.setScriptName(f.getAbsolutePath());
-        config.setOutputDir((new File(f.getParent(), "output")).getAbsolutePath());
-        File outputDir = new File(config.getOutputDir());
-        outputDir.mkdirs();
+        config.setScriptName(f.getName());
 
         // Prepare test environment.
         TestEnvironment environment = new TestEnvironment();
+        environment.getContext().getEnvironment().put(ExecuteShellScript.SHELL_SCRIPT_PATH, f.getParent());
         WritableFilesDataUnit filesOutput = environment.createFilesOutput("filesOutput");
         // Prepare data unit.
         WritableFilesDataUnit filesInput = environment.createFilesInput("filesInput");
@@ -54,7 +51,9 @@ public class ExecuteShellScriptTest {
             FilesDataUnit.Iteration iteration = filesInput.getIteration();
             while (iteration.hasNext()) {
                 File inpF = FilesDataUnitUtils.asFile(iteration.next());
-                File outF = new File(config.getOutputDir(), config.getConfiguration() + inpF.getName());
+//                File outF = new File(config.getOutputDir(), config.getConfiguration() + inpF.getName());
+                File parentDir = new File(URI.create(filesOutput.getBaseFileURIString() + "tmp"));
+                File outF = new File(parentDir.getAbsolutePath(), config.getConfiguration() + inpF.getName());
                 Assert.assertTrue(outF.exists());
             }
 
@@ -77,13 +76,11 @@ public class ExecuteShellScriptTest {
             file = Thread.currentThread().getContextClassLoader().getResource("pokusNoInput.sh");
         }
         File f = new File(file.toURI());
-        config.setScriptName(f.getAbsolutePath());
-        config.setOutputDir((new File(f.getParent(), "output")).getAbsolutePath());
-        File outputDir = new File(config.getOutputDir());
-        outputDir.mkdirs();
+        config.setScriptName(f.getName());
 
         // Prepare test environment.
         TestEnvironment environment = new TestEnvironment();
+        environment.getContext().getEnvironment().put(ExecuteShellScript.SHELL_SCRIPT_PATH, f.getParent());
         WritableFilesDataUnit filesOutput = environment.createFilesOutput("filesOutput");
         // Prepare DPU.
         ExecuteShellScript dpu = new ExecuteShellScript();
@@ -96,7 +93,8 @@ public class ExecuteShellScriptTest {
             String[] items = config.getConfiguration().split(" ");
             List<String> itemList = Arrays.asList(items);
             for (String newFile : itemList) {
-                File outF = new File(config.getOutputDir(), newFile);
+                File parentDir = new File(URI.create(filesOutput.getBaseFileURIString() + "tmp"));
+                File outF = new File(parentDir.getAbsolutePath(), newFile);
                 Assert.assertTrue(outF.exists());
             }
 

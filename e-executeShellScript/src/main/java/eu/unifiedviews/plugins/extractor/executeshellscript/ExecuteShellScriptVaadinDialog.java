@@ -1,7 +1,11 @@
 package eu.unifiedviews.plugins.extractor.executeshellscript;
 
+import java.io.File;
+import java.util.Map;
+
+import com.vaadin.ui.Label;
+import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
@@ -12,11 +16,13 @@ import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
  */
 public class ExecuteShellScriptVaadinDialog extends AbstractDialog<ExecuteShellScriptConfig_V1> {
 
-    private TextField txtScriptName;
+    ListSelect lstScriptName;
 
     private TextArea txtConfiguration;
 
-    private TextField txtOutputDir;
+    private String pathToShellScripts = null;
+
+    private Label errorLabel;
 
     public ExecuteShellScriptVaadinDialog() {
         super(ExecuteShellScript.class);
@@ -24,52 +30,71 @@ public class ExecuteShellScriptVaadinDialog extends AbstractDialog<ExecuteShellS
 
     @Override
     public void setConfiguration(ExecuteShellScriptConfig_V1 c) throws DPUConfigException {
-        txtScriptName.setValue(c.getScriptName());
+        lstScriptName.setValue(c.getScriptName());
         txtConfiguration.setValue(c.getConfiguration());
-        txtOutputDir.setValue(c.getOutputDir());
     }
 
     @Override
     public ExecuteShellScriptConfig_V1 getConfiguration() throws DPUConfigException {
-        if (txtScriptName.getValue() == null || txtScriptName.getValue().trim() == "") {
-            throw new DPUConfigException(ctx.tr("ExecuteShellScript.dialog.error.scriptNameEmpty"));
-        }
-        if (txtOutputDir.getValue() == null || txtOutputDir.getValue().trim() == "") {
-            throw new DPUConfigException(ctx.tr("ExecuteShellScript.dialog.error.outputDirEmpty"));
-        }
         final ExecuteShellScriptConfig_V1 c = new ExecuteShellScriptConfig_V1();
 
-        c.setScriptName(txtScriptName.getValue());
+        c.setScriptName((String) lstScriptName.getValue());
         c.setConfiguration(txtConfiguration.getValue());
-        c.setOutputDir(txtOutputDir.getValue());
         return c;
     }
 
     @Override
     public void buildDialogLayout() {
+        Map<String, String> env = this.getContext().getEnvironment();
+        pathToShellScripts = env.get(ExecuteShellScript.SHELL_SCRIPT_PATH);
         final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSizeFull();
         mainLayout.setMargin(true);
         mainLayout.setSpacing(true);
 
-        txtScriptName = new TextField(ctx.tr("ExecuteShellScript.dialog.scriptName"));
-        txtScriptName.setWidth("100%");
-        txtScriptName.setRequired(true);
-        mainLayout.addComponent(txtScriptName);
-        mainLayout.setExpandRatio(txtScriptName, 0);
+        lstScriptName = new ListSelect(ctx.tr("ExecuteShellScript.dialog.scriptName"));
+        lstScriptName.setRows(5);
+        lstScriptName.setNullSelectionAllowed(true);
+        lstScriptName.setWidth("100%");
+        mainLayout.addComponent(lstScriptName);
 
         txtConfiguration = new TextArea(ctx.tr("ExecuteShellScript.dialog.configuration"));
         txtConfiguration.setSizeFull();
         mainLayout.addComponent(txtConfiguration);
-        mainLayout.setExpandRatio(txtConfiguration, 1.0f);
 
-        txtOutputDir = new TextField(ctx.tr("ExecuteShellScript.dialog.outputDir"));
-        txtOutputDir.setWidth("100%");
-        txtOutputDir.setRequired(true);
-        mainLayout.addComponent(txtOutputDir);
-        mainLayout.setExpandRatio(txtOutputDir, 0);
+        errorLabel = new Label();
+        errorLabel.setVisible(false);
+        errorLabel.setStyleName("dpu-error-label");
+        mainLayout.addComponent(errorLabel);
 
+        fillListValues();
         setCompositionRoot(mainLayout);
     }
 
+    private void fillListValues() {
+        if (pathToShellScripts == null) {
+            if (errorLabel == null) {
+                errorLabel = new Label();
+            }
+            errorLabel.setValue(ctx.tr("errors.pathToScriptsNotSet"));
+            errorLabel.setVisible(true);
+            return;
+        }
+        File scriptDirFile = new File(pathToShellScripts);
+        if (!scriptDirFile.exists()) {
+            errorLabel.setValue(ctx.tr("errors.pathToScriptsDoesntExist"));
+            errorLabel.setVisible(true);
+            return;
+        }
+        File[] scriptFiles = scriptDirFile.listFiles();
+        if (scriptFiles == null || scriptFiles.length < 1) {
+            errorLabel.setValue(ctx.tr("errors.dirWithScriptsIsEmpty"));
+            errorLabel.setVisible(true);
+            return;
+        }
+
+        for (File scriptFile : scriptFiles) {
+            lstScriptName.addItem(scriptFile.getName());
+        }
+    }
 }

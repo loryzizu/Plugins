@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -20,6 +21,7 @@ import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.files.FilesDataUnitUtils;
 import eu.unifiedviews.helpers.dataunit.resource.Resource;
@@ -37,6 +39,8 @@ public class ExecuteShellScript extends AbstractDpu<ExecuteShellScriptConfig_V1>
 
     private static final Logger LOG = LoggerFactory.getLogger(ExecuteShellScript.class);
 
+    public static final String SHELL_SCRIPT_PATH = "shell.scripts.path";
+
     @DataUnit.AsInput(name = "filesInput", optional = true)
     public FilesDataUnit filesInput;
 
@@ -50,33 +54,23 @@ public class ExecuteShellScript extends AbstractDpu<ExecuteShellScriptConfig_V1>
     @Override
     protected void innerExecute() throws DPUException {
         try {
+            String script = getScriptWithPath();
             File inpFilesList = null;
             if (filesInput != null) {
                 inpFilesList = prepareInputFiles();
             }
-            LOG.debug(String.format("Script name : %s", config.getScriptName()));
+            LOG.debug(String.format("Script name : %s", script));
             LOG.debug(String.format("Configuration : %s", config.getConfiguration()));
-            LOG.debug(String.format("Output directory : %s", config.getOutputDir()));
             String confFilePath = writeConfiguration().getAbsolutePath();
 
-            if (!(new File(config.getScriptName())).exists()) {
-                LOG.error(String.format("Script %s doesn't exist!", config.getScriptName()));
-                throw ContextUtils.dpuException(ctx, "ExecuteShellScript.error.scriptDoesntExist");
-            }
-            File outputDir = new File(config.getOutputDir());
-            if (!outputDir.exists()) {
-                if (!outputDir.mkdirs()) {
-                    LOG.error(String.format("Can't create output directory: %s", config.getOutputDir()));
-                    throw ContextUtils.dpuException(ctx, "ExecuteShellScript.error.cantCreateOutDir");
-                }
-            }
-            CommandLine cmdLine = new CommandLine(config.getScriptName());
+            File outputDir = createTempOutputDir();
+            CommandLine cmdLine = new CommandLine(script);
 
             cmdLine.addArgument(confFilePath);
             if (inpFilesList != null) {
                 cmdLine.addArgument(inpFilesList.getAbsolutePath());
             }
-            cmdLine.addArgument(config.getOutputDir());
+            cmdLine.addArgument(outputDir.getAbsolutePath());
 
             String commandLine = cmdLine.toString().substring(1, cmdLine.toString().length() - 1);
             commandLine = commandLine.replace(",", "");
@@ -104,8 +98,7 @@ public class ExecuteShellScript extends AbstractDpu<ExecuteShellScriptConfig_V1>
                 IOUtils.closeQuietly(stdout);
             }
             if (result == 0) {
-                File outputFolder = new File(config.getOutputDir());
-                for (File fileEntry : outputFolder.listFiles()) {
+                for (File fileEntry : outputDir.listFiles()) {
                     filesOutput.addExistingFile(fileEntry.getName(), fileEntry.toURI().toASCIIString());
                     VirtualPathHelpers.setVirtualPath(filesOutput, fileEntry.getName(), fileEntry.getName());
                     Resource resource = ResourceHelpers.getResource(filesOutput, fileEntry.getName());
@@ -134,6 +127,21 @@ public class ExecuteShellScript extends AbstractDpu<ExecuteShellScriptConfig_V1>
         return outputFile;
     }
 
+    private File createTempOutputDir() throws DataUnitException, DPUException {
+        File parentDir = new File(URI.create(filesOutput.getBaseFileURIString()));
+        File outputDir = null;
+        if (parentDir.getAbsolutePath().endsWith(File.separator)) {
+            outputDir = new File(parentDir, "tmp");
+        } else {
+            outputDir = new File(parentDir, File.separator + "tmp");
+        }
+
+        if (!outputDir.mkdirs()) {
+            throw ContextUtils.dpuException(ctx, "errors.creatingTempOutputDir");
+        }
+        return outputDir;
+    }
+
     private File prepareInputFiles() {
         File filesToProcessList = null;
         FileWriter writer = null;
@@ -151,5 +159,27 @@ public class ExecuteShellScript extends AbstractDpu<ExecuteShellScriptConfig_V1>
             IOUtils.closeQuietly(writer);
         }
         return filesToProcessList;
+    }
+
+    private String getScriptWithPath() throws DPUException {
+        DPUContext dpuContext = ctx.getExecMasterContext().getDpuContext();
+        Map<String, String> environment = dpuContext.getEnvironment();
+
+        String pathToScript = environment.get(SHELL_SCRIPT_PATH);
+        if (pathToScript == null || pathToScript.trim().equals("")) {
+            LOG.error("Directory with shell scripts is not set in beckend configuration file!");
+            throw ContextUtils.dpuException(ctx, "errors.pathToScriptsNotSet.backend");
+        }
+        File scriptDirFile = new File(pathToScript);
+        if (!scriptDirFile.exists()) {
+            LOG.error(String.format("Directory with shell scripts %s doesn't exist!", pathToScript));
+            throw ContextUtils.dpuException(ctx, "errors.pathToScriptsDoesntExist.backend");
+        }
+        File scriptFile = new File(pathToScript, config.getScriptName());
+        if (scriptFile == null || !scriptFile.exists()) {
+            LOG.error(String.format("Script %s doesn't exist!", config.getScriptName()));
+            throw ContextUtils.dpuException(ctx, "errors.scriptDoesntExist");
+        }
+        return scriptFile.getAbsolutePath();
     }
 }
