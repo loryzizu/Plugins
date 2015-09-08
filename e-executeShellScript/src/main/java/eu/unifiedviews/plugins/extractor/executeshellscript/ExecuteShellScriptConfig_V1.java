@@ -8,8 +8,6 @@ public class ExecuteShellScriptConfig_V1 {
 
     private String configuration = "";
 
-    private String outputDir = "";
-
     public ExecuteShellScriptConfig_V1() {
 
     }
@@ -28,14 +26,6 @@ public class ExecuteShellScriptConfig_V1 {
 
     public void setConfiguration(String configuration) {
         this.configuration = configuration;
-    }
-
-    public String getOutputDir() {
-        return outputDir;
-    }
-
-    public void setOutputDir(String outputDir) {
-        this.outputDir = outputDir;
     }
 
 }
