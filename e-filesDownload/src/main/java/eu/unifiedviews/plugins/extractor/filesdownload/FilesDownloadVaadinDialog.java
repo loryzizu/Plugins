@@ -2,14 +2,17 @@ package eu.unifiedviews.plugins.extractor.filesdownload;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.vfs2.provider.UriParser;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Validator;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.*;
@@ -39,7 +42,8 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
     @Override
     protected void buildDialogLayout() {
         final VerticalLayout mainLayout = new VerticalLayout();
-        mainLayout.setSizeFull();
+        mainLayout.setHeight("-1px");
+        mainLayout.setWidth("100%");
         mainLayout.setImmediate(false);
         mainLayout.setMargin(true);
         mainLayout.setSpacing(true);
@@ -85,7 +89,8 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
         table.setColumnHeader("password", ctx.tr("FilesDownloadVaadinDialog.password"));
         table.setColumnHeader("fileName", ctx.tr("FilesDownloadVaadinDialog.fileName"));
         table.setEditable(true);
-        table.setSizeFull();
+        table.setWidth("100%");
+        table.setHeight("150px");
         table.setTableFieldFactory(new TableFieldFactory() {
 
             @Override
@@ -133,9 +138,45 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
         CheckBox chkIgnoreTlsErrors = new CheckBox(ctx.tr("FilesDownloadVaadinDialog.ignoreTlsErrors.caption"), ignoreTlsErrors);
         chkIgnoreTlsErrors.setDescription(ctx.tr("FilesDownloadVaadinDialog.ignoreTlsErrors.description"));
         mainLayout.addComponent(chkIgnoreTlsErrors);
-        
-        mainLayout.setExpandRatio(table, 1.0f);
+
         setCompositionRoot(mainLayout);
+    }
+
+    private boolean checkURIProtocolSupported(String uri) {
+        Map<String, String> environment = this.ctx.getDialogMasterContext().getDialogContext().getEnvironment();
+        String supportedProtocols = environment.get(FilesDownload.SUPPORTED_PROTOCOLS);
+        if (StringUtils.isEmpty(supportedProtocols)) {
+            return true;
+        }
+
+        final String scheme = UriParser.extractScheme(uri);
+        String[] supportedSchemes = supportedProtocols.trim().split(",");
+        Set<String> supportedSet = new HashSet<>();
+        for (String s : supportedSchemes) {
+            supportedSet.add(s);
+        }
+
+        if (StringUtils.isEmpty(scheme) && !supportedSet.contains("file")) {
+            return false;
+        }
+
+        return supportedSet.contains(scheme);
+    }
+
+    private List<String> getSupportedProtocols() {
+        Map<String, String> environment = this.ctx.getDialogMasterContext().getDialogContext().getEnvironment();
+        String supportedProtocols = environment.get(FilesDownload.SUPPORTED_PROTOCOLS);
+        if (StringUtils.isEmpty(supportedProtocols)) {
+            return null;
+        }
+
+        String[] supportedProtocolsArray = supportedProtocols.trim().split(",");
+        List<String> protocols = new ArrayList<>();
+        for (String protocol : supportedProtocolsArray) {
+            protocols.add(protocol);
+        }
+
+        return protocols;
     }
 
     @Override
@@ -186,6 +227,13 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
                 } else if (StringUtils.isNotBlank(vfsFile.getUsername()) && StringUtils.isBlank(vfsFile.getPassword())) {
                     result = false;
                     resultException = new DPUConfigException(ctx.tr("FilesDownloadVaadinDialog.password.required"));
+                    break;
+                }
+
+                if (!checkURIProtocolSupported(vfsFile.getUri())) {
+                    result = false;
+                    resultException = new DPUConfigException(this.ctx.tr("FilesDownloadVaadinDialog.protocol.not.supported",
+                            vfsFile.getUri(), getSupportedProtocols()));
                     break;
                 }
 

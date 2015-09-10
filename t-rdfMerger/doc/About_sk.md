@@ -6,11 +6,11 @@ Zlúči RDF dáta
 
 | Meno | Popis |
 |:----|:----|
-|N/A||
+|N/A| |
 
 ### Vstupy a výstupy
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|rdfInput  |i| RDFDataUnit | Dátová jednotka, kam používateľ zapojí všetky vstupy, ktoré majú byť zlúčené |x|
-|rdfOutput |o| RDFDataUnit | Dátová jednotka, kam sa pošle zlúčené grafy ||
+|rdfInput  |vstup| RDFDataUnit | Dátová jednotka, kam používateľ zapojí všetky vstupy, ktoré majú byť zlúčené |áno|
+|rdfOutput |výstup| RDFDataUnit | Dátová jednotka, kam sa pošle zlúčené grafy | |

@@ -1,7 +1,21 @@
 T-FilesMerger
 ----------
 
-v2.1.1-SNAPSHOT
+v2.1.4-SNAPSHOT
+---
+* Improved documentation (About)
+* Update to helpers 2.1.4
+
+v2.1.3
+---
+* Update to helpers 2.1.3
+
+v2.1.2
+---
+* Fixed documentation (About)
+* Update to API 2.1.2 (properly displayed about tab in UTF-8 encoding)
+
+v2.1.1
 ---
 * Improved description (About)
 

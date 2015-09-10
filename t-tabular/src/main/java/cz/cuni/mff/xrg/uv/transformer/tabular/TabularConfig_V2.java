@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import eu.unifiedviews.plugins.transformer.tabular.column.NamedCell_V1;
+import cz.cuni.mff.xrg.uv.transformer.tabular.column.NamedCell_V1;
 
 /**
  *
@@ -155,6 +155,11 @@ public class TabularConfig_V2 {
      * If set then trailing null values in header are ignored.
      */
     private boolean stripHeader = false;
+
+    /**
+     * If true then string values are trimmed before used.
+     */
+    private boolean dbfTrimString = false;
 
     public TabularConfig_V2() {
     }
@@ -351,6 +356,14 @@ public class TabularConfig_V2 {
         this.stripHeader = stripHeader;
     }
 
+    public boolean isDbfTrimString() {
+        return dbfTrimString;
+    }
+
+    public void setDbfTrimString(boolean dbfTrimString) {
+        this.dbfTrimString = dbfTrimString;
+    }
+
     public TableToRdfConfig getTableToRdfConfig() {
         return new TableToRdfConfig(keyColumn, baseURI, columnsInfo,
                 generateNew, rowsClass, ignoreBlankCells, columnsInfoAdv,
@@ -367,7 +380,7 @@ public class TabularConfig_V2 {
     public ParserDbfConfig getParserDbfConfig() {
         return new ParserDbfConfig(encoding,
                 rowsLimit == null || rowsLimit == -1 ? null : rowsLimit,
-                staticRowCounter);
+                staticRowCounter, dbfTrimString);
     }
 
     public ParserXlsConfig getParserXlsConfig() {

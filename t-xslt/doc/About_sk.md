@@ -1,7 +1,7 @@
 ### Popis
 
-Vykoná XSL Transformáciu vstupných súborov na `files` vstupe s vzužitím statického predpisu xslt.
-Tranformované súbory dá na výstup files`.
+Vykoná XSL Transformáciu vstupných súborov na `files` vstupe s využitím statického predpisu xslt.
+Transformované súbory dá na výstup `files`.
 
 V XSLT je podporované generovanie náhodných UUID pomocou `randomUUID()` funkcie v mennom priestore `uuid-functions`.
 
@@ -23,22 +23,22 @@ Príklad použitia:
 
 | Name | Description |
 |:----|:----|
-| **Preskoč súbor ak sa vyskytne chyba** | Pri zaškrtnutej voľbe sa v prípade chyby pri transformácii súboru daná transformácia skončí a pokračuje sa naďaľším súborom. Inak sa transformácia zastaví |
-| **Prípona výstupného súboru** | Pridá uvedenú príponu ku menu vstupného súboru pre výstupný súbor |
-| **Number of extra threads** | Počet vlákien použitých pri transformácii. Ak sa nastaví 0, spustí sa jedno vlákno rovnako ako pri 1.<br>Toto nastavenie je užitočné pri transformáciác, ktoré trvajú dlhší čas.<br>Viac vlákien však znamená nielen zvýšenie rýchlosti, ale aj zvýšenie spotreby pamäte, takže treba zvážiť vhodné nastavenie |
+| **Preskoč súbor ak sa vyskytne chyba** | Pri zaškrtnutej voľbe sa v prípade chyby pri transformácii súboru daná transformácia skončí a pokračuje sa ďalším súborom. Inak sa transformácia zastaví. |
+| **Prípona výstupného súboru** | Pridá uvedenú príponu k menu vstupného súboru pre výstupný súbor |
+| **Počet vlákien navyše** | Počet vlákien použitých pri transformácii. Ak sa nastaví 0, spustí sa jedno vlákno rovnako ako pri 1.<br>Toto nastavenie je užitočné pri transformáciách, ktoré trvajú dlhší čas.<br>Viac vlákien však znamená nielen zvýšenie rýchlosti, ale aj zvýšenie spotreby pamäte, takže treba zvážiť vhodné nastavenie |
 | **XSLT šablóna** | XSLT šablóna použitá na tranformáciu |
 
 ### Vstupy a výstupy
 
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|files  |i| FilesDataUnit | Súbory určené na transformáciu  |x|
-|files  |o| FilesDataUnit | Transformované súbory |x|
-|config |i| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | |
+|files  |vstup| FilesDataUnit | Súbory určené na transformáciu  |áno|
+|files  |výstup| FilesDataUnit | Transformované súbory |áno|
+|config |vstup| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | |
 
 ### Pokročilá konfigurácia
 
-Krok je možné nakonfigurovať aj dznamicky cez vstup `config` pomocou RDF dát.
+Krok je možné nakonfigurovať aj dynamicky cez vstup `config` pomocou RDF dát.
 
 Vzor konfigurácie:
 

@@ -1,7 +1,23 @@
 E-FilesDownload
 ----------
 
-v2.1.1-SNAPSHOT
+v2.1.4-SNAPSHOT
+---
+* fixes in dialog layout
+* Update to helpers 2.1.4
+
+v2.1.3
+---
+* Allowed protocols may be configured, so that only certain protocols are allowed 
+* Update to helpers 2.1.3
+
+v2.1.2
+---
+* Update to API 2.1.2 (properly displayed about tab in UTF-8 encoding)
+* Fixed documentation (About)
+
+
+v2.1.1
 ---
 * support for ignore TLS errors
 * Improved description (About)

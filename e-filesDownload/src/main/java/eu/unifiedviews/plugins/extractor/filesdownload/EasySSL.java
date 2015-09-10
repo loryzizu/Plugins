@@ -31,7 +31,7 @@ public class EasySSL implements SecureProtocolSocketFactory {
     public EasySSL() {
         SSLContext sslContext;
         try {
-            sslContext = SSLContext.getInstance("TLS");
+            sslContext = SSLContext.getInstance("TLSv1.2");
 
             TrustManager[] trustAllCerts = new TrustManager[] {
                     new X509TrustManager() {

@@ -1,0 +1,26 @@
+PREFIX dbo: <http://dbpedia.org/ontology/>
+
+CONSTRUCT {
+  ?village a dbo:Village .
+}
+WHERE {
+  {
+    SELECT ?village
+    WHERE {
+      {
+        SELECT ?village
+        WHERE {
+          GRAPH <http://dbpedia.org> {
+            ?village a dbo:Village ;
+              dbo:country ?country .
+          }
+        }
+        GROUP BY ?village
+        HAVING (COUNT(DISTINCT ?country) > 1)
+      }
+    }
+    ORDER BY ?village
+  }
+}
+LIMIT 10
+OFFSET 0

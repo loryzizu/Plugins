@@ -20,4 +20,4 @@ Optionally, it copies input data to optional output data unit `rdfOutput`, inclu
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |rdfInput  |i| RDFDataUnit | RDF graphs to be loaded |x|
-|rdfOutput |o| RDFDataUnit | Metadata about graphs stored into Virtuoso ||
+|rdfOutput |o| RDFDataUnit | Metadata about graphs stored into Virtuoso | |
