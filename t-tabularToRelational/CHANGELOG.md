@@ -1,7 +1,17 @@
 T-TabularToRelational
 ----------
 
-2.2.0-SNAPSHOT
+v2.2.2
+---
+* Update to helpers 2.1.3
+
+v2.2.1
+---
+* Fixed documentation (About)
+* Update to API 2.1.2 (properly displayed about tab in UTF-8 encoding)
+* Validation rule update to properly save configuration
+
+2.2.0
 ---
 * improved configuration
 * added new parsers(XLS, XLSX, DBF)

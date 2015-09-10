@@ -22,10 +22,5 @@ Premenuje súbory
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-<<<<<<< HEAD
-|inFilesData  |i| FilesDataUnit | Meno súboru, ktoré sa má zmeniť |x|
-|outFilesData |o| FilesDataUnit | Zmenené meno súboru |x|
-=======
 |inFilesData  |vstup| FilesDataUnit | Súbory, ktoré majú byť premenované |áno|
 |outFilesData |výstup| FilesDataUnit | Premenované súbory |áno|
->>>>>>> develop

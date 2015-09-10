@@ -11,10 +11,13 @@ v2.3.0
 v2.2.2
 ---
 * For DBF: Added possibility to trim trailing and leading spaces from values, dialog adjustments.
+* Update to helpers 2.1.3
 
 v2.2.1
 ---
 * Fixed bug with wrongly moved NamedCell_V1 class causing corruption of tabular configuration for xls files with named cells.
+* Fixed documentation (About)
+* Update to API 2.1.2 (properly displayed about tab in UTF-8 encoding)
 
 v2.2.0
 ---
