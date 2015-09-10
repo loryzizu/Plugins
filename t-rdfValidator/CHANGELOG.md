@@ -1,7 +1,7 @@
 T-RdfValidator
 ----------
 
-v2.0.3-SNAPSHOT
+v2.0.3
 ---
 * Update to helpers 2.1.3
 

@@ -42,7 +42,8 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
     @Override
     protected void buildDialogLayout() {
         final VerticalLayout mainLayout = new VerticalLayout();
-        mainLayout.setSizeFull();
+        mainLayout.setHeight("-1px");
+        mainLayout.setWidth("100%");
         mainLayout.setImmediate(false);
         mainLayout.setMargin(true);
         mainLayout.setSpacing(true);
@@ -88,7 +89,8 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
         table.setColumnHeader("password", ctx.tr("FilesDownloadVaadinDialog.password"));
         table.setColumnHeader("fileName", ctx.tr("FilesDownloadVaadinDialog.fileName"));
         table.setEditable(true);
-        table.setSizeFull();
+        table.setWidth("100%");
+        table.setHeight("150px");
         table.setTableFieldFactory(new TableFieldFactory() {
 
             @Override
@@ -137,7 +139,6 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
         chkIgnoreTlsErrors.setDescription(ctx.tr("FilesDownloadVaadinDialog.ignoreTlsErrors.description"));
         mainLayout.addComponent(chkIgnoreTlsErrors);
 
-        mainLayout.setExpandRatio(table, 1.0f);
         setCompositionRoot(mainLayout);
     }
 
