@@ -12,5 +12,5 @@ Converts database tables (SQL) into RDF data
 
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|tablesInput           |i| RelationalDataUnit| Input database tables |x|
-|rdfOutput |o| RDFDataUnit  | RDF data |x|
+|tablesInput |i| RelationalDataUnit| Input database tables |x|
+|rdfOutput |o| RDFDataUnit | RDF data |x|

@@ -12,5 +12,5 @@ Konvertuje tabuľkové dáta (SQL databázové tabuľky) na RDF dáta
 
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
-|tablesInput           |vstup| RelationalDataUnit| Vstupné databázové tabuľky |áno|
+|tablesInput |vstup| RelationalDataUnit| Vstupné databázové tabuľky |áno|
 |rdfOutput |výstup| RDFDataUnit  | RDF dáta na výstupe |áno|
