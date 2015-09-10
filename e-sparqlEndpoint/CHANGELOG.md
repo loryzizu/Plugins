@@ -1,9 +1,11 @@
 E-SparqlEndpoint
 ----------
 
-v1.1.0
+v1.1.0-SNAPSHOT
 ---
 * Added support for chunked queries. The given query can be rewritten so that results are chunked in order to avoid timeouts, result sets max rows limitations, etc.
+* Improved documentation (About)
+* Update to helpers 2.1.4
 
 v1.0.2
 ---
