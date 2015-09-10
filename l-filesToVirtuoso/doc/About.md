@@ -35,7 +35,7 @@ Sample pipeline design:
 |Name |Type | DataUnit | Description | Mandatory |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |config |i| RdfDataUnit | Dynamic DPU configuration, see Advanced configuration | &nbsp; |
-|config |o| FileDataUnit | Files stored to Virtuoso data storage | &nbsp; |
+|rdfOutput |o| RDFDataUnit | Metadata about the RDF data loaded to Virtuoso | &nbsp; |
 
 ### Advanced configuration
 

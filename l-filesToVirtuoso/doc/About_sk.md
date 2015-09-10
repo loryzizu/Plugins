@@ -36,7 +36,7 @@ Príklad transformácie:
 |Meno |Typ | Dátová hrana | Popis | Povinné |
 |:--------|:------:|:------:|:-------------|:---------------------:|
 |config |vstup| RdfDataUnit | Dynamická RDF konfigurácia, pozri Pokročilá konfigurácia | &nbsp; |
-|config |výstup| FileDataUnit | Súbory uložené na úložisko Virtuoso | &nbsp; |
+|rdfOutput |výstup| RDFDataUnit | Metadata o datech na úložisku Virtuoso | &nbsp; |
 
 ### Pokročilá konfigurácia
 
