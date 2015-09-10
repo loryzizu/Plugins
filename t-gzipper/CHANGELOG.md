@@ -1,7 +1,7 @@
 T-Gzipper
 ----------
 
-v1.0.3-SNAPSHOT
+v1.0.3
 ---
 * Update to helpers 2.1.3
 
@@ -14,6 +14,6 @@ v1.0.1
 ---
 * Improved description (About)
 
-v1.0.0-SNAPSHOT
+v1.0.0
 ---
 * initial release

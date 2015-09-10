@@ -1,7 +1,7 @@
 L-FilesToVirtuoso
 ----------
 
-v2.1.3-SNAPSHOT
+v2.1.3
 ---
 * Update to helpers 2.1.3
 

@@ -1,7 +1,7 @@
 T-Xslt
 ----------
 
-v2.2.3-SNAPSHOT
+v2.2.3
 ---
 * Update to helpers 2.1.3
 
