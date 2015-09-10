@@ -1,6 +1,6 @@
 ### Description
 
-Merges Files inputs
+Merges content of multiple Files data units to one Files data unit. So the outputted Files data unit contains union of all files from input Files data units. 
 
 ### Configuration parameters
 

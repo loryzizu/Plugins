@@ -1,14 +1,16 @@
 T-FilesRenamer
 ----------
 
-v2.2.0-SNAPSHOT
+v2.2.0
 ---
 * Added support for advanced query
 * Dialog layout update (size is -1 not 100%)
+* Update to helpers 2.1.3
 
 v2.1.2
 ---
-* Update to UnifiedViews Plugins-DevEnv 2.1.2
+* Fixed documentation (About)
+* Update to API 2.1.2 (properly displayed about tab in UTF-8 encoding)
 
 v2.1.1
 ---
