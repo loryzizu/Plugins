@@ -1,7 +1,7 @@
 T-Gunzipper
 ----------
 
-v1.0.3-SNAPSHOT
+v1.0.3
 ---
 * Update to helpers 2.1.3
 

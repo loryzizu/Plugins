@@ -1,7 +1,7 @@
 E-SilkLinker
 ----------
 
-v2.0.0-SNAPSHOT
+v2.0.0
 ---
 * Update to UnifiedViews 2.X 
 * Using helpers 2.1.3
