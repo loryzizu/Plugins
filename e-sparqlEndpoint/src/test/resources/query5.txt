@@ -1,0 +1,23 @@
+PREFIX dbo:  <http://dbpedia.org/ontology/>
+PREFIX rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
+
+CONSTRUCT {
+  ?village a dbo:Village ;
+    rdfs:label ?label .
+}
+WHERE {
+  {
+    SELECT ?village
+    WHERE {
+      GRAPH <http://dbpedia.org> {
+        ?village a dbo:Village ;
+          dbo:country ?country .
+      }
+    }
+    GROUP BY ?village
+    HAVING (COUNT(DISTINCT ?country) > 1)
+  }
+  GRAPH <http://dbpedia.org> {
+    ?village rdfs:label ?label .
+  }
+}
