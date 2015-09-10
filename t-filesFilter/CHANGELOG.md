@@ -1,6 +1,10 @@
 T-FilesFilter
 ----------
 
+v2.1.4-SNAPSHOT
+* string replacement bug fix
+* Update to helpers 2.1.4
+
 v2.1.3
 ---
 * Update to helpers 2.1.3
