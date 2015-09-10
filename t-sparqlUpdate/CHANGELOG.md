@@ -1,6 +1,11 @@
 T-SparqlUpdate
 ----------
 
+2.1.4-SNAPSHOT
+---
+* Documentation (About) improved
+* Update to helpers 2.1.4
+
 v2.1.3
 ---
 * Update to helpers 2.1.3
@@ -28,4 +33,3 @@ v2.0.1
 v2.0.0
 ---
 * Imported from the repository https://github.com/mff-uk/DPUs, using helpers 2.0.0
-
