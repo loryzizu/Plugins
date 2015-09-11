@@ -119,6 +119,7 @@ public class RelationalToRdfTest {
                     ps.close();
                 }
             } catch (SQLException ignore) {
+                // ignore exception
             }
         }
     }
@@ -148,6 +149,7 @@ public class RelationalToRdfTest {
                     stmnt.close();
                 }
             } catch (SQLException ignore) {
+                // ignore exception
             }
         }
     }
