@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.uv.transformer.tabular.mapper;
 
+import java.util.ArrayList;
+
 import cz.cuni.mff.xrg.uv.transformer.tabular.TabularOntology;
 
 import java.util.List;
@@ -65,7 +67,21 @@ public class TableToRdf {
                     row.size(), nameToIndex.size());
             return;
         }
-
+        //
+        // trim string values
+        //
+        if (config.trimString) {
+            List<Object> newRow = new ArrayList<>(row.size());
+            for (Object item : row) {
+                if (item instanceof String) {
+                    final String itemAsString = (String)item;
+                    newRow.add(itemAsString.trim());
+                } else {
+                    newRow.add(item);
+                }
+            }
+            row = newRow;
+        }
         //
         // get subject - key
         //

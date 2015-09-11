@@ -1,6 +1,14 @@
 T-Tabular
 ----------
 
+v2.3.0-SNAPSHOT
+---
+* Space trailing is now accessible for all input types.
+* Dialog layout update, to provide more space for check boxes.
+* For XSL: Option to use advanced value detection for better handling of integers and dates.
+* Added option for ignoring missing 'named' column (info log message is used instead of error).
+* Update to helpers 2.1.4
+
 v2.2.2
 ---
 * For DBF: Added possibility to trim trailing and leading spaces from values, dialog adjustments.

@@ -1,13 +1,13 @@
 ### Popis
 
-Transformuje vstupné dáta pomocou SPARQL SELECT dotazu a výsledok uloží do CSV súboru. Nerobí validáciu dát.
+Transformuje vstupné dáta pomocou výberového SPARQL dotazu a výsledok uloží do CSV súboru. Nerobí validáciu dát.
 
 ### Konfiguračné parametre
 
 | Meno | Popis |
 |:----|:----|
 |**Cieľová cesta** | Cesta a názov cieľového CSV súboru |
-|**SPARQL dotaz** | Textové pole určené pre SPARQL dotaz|
+|**SPARQL výberový dotaz** | Textové pole určené pre SPARQL výberový dotaz|
 
 ### Vstupy a výstupy
 
