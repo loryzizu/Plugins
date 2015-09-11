@@ -49,6 +49,9 @@ public class RelationalToRdf extends AbstractDpu<RelationalToRdfConfig_V1> {
     @Override
     protected void innerExecute() throws DPUException {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
+        String longMessage = String.format("Configuration: base URI resource: %s, map all columns: %s, generate row columns: %s",
+                this.config.getBaseURI(), this.config.isGenerateNew(), this.config.isGenerateRowTriple());
+        LOG.info(shortMessage + " : " + longMessage);
 
         // Prepare tabular converter.
         final TableToRdf tableToRdf = new TableToRdf(
@@ -58,9 +61,10 @@ public class RelationalToRdf extends AbstractDpu<RelationalToRdfConfig_V1> {
 
         RelationalToRdfConverter converter = new RelationalToRdfConverter(tableToRdf, this.ctx);
 
-        // Get files to process.
+        LOG.debug("Going to get input database tables");
         final List<RelationalDataUnit.Entry> tables = FaultToleranceUtils.getEntries(this.faultTolerance, this.tablesInput,
                 RelationalDataUnit.Entry.class);
+        LOG.debug("Input database tables successfuly obtained");
 
         Connection conn = null;
         try {
@@ -69,7 +73,9 @@ public class RelationalToRdf extends AbstractDpu<RelationalToRdfConfig_V1> {
                 if (this.ctx.canceled()) {
                     throw ContextUtils.dpuExceptionCancelled(this.ctx);
                 }
-                // Set output graph.
+                LOG.info("Processing table {}", entry.getTableName());
+
+                LOG.debug("Going to create output graph");
                 final RDFDataUnit.Entry entryOutput = this.faultTolerance.execute(new FaultTolerance.ActionReturn<RDFDataUnit.Entry>() {
 
                     @Override
@@ -78,6 +84,8 @@ public class RelationalToRdf extends AbstractDpu<RelationalToRdfConfig_V1> {
                     }
                 });
                 this.rdfTableWrap.setOutput(entryOutput);
+                LOG.debug("Output RDF graph successfuly created");
+
                 final String symbolicName = this.faultTolerance.execute(new FaultTolerance.ActionReturn<String>() {
 
                     @Override
@@ -85,13 +93,13 @@ public class RelationalToRdf extends AbstractDpu<RelationalToRdfConfig_V1> {
                         return entry.getSymbolicName();
                     }
                 });
+                LOG.debug("Symbolic name of processed table is {}", symbolicName);
 
-                ContextUtils.sendShortInfo(this.ctx, "Processing table: ''{0}''", symbolicName);
-                // Output data.
-
+                ContextUtils.sendShortInfo(this.ctx, "dpu.execution.table.processing", symbolicName);
                 try {
                     // If set add subject for the whole table.
                     if (this.config.isUseTableSubject()) {
+                        LOG.debug("Use table subject option is used, preparing subject for table");
                         // Prepare subject for table.
                         // TODO: We can use better subject here!
                         final URI tableURI = this.faultTolerance.execute(new FaultTolerance.ActionReturn<URI>() {
@@ -114,8 +122,9 @@ public class RelationalToRdf extends AbstractDpu<RelationalToRdfConfig_V1> {
                         });
                     }
                     converter.convertTable(entry, conn);
+                    ContextUtils.sendShortInfo(this.ctx, "dpu.execution.table.processing.finished", symbolicName);
                 } catch (ConversionFailed ex) {
-                    throw ContextUtils.dpuException(this.ctx, ex, "Failed to convert file.", "File: {0}", entry);
+                    throw ContextUtils.dpuException(this.ctx, ex, "dpu.execution.errors.conversion.failed", entry);
                 }
             }
         } catch (DataUnitException e) {
