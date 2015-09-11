@@ -1,7 +1,7 @@
 T-FilesRenamer
 ----------
 
-v2.2.0-SNAPSHOT
+v2.2.0
 ---
 * Added support for advanced query
 * Dialog layout update (size is -1 not 100%)
