@@ -89,8 +89,7 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
         table.setColumnHeader("password", ctx.tr("FilesDownloadVaadinDialog.password"));
         table.setColumnHeader("fileName", ctx.tr("FilesDownloadVaadinDialog.fileName"));
         table.setEditable(true);
-        table.setWidth("100%");
-        table.setHeight("150px");
+        table.setSizeFull();
         table.setTableFieldFactory(new TableFieldFactory() {
 
             @Override
@@ -133,11 +132,14 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
             }
         });
 
-        mainLayout.addComponent(txtDefaultTimeout);
+        HorizontalLayout bottomLayout = new HorizontalLayout();
+        bottomLayout.setWidth("100%");
+        bottomLayout.addComponent(txtDefaultTimeout);
 
         CheckBox chkIgnoreTlsErrors = new CheckBox(ctx.tr("FilesDownloadVaadinDialog.ignoreTlsErrors.caption"), ignoreTlsErrors);
         chkIgnoreTlsErrors.setDescription(ctx.tr("FilesDownloadVaadinDialog.ignoreTlsErrors.description"));
-        mainLayout.addComponent(chkIgnoreTlsErrors);
+        bottomLayout.addComponent(chkIgnoreTlsErrors);
+        mainLayout.addComponent(bottomLayout);
 
         setCompositionRoot(mainLayout);
     }
