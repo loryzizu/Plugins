@@ -15,6 +15,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -57,9 +58,6 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
             }
 
         });
-
-        mainLayout.addComponent(addVfsFile);
-        mainLayout.setExpandRatio(addVfsFile, 0.0f);
 
         final Table table = new Table();
         table.addGeneratedColumn("remove", new ColumnGenerator() {
@@ -111,7 +109,11 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
 
         });
         table.setVisibleColumns("remove", "uri", "username", "password", "fileName");
+        mainLayout.addComponent(addVfsFile);
+        addVfsFile.setClickShortcut(KeyCode.INSERT);
+        addVfsFile.setDescription(ctx.tr("FilesDownloadVaadinDialog.addButton.description"));
         mainLayout.addComponent(table);
+        mainLayout.setExpandRatio(addVfsFile, 0.0f);
 
         txtDefaultTimeout = new TextField(ctx.tr("FilesDownloadVaadinDialog.defaultTimeout.caption"), defaultTimeout);
         txtDefaultTimeout.setNullRepresentation("");
