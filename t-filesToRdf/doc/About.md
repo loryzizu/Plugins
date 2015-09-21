@@ -1,6 +1,6 @@
 ### Description
 
-Extracts RDF data from Files (any file format) and adds them to RDF
+Extracts RDF data from Files (any file format). Output RDF data unit contains one entry for each input file (so every input file results in one data graph with RDF data). 
 
 ### Configuration parameters
 
