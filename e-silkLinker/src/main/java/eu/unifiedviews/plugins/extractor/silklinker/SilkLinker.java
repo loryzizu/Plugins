@@ -39,7 +39,7 @@ import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
 
 /**
- * Simple XSLT Extractor
+ * Silk Linker
  * 
  * @author tomasknap
  */
