@@ -13,6 +13,7 @@
         <module>e-distributionMetadata</module>
         <module>e-filesDownload</module>
         <module>e-relationalFromSql</module>
+        <module>e-silkLinker</module>
         <module>e-sparqlEndpoint</module>
         <module>e-executeShellScript</module>
 
