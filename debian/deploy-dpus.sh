@@ -28,6 +28,7 @@ install_dpu "/usr/share/unifiedviews/dist/plugins/uv-e-distributionMetadata-*.ja
 install_dpu "/usr/share/unifiedviews/dist/plugins/uv-e-executeShellScript-*.jar"
 install_dpu "/usr/share/unifiedviews/dist/plugins/uv-e-filesDownload-*.jar"
 install_dpu "/usr/share/unifiedviews/dist/plugins/uv-e-relationalFromSql-*.jar"
+install_dpu "/usr/share/unifiedviews/dist/plugins/uv-e-silkLinker-*.jar"
 install_dpu "/usr/share/unifiedviews/dist/plugins/uv-l-filesToParliament-*.jar"
 install_dpu "/usr/share/unifiedviews/dist/plugins/uv-l-filesToVirtuoso-*.jar"
 install_dpu "/usr/share/unifiedviews/dist/plugins/uv-l-filesUpload-*.jar"
