@@ -14,7 +14,7 @@
         <module>e-filesDownload</module>
         <module>e-relationalFromSql</module>
         <module>e-sparqlEndpoint</module>
-       <module>e-executeShellScript</module>
+        <module>e-executeShellScript</module>
 
         <!-- TRANSFORMERS -->
         <module>t-filesFilter</module>

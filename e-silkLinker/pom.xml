@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>eu.unifiedviews</groupId>
@@ -16,7 +16,7 @@
         https://www.assembla.com/spaces/silk/wiki/Link_Specification_Language.
         The script may be uploaded/adjusted in the DPU configuration. Output section of such script is always ignored,
         output is written to two output data units of the DPU - "links_confirmed", "links_to_be_verified".
-        DPU configuration may also specify thresholds for the two outputs created. 
+        DPU configuration may also specify thresholds for the two outputs created.
     </description>
     <version>2.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
@@ -27,7 +27,7 @@
     </properties>
 
     <dependencies>
-        
+
         <!-- UnifiedViews helpers. -->
         <dependency>
             <groupId>eu.unifiedviews</groupId>
@@ -41,7 +41,7 @@
         </dependency>
     </dependencies>
 
-        <repositories>
+    <repositories>
         <repository>
             <id>maven.eea.sk</id>
             <name>maven.eea.sk-public</name>
