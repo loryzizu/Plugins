@@ -1,7 +1,7 @@
 T-SparqlUpdate
 ----------
 
-2.1.4-SNAPSHOT
+2.1.4
 ---
 * Documentation (About) improved
 * Update to helpers 2.1.4

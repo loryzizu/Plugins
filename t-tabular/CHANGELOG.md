@@ -1,7 +1,7 @@
 T-Tabular
 ----------
 
-v2.3.0-SNAPSHOT
+v2.3.0
 ---
 * Space trailing is now accessible for all input types.
 * Dialog layout update, to provide more space for check boxes.

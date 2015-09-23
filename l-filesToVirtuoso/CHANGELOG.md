@@ -1,7 +1,7 @@
 L-FilesToVirtuoso
 ----------
 
-2.1.4-SNAPSHOT
+2.1.4
 ---
 * output data unit is optional in loader
 * Update to helpers 2.1.4
