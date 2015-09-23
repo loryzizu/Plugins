@@ -1,7 +1,7 @@
 E-DistributionMetadata
 ----------
 
-v2.0.4-SNAPSHOT
+v2.0.4
 ---
 * fixes in dialog layout
 * Update to helpers 2.1.4

@@ -52,7 +52,7 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V2> {
     @DataUnit.AsInput(name = "config", optional = true)
     public RDFDataUnit rdfConfiguration;
 
-    @DataUnit.AsOutput(name = "rdfOutput")
+    @DataUnit.AsOutput(name = "rdfOutput", optional = true)
     public WritableRDFDataUnit rdfOutput;
 
     private static final String LD_DIR = "ld_dir (?, ?, ?)";

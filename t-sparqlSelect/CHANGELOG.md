@@ -1,6 +1,11 @@
 T-SPARQLSelect
 ----------
 
+2.1.4
+---
+* Documentation (About) improved
+* Update to helpers 2.1.4
+
 v2.1.3
 ---
 * Update to helpers 2.1.3

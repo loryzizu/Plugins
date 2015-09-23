@@ -1,6 +1,6 @@
 ### Description
 
-Transforms RDF graphs into files
+Transforms RDF graphs into files. It transforms all graphs within the input RDF data unit to one file. 
 
 ### Configuration parameters
 
@@ -9,7 +9,7 @@ Transforms RDF graphs into files
 |**RDF format (list)** | Output file format:<BR>- Turtle<BR>- RDF/XML<BR>- N-Triples<BR>- N3<BR>- RDFa |
 |**Generate graph file (checkbox)** | Is graph file desired? |
 |**Output graph name** | Name of the output graph (if graph file is desired) |
-|**File path/name without extension** | self-descriptive |
+|**File path/name without extension** | The path/name of the create file containing all RDF data |
 
 ### Inputs and outputs
 

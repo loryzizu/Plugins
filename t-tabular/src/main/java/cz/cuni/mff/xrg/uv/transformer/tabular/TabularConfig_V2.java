@@ -158,8 +158,17 @@ public class TabularConfig_V2 {
 
     /**
      * If true then string values are trimmed before used.
+     *
+     * WARNING: This field is in fact used not only for dbf, but in global scope.
      */
     private boolean dbfTrimString = false;
+
+    private boolean xlsAdvancedDoubleParser = false;
+
+    /**
+     * If true only info log instead of error in case of missing named column.
+     */
+    private boolean ignoreMissingColumn = false;
 
     public TabularConfig_V2() {
     }
@@ -364,10 +373,27 @@ public class TabularConfig_V2 {
         this.dbfTrimString = dbfTrimString;
     }
 
+    public boolean isXlsAdvancedDoubleParser() {
+        return xlsAdvancedDoubleParser;
+    }
+
+    public void setXlsAdvancedDoubleParser(boolean xlsAdvancedDoubleParser) {
+        this.xlsAdvancedDoubleParser = xlsAdvancedDoubleParser;
+    }
+
+    public boolean isIgnoreMissingColumn() {
+        return ignoreMissingColumn;
+    }
+
+    public void setIgnoreMissingColumn(boolean ignoreMissingColumn) {
+        this.ignoreMissingColumn = ignoreMissingColumn;
+    }
+
     public TableToRdfConfig getTableToRdfConfig() {
         return new TableToRdfConfig(keyColumn, baseURI, columnsInfo,
                 generateNew, rowsClass, ignoreBlankCells, columnsInfoAdv,
-                advancedKeyColumn, generateRowTriple, autoAsStrings, generateTableClass, generateLabels);
+                advancedKeyColumn, generateRowTriple, autoAsStrings, 
+                generateTableClass, generateLabels, dbfTrimString, ignoreMissingColumn);
     }
 
     public ParserCsvConfig getParserCsvConfig() {
@@ -380,14 +406,14 @@ public class TabularConfig_V2 {
     public ParserDbfConfig getParserDbfConfig() {
         return new ParserDbfConfig(encoding,
                 rowsLimit == null || rowsLimit == -1 ? null : rowsLimit,
-                staticRowCounter, dbfTrimString);
+                staticRowCounter);
     }
 
     public ParserXlsConfig getParserXlsConfig() {
         return new ParserXlsConfig(xlsSheetName, linesToIgnore, hasHeader,
                 namedCells, 
                 rowsLimit == null || rowsLimit == -1 ? null : rowsLimit,
-                staticRowCounter, stripHeader);
+                staticRowCounter, stripHeader, xlsAdvancedDoubleParser);
     }
 
 }
