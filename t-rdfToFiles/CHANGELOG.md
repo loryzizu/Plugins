@@ -1,7 +1,7 @@
 T-RdfToFiles
 ----------
 
-2.1.4-SNAPSHOT
+2.1.4
 ---
 * Fixed documentation (About)
 * Update to helpers 2.1.4

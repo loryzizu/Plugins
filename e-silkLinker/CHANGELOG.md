@@ -1,7 +1,7 @@
 E-SilkLinker
 ----------
 
-v2.0.1-SNAPSHOT
+v2.0.1
 ---
 * Fixed problem with permissions
 * Using helpers 2.1.4
