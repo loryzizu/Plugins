@@ -1,7 +1,7 @@
 E-FilesDownload
 ----------
 
-v2.1.4-SNAPSHOT
+v2.1.4
 ---
 * fixes in dialog layout
 * Update to helpers 2.1.4

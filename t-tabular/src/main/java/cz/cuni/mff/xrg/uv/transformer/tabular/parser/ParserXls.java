@@ -4,9 +4,12 @@ package cz.cuni.mff.xrg.uv.transformer.tabular.parser;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -234,7 +237,7 @@ public class ParserXls implements Parser {
                     for (int i = 0; i < columnEnd; i++) {
                         columnNames.add("col" + Integer.toString(++columnIndex));
                     }
-                } else {                    
+                } else {
                     // expand types row. The header might be wider then the first data row.
                     fitToSize(types, tableHeaderSize);
                 }
@@ -343,7 +346,31 @@ public class ParserXls implements Parser {
                         " on row: " + Integer.toString(cell.getRowIndex()) +
                         " column: " + Integer.toString(cell.getColumnIndex()));
             case Cell.CELL_TYPE_NUMERIC:
-                return Double.toString(cell.getNumericCellValue());
+                if (config.advancedDoubleParser) {
+                    // Check for Date - https://poi.apache.org/faq.html#faq-N1008D FAQ 8
+                    if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                        final Calendar cal = new GregorianCalendar();
+                        cal.setTime(HSSFDateUtil.getJavaDate(cell.getNumericCellValue()));
+                        final StringBuilder dateStr = new StringBuilder(10);
+                        dateStr.append(cal.get(Calendar.YEAR));
+                        dateStr.append("-");
+                        dateStr.append(String.format("%02d", cal.get(Calendar.MONTH) + 1));
+                        dateStr.append("-");
+                        dateStr.append(String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
+                        return dateStr.toString();
+                    }
+                    // Can be double or long/integer.
+                    final double doubleValue = cell.getNumericCellValue();
+                    // Check if the value is decimal or not.
+                    if ((doubleValue % 1) == 0) {
+                        // It's integer or long.
+                        return Long.toString((long)doubleValue);
+                    } else {
+                        return Double.toString(doubleValue);
+                    }
+                } else {
+                    return Double.toString(cell.getNumericCellValue());
+                }
             case Cell.CELL_TYPE_STRING:
                 return cell.getStringCellValue();
             default:

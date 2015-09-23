@@ -188,8 +188,13 @@ public class TableToRdfConfigurator {
                 //     - bug fix
                 continue;
             }
-            LOG.error("Column '{}' (uri:{}) ignored as does not match original columns.",
-                    key, unused.get(key).getURI());
+            if (config.ignoreMissingColumn) {
+                LOG.info("Column '{}' (uri:{}) ignored as does not match original columns.",
+                        key, unused.get(key).getURI());
+            } else {
+                LOG.error("Column '{}' (uri:{}) ignored as does not match original columns.",
+                        key, unused.get(key).getURI());
+            }
         }
         //
         // add advanced
