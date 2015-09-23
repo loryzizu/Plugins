@@ -304,9 +304,9 @@ public class SilkLinker extends AbstractDpu<SilkLinkerConfig_V1> {
                     + ex.getMessage());
             throw new DPUException(ex);
         } finally {
-            if (connection != null) {
+            if (connection2 != null) {
                 try {
-                    connection.close();
+                    connection2.close();
                 } catch (RepositoryException ex) {
                     log.warn("Error when closing connection", ex);
                 }
