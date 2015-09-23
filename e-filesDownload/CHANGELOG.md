@@ -1,7 +1,12 @@
 E-FilesDownload
 ----------
 
-v2.1.3-SNAPSHOT
+v2.1.4
+---
+* fixes in dialog layout
+* Update to helpers 2.1.4
+
+v2.1.3
 ---
 * Allowed protocols may be configured, so that only certain protocols are allowed 
 * Update to helpers 2.1.3

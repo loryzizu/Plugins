@@ -1,13 +1,13 @@
 ### Popis
 
-Transformuje vstupné dáta pomocou SPARQL construct dotazu
+Transformuje vstupné dáta pomocou konštrukčného SPARQL dotazu
 
 ### Konfiguračné parametre
 
 | Meno | Popis |
 |:----|:----|
 |**Púšťanie dotazov po grafoch** | Ak zaškrtnuté, dotazy sú púšťané po grafoch |
-|**SPARQL dotaz typu CONSTRUCT** | SPARQL dotaz typu CONSTRUCT |
+|**SPARQL konštrukčný dotaz** | Textové pole určené pre SPARQL konštrukčný dotaz |
 
 ### Vstupy a výstupy
 

@@ -39,7 +39,7 @@ import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
 
 /**
- * Simple XSLT Extractor
+ * Silk Linker
  * 
  * @author tomasknap
  */
@@ -198,22 +198,44 @@ public class SilkLinker extends AbstractDpu<SilkLinkerConfig_V1> {
         //            log.error("IOException: %s%n", x);
         //        }
 
+        //        }
+
         //File conf = new File(config.getSilkConf());
 
         //((SilkLinkerVaadinDialog)getConfigurationDialog()).setContext(context);
-
-        //Execution of the Silk linker (xml conf is an important input!)
         //TODO Petr: solve the problem when loading XML conf
         //LOG.info("Silk is being launched");
         //Silk.executeFile(conf, null, Silk.DefaultThreads(), true);
         //LOG.info("Silk finished");
 
+        try {
+            //create confirmed.ttl, verified.ttl, they should be set to be writable.
+            File fConfirmedLinks = new File(confirmedLinks);
+            File fToBeVerifiedLinks = new File(toBeVerifiedLinks);
+            fConfirmedLinks.createNewFile();
+            fToBeVerifiedLinks.createNewFile();
+            fConfirmedLinks.setReadable(true, false);
+            fConfirmedLinks.setWritable(true, false);
+            fToBeVerifiedLinks.setReadable(true, false);
+            fToBeVerifiedLinks.setWritable(true, false);
+
+        } catch (IOException ex) {
+            log.error(ex.getLocalizedMessage());
+        }
+
+        //        //chmod to ensure that Silk may write to the working dir
+        //        try {
+        //            String chmodCommand = "chmod -R a+r,a+w,a+x " + workingDir;
+        //            Process p = Runtime.getRuntime().exec(chmodCommand);
+        //            printProcessOutput(p);
+        //            log.info("Executing: " + chmodCommand + " so that Silk running under logged user has access to working dir and can create confirmed/verified.ttl");
+        //        } catch (IOException ex) {
+        //            log.error(ex.getLocalizedMessage());
+        //        }
+
         log.info("Silk is about to be executed");
         try {
-            //Process p = Runtime.getRuntime().exec("java -DconfigFile=" + configFile.getCanonicalPath() + " -jar /Users/tomasknap/Documents/PROJECTS/ETL-SWProj/intlib/tmp/silk_2.5.2/silk.jar");
-
             Process p = Runtime.getRuntime().exec("java -DconfigFile=" + configFile.getCanonicalPath() + " -jar " + config.getSilkLibraryLocation()); ///data/odcs/libs/silk_2.5.3/silk.jar
-
             printProcessOutput(p);
         } catch (IOException ex) {
             log.error(ex.getLocalizedMessage());
@@ -229,15 +251,14 @@ public class SilkLinker extends AbstractDpu<SilkLinkerConfig_V1> {
             File f = new File(confirmedLinks);
             if (f.exists()) {
                 log.info("File with confirmed links was generated {}", confirmedLinks);
+                connection = outputConfirmed.getConnection();
+                String baseURI = "";
+                URI graph = outputConfirmed.addNewDataGraph("confirmed");
+                connection.add(f, baseURI, RDFFormat.TURTLE, graph);
             }
             else {
                 log.error("File with confirmed links was NOT generated");
             }
-
-            connection = outputConfirmed.getConnection();
-            String baseURI = "";
-            URI graph = outputConfirmed.addNewDataGraph("confirmed");
-            connection.add(f, baseURI, RDFFormat.TURTLE, graph);
 
         } catch (IOException | RepositoryException | RDFParseException ex) {
             log.error(ex.getLocalizedMessage());
@@ -265,15 +286,15 @@ public class SilkLinker extends AbstractDpu<SilkLinkerConfig_V1> {
             File f = new File(toBeVerifiedLinks);
             if (f.exists()) {
                 log.info("File with links to be verfied was generated, {}", toBeVerifiedLinks);
+                connection2 = outputToVerify.getConnection();
+                String baseURI = "";
+                URI graph = outputToVerify.addNewDataGraph("toverify");
+                connection2.add(f, baseURI, RDFFormat.TURTLE, graph);
             }
             else {
                 log.error("File with links to be verfied was NOT generated");
             }
 
-            connection2 = outputToVerify.getConnection();
-            String baseURI = "";
-            URI graph = outputToVerify.addNewDataGraph("toverify");
-            connection2.add(f, baseURI, RDFFormat.TURTLE, graph);
         } catch (IOException | RepositoryException | RDFParseException ex) {
             log.error(ex.getLocalizedMessage());
             ctx.getExecMasterContext().getDpuContext().sendMessage(DPUContext.MessageType.ERROR, "RDFException: "
@@ -283,9 +304,9 @@ public class SilkLinker extends AbstractDpu<SilkLinkerConfig_V1> {
                     + ex.getMessage());
             throw new DPUException(ex);
         } finally {
-            if (connection != null) {
+            if (connection2 != null) {
                 try {
-                    connection.close();
+                    connection2.close();
                 } catch (RepositoryException ex) {
                     log.warn("Error when closing connection", ex);
                 }
@@ -302,7 +323,8 @@ public class SilkLinker extends AbstractDpu<SilkLinkerConfig_V1> {
             while ((line = in.readLine()) != null) {
                 errors.append(line);
             }
-            log.warn(errors.toString());
+            if (errors.length() > 0)
+                log.warn(errors.toString());
             in.close();
 
             in = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -311,7 +333,8 @@ public class SilkLinker extends AbstractDpu<SilkLinkerConfig_V1> {
             while ((line = in.readLine()) != null) {
                 notes.append(line);
             }
-            log.debug(notes.toString());
+            if (notes.length() > 0)
+                log.info(notes.toString());
             in.close();
         } catch (IOException e) {
             log.error(e.getLocalizedMessage());

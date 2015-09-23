@@ -79,7 +79,11 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
     private CheckBox checkXlsStripHeader;
 
-    private CheckBox checkDbfTrimString;
+    private CheckBox checkXlsAdvancedDoubleParser;
+
+    private CheckBox checkTrimString;
+
+    private CheckBox checkIgnoreMissingColumns;
 
     /**
      * Layout for basic column mapping.
@@ -126,7 +130,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         // ------------------------ General ------------------------
         final VerticalLayout generalLayout = new VerticalLayout();
         generalLayout.setImmediate(true);
-        generalLayout.setWidth("100%");
+        generalLayout.setWidth("350px");
         generalLayout.setHeight("-1px");
 
         this.optionTableType = new OptionGroup("Choose the input type:");
@@ -181,12 +185,11 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         generalLayout.addComponent(this.txtRowsClass);
 
         // area with check boxes
-        GridLayout checkLayout = new GridLayout(3, 1);
+        GridLayout checkLayout = new GridLayout(5, 1);
         checkLayout.setWidth("100%");
         checkLayout.setHeight("-1px");
         checkLayout.setSpacing(true);
-        generalLayout.addComponent(checkLayout);
-
+        
         this.checkGenerateNew = new CheckBox("Full column mapping");
         this.checkGenerateNew.setDescription("If true then default mapping is generated for every column.");
         checkLayout.addComponent(this.checkGenerateNew);
@@ -233,6 +236,16 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         this.checkGenerateLabels.setDescription(
                 "If checked then rdfs:labels are generated to column URIs, as the value original column name is used. If file does not contain header then data from first row are used. Does not generate labels for advanced mapping.");
         checkLayout.addComponent(this.checkGenerateLabels);
+
+        this.checkTrimString = new CheckBox("Remove trailing spaces");
+        this.checkTrimString.setDescription("If checked then for every loaded string the leading and "
+                + "trailing spaces are removed before the value is futher processed.");
+        checkLayout.addComponent(this.checkTrimString);
+
+        this.checkIgnoreMissingColumns = new CheckBox("Ignore missing columns");
+        this.checkIgnoreMissingColumns.setDescription("If checked and named column is missing only "
+                + "info level log is used instead of error level.");
+        checkLayout.addComponent(this.checkIgnoreMissingColumns);
 
         // -------------------------- CSV ----------------------------
         final FormLayout csvLayout = new FormLayout();
@@ -293,6 +306,12 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
                 + "exception is thrown.");
         xlsLayout.addComponent(this.checkXlsStripHeader);
 
+        this.checkXlsAdvancedDoubleParser = new CheckBox("Use advanced parser for 'double'");
+        this.checkXlsAdvancedDoubleParser.setDescription("In xls a integer, dlouble and date are all "
+                + "represented in a same way. This option enabled advanced detection of integers and dates "
+                + "based on value and formating.");
+        xlsLayout.addComponent(checkXlsAdvancedDoubleParser);
+
         // add change listener
         this.optionTableType.addValueChangeListener(new Property.ValueChangeListener() {
 
@@ -311,10 +330,6 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         dbfLayout.setHeight("-1px");
         dbfLayout.addComponent(new Label("DBF specific settings"));
 
-        this.checkDbfTrimString = new CheckBox("Remove trailing spaces");
-        this.checkDbfTrimString.setDescription("If checked then for every loaded string the leading and "
-                + "trailing spaces are removed before the value is futher processed.");
-        dbfLayout.addComponent(this.checkDbfTrimString);
 
         // --------------------- Mapping - simple ---------------------
         this.basicLayout = new GridLayout(5, 1);
@@ -409,6 +424,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         mainLayout.setHeight("-1px");
         mainLayout.setMargin(true);
         mainLayout.addComponent(configLayout);
+        mainLayout.addComponent(checkLayout);
         mainLayout.setExpandRatio(configLayout, 0.0f);
 
         mainLayout.addComponent(new Label("Mapping"));
@@ -517,11 +533,10 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         txtXlsLinesToIgnore.setEnabled(xlsEnabled);
         checkXlsHasHeader.setEnabled(xlsEnabled);
         checkXlsStripHeader.setEnabled(xlsEnabled);
+        checkXlsAdvancedDoubleParser.setEnabled(xlsEnabled);
         for (PropertyNamedCell namedCell : xlsNamedCells) {
             namedCell.setEnabled(xlsEnabled);
         }
-
-        checkDbfTrimString.setEnabled(dbfEnabled);
     }
 
     /**
@@ -654,17 +669,14 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
             loadCellMapping(c.getNamedCells());
             checkXlsHasHeader.setValue(c.isHasHeader());
             checkXlsStripHeader.setValue(c.isStripHeader());
+            checkXlsAdvancedDoubleParser.setValue(c.isXlsAdvancedDoubleParser());
         } else {
             txtXlsSheetName.setValue("");
             txtXlsLinesToIgnore.setValue("0");
             loadCellMapping(Collections.EMPTY_LIST);
             checkXlsHasHeader.setValue(true);
             checkXlsStripHeader.setValue(false);
-        }
-        if (c.getTableType() == ParserType.DBF) {
-            checkDbfTrimString.setValue(c.isDbfTrimString());
-        } else {
-            checkDbfTrimString.setValue(false);
+            checkXlsAdvancedDoubleParser.setValue(false);
         }
         //
         // other data
@@ -689,6 +701,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         checkAutoAsString.setValue(c.isAutoAsStrings());
         checkGenerateTableClass.setValue(c.isGenerateTableClass());
         checkGenerateLabels.setValue(c.isGenerateLabels());
+        checkTrimString.setValue(c.isDbfTrimString());
+        checkIgnoreMissingColumns.setValue(c.isIgnoreMissingColumn());
         //
         // enable/disable controlls
         //
@@ -760,8 +774,7 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
 
             cnf.setHasHeader(checkXlsHasHeader.getValue());
             cnf.setStripHeader(checkXlsStripHeader.getValue());
-        } else if (value == ParserType.DBF) {
-            cnf.setDbfTrimString(checkDbfTrimString.getValue());
+            cnf.setXlsAdvancedDoubleParser(checkXlsAdvancedDoubleParser.getValue());
         }
         //
         // other data
@@ -789,6 +802,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         cnf.setAutoAsStrings(checkAutoAsString.getValue());
         cnf.setGenerateTableClass(checkGenerateTableClass.getValue());
         cnf.setGenerateLabels(checkGenerateLabels.getValue());
+        cnf.setDbfTrimString(checkTrimString.getValue());
+        cnf.setIgnoreMissingColumn(checkIgnoreMissingColumns.getValue());
 
         final String rowsClass = txtRowsClass.getValue();
         if (rowsClass == null || rowsClass.isEmpty()) {

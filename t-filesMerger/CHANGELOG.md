@@ -1,7 +1,12 @@
 T-FilesMerger
 ----------
 
-v2.1.3-SNAPSHOT
+v2.1.4
+---
+* Improved documentation (About)
+* Update to helpers 2.1.4
+
+v2.1.3
 ---
 * Update to helpers 2.1.3
 
