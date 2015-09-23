@@ -1,6 +1,11 @@
 T-FilesToRdf
 ----------
 
+v2.1.4-SNAPSHOT
+---
+* Fixed About page
+* Update to helpers 2.1.4
+
 v2.1.3
 ---
 * Update to helpers 2.1.3
