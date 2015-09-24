@@ -315,27 +315,39 @@ public class SilkLinker extends AbstractDpu<SilkLinkerConfig_V1> {
 
     }
 
-    private static void printProcessOutput(Process process) {
+    private static void printProcessOutput(Process process) throws DPUException {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             StringBuilder errors = new StringBuilder();
+            StringBuilder warnings = new StringBuilder();
             String line;
             while ((line = in.readLine()) != null) {
-                errors.append(line);
+                if (line.startsWith("Error:")) {
+                    errors.append(line);
+                    errors.append(System.lineSeparator());
+                }
+                else {
+                    warnings.append(line);
+                    warnings.append(System.lineSeparator());
+                }
             }
-            if (errors.length() > 0)
-                log.warn(errors.toString());
+            if (errors.length() > 0) {
+                throw new DPUException(errors.toString()); //log.error(errors.toString());
+            }
+            if (warnings.length() > 0) {
+                log.warn(warnings.toString());
+            }
             in.close();
 
-            in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader in2 = new BufferedReader(new InputStreamReader(process.getInputStream()));
             StringBuilder notes = new StringBuilder();
 
-            while ((line = in.readLine()) != null) {
+            while ((line = in2.readLine()) != null) {
                 notes.append(line);
             }
             if (notes.length() > 0)
                 log.info(notes.toString());
-            in.close();
+            in2.close();
         } catch (IOException e) {
             log.error(e.getLocalizedMessage());
         }
