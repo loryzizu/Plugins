@@ -89,7 +89,8 @@ public class RdfToFiles extends AbstractDpu<RdfToFilesConfig_V2> {
                 return FilesDataUnitUtils.createFile(outFilesData, outputFileName);
             }
         });
-        exportGraph(graphs, outputFile);
+        if (graphs.size() > 0)
+            exportGraph(graphs, outputFile);
 
     }
 
