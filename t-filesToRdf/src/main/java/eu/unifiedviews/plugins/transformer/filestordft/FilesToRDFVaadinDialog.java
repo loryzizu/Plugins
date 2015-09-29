@@ -2,7 +2,11 @@ package eu.unifiedviews.plugins.transformer.filestordft;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.ui.*;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
@@ -20,6 +24,8 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
     private ComboBox comboFailPolicy;
 
     private ComboBox comboOutputGraph;
+
+    private ComboBox comboTypeOfGraph;
 
     private TextField txtSymbolicName;
 
@@ -53,6 +59,7 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
         comboFailPolicy.setNullSelectionAllowed(false);
         mainLayout.addComponent(comboFailPolicy);
 
+        HorizontalLayout bottomLayout = new HorizontalLayout();
         comboOutputGraph = new ComboBox(ctx.tr("FilesToRDFVaadinDialog.comboOutputGraph"));
         comboOutputGraph.addItem(FilesToRDFConfig_V1.USE_INPUT_SYMBOLIC_NAME);
         comboOutputGraph.setItemCaption(FilesToRDFConfig_V1.USE_INPUT_SYMBOLIC_NAME, ctx.tr("FilesToRDFVaadinDialog.comboOutputGraph.USE_INPUT_SYMBOLIC_NAME"));
@@ -61,7 +68,17 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
         comboOutputGraph.setInvalidAllowed(false);
         comboOutputGraph.setNullSelectionAllowed(false);
         comboOutputGraph.setImmediate(true);
-        mainLayout.addComponent(comboOutputGraph);
+        bottomLayout.addComponent(comboOutputGraph);
+
+        comboTypeOfGraph = new ComboBox("Type of graph");
+        for (Object o : RDFTypes.values()) {
+            comboTypeOfGraph.addItem(o.toString());
+        }
+        comboTypeOfGraph.setInvalidAllowed(false);
+        comboTypeOfGraph.setNullSelectionAllowed(false);
+        comboTypeOfGraph.setImmediate(true);
+        bottomLayout.addComponent(comboTypeOfGraph);
+        mainLayout.addComponent(bottomLayout);
 
         txtSymbolicName = new TextField(ctx.tr("FilesToRDFVaadinDialog.txtSymbolicName"));
         txtSymbolicName.setDescription(ctx.tr("FilesToRDFVaadinDialog.txtSymbolicName.description"));
@@ -88,7 +105,7 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
         commitSize.setValue(conf.getCommitSize());
         comboFailPolicy.setValue(conf.getFatalErrorHandling());
         comboOutputGraph.setValue(conf.getOutputNaming());
-
+        comboTypeOfGraph.setValue(conf.getOutputType());
         txtSymbolicName.setValue(conf.getOutputSymbolicName());
         txtSymbolicName.setEnabled(FilesToRDFConfig_V1.USE_FIXED_SYMBOLIC_NAME.equals(comboOutputGraph.getValue()));
     }
@@ -99,8 +116,12 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
         conf.setCommitSize(commitSize.getValue());
         conf.setFatalErrorHandling(comboFailPolicy.getValue().toString());
         conf.setOutputNaming(comboOutputGraph.getValue().toString());
+        conf.setOutputType(comboTypeOfGraph.getValue().toString());
         conf.setOutputSymbolicName(txtSymbolicName.getValue());
         return conf;
     }
 
+    private enum RDFTypes {
+        AUTO, RDFXML, N3, TRIG, TTL, TRIX, NT;
+    }
 }

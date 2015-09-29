@@ -112,6 +112,7 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
                 }
                 LOG.info("Output symbolic name: {}", value);
                 globalOutputGraphUri = rdfOutput.addNewDataGraph(value);
+                final String fileType = config.getOutputType();
                 final String outputSymbolicName = value;
                 faultTolerance.execute(new FaultTolerance.Action() {
 

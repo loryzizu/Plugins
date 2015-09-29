@@ -13,6 +13,8 @@ public class FilesToRDFConfig_V1 {
 
     public static final String USE_INPUT_SYMBOLIC_NAME = "USE_INPUT_GRAPH_NAME";
 
+    public static final String SET_RDF_TYPE = "AUTO";
+
     public static final String USE_FIXED_SYMBOLIC_NAME = "USE_SINGLE_SYMBOLIC_NAME";
 
     /**
@@ -46,6 +48,11 @@ public class FilesToRDFConfig_V1 {
      * Policy for output graph naming.
      */
     private String outputNaming = USE_INPUT_SYMBOLIC_NAME;
+
+    /**
+     * Manually added type of RDF graph
+     */
+    private String outputType = SET_RDF_TYPE;
 
     /**
      * If outputNaming == USE_FIXED_SYMBOLIC_NAME then this value specify name of output graph.
@@ -111,6 +118,14 @@ public class FilesToRDFConfig_V1 {
 
     public void setOutputNaming(String graphNaming) {
         this.outputNaming = graphNaming;
+    }
+
+    public String getOutputType() {
+        return outputType;
+    }
+
+    public void setOutputType(String outputType) {
+        this.outputType = outputType;
     }
 
     public String getOutputSymbolicName() {
