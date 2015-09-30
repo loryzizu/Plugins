@@ -70,19 +70,25 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
 
     private static final String DATA_GRAPH_BINDING = "dataGraph";
 
-    private static final String UPDATE_EXISTING_GRAPH_FROM_FILE = "DELETE "
-            + "{ "
-            + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o "
-            + "} "
-            + "INSERT "
-            + "{ "
-            + "?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?" + DATA_GRAPH_BINDING + " "
-            + "} "
-            + "WHERE "
-            + "{"
-            + "?s <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . "
-            + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o "
-            + "}";
+    private static final String UPDATE_EXISTING_GRAPH_FROM_FILE = getUpdateQueryString();
+
+    private static String getUpdateQueryString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("DELETE ");
+        sb.append("{ ");
+        sb.append("?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o ");
+        sb.append("} ");
+        sb.append("INSERT ");
+        sb.append("{ ");
+        sb.append("?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?" + DATA_GRAPH_BINDING + " ");
+        sb.append("} ");
+        sb.append("WHERE ");
+        sb.append("{");
+        sb.append("?s <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . ");
+        sb.append("?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o ");
+        sb.append("}");
+        return sb.toString();
+    }
 
     /**
      * True if at least one file has been skipped during conversion.
