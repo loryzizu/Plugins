@@ -189,6 +189,9 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
 
                 @Override
                 public RDFFormat action() throws Exception {
+                    if (!config.getOutputType().equals("AUTO")) {
+                        return Rio.getParserFormatForMIMEType(config.getOutputType());
+                    }
                     String inputVirtualPath = MetadataUtils.get(filesInput, entry, FilesVocabulary.UV_VIRTUAL_PATH);
                     if (inputVirtualPath != null) {
                         return Rio.getParserFormatForFileName(inputVirtualPath);

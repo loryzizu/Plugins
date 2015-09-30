@@ -1,5 +1,7 @@
 package eu.unifiedviews.plugins.transformer.filestordft;
 
+import org.openrdf.rio.RDFFormat;
+
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.ComboBox;
@@ -71,8 +73,9 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
         bottomLayout.addComponent(comboOutputGraph);
 
         comboTypeOfGraph = new ComboBox("Type of graph");
-        for (Object o : RDFTypes.values()) {
-            comboTypeOfGraph.addItem(o.toString());
+        comboTypeOfGraph.addItem("AUTO");
+        for (RDFFormat o : RDFFormat.values()) {
+            comboTypeOfGraph.addItems(o.getMIMETypes());
         }
         comboTypeOfGraph.setInvalidAllowed(false);
         comboTypeOfGraph.setNullSelectionAllowed(false);
@@ -121,7 +124,4 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
         return conf;
     }
 
-    private enum RDFTypes {
-        AUTO, RDFXML, N3, TRIG, TTL, TRIX, NT;
-    }
 }
