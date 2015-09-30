@@ -1,6 +1,10 @@
 T-RdfToFiles
 ----------
 
+2.2.0
+---
+* Empty list of imported files behavior covered
+
 2.1.4
 ---
 * Fixed documentation (About)
