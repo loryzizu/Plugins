@@ -1,4 +1,4 @@
-UnifiedViews Plugins
+UnifiedViews Plugins [![Build Status](https://travis-ci.org/UnifiedViews/Plugins.svg)](https://travis-ci.org/UnifiedViews/Plugins)
 ---
 
 This repository is used for source code of general purpose UnifiedViews Plugins (DPUs).
