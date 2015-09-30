@@ -72,7 +72,7 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
         comboOutputGraph.setImmediate(true);
         bottomLayout.addComponent(comboOutputGraph);
 
-        comboTypeOfGraph = new ComboBox("Type of graph");
+        comboTypeOfGraph = new ComboBox(ctx.tr("FilesToRDFVaadinDialog.comboTypeOfGraph"));
         comboTypeOfGraph.addItem("AUTO");
         for (RDFFormat o : RDFFormat.values()) {
             comboTypeOfGraph.addItems(o.getMIMETypes());
