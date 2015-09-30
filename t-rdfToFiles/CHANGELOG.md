@@ -1,7 +1,7 @@
 T-RdfToFiles
 ----------
 
-2.2.0-SNAPSHOT
+2.1.5-SNAPSHOT
 ---
 * Empty list of imported files behavior covered
 
