@@ -70,17 +70,19 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
         comboOutputGraph.setInvalidAllowed(false);
         comboOutputGraph.setNullSelectionAllowed(false);
         comboOutputGraph.setImmediate(true);
-        bottomLayout.addComponent(comboOutputGraph);
 
         comboTypeOfGraph = new ComboBox(ctx.tr("FilesToRDFVaadinDialog.comboTypeOfGraph"));
         comboTypeOfGraph.addItem("AUTO");
         for (RDFFormat o : RDFFormat.values()) {
-            comboTypeOfGraph.addItems(o.getMIMETypes());
+            comboTypeOfGraph.addItem(o.getDefaultMIMEType());
+            comboTypeOfGraph.setItemCaption(o.getDefaultMIMEType(), o.getName());
         }
         comboTypeOfGraph.setInvalidAllowed(false);
         comboTypeOfGraph.setNullSelectionAllowed(false);
         comboTypeOfGraph.setImmediate(true);
+
         bottomLayout.addComponent(comboTypeOfGraph);
+        bottomLayout.addComponent(comboOutputGraph);
         mainLayout.addComponent(bottomLayout);
 
         txtSymbolicName = new TextField(ctx.tr("FilesToRDFVaadinDialog.txtSymbolicName"));

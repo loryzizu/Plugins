@@ -118,7 +118,6 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
                 }
                 LOG.info("Output symbolic name: {}", value);
                 globalOutputGraphUri = rdfOutput.addNewDataGraph(value);
-                final String fileType = config.getOutputType();
                 final String outputSymbolicName = value;
                 faultTolerance.execute(new FaultTolerance.Action() {
 
@@ -208,34 +207,38 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
             });
 
             LOG.debug("Starting extraction of file: {}", entry);
-            faultTolerance.execute(rdfOutput, new FaultTolerance.ConnectionAction() {
+            try {
+                faultTolerance.execute(rdfOutput, new FaultTolerance.ConnectionAction() {
 
-                @Override
-                public void action(RepositoryConnection connection) throws Exception {
-                    RDFInserter rdfInserter = new CancellableCommitSizeInserter(connection,
-                            config.getCommitSize(), ctx);
-                    rdfInserter.enforceContext(outputGraphUri);
-                    ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(
-                            connection.getParserConfig(), connection.getValueFactory());
-                    try {
-                        loader.load(new File(java.net.URI.create(entry.getFileURIString())), null, format,
-                                rdfInserter, new ParseErrorLogger());
-                    } catch (IOException | RDFHandlerException | RDFParseException ex) {
-                        switch (config.getFatalErrorHandling()) {
-                            case FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING:
-                                LOG.error("Skipping file name '{}' with path '{}'",
-                                        entry.getSymbolicName(),
-                                        entry.getFileURIString());
-                                fileSkipped = true;
-                                break;
-                            case FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING:
-                            default:
-                                throw ex;
+                    @Override
+                    public void action(RepositoryConnection connection) throws Exception {
+                        RDFInserter rdfInserter = new CancellableCommitSizeInserter(connection,
+                                config.getCommitSize(), ctx);
+                        rdfInserter.enforceContext(outputGraphUri);
+                        ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(
+                                connection.getParserConfig(), connection.getValueFactory());
+                        try {
+                            loader.load(new File(java.net.URI.create(entry.getFileURIString())), null, format,
+                                    rdfInserter, new ParseErrorLogger());
+                        } catch (IOException | RDFHandlerException | RDFParseException ex) {
+                            switch (config.getFatalErrorHandling()) {
+                                case FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING:
+                                    LOG.error("Skipping file name '{}' with path '{}'",
+                                            entry.getSymbolicName(),
+                                            entry.getFileURIString());
+                                    fileSkipped = true;
+                                    break;
+                                case FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING:
+                                default:
+                                    throw ex;
+                            }
                         }
                     }
-                }
-            });
-            LOG.debug("Finished extraction of file: {}", entry);
+                });
+                LOG.debug("Finished extraction of file: {}", entry);
+            } catch (DPUException ex) {
+                throw ContextUtils.dpuException(ctx, "FilesToRDF.execute.failure");
+            }
         }
         // Publish messsage.
         if (fileSkipped) {
