@@ -5,7 +5,6 @@ import org.openrdf.rio.RDFFormat;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -44,24 +43,12 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
         panel.setSizeFull();
 
         VerticalLayout mainLayout = new VerticalLayout();
-        mainLayout.setMargin(false);
+        mainLayout.setMargin(true);
         mainLayout.setSpacing(true);
         mainLayout.setImmediate(false);
         mainLayout.setWidth("100%");
         mainLayout.setHeight("-1px");
 
-        mainLayout.addComponent(new TextField(ctx.tr("FilesToRDFVaadinDialog.commitSize"), commitSize));
-
-        comboFailPolicy = new ComboBox(ctx.tr("FilesToRDFVaadinDialog.comboFailPolicy"));
-        comboFailPolicy.addItem(FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING);
-        comboFailPolicy.setItemCaption(FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING, ctx.tr("FilesToRDFVaadinDialog.comboFailPolicy.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING"));
-        comboFailPolicy.addItem(FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING);
-        comboFailPolicy.setItemCaption(FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING, ctx.tr("FilesToRDFVaadinDialog.comboFailPolicy.STOP_EXTRACTION_ERROR_HANDLING"));
-        comboFailPolicy.setInvalidAllowed(false);
-        comboFailPolicy.setNullSelectionAllowed(false);
-        mainLayout.addComponent(comboFailPolicy);
-
-        HorizontalLayout bottomLayout = new HorizontalLayout();
         comboOutputGraph = new ComboBox(ctx.tr("FilesToRDFVaadinDialog.comboOutputGraph"));
         comboOutputGraph.addItem(FilesToRDFConfig_V1.USE_INPUT_SYMBOLIC_NAME);
         comboOutputGraph.setItemCaption(FilesToRDFConfig_V1.USE_INPUT_SYMBOLIC_NAME, ctx.tr("FilesToRDFVaadinDialog.comboOutputGraph.USE_INPUT_SYMBOLIC_NAME"));
@@ -81,9 +68,13 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
         comboTypeOfGraph.setNullSelectionAllowed(false);
         comboTypeOfGraph.setImmediate(true);
 
-        bottomLayout.addComponent(comboTypeOfGraph);
-        bottomLayout.addComponent(comboOutputGraph);
-        mainLayout.addComponent(bottomLayout);
+        comboFailPolicy = new ComboBox(ctx.tr("FilesToRDFVaadinDialog.comboFailPolicy"));
+        comboFailPolicy.addItem(FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING);
+        comboFailPolicy.setItemCaption(FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING, ctx.tr("FilesToRDFVaadinDialog.comboFailPolicy.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING"));
+        comboFailPolicy.addItem(FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING);
+        comboFailPolicy.setItemCaption(FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING, ctx.tr("FilesToRDFVaadinDialog.comboFailPolicy.STOP_EXTRACTION_ERROR_HANDLING"));
+        comboFailPolicy.setInvalidAllowed(false);
+        comboFailPolicy.setNullSelectionAllowed(false);
 
         txtSymbolicName = new TextField(ctx.tr("FilesToRDFVaadinDialog.txtSymbolicName"));
         txtSymbolicName.setDescription(ctx.tr("FilesToRDFVaadinDialog.txtSymbolicName.description"));
@@ -91,6 +82,11 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
         txtSymbolicName.setInputPrompt("auto");
         txtSymbolicName.setNullSettingAllowed(true);
         txtSymbolicName.setNullRepresentation("");
+
+        mainLayout.addComponent(comboTypeOfGraph);
+        mainLayout.addComponent(new TextField(ctx.tr("FilesToRDFVaadinDialog.commitSize"), commitSize));
+        mainLayout.addComponent(comboFailPolicy);
+        mainLayout.addComponent(comboOutputGraph);
         mainLayout.addComponent(txtSymbolicName);
 
         comboOutputGraph.addValueChangeListener(new Property.ValueChangeListener() {
