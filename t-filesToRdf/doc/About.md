@@ -1,6 +1,6 @@
 ### Description
 
-Extracts RDF data from Files (any file format). Output RDF data unit contains one entry for each input file (so every input file results in one data graph with RDF data). 
+Extracts RDF data from Files (any file format). Output RDF data unit contains one entry for each input file (so every input file results in one data graph with RDF data).
 
 By default, RDF format of the input files is estimated automatically based on the extension of the file name. If that does not work for you, please specify the RDF format of the input files explicitely.
 
