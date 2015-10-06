@@ -1,6 +1,10 @@
 T-FilesToRdf
 ----------
 
+v2.2.0-SNAPSHOT
+---
+* Manual RDF mimetype selection allowed
+
 v2.1.4
 ---
 * Fixed About page
