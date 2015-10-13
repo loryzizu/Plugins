@@ -1,6 +1,10 @@
 E-FilesDownload
 ----------
 
+v2.1.5-SNAPSHOT
+---
+* ???
+
 v2.1.4
 ---
 * fixes in dialog layout
