@@ -1,6 +1,10 @@
 L-FilesToVirtuoso
 ----------
 
+2.1.5
+---
+* Fixed missing error message in case of failure.
+
 2.1.4
 ---
 * output data unit is optional in loader

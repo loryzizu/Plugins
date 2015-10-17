@@ -115,13 +115,12 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V2> {
         if (config.getLoadDirectoryPath() == null || config.getLoadDirectoryPath().isEmpty()) {
             config.setLoadDirectoryPath(virtuosoLoadDirectoryPath);
         }
-        String shortMessage = this.getClass().getSimpleName() + " starting.";
-        String longMessage = String.format("Configuration: VirtuosoUrl: %s, username: %s, password: %s, loadDirectoryPath: %s, "
-                + "includeSubdirectories: %s, targetContext: %s, statusUpdateInterval: %s, threadCount: %s",
-                config.getVirtuosoUrl(), config.getUsername(), "***", config.getLoadDirectoryPath(),
+        final String longMessage = String.format("Configuration: VirtuosoUrl: %s\nusername: %s\nloadDirectoryPath: %s\n"
+                + "includeSubdirectories: %s\ntargetContext: %s\nstatusUpdateInterval: %s\nthreadCount: %s",
+                config.getVirtuosoUrl(), config.getUsername(), config.getLoadDirectoryPath(),
                 config.isIncludeSubdirectories(), config.getTargetContext(), config.getStatusUpdateInterval(),
                 config.getThreadCount());
-        LOG.info(shortMessage + " " + longMessage);
+        ContextUtils.sendInfo(ctx, "Configuration", longMessage);
         try {
             Class.forName("virtuoso.jdbc4.Driver");
         } catch (ClassNotFoundException ex) {
@@ -256,12 +255,11 @@ public class VirtuosoLoader extends AbstractDpu<VirtuosoLoaderConfig_V2> {
             ResultSet resultSetErrorRows = statementsErrorRows.executeQuery();
             while (resultSetErrorRows.next()) {
                 if (config.isSkipOnError()) {
-                    ContextUtils.sendShortWarn(ctx, longMessage, "Error processing file {0},error {1}",
-                            resultSetErrorRows.getString(1), resultSetErrorRows.getString(8));
+                    ContextUtils.sendWarn(ctx, "Error processing file: " + resultSetErrorRows.getString(1),
+                            "Error: " + resultSetErrorRows.getString(8));
                 } else {
-                    ContextUtils.sendError(ctx, longMessage, "Error processing file {0},error {1}",
-                            resultSetErrorRows.getString(1), resultSetErrorRows.getString(8));
-
+                    ContextUtils.sendError(ctx, "Error processing file: " + resultSetErrorRows.getString(1),
+                            "Error: " + resultSetErrorRows.getString(8));
                 }
             }
             resultSetErrorRows.close();
