@@ -8,6 +8,8 @@ Transformuje N vstupných tabuliek do jednej výstupnej tabuľky pomocout SQL SE
 |:----|:----|
 |**SQL SELECT dotaz** | SQL SELECT dotaz na získanie/transformáciu dát zo vstupných tabuliek |
 |**Meno cieľovej tabuľky** | Meno tabuľky, kam sa uloží výstup SQL dotazu |
+|**Stĺpce primárneho kľúča** | Čiarkou oddelený zoznam stĺpcov, ktoré tvoria primárny kľúč výslednej tabuľky |
+|**Indexované stĺpce** | Čiarkou oddelený zoznam stĺpcov, ktoré budú indexované vo výslednej tabuľke |
 
 ### Vstupy a výstupy
 
