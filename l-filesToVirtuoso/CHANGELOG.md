@@ -4,6 +4,7 @@ L-FilesToVirtuoso
 2.1.5
 ---
 * Fixed missing error message in case of failure.
+* Improved slovak translations
 
 2.1.4
 ---

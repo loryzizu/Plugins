@@ -1,6 +1,10 @@
 T-SparqlConstruct
 ----------
 
+2.1.5
+---
+* Improved slovak translation
+
 2.1.4
 ---
 * Documentation (About) improved

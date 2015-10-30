@@ -1,6 +1,10 @@
 T-Tabular
 ----------
 
+v2.3.1
+---
+* Improved slovak translations
+
 v2.3.0
 ---
 * Space trailing is now accessible for all input types.
