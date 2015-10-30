@@ -60,6 +60,15 @@
                 <module>debian</module>
             </modules>
         </profile>
+		<profile>
+			<id>oracle</id>
+			<activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+			<modules>
+				<module>e-relationalFromSql</module>
+			</modules>
+		</profile>
     </profiles>
 
     <repositories>

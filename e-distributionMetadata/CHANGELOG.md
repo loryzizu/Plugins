@@ -1,6 +1,10 @@
 E-DistributionMetadata
 ----------
 
+v2.0.5
+---
+* improvements in slovak translations
+
 v2.0.4
 ---
 * fixes in dialog layout

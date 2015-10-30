@@ -1,6 +1,11 @@
 L-FilesToParliament
 ----------
 
+v1.0.4
+---
+* improved slovak translations
+* Update to helpers 2.1.4
+
 v1.0.3
 ---
 * Update to helpers 2.1.3

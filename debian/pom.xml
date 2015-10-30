@@ -8,9 +8,9 @@
     </parent>
 
     <groupId>eu.unifiedviews.packages</groupId>
-    <artifactId>unifiedviews-plugins</artifactId>
-    <name>unifiedviews-plugins</name>
-    <description>UnifiedViews Plugins</description>
+    <artifactId>uv-plugin-dpus-deb</artifactId>
+    <name>UV Plugins Debian</name>
+    <description>UnifiedViews Plugins Debian package build</description>
 
     <properties>
         <plugins.uv.groupid>eu.unifiedviews.plugins</plugins.uv.groupid>
@@ -24,27 +24,27 @@
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-e-distributionMetadata</artifactId>
-            <version>2.0.4</version>
+            <version>2.0.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-e-executeShellScript</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-e-filesDownload</artifactId>
-            <version>2.1.4</version>
+            <version>2.1.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-e-relationalFromSql</artifactId>
-            <version>2.1.3</version>
+            <version>2.1.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-e-silkLinker</artifactId>
-            <version>2.0.1</version>
+            <version>2.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
@@ -54,12 +54,12 @@
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-l-filesToParliament</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-l-filesToVirtuoso</artifactId>
-            <version>2.1.4</version>
+            <version>2.1.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-l-rdfToVirtuoso</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
@@ -99,7 +99,7 @@
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-t-filesToRdf</artifactId>
-            <version>2.1.4</version>
+            <version>2.2.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
@@ -109,17 +109,17 @@
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-t-gunzipper</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-t-gzipper</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-t-metadata</artifactId>
-            <version>2.1.3</version>
+            <version>2.1.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
@@ -129,7 +129,7 @@
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-t-rdfGraphMerger</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
@@ -149,27 +149,32 @@
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-t-relational</artifactId>
-            <version>2.1.3</version>
+            <version>2.1.4-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>${plugins.uv.groupid}</groupId>
+            <artifactId>uv-t-relationalToRdf</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-t-sparqlConstruct</artifactId>
-            <version>2.1.4</version>
+            <version>2.1.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-t-sparqlSelect</artifactId>
-            <version>2.1.4</version>
+            <version>2.1.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-t-sparqlUpdate</artifactId>
-            <version>2.1.4</version>
+            <version>2.1.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
             <artifactId>uv-t-tabular</artifactId>
-            <version>2.3.0</version>
+            <version>2.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${plugins.uv.groupid}</groupId>
