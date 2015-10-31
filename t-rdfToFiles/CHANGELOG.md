@@ -1,9 +1,9 @@
 T-RdfToFiles
 ----------
 
-2.1.5-SNAPSHOT
+2.1.5
 ---
-* Empty list of imported files behavior covered
+* If there is no data on the input, no data is produced and there is an INFO event about that.
 
 2.1.4
 ---
