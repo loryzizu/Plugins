@@ -1,6 +1,10 @@
 E-FilesDownload
 ----------
 
+v2.1.5-SNAPSHOT
+---
+* Adjusted layout of the DPU
+
 v2.1.4
 ---
 * fixes in dialog layout

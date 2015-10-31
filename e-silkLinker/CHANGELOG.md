@@ -4,7 +4,7 @@ E-SilkLinker
 v2.0.2
 ---
 * Improved handling of errors/warnings produced by the Silk process. Errors directly cause the DPU to fail. 
-
+* improved slovak translations
 
 v2.0.1
 ---
