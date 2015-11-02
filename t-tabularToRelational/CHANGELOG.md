@@ -1,7 +1,7 @@
 T-TabularToRelational
 ----------
 
-v2.2.3-SNAPSHOT
+v2.2.3
 ---
 * Documentation (About) corrections
 * Update to helpers 2.1.4
