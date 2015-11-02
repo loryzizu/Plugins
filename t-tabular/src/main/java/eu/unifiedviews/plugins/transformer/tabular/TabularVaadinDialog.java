@@ -239,8 +239,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
         csvLayout.setHeight("-1px");
         csvLayout.addComponent(new Label(this.ctx.tr("dialog.csv.settings")));
 
-        this.txtCsvQuoteChar = new TextField(this.ctx.tr("csv.dialog.char.quote"));
-        this.txtCsvQuoteChar.setDescription(this.ctx.tr("csv.dialog.char.quote.description"));
+        this.txtCsvQuoteChar = new TextField(this.ctx.tr("dialog.csv.char.quote"));
+        this.txtCsvQuoteChar.setDescription(this.ctx.tr("dialog.csv.char.quote.description"));
         //this.txtCsvQuoteChar.setInputPrompt("\"");
         csvLayout.addComponent(this.txtCsvQuoteChar);
 
