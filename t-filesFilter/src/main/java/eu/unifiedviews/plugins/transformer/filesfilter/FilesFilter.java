@@ -19,6 +19,8 @@ import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
 import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @DPU.AsTransformer
 public class FilesFilter extends AbstractDpu<FilesFilterConfig_V1> {
@@ -28,6 +30,8 @@ public class FilesFilter extends AbstractDpu<FilesFilterConfig_V1> {
     private static final String SPARQL_EXACT_MATCH = getSparqlExactMatch();
 
     private static final String SPARQL_REG_EXP = getSparqlRegExp();
+
+    private static final Logger log = LoggerFactory.getLogger(FilesFilter.class);
 
     private static String getSparqlExactMatch() {
         StringBuilder sb = new StringBuilder();
@@ -130,8 +134,8 @@ public class FilesFilter extends AbstractDpu<FilesFilterConfig_V1> {
                     query = SPARQL_EXACT_MATCH;
                 }
                 // Do name substitution.
-                query = query.replaceAll(PATH_PLACEHOLDER, config.getObject());
-                return SparqlUtils.createInsert(String.format(Matcher.quoteReplacement(query), config.getObject()), source, target);
+                query = query.replaceAll(PATH_PLACEHOLDER, Matcher.quoteReplacement(config.getObject()));
+                return SparqlUtils.createInsert(String.format(query, config.getObject()), source, target);
             }
         }, "filesFilter.error.sparql.preparation");
 
