@@ -1,8 +1,8 @@
 T-FilesFilter
 ----------
 
-v2.1.4-SNAPSHOT
-* string replacement bug fix
+v2.1.4
+* String replacement quoted in case regular expression is used
 * Update to helpers 2.1.4
 
 v2.1.3
