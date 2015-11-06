@@ -23,6 +23,7 @@ import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserType;
 import cz.cuni.mff.xrg.uv.transformer.tabular.parser.ParserXls;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
+import eu.unifiedviews.helpers.dpu.vaadin.tabs.ConfigCopyPaste;
 import eu.unifiedviews.plugins.transformer.tabular.gui.PropertyGroup;
 import eu.unifiedviews.plugins.transformer.tabular.gui.PropertyGroupAdv;
 import eu.unifiedviews.plugins.transformer.tabular.gui.PropertyNamedCell;
@@ -123,6 +124,8 @@ public class TabularVaadinDialog extends AbstractDialog<TabularConfig_V2> {
     protected void buildDialogLayout() {
         buildMappingImportExportTab();
         buildMainLayout();
+        // Copy & paste.
+        this.addTab(ConfigCopyPaste.create(ctx), "Copy&Paste");
     }
 
     private void buildMainLayout() {
