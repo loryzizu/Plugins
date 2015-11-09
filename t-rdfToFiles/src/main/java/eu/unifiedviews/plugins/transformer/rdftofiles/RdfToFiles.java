@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
+import eu.unifiedviews.dpu.DPUContext.MessageType;
 import eu.unifiedviews.helpers.dataunit.files.FilesDataUnitUtils;
 import eu.unifiedviews.helpers.dataunit.files.FilesVocabulary;
 import eu.unifiedviews.helpers.dataunit.metadata.MetadataUtils;
@@ -78,24 +79,30 @@ public class RdfToFiles extends AbstractDpu<RdfToFilesConfig_V2> {
         final List<RDFDataUnit.Entry> graphs = FaultToleranceUtils.getEntries(faultTolerance, inRdfData,
                 RDFDataUnit.Entry.class);
 
-        // TODO Export metadata graph? DataUnitUtils can be used to obtain entity for metadata.
-        // Create output file.
-        final String outputFileName = config.getOutFileName() + "." + rdfFormat.getDefaultFileExtension();
-        // Prepare output file entity.
-        final FilesDataUnit.Entry outputFile = faultTolerance.execute(new FaultTolerance.ActionReturn<FilesDataUnit.Entry>() {
+        if (graphs.size() > 0) {
 
-            @Override
-            public FilesDataUnit.Entry action() throws Exception {
-                return FilesDataUnitUtils.createFile(outFilesData, outputFileName);
-            }
-        });
-        exportGraph(graphs, outputFile);
+            // Create output file.
+            final String outputFileName = config.getOutFileName() + "." + rdfFormat.getDefaultFileExtension();
+            // Prepare output file entity.
+            final FilesDataUnit.Entry outputFile = faultTolerance.execute(new FaultTolerance.ActionReturn<FilesDataUnit.Entry>() {
+
+                @Override
+                public FilesDataUnit.Entry action() throws Exception {
+                    return FilesDataUnitUtils.createFile(outFilesData, outputFileName);
+                }
+            });
+
+            exportGraph(graphs, outputFile);
+        } else {
+            //no data to be exported, no file being produced. 
+            ContextUtils.sendMessage(ctx, MessageType.INFO, "rdfToFiles.nodata", "");
+        }
 
     }
 
     /**
      * Export given graphs into given file. If needed .graph file is also created.
-     *
+     * 
      * @param sources
      * @param target
      * @throws DPUException
@@ -139,12 +146,12 @@ public class RdfToFiles extends AbstractDpu<RdfToFilesConfig_V2> {
         }
     }
 
-
     /**
      * Check if file graph should be generated and if so, then generate new graph file.
      * 
      * @param graph
-     * @param graphName Name of the graph, that will be written into .graph file.
+     * @param graphName
+     *            Name of the graph, that will be written into .graph file.
      * @throws DPUException
      */
     private void generateGraphFile(final FilesDataUnit.Entry rdfFile, String graphName) throws DPUException {
