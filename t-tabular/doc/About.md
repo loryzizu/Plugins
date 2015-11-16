@@ -10,7 +10,7 @@ Converts tabular data into RDF data
 |Key column | Name of column that will be appended to 'Resource URI base' and used as subject for rows |
 |Encoding   | Character encoding of input files |
 |Rows limit | Max. count of processed lines |
-|Class for a row entity | This value is used as a class for each row entity |
+|Class for a row entity | This value is used as a class for each row entity. If no value is specified, the default "Row" class is used. |
 |Full column mapping | Default mapping is generated for every column |
 |Generate row column | Column with row number is generated for each row |
 |Generate table/row class | Class is generated for table entities statement with type |
