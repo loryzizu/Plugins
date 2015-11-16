@@ -10,7 +10,7 @@ Konvertuje tabulárne dáta na RDF dáta
 |Stĺpec kľúča | Názov stĺpca, ktorý bude pridaný k 'Základ URI vlastnosti' a použitý ako predmet pre riadky. |
 |Kódovanie znakov | Kódovanie znakov vo vstupnom súbore |
 |Limit riadkov | Max. počet spracovaných riadkov |
-|Trieda pre entitu riadku | Táto hodnota sa použije ako trieda pre všetky entity riadkov |
+|Trieda pre entitu riadku | Táto hodnota sa použije ako trieda pre všetky entity riadkov. Ak nie je zadaná žiadna hodnota, použije sa default "Row" trieda. |
 |Mapovať všetky stĺpce | Východzie mapovanie je automaticky vygenerované pre každý stĺpec |
 |Generovať stĺpec pre riadok | Stĺpec s číslom riadku je generovaný pre každý riadok |
 |Generovať triedu pre tabuľku/riadok | Pre výrazy tabuľkových entít s typom sú generované triedy  |
