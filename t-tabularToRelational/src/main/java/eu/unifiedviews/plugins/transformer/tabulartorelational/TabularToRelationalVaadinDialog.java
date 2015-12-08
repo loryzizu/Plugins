@@ -33,6 +33,8 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
 
     private Table table;
 
+    private CheckBox validCsvCheckbox;
+
     public TabularToRelationalVaadinDialog() {
         super(TabularToRelational.class);
     }
@@ -77,14 +79,14 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
                 ParserType newParserType = (ParserType) e.getProperty().getValue();
                 switch (newParserType) {
                     case XLS:
-                        hideComponents(charsetSelect, fieldDelimiterField, fieldSeparatorField);
+                        hideComponents(charsetSelect, fieldDelimiterField, fieldSeparatorField, validCsvCheckbox);
                         break;
                     case CSV:
-                        showComponents(charsetSelect, fieldDelimiterField, fieldSeparatorField);
+                        showComponents(charsetSelect, fieldDelimiterField, fieldSeparatorField, validCsvCheckbox);
                         break;
                     case DBF:
                         showComponents(charsetSelect);
-                        hideComponents(fieldDelimiterField, fieldSeparatorField);
+                        hideComponents(fieldDelimiterField, fieldSeparatorField, validCsvCheckbox);
                         break;
                     default:
                 }
@@ -126,6 +128,10 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         charsetSelect.setNullSelectionAllowed(false);
         charsetSelect.setImmediate(true);
         formLayout.addComponent(charsetSelect);
+
+        this.validCsvCheckbox = new CheckBox(this.ctx.tr("dialog.validCsv"));
+        this.validCsvCheckbox.setDescription(this.ctx.tr("dialog.validCsv.description"));
+        formLayout.addComponent(this.validCsvCheckbox);
 
         return formLayout;
     }
@@ -200,6 +206,7 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         fieldDelimiterField.setValue(config.getFieldDelimiter());
         fieldSeparatorField.setValue(config.getFieldSeparator());
         parserTypeOptionGroup.setValue(config.getParserType());
+        validCsvCheckbox.setValue(config.isProcessOnlyValidCsv());
         table.removeAllItems();
         if (config.getColumnMapping() == null || config.getColumnMapping().isEmpty()) { // if config does not contain any mapping, create empty one
             // add first row
@@ -224,6 +231,7 @@ public class TabularToRelationalVaadinDialog extends AbstractDialog<TabularToRel
         config.setFieldSeparator(fieldSeparatorField.getValue());
         config.setParserType((ParserType) parserTypeOptionGroup.getValue());
         config.setDataBegginningRow(Integer.parseInt(dataBeginningRowField.getValue()));
+        config.setProcessOnlyValidCsv(this.validCsvCheckbox.getValue());
 
         List<ColumnMappingEntry> list = new ArrayList<>();
         for (Iterator i = table.getItemIds().iterator(); i.hasNext();) {
