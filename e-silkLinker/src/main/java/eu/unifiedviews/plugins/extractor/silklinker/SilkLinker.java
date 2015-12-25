@@ -1,9 +1,7 @@
 package eu.unifiedviews.plugins.extractor.silklinker;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -37,6 +35,9 @@ import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import java.lang.ProcessBuilder.Redirect;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Silk Linker
@@ -83,7 +84,7 @@ public class SilkLinker extends AbstractDpu<SilkLinkerConfig_V1> {
         try {
             configFile = new File(workingDir.getCanonicalPath() + "/conf.xml");
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(SilkLinker.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(ex.getLocalizedMessage());
         }
 
         try {
@@ -190,16 +191,6 @@ public class SilkLinker extends AbstractDpu<SilkLinkerConfig_V1> {
             java.util.logging.Logger.getLogger(SilkLinker.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        //        Charset charset = StandardCharsets.UTF_8;
-        //
-        //        try (BufferedWriter writer = Files.newBufferedWriter(configFile.toPath(), charset)) {
-        //            writer.write(configString, 0, configString.length());
-        //        } catch (IOException x) {
-        //            log.error("IOException: %s%n", x);
-        //        }
-
-        //        }
-
         //File conf = new File(config.getSilkConf());
 
         //((SilkLinkerVaadinDialog)getConfigurationDialog()).setContext(context);
@@ -223,25 +214,27 @@ public class SilkLinker extends AbstractDpu<SilkLinkerConfig_V1> {
             log.error(ex.getLocalizedMessage());
         }
 
-        //        //chmod to ensure that Silk may write to the working dir
-        //        try {
-        //            String chmodCommand = "chmod -R a+r,a+w,a+x " + workingDir;
-        //            Process p = Runtime.getRuntime().exec(chmodCommand);
-        //            printProcessOutput(p);
-        //            log.info("Executing: " + chmodCommand + " so that Silk running under logged user has access to working dir and can create confirmed/verified.ttl");
-        //        } catch (IOException ex) {
-        //            log.error(ex.getLocalizedMessage());
-        //        }
-
         log.info("Silk is about to be executed");
         try {
-            Process p = Runtime.getRuntime().exec("java -DconfigFile=" + configFile.getCanonicalPath() + " -jar " + config.getSilkLibraryLocation()); ///data/odcs/libs/silk_2.5.3/silk.jar
-            printProcessOutput(p);
+            List<String> command = new ArrayList();
+            command.add("java"); ///usr/lib/jvm/java-7-oracle/bin/java
+            command.add("-DconfigFile=" + configFile.getCanonicalPath());
+            command.add("-jar");
+            command.add(config.getSilkLibraryLocation());
+
+            ProcessBuilder pb = new ProcessBuilder(command);
+            pb.redirectOutput(Redirect.appendTo(new File(workingDir.getCanonicalPath() + "/silk.log")));
+            pb.redirectError(Redirect.appendTo(new File(workingDir.getCanonicalPath() + "/silk_err.log")));
+            Process p = pb.start();
+            p.waitFor();
         } catch (IOException ex) {
             log.error(ex.getLocalizedMessage());
             ctx.getExecMasterContext().getDpuContext().sendMessage(DPUContext.MessageType.ERROR, "Problem executing Silk: "
                     + ex.getMessage());
+        } catch (InterruptedException ex) {
+            log.info("Silk execution interrupted");
         }
+
         log.info("Silk was executed");
 
         log.info("Output 'confirmed links' is being prepared");
@@ -315,41 +308,4 @@ public class SilkLinker extends AbstractDpu<SilkLinkerConfig_V1> {
 
     }
 
-    private static void printProcessOutput(Process process) throws DPUException {
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            StringBuilder errors = new StringBuilder();
-            StringBuilder warnings = new StringBuilder();
-            String line;
-            while ((line = in.readLine()) != null) {
-                if (line.startsWith("Error:")) {
-                    errors.append(line);
-                    errors.append(System.lineSeparator());
-                }
-                else {
-                    warnings.append(line);
-                    warnings.append(System.lineSeparator());
-                }
-            }
-            if (errors.length() > 0) {
-                throw new DPUException(errors.toString()); //log.error(errors.toString());
-            }
-            if (warnings.length() > 0) {
-                log.warn(warnings.toString());
-            }
-            in.close();
-
-            BufferedReader in2 = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringBuilder notes = new StringBuilder();
-
-            while ((line = in2.readLine()) != null) {
-                notes.append(line);
-            }
-            if (notes.length() > 0)
-                log.info(notes.toString());
-            in2.close();
-        } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
-        }
-    }
 }
