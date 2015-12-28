@@ -4,6 +4,7 @@ T-FilesToRdf
 v2.2.0
 ---
 * Manual RDF mimetype selection allowed
+* Simplified user interface - possibility to specify 'commit size' hidden
 
 v2.1.4
 ---
