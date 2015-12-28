@@ -1,16 +1,16 @@
 ### Description
 
-Extracts RDF statements from external SPARQL endpoint using SPARQL Construct query defined in configuration into a single output graph. 
+Extracts RDF statements from the given external SPARQL endpoint using the given SPARQL Construct query. The extracted RDF statements are places into a single output graph. 
 
-The given query can be automatically rewritten so that results are chunked in order to avoid timeouts, result sets max rows limitations, etc. While rewriting, the outer most ORDER BY and LIMIT are thrown away.
+The given SPARQL Construct query can be rewritten (automatically, on background) so that results obtained from the given Virtuoso SPARQL endpoint are chunked in order to avoid timeouts, result sets max rows limitations, etc. While rewriting, the outermost ORDER BY and LIMIT (if any) are thrown away. Supported by Virtuoso SPARQL endpoints.
 
 ### Configuration parameters
 
 | Name | Description |
 |:----|:----|
-|**Endpoint URL** | URL of SPARQL endpoint to extract data from |
+|**SPARQL Endpoint URL** | URL of SPARQL endpoint to extract data from |
 |**SPARQL Construct** | SPARQL construct used to extract data |
-|**Chunk size:** | The given query can be rewritten so that results are chunked in order to avoid timeouts, result sets max rows limitations, etc. This option allows you to specify the chunk size (supported by Virtuoso endpoints). |
+|**Chunk Size:** | The given query can be rewritten (automatically, on background) so that results obtained from the given Virtuoso SPARQL endpoint are chunked in order to avoid timeouts, result sets max rows limitations, etc. This option allows you to specify the chunk size of such chunks. |
 
 ### Inputs and outputs
 
