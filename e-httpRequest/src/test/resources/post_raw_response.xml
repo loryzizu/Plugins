@@ -1,0 +1,19 @@
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <soap:Body>
+      <GetWeatherResponse xmlns="http://www.webserviceX.NET">
+         <GetWeatherResult><![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<CurrentWeather>
+  <Location>Bratislava Ivanka, Slovakia (LZIB) 48-12N 017-12E 142M</Location>
+  <Time>Dec 28, 2015 - 12:00 PM EST / 2015.12.28 1700 UTC</Time>
+  <Wind> from the WSW (240 degrees) at 2 MPH (2 KT):0</Wind>
+  <Visibility> less than 1 mile:0</Visibility>
+  <SkyConditions> obscured</SkyConditions>
+  <Temperature> 33 F (1 C)</Temperature>
+  <DewPoint> 33 F (1 C)</DewPoint>
+  <RelativeHumidity> 100%</RelativeHumidity>
+  <Pressure> 30.42 in. Hg (1030 hPa)</Pressure>
+  <Status>Success</Status>
+</CurrentWeather>]]></GetWeatherResult>
+      </GetWeatherResponse>
+   </soap:Body>
+</soap:Envelope>
