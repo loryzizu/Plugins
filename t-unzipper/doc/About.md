@@ -6,32 +6,31 @@ Unzips input file into files based on zip content.
 
 | Name | Description |
 |:----|:----|
-|**Duplicate name prevention (checkbox)** | If checked, DPU prevents collision in file names sent to the output when multiple zip files with the same structure are unzipped. Each file will be identified not just with name and relative path within the zip archive, but also with identification of the zip archive itself. If unchecked, unzipped files are identified only with their names and relative paths within the unzipped archives, which may lead into collision if more than one zip archive with similar structure and file names is unzipped. If not sure, please keep checked.|
+|**Duplicate name prevention (checkbox)** | If checked, DPU prevents collision in symbolic names of files sent to the output when multiple zip files with the same structure are unzipped. If checked, symbolic name of each output file will contain not just file name and relative path within the zip archive, but also the identification of the zip archive itself. If unchecked, unzipped files have symbolic names being constructed only based on their names and relative paths within the unzipped archives, which may lead into collision of symbolic names if more than one zip archive with similar structure and file names is unzipped (and the execution may end with a failure). If not sure, please keep checked.|
 
 #### Example
-Input File 1: tounzipA.zip
+Input File 1: tounzipA.zip, containing:
 ```
 text.txt
 ```
 
-Input File 2: tounzipB.zip
+Input File 2: tounzipB.zip, containing:
 ```
 text.txt
 ```
 
-Output when checked:
+Symbolic name of the unzipped file when 'Duplicate name prevention' is checked:
 ```
 tounzipA.zip/text.txt
 tounzipB.zip/text.txt
 ```
 
-Output when unchecked:
+Symbolic name of the unzipped file when 'Duplicate name prevention' is not unchecked:
 ```
 text.txt
 text.txt
 ```
 
-If unchecked, it leads in this case to name collision and execution failure.
 
 ### Inputs and outputs
 
