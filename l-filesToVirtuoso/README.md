@@ -9,7 +9,8 @@ L-FilesToVirtuoso
 ### Technical notes
 
 * uses Virtuoso internal functions to load directory of RDF data.
-* Localization is pending
+* Localization is pending.
+* An alternative to this DPU is L-RdfToVirtuoso.
 
 ### Version history
 
