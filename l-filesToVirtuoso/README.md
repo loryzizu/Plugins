@@ -9,6 +9,7 @@ L-FilesToVirtuoso
 ### Technical notes
 
 * uses Virtuoso internal functions to load directory of RDF data.
+* Localization is pending
 
 ### Version history
 
