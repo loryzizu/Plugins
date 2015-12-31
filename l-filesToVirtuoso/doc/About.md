@@ -1,6 +1,6 @@
 ### Description
 
-Loads RDF data (graphs) into Virtuoso
+Loads RDF data serialized in the files into Virtuoso
 
 This DPU has no input data unit. The input for this DPU (the RDF data serialized in a file) has to be specified in the configuration of this DPU as a directory on the target file system where the target Virtuoso is. All files in this directory must be in the formats Virtuoso supports - the recommended formats are either `application/rdf+xml` or `text/turtle` (filenames suffix `.rdf` or `.ttl` respectively). Please make sure that Virtuoso can load data from such directory, i.e., the directory to be loaded is among 'DirsAllowed' option in virtuoso.ini.
 
@@ -18,11 +18,11 @@ Sample pipeline design:
 
 | Name | Description |
 |:----|:----|
-|**Virtuoso JDBC URL** | URL for establishing JDBC session with Virtuoso server |
+|**Virtuoso JDBC URL** | URL for establishing JDBC session with the target Virtuoso server. If remote machine is specified, please make sure that the given Virtuoso port (typically 1111) is open. |
 |**Username** | Username for Virtuoso server |
 |**Password** | Password for the username |
 |**Clear destination graph before loading (checkbox)** | Self-descriptive |
-|**Directory to be loaded** | Path to directory to be loaded. Please make sure that Virtuoso can load data from such directory, i.e., the directory to be loaded is among DirsAllowed option in virtuoso.ini. |
+|**Directory to be loaded** | Path to the directory to be loaded. Please make sure that Virtuoso can load data from such directory, i.e., the directory to be loaded is among DirsAllowed option in virtuoso.ini. |
 |**Include subdirectories (checkbox)** | If checked, subdirectories are also loaded to Virtuoso |
 |**File name pattern** | A pattern for file names to be included according to SQL standard (characters string is symbolized as ‘%’). For example ‘%.ttl’ |
 |**Target Graph** | Target graph URI |
