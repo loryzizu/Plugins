@@ -6,7 +6,7 @@ Extrahuje súbory komprimované metódou GZIP
 
 | Meno | Popis |
 |:----|:----|
-|N/A | |
+|Vynechať súbor pri chybe (checkbox) | V prípade výskytu chyby pokračuje proces s ďalším súborom (ak je checkbox aktívny) |
 
 ### Vstupy a výstupy ###
 
