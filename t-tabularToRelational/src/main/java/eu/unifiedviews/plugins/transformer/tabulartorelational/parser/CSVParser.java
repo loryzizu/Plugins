@@ -1,5 +1,20 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational.parser;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.supercsv.io.CsvListReader;
+import org.supercsv.prefs.CsvPreference;
+import org.supercsv.quote.QuoteMode;
+import org.supercsv.util.CsvContext;
+
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
 import eu.unifiedviews.dpu.DPUContext;
@@ -8,12 +23,6 @@ import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
 import eu.unifiedviews.plugins.transformer.tabulartorelational.TabularToRelationalConfig_V2;
 import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
 import eu.unifiedviews.plugins.transformer.tabulartorelational.util.DatabaseHelper;
-
-import org.apache.commons.lang3.StringUtils;
-import java.io.File;
-import java.util.List;
-
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Parser responsible for reading CSV files.
@@ -27,10 +36,16 @@ public class CSVParser extends RelationalParser {
 
     @Override
     public void parseFile(File inputFile) throws DataUnitException {
-        if (!isTableCreated()) {  // create table only for first file
+        if (!isTableCreated()) { // create table only for first file
             List<ColumnMappingEntry> columns = config.getColumnMapping();
             if (columns == null || columns.isEmpty()) {
                 throw new DataUnitException("Empty column mapping! Cannot create target table in relational dataunit.");
+            }
+
+            if (this.config.isProcessOnlyValidCsv()) {
+                if (!isCsvFileValid(inputFile)) {
+                    throw new DataUnitException(this.ctx.tr("csv.errors.invalid.input.short"));
+                }
             }
 
             // create table from user config
@@ -57,8 +72,7 @@ public class CSVParser extends RelationalParser {
                 StringUtils.join(columnNames, ", "),
                 csvFilePath,
                 StringUtils.join(columnNames, config.getFieldSeparator()).toUpperCase(), // names of columns have to be in upper case
-                processCsvOptions()
-        ));
+                processCsvOptions()));
 
         int skipFirstNRows = config.getDataBegginningRow() - 1;
         if (skipFirstNRows > 0) { // skip first n rows
@@ -90,5 +104,60 @@ public class CSVParser extends RelationalParser {
             sb.deleteCharAt(sb.length() - 1);
         }
         return sb.toString();
+    }
+
+    private boolean isCsvFileValid(File inputFile) {
+        boolean isValid = false;
+
+        CsvPreference csvPreference;
+        if (this.config.getFieldDelimiter() == null || this.config.getFieldDelimiter().isEmpty()) {
+            final QuoteMode customQuoteMode = new QuoteMode() {
+                @Override
+                public boolean quotesRequired(String csvColumn, CsvContext context, CsvPreference preference) {
+                    return false;
+                }
+            };
+            csvPreference = new CsvPreference.Builder(' ', this.config.getFieldSeparator().charAt(0),
+                    "\\n").useQuoteMode(customQuoteMode).build();
+
+        } else {
+            csvPreference = new CsvPreference.Builder(this.config.getFieldDelimiter().charAt(0),
+                    this.config.getFieldSeparator().charAt(0), "\\n").build();
+        }
+
+        try (FileInputStream fileInputStream = new FileInputStream(inputFile);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, this.config.getEncoding());
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                CsvListReader csvListReader = new CsvListReader(bufferedReader, csvPreference)) {
+
+            for (int i = 1; i <= this.config.getDataBegginningRow(); i++) {
+                bufferedReader.readLine();
+            }
+
+            int rowNum = this.config.getDataBegginningRow();
+            List<String> row = csvListReader.read();
+            if (row == null) {
+                // no data
+                LOG.warn("No data found!");
+                return true;
+            }
+
+            while (row != null && !this.ctx.canceled()) {
+                if (row.size() < this.config.getColumnMapping().size()) {
+                    ContextUtils.sendError(this.ctx, "csv.errors.invalid.input.short", "csv.errors.invalid.input.long", rowNum, row.size(), this.config.getColumnMapping().size());
+                    return false;
+                }
+                row = csvListReader.read();
+                rowNum++;
+            }
+
+            isValid = true;
+
+        } catch (IOException e) {
+            LOG.error("Failed to parse input CSV file", e);
+            isValid = false;
+        }
+
+        return isValid;
     }
 }

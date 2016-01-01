@@ -16,6 +16,7 @@
  */
 package eu.unifiedviews.plugins.transformer.filestordft;
 
+import eu.unifiedviews.dpu.DPUException;
 import info.aduna.io.GZipUtil;
 import info.aduna.io.ZipUtil;
 
@@ -62,26 +63,26 @@ public class ParseErrorListenerEnabledRDFLoader {
      * Parses RDF data from the specified file to the given RDFHandler.
      * 
      * @param file
-     *        A file containing RDF data.
+     *            A file containing RDF data.
      * @param baseURI
-     *        The base URI to resolve any relative URIs that are in the data
-     *        against. This defaults to the value of {@link java.io.File#toURI()
-     *        file.toURI()} if the value is set to <tt>null</tt>.
+     *            The base URI to resolve any relative URIs that are in the data
+     *            against. This defaults to the value of {@link java.io.File#toURI()
+     *            file.toURI()} if the value is set to <tt>null</tt>.
      * @param dataFormat
-     *        The serialization format of the data.
+     *            The serialization format of the data.
      * @param rdfHandler
-     *        Receives RDF parser events.
+     *            Receives RDF parser events.
      * @throws IOException
-     *         If an I/O error occurred while reading from the file.
+     *             If an I/O error occurred while reading from the file.
      * @throws UnsupportedRDFormatException
-     *         If no parser is available for the specified RDF format.
+     *             If no parser is available for the specified RDF format.
      * @throws RDFParseException
-     *         If an error was found while parsing the RDF data.
+     *             If an error was found while parsing the RDF data.
      * @throws RDFHandlerException
-     *         If thrown by the RDFHandler
+     *             If thrown by the RDFHandler
      */
     public void load(File file, String baseURI, RDFFormat dataFormat, RDFHandler rdfHandler, ParseErrorListener parseErrorListener)
-        throws IOException, RDFParseException, RDFHandlerException
+            throws IOException, RDFParseException, RDFHandlerException, RDFDataFormatNullException
     {
         if (baseURI == null) {
             // default baseURI to file
@@ -91,11 +92,14 @@ public class ParseErrorListenerEnabledRDFLoader {
             dataFormat = Rio.getParserFormatForFileName(file.getName());
         }
 
+        if (dataFormat == null) {
+            throw new RDFDataFormatNullException();
+        }
+
         InputStream in = new FileInputStream(file);
         try {
             load(in, baseURI, dataFormat, rdfHandler, parseErrorListener);
-        }
-        finally {
+        } finally {
             in.close();
         }
     }
@@ -105,31 +109,30 @@ public class ParseErrorListenerEnabledRDFLoader {
      * RDFHandler.
      * 
      * @param url
-     *        The URL of the RDF data.
+     *            The URL of the RDF data.
      * @param baseURI
-     *        The base URI to resolve any relative URIs that are in the data
-     *        against. This defaults to the value of
-     *        {@link java.net.URL#toExternalForm() url.toExternalForm()} if the
-     *        value is set to <tt>null</tt>.
+     *            The base URI to resolve any relative URIs that are in the data
+     *            against. This defaults to the value of {@link java.net.URL#toExternalForm() url.toExternalForm()} if the
+     *            value is set to <tt>null</tt>.
      * @param dataFormat
-     *        The serialization format of the data. If set to <tt>null</tt>, the
-     *        format will be automatically determined by examining the content
-     *        type in the HTTP response header, and failing that, the file name
-     *        extension of the supplied URL.
+     *            The serialization format of the data. If set to <tt>null</tt>, the
+     *            format will be automatically determined by examining the content
+     *            type in the HTTP response header, and failing that, the file name
+     *            extension of the supplied URL.
      * @param rdfHandler
-     *        Receives RDF parser events.
+     *            Receives RDF parser events.
      * @throws IOException
-     *         If an I/O error occurred while reading from the URL.
+     *             If an I/O error occurred while reading from the URL.
      * @throws UnsupportedRDFormatException
-     *         If no parser is available for the specified RDF format, or the RDF
-     *         format could not be automatically determined.
+     *             If no parser is available for the specified RDF format, or the RDF
+     *             format could not be automatically determined.
      * @throws RDFParseException
-     *         If an error was found while parsing the RDF data.
+     *             If an error was found while parsing the RDF data.
      * @throws RDFHandlerException
-     *         If thrown by the RDFHandler
+     *             If thrown by the RDFHandler
      */
     public void load(URL url, String baseURI, RDFFormat dataFormat, RDFHandler rdfHandler, ParseErrorListener parseErrorListener)
-        throws IOException, RDFParseException, RDFHandlerException
+            throws IOException, RDFParseException, RDFHandlerException
     {
         if (baseURI == null) {
             baseURI = url.toExternalForm();
@@ -170,8 +173,7 @@ public class ParseErrorListenerEnabledRDFLoader {
 
         try {
             load(in, baseURI, dataFormat, rdfHandler, parseErrorListener);
-        }
-        finally {
+        } finally {
             in.close();
         }
     }
@@ -180,25 +182,25 @@ public class ParseErrorListenerEnabledRDFLoader {
      * Parses RDF data from an InputStream to the RDFHandler.
      * 
      * @param in
-     *        An InputStream from which RDF data can be read.
+     *            An InputStream from which RDF data can be read.
      * @param baseURI
-     *        The base URI to resolve any relative URIs that are in the data
-     *        against.
+     *            The base URI to resolve any relative URIs that are in the data
+     *            against.
      * @param dataFormat
-     *        The serialization format of the data.
+     *            The serialization format of the data.
      * @param rdfHandler
-     *        Receives RDF parser events.
+     *            Receives RDF parser events.
      * @throws IOException
-     *         If an I/O error occurred while reading from the input stream.
+     *             If an I/O error occurred while reading from the input stream.
      * @throws UnsupportedRDFormatException
-     *         If no parser is available for the specified RDF format.
+     *             If no parser is available for the specified RDF format.
      * @throws RDFParseException
-     *         If an error was found while parsing the RDF data.
+     *             If an error was found while parsing the RDF data.
      * @throws RDFHandlerException
-     *         If thrown by the RDFHandler
+     *             If thrown by the RDFHandler
      */
     public void load(InputStream in, String baseURI, RDFFormat dataFormat, RDFHandler rdfHandler, ParseErrorListener parseErrorListener)
-        throws IOException, RDFParseException, RDFHandlerException
+            throws IOException, RDFParseException, RDFHandlerException
     {
         if (!in.markSupported()) {
             in = new BufferedInputStream(in, 1024);
@@ -223,31 +225,31 @@ public class ParseErrorListenerEnabledRDFLoader {
      * be preferred.</b>
      * 
      * @param reader
-     *        A Reader from which RDF data can be read.
+     *            A Reader from which RDF data can be read.
      * @param baseURI
-     *        The base URI to resolve any relative URIs that are in the data
-     *        against.
+     *            The base URI to resolve any relative URIs that are in the data
+     *            against.
      * @param dataFormat
-     *        The serialization format of the data.
+     *            The serialization format of the data.
      * @param rdfHandler
-     *        Receives RDF parser events.
+     *            Receives RDF parser events.
      * @throws IOException
-     *         If an I/O error occurred while reading from the reader.
+     *             If an I/O error occurred while reading from the reader.
      * @throws UnsupportedRDFormatException
-     *         If no parser is available for the specified RDF format.
+     *             If no parser is available for the specified RDF format.
      * @throws RDFParseException
-     *         If an error was found while parsing the RDF data.
+     *             If an error was found while parsing the RDF data.
      * @throws RDFHandlerException
-     *         If thrown by the RDFHandler
+     *             If thrown by the RDFHandler
      */
     public void load(Reader reader, String baseURI, RDFFormat dataFormat, RDFHandler rdfHandler, ParseErrorListener parseErrorListener)
-        throws IOException, RDFParseException, RDFHandlerException
+            throws IOException, RDFParseException, RDFHandlerException
     {
         loadInputStreamOrReader(reader, baseURI, dataFormat, rdfHandler, parseErrorListener);
     }
 
     private void loadZip(InputStream in, String baseURI, RDFFormat dataFormat, RDFHandler rdfHandler, ParseErrorListener parseErrorListener)
-        throws IOException, RDFParseException, RDFHandlerException
+            throws IOException, RDFParseException, RDFHandlerException
     {
         ZipInputStream zipIn = new ZipInputStream(in);
 
@@ -268,19 +270,16 @@ public class ParseErrorListenerEnabledRDFLoader {
                     };
                     load(wrapper, baseURI, format, rdfHandler, parseErrorListener);
 
-                }
-                catch (RDFParseException e) {
+                } catch (RDFParseException e) {
                     String msg = e.getMessage() + " in " + entry.getName();
                     RDFParseException pe = new RDFParseException(msg, e.getLineNumber(), e.getColumnNumber());
                     pe.initCause(e);
                     throw pe;
-                }
-                finally {
+                } finally {
                     zipIn.closeEntry();
                 }
             } // end for
-        }
-        finally {
+        } finally {
             zipIn.close();
         }
     }
@@ -290,14 +289,14 @@ public class ParseErrorListenerEnabledRDFLoader {
      * this repository.
      * 
      * @param inputStreamOrReader
-     *        An {@link InputStream} or {@link Reader} containing RDF data that
-     *        must be added to the repository.
+     *            An {@link InputStream} or {@link Reader} containing RDF data that
+     *            must be added to the repository.
      * @param baseURI
-     *        The base URI for the data.
+     *            The base URI for the data.
      * @param dataFormat
-     *        The file format of the data.
+     *            The file format of the data.
      * @param rdfHandler
-     *        handles all data from all documents
+     *            handles all data from all documents
      * @throws IOException
      * @throws UnsupportedRDFormatException
      * @throws RDFParseException
@@ -305,22 +304,22 @@ public class ParseErrorListenerEnabledRDFLoader {
      */
     private void loadInputStreamOrReader(Object inputStreamOrReader, String baseURI, RDFFormat dataFormat,
             RDFHandler rdfHandler, ParseErrorListener parseErrorListener)
-        throws IOException, RDFParseException, RDFHandlerException
+            throws IOException, RDFParseException, RDFHandlerException
     {
         RDFParser rdfParser = Rio.createParser(dataFormat, vf);
         rdfParser.setParserConfig(config);
         if (parseErrorListener == null) {
-            parseErrorListener =new ParseErrorLogger(); 
+            parseErrorListener = new ParseErrorLogger();
         }
         rdfParser.setParseErrorListener(parseErrorListener);
 
         rdfParser.setRDFHandler(rdfHandler);
 
         if (inputStreamOrReader instanceof InputStream) {
-            rdfParser.parse((InputStream)inputStreamOrReader, baseURI);
+            rdfParser.parse((InputStream) inputStreamOrReader, baseURI);
         }
         else if (inputStreamOrReader instanceof Reader) {
-            rdfParser.parse((Reader)inputStreamOrReader, baseURI);
+            rdfParser.parse((Reader) inputStreamOrReader, baseURI);
         }
         else {
             throw new IllegalArgumentException("Must be an InputStream or a Reader, is a: "

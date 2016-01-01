@@ -70,19 +70,25 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
 
     private static final String DATA_GRAPH_BINDING = "dataGraph";
 
-    private static final String UPDATE_EXISTING_GRAPH_FROM_FILE = "DELETE "
-            + "{ "
-            + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o "
-            + "} "
-            + "INSERT "
-            + "{ "
-            + "?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?" + DATA_GRAPH_BINDING + " "
-            + "} "
-            + "WHERE "
-            + "{"
-            + "?s <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . "
-            + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o "
-            + "}";
+    private static final String UPDATE_EXISTING_GRAPH_FROM_FILE = getUpdateQueryString();
+
+    private static String getUpdateQueryString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("DELETE ");
+        sb.append("{ ");
+        sb.append("?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o ");
+        sb.append("} ");
+        sb.append("INSERT ");
+        sb.append("{ ");
+        sb.append("?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?" + DATA_GRAPH_BINDING + " ");
+        sb.append("} ");
+        sb.append("WHERE ");
+        sb.append("{");
+        sb.append("?s <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . ");
+        sb.append("?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o ");
+        sb.append("}");
+        return sb.toString();
+    }
 
     /**
      * True if at least one file has been skipped during conversion.
@@ -188,6 +194,9 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
 
                 @Override
                 public RDFFormat action() throws Exception {
+                    if (!config.getOutputType().equals("AUTO")) {
+                        return Rio.getParserFormatForMIMEType(config.getOutputType());
+                    }
                     String inputVirtualPath = MetadataUtils.get(filesInput, entry, FilesVocabulary.UV_VIRTUAL_PATH);
                     if (inputVirtualPath != null) {
                         return Rio.getParserFormatForFileName(inputVirtualPath);
@@ -198,34 +207,56 @@ public class FilesToRDF extends AbstractDpu<FilesToRDFConfig_V1> {
             });
 
             LOG.debug("Starting extraction of file: {}", entry);
-            faultTolerance.execute(rdfOutput, new FaultTolerance.ConnectionAction() {
+            try {
+                faultTolerance.execute(rdfOutput, new FaultTolerance.ConnectionAction() {
 
-                @Override
-                public void action(RepositoryConnection connection) throws Exception {
-                    RDFInserter rdfInserter = new CancellableCommitSizeInserter(connection,
-                            config.getCommitSize(), ctx);
-                    rdfInserter.enforceContext(outputGraphUri);
-                    ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(
-                            connection.getParserConfig(), connection.getValueFactory());
-                    try {
-                        loader.load(new File(java.net.URI.create(entry.getFileURIString())), null, format,
-                                rdfInserter, new ParseErrorLogger());
-                    } catch (IOException | RDFHandlerException | RDFParseException ex) {
-                        switch (config.getFatalErrorHandling()) {
-                            case FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING:
-                                LOG.error("Skipping file name '{}' with path '{}'",
-                                        entry.getSymbolicName(),
-                                        entry.getFileURIString());
-                                fileSkipped = true;
-                                break;
-                            case FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING:
-                            default:
-                                throw ex;
+                    @Override
+                    public void action(RepositoryConnection connection) throws Exception {
+
+                        RDFInserter rdfInserter = new CancellableCommitSizeInserter(connection,
+                                config.getCommitSize(), ctx);
+                        rdfInserter.enforceContext(outputGraphUri);
+                        ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(
+                                connection.getParserConfig(), connection.getValueFactory());
+                        try {
+                            loader.load(new File(java.net.URI.create(entry.getFileURIString())), null, format,
+                                    rdfInserter, new ParseErrorLogger());
+                        } catch (IOException | RDFHandlerException | RDFParseException ex) {
+                            switch (config.getFatalErrorHandling()) {
+                                case FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING:
+                                    handleErrorForEntry(entry, ex);
+                                    fileSkipped = true;
+                                    break;
+                                case FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING:
+                                default:
+                                    throw ex;
+                            }
+                        } catch (RDFDataFormatNullException ex) {
+                            switch (config.getFatalErrorHandling()) {
+                                case FilesToRDFConfig_V1.SKIP_CONTINUE_NEXT_FILE_ERROR_HANDLING:
+                                    handleErrorForEntry(entry, ex);
+                                    fileSkipped = true;
+                                    break;
+                                case FilesToRDFConfig_V1.STOP_EXTRACTION_ERROR_HANDLING:
+                                default:
+                                    LOG.error("There was a problem extracting file with symbolic name '{}' and path '{}': {}", entry.getSymbolicName(), entry.getFileURIString(), ctx.tr("FilesToRDF.execute.failure.rdfformatnull"));
+                                    throw ContextUtils.dpuException(ctx, "FilesToRDF.execute.failure.rdfformatnull");
+                            }
                         }
                     }
-                }
-            });
-            LOG.debug("Finished extraction of file: {}", entry);
+
+                    private void handleErrorForEntry(FilesDataUnit.Entry entry, java.lang.Exception ex) throws DataUnitException {
+                        LOG.warn("There was a problem extracting file with symbolic name '{}' and path '{}', such file is skipped",
+                                entry.getSymbolicName(),
+                                entry.getFileURIString());
+                        LOG.info("The detail of the problem: {}", ex.getLocalizedMessage());
+
+                    }
+                });
+                LOG.debug("Finished extraction of file: {}", entry);
+            } catch (DPUException ex) {
+                throw ContextUtils.dpuException(ctx, ex, "FilesToRDF.execute.failure");
+            }
         }
         // Publish messsage.
         if (fileSkipped) {

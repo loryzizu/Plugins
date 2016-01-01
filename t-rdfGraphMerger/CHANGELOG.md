@@ -1,6 +1,11 @@
 T-RdfGraphMerger
 ----------
 
+v1.0.2
+---
+* improved slovak translations
+* Update to helpers 2.1.4
+
 v1.0.1
 ---
 * Update to helpers 2.1.3

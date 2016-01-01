@@ -304,6 +304,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
                     Window tablesWindow = createSelectTableWindow();
                     if (tablesWindow != null) {
                         UI.getCurrent().addWindow(tablesWindow);
+                        tablesWindow.focus();
                     }
                 } else {
                     showMessage("dialog.messages.dbparams", Notification.Type.WARNING_MESSAGE);
@@ -327,6 +328,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
                 if (checkConnectionParametersInput() && RelationalFromSqlVaadinDialog.this.txtSqlQuery.isValid()) {
                     Window previewInit = createPreviewWindow();
                     UI.getCurrent().addWindow(previewInit);
+                    previewInit.focus();
                 } else {
                     showMessage("dialog.messages.dbparams", Notification.Type.WARNING_MESSAGE);
                 }
@@ -447,6 +449,7 @@ public class RelationalFromSqlVaadinDialog extends AbstractDialog<RelationalFrom
                     window.close();
                     DataPreviewWindow dataPreview = new DataPreviewWindow(getConfigurationInternal(), Integer.parseInt(txtLimit.getValue()));
                     UI.getCurrent().addWindow(dataPreview);
+                    dataPreview.focus();
                 } catch (Exception e) {
                     showMessage("dialog.errors.preview", Notification.Type.ERROR_MESSAGE);
                 }

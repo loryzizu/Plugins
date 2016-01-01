@@ -1,6 +1,8 @@
 ### Description
 
-Transform input using SPARQL construct
+Transforms input using SPARQL Construct query provided. The result of the SPARQL Construct - the created triples - is stored to the output. 
+
+Note: Internally, the query is translated to SPARQL Update query before it is executed. 
 
 ### Configuration parameters
 

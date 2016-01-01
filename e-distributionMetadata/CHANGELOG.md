@@ -1,6 +1,11 @@
 E-DistributionMetadata
 ----------
 
+v2.0.5
+---
+* improvements in slovak translations
+* changed Slovak DPU name
+
 v2.0.4
 ---
 * fixes in dialog layout

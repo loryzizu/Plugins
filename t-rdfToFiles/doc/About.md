@@ -1,6 +1,6 @@
 ### Description
 
-Transforms RDF graphs into files. It transforms all graphs within the input RDF data unit to one file. 
+Transforms RDF graphs into files. It transforms all graphs within the input RDF data unit to one file. If there is no graph on the input, no output is created.
 
 ### Configuration parameters
 

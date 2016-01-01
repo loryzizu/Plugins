@@ -12,6 +12,7 @@ L-RdfToVirtuoso
 * Depending on number of graphs on the input, it works in 2 modes:
  * In single graph mode: One RDF graph with CKAN Resource set, with VirtualGraph set to real graph name, where the data were loaded.
  * In per-graph mode: RDF graphs from input with CKAN Resource set, with VirtualGraph set to real graph name, where the data were loaded.
+* An alternative to this DPU is L-filesToVirtuoso.
 
 ### Version history
 

@@ -1,6 +1,12 @@
 T-FilesToRdf
 ----------
 
+v2.2.0
+---
+* Manual RDF mimetype selection allowed
+* Simplified user interface - possibility to specify 'commit size' hidden
+* Fixed bug https://github.com/UnifiedViews/Plugins/issues/356
+
 v2.1.4
 ---
 * Fixed About page
