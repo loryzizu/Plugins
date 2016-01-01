@@ -78,11 +78,13 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
 
     /**
      * Execute the main part - loading of data into virtuoso using supplied config instance
-     * 
      * This method is public, since it is used from at least one outside place https://github.com/OpenDataNode/UVPlugin-rdfToVirtuosoAndCkan
      * Please take this into account when changing method interface.
-     * @param ctx context 
-     * @param config DPU configuration
+     * 
+     * @param ctx
+     *            context
+     * @param config
+     *            DPU configuration
      * @throws DPUException
      */
     public void outerExecute(UserExecContext ctx, RdfToVirtuosoConfig_V1 config) throws DPUException {
@@ -195,7 +197,7 @@ public class RdfToVirtuoso extends AbstractDpu<RdfToVirtuosoConfig_V1> {
                                 LOG.warn("Worker " + future.toString() + " finished with " + status.skippedEntries.size() + " skipped entries");
                             }
                         } catch (TimeoutException ex) {
-                            // nothing wrong
+                            LOG.info("Timeout reached, {}", ex.getLocalizedMessage());
                         } catch (InterruptedException ex) {
                             Thread.currentThread().interrupt();
                             throw ContextUtils.dpuExceptionCancelled(ctx);

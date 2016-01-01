@@ -6,7 +6,7 @@ import eu.unifiedviews.helpers.dpu.ontology.EntityDescription;
 public class VfsFile {
 
     @EntityDescription.Property(uri = FilesDownloadVocabulary.STR_FILE_URI)
-    private String uri = "http://www.zmluvy.gov.sk/data/att/117597_dokument.pdf";
+    private String uri = "";
 
     @EntityDescription.Property(uri = FilesDownloadVocabulary.STR_FILE_USERNAME)
     private String username = "";

@@ -17,7 +17,6 @@ import eu.unifiedviews.helpers.dpu.vaadin.validator.UrlValidator;
 
 /**
  * Vaadin configuration dialog for SparqlEndpoint.
- * 
  */
 public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointConfig_V1> {
 
@@ -116,7 +115,7 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
         cmbChunkSize.addItem(new Integer(10000));
         cmbChunkSize.addItem(new Integer(100000));
         cmbChunkSize.addItem(new Integer(500000));
-        cmbChunkSize.setWidth("30%");
+        //cmbChunkSize.setWidth("30%");
         cmbChunkSize.setDescription(ctx.tr("SparqlEndpoint.dialog.chunksize.description"));
         cmbChunkSize.setImmediate(true);
         cmbChunkSize.setInvalidAllowed(false);
@@ -131,6 +130,8 @@ public class SparqlEndpointVaadinDialog extends AbstractDialog<SparqlEndpointCon
                     cmbChunkSize.getContainerDataSource().addItem(newItem);
                     cmbChunkSize.select(newItem);
                 } catch (NumberFormatException ex) {
+                    //in case of issues, select -1 (default choice)
+                    cmbChunkSize.select(new Integer(-1));
                 }
             }
         });

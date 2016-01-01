@@ -1,7 +1,7 @@
 T-TabularToRelational
 ----------
 
-v2.2.3-SNAPSHOT
+v2.2.3
 ---
 * added possibility to validate input CSV files
 

@@ -25,7 +25,7 @@ public class VirtuosoLoaderVaadinDialog extends AbstractDialog<VirtuosoLoaderCon
 
     private static final String CLEAR_DESTINATION_GRAPH_LABEL = "Clear destination graph before loading";
 
-    private static final String LOAD_DIRECTORY_PATH_LABEL = "Directory to load path";
+    private static final String LOAD_DIRECTORY_PATH_LABEL = "Directory to be loaded";
 
     private static final String INCLUDE_SUBDIRECTORIES_LABEL = "Include subdirectories";
 
