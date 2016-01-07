@@ -1,8 +1,8 @@
 ### Description
 
-The DPU fuses the input RDF data (which may come over "input" or "input2" input data units), taking into account  "sameAs" links (which may come over input data unit "sameAs"). 
+The DPU fuses the input RDF data (which may come over "input" or "input2" input data units), taking into account  "sameAs" links (which may come over input data unit "sameAs"). Internally it uses the RDF data integration tool [LD-FusionTool](https://github.com/mifeet/LD-FusionTool)
 
-The DPU is configured via its XML configuration file, which may be inserted in the DPU’s dialog. Sample configuration is available [here](https://github.com/mifeet/FusionTool-DPU/blob/master/examples/sample-config-full.xml).
+The DPU is configured via its XML configuration file, which may be inserted in the dialog of the DPU. Sample configuration is available [here](https://github.com/mifeet/FusionTool-DPU/blob/master/examples/sample-config-full.xml).
 
 The core part of the XML configuration is the configuration of conflict resolution policies; every such conflict resolution policy specifies how the conflicting values of the particular predicate are fused. For example, if conflict resolution function "VOTE" is used to resolve conflicting object values of the predicate "gr:legalName", then the following XML fragment should be used in the XML configuration:
 
@@ -32,7 +32,7 @@ Certain function may have also parameters, as for example the function "FILTER" 
 </ConflictResolution>
 ```
 
-The list of supported conflict resolution functions is as follows (the function’s names are case sensitive):
+The list of supported conflict resolution functions is as follows (the names of functions are case sensitive):
 
 | Name of the function | Description |
 |:----|:----|
