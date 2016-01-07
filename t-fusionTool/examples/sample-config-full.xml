@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Config>
+  <!-- Definitions of namespace prefixes which can be used throughout the configuration. -->
+  <Prefixes>
+    <Prefix id="rdf" namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#" />
+    <Prefix id="rdfs" namespace="http://www.w3.org/2000/01/rdf-schema#" />
+  </Prefixes>
+
+  <!-- Definition of data processing settings; (optional) -->
+  <DataProcessing>
+    <!-- If not empty, only resources of the given (RDFS/OWL) class will be processed;
+         if omitted or empty, all resources in input data will be processed -->
+      <Param name="processResourcesWithClass" value="http://schema.org/PostalAddress" />
+  </DataProcessing>
+  
+  <!-- Definition of conflict resolution settings (optional) -->
+  <ConflictResolution>
+    <!-- Spefifies the default conflict resolution policy; (optional);
+         'function' attribute defines the conflict resolution function (optional attribute, defaults to ALL),
+         'cardinality' attribute defines the expected cardinality of the property - possible values are 'MANYVALUED' and 'SINGLEVALUED'
+		        (optional, default to MANYVALUED),
+         'aggregationErrroStrategy' defines the aggregation error strategy - possible values are 'IGNORE' and 'RETURN_ALL'
+               (optional, defaults to RETURN_ALL)
+          <Param name="..." value="..." /> optional subelements define additional parameters for the resolution function -->
+    <DefaultStrategy function="ALL" cardinality="MANYVALUED" aggregationErrorStrategy="RETURN_ALL" />
+    
+    <!-- <ResolutionStrategy> elements specify a conflict resolution policy:
+         'function' attribute defines the conflict resolution method (optional attribute, defaults to ALL),
+          'cardinality' attribute defines the expected cardinality of the property - possible values are 'MANYVALUED' and 'SINGLEVALUED'
+		        (optional, default to MANYVALUED),
+         'aggregationErrorStrategy' defines the aggregation error strategy - possible values are 'IGNORE' and 'RETURN_ALL'
+              (optional, default to RETURN_ALL)
+         <Param name="..." value="..." /> optional subelements define additional parameters for the resolution function -->
+    <ResolutionStrategy function="AVG" cardinality="SINGLEVALUED">
+      <!-- Definition of properties to which the resolution strategy applies to -->
+      <Property id="http://rdf.freebase.com/ns/location.geocode.longtitude"/>
+      <Property id="http://rdf.freebase.com/ns/location.geocode.latitude" />
+    </ResolutionStrategy>
+    <ResolutionStrategy function="BEST">
+      <Property id="rdfs:label"/>
+    </ResolutionStrategy>
+  </ConflictResolution>
+
+</Config>
