@@ -51,6 +51,14 @@ The list of supported conflict resolution functions is as follows (the names of 
 |**CONCAT** | Returns a concatenation of all values. The separator of values may be given as a parameter. |
 |**RANDOM** | Returns a random (non-NULL) value. The chosen value may differ among calls on the same input |
  
+There is also a special conflict resolution policy "DEPENDENT_RESOURCE", which automatically fuses together blank node identifiers at the position of the object into a single blank node. To use it, please se the example below:
+
+```
+<ResolutionStrategy function="DEPENDENT_RESOURCE">
+  <!-- Definition of properties to which the resolution strategy applies to -->
+  <Property id="http://schema.org/address"/>
+</ResolutionStrategy>"
+```
 For further information about the library responsible for data fusion, please see [here](http://mifeet.github.io/LD-FusionTool/). 
 
 ### Configuration parameters
