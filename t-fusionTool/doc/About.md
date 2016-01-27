@@ -1,6 +1,6 @@
 ### Description
 
-The DPU fuses the input RDF data (which may come over "input" or "input2" input data units), taking into account  "sameAs" links (which may come over input data unit "sameAs"). Internally it uses the RDF data integration tool [LD-FusionTool](https://github.com/mifeet/LD-FusionTool)
+The DPU fuses the input RDF data (which may come over "input" or "input2" input data units), taking into account  "sameAs" links (which may come over input data unit "sameAs"). Internally it uses the RDF data integration tool [LD-FusionTool](https://github.com/mifeet/LD-FusionTool).
 
 The DPU is configured via its XML configuration file, which may be inserted in the dialog of the DPU. Sample configuration is available [here](https://github.com/mifeet/FusionTool-DPU/blob/master/examples/sample-config-full.xml).
 
@@ -59,7 +59,7 @@ There is also a special conflict resolution policy "DEPENDENT_RESOURCE", which a
   <Property id="http://schema.org/address"/>
 </ResolutionStrategy>"
 ```
-For further information about the library responsible for data fusion, please see [here](http://mifeet.github.io/LD-FusionTool/). 
+For further information about the library responsible for data fusion, please see [homepage of the fusion library](http://mifeet.github.io/LD-FusionTool/) and the [documentation of the library](https://github.com/mifeet/LD-FusionTool/wiki/Resolution-strategy-configuration). 
 
 ### Configuration parameters
 
