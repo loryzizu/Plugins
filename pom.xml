@@ -51,24 +51,37 @@
     </modules>
 
     <profiles>
-        <profile>
-            <id>debian</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <modules>
-                <module>debian</module>
-            </modules>
-        </profile>
-		<profile>
-			<id>oracle</id>
-			<activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-			<modules>
-				<module>e-relationalFromSql</module>
-			</modules>
-		</profile>
+      <profile>
+        <id>debian</id>
+        <activation>
+          <activeByDefault>false</activeByDefault>
+        </activation>
+        <modules>
+          <module>debian</module>
+        </modules>
+      </profile>
+      <profile>
+	<id>oracle</id>
+	<activation>
+          <activeByDefault>false</activeByDefault>
+        </activation>
+	<modules>
+	  <module>e-relationalFromSql</module>
+	</modules>
+      </profile>
+      <profile>
+	<id>sesame4</id>
+	<activation>
+	  <jdk>1.8</jdk>
+	</activation>
+	<properties>
+	  <project.java.source.version>1.8</project.java.source.version>
+	  <project.java.target.version>1.8</project.java.target.version>
+	  <sesame.version>4.1.0</sesame.version>
+	  <virtuoso.sesame.version>4</virtuoso.sesame.version>
+	  <virtuoso.jdbc.version>4.0</virtuoso.jdbc.version>
+	</properties>
+      </profile>
     </profiles>
 
     <repositories>
@@ -105,4 +118,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
