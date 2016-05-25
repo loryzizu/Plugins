@@ -1,0 +1,41 @@
+{
+  "help": null,
+  "success": true,
+  "result": {
+    "resource_group_id": "c077737c-ee23-4bf4-8879-a95d953634e0",
+    "data_correctness": "correct and exact",
+    "maintainer": "1AE84104-6E73-4907-AF8B-ADC9BCD9AE37",
+    "periodicity": "daily",
+    "cache_last_updated": null,
+    "webstore_last_updated": null,
+    "datastore_active": true,
+    "id": "0bb71eaf-775f-4dac-bcf6-cfa457f816fa",
+    "size": null,
+    "state": "active",
+    "transformed": true,
+    "last_modified": "2015-12-21T19:00:50",
+    "schema": "https://10.30.96.12/dataset/a24d43e5-9558-4a9e-a3b5-7ae041c740ae/resource/529be754-bea0-4807-af39-1e121e51c48f/download/package2doc1.htm",
+    "status": "public",
+    "hash": "",
+    "description": "Jeden riadok v tejto tabuľke reprezentuje jeden zmenový záznam regionChange (zmena kraju), ktorý prišiel v zmenovej dávke z Registra adries. Celá tabuľka tak obsahuje históriu všetkých zmien v Registri adries pre všetky kraje.",
+    "format": "api, csv",
+    "validity": "custom_valid",
+    "last_changes_id": "234208",
+    "tracking_summary": {
+      "total": 0,
+      "recent": 0
+    },
+    "mimetype_inner": null,
+    "url_type": "datastore",
+    "validity_description": "validFrom, validTo, effectiveDate",
+    "mimetype": null,
+    "cache_url": null,
+    "name": "Kraj - zmenové dáta",
+    "created": "2015-12-21T08:33:54.466045",
+    "url": "/datastore/dump/0bb71eaf-775f-4dac-bcf6-cfa457f816fa",
+    "webstore_url": null,
+    "position": 0,
+    "revision_id": "72ce85d5-e038-4d8b-a8e2-a82c6594ec5e",
+    "resource_type": null
+  }
+}
