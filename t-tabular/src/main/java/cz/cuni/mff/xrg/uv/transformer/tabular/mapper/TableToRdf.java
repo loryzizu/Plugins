@@ -66,6 +66,9 @@ public class TableToRdf {
             LOG.warn("Row is smaller ({} instead of {}) - ignore.",
                     row.size(), nameToIndex.size());
             return;
+        } else if (row.size() > nameToIndex.size()) {
+            LOG.warn("Row is too big, some data may be invalid! (size: {} expected: {})",
+                    row.size(), nameToIndex.size());
         }
         //
         // trim string values

@@ -106,7 +106,7 @@ public class ParserXls implements Parser {
         // generate column names
         int startRow = config.numberOfStartLinesToIgnore;
         List<String> columnNames;
-
+        Integer tableHeaderSize = null; // Size of original header from file, used to expand/strip content.
         if (config.hasHeader) {
             // parse line for header
             final Row row = sheet.getRow(startRow++);
@@ -142,8 +142,11 @@ public class ParserXls implements Parser {
                 }
                 LOG.info("Removal of nulls changed header size from {} to {}",
                         initialSize, columnNames.size());
+            } else {
+                LOG.debug("Header size {}", columnNames.size());
             }
             // global names will be added later
+            tableHeaderSize = columnNames.size();
         } else {
             columnNames = null;
         }
@@ -195,7 +198,6 @@ public class ParserXls implements Parser {
         }
 
         int skippedLinesCounter = 0;
-        Integer tableHeaderSize = null; // Size of original header from file, used to expand/strip content.
         for (Integer rowNumPerFile = startRow; rowNumPerFile < dataEndAtRow; ++rowNumber, ++rowNumPerFile) {
             if (context.canceled()) {
                 break;
@@ -237,6 +239,7 @@ public class ParserXls implements Parser {
                     for (int i = 0; i < columnEnd; i++) {
                         columnNames.add("col" + Integer.toString(++columnIndex));
                     }
+                    tableHeaderSize = columnNames.size();
                 } else {
                     // expand types row. The header might be wider then the first data row.
                     fitToSize(types, tableHeaderSize);
@@ -284,7 +287,7 @@ public class ParserXls implements Parser {
             // add named columns first !!
             parsedRow.addAll(namedCells);
             // add global data
-            parsedRow.add(wb.getSheetName(sheetIndex)); 
+            parsedRow.add(wb.getSheetName(sheetIndex));
             // convert into table
             tableToRdf.paserRow((List) parsedRow, rowNumber);
 
@@ -299,24 +302,24 @@ public class ParserXls implements Parser {
     }
 
     /**
-     * Shrink or expand the line as read from the table (no named columns presented).
+     * Shrink or expand the line as read from the table (no named expectedSize presented).
      *
      * @param row
-     * @param size In null no transformation is done. This can be used if row should not be modified.
+     * @param expectedSize In null no transformation is done. This can be used if row should not be modified.
      */
-    private void fitToSize(List<?> row, Integer size) {
-        if (size == null) {
-            return;
+    private void fitToSize(List<?> row, Integer expectedSize) {
+        if (expectedSize == null) {
+            throw new RuntimeException("Row expectedSize is not set!");
         }
-        if (row.size() == size) {
+        if (row.size() == expectedSize) {
             // This is ok.
-        } else if (row.size() > size) {
+        } else if (row.size() > expectedSize) {
             // Shrink and drop data. As they are outside the header, named column would get corrupted by them.
-            while (row.size() > size) {
+            while (row.size() > expectedSize) {
                 row.remove(row.size() - 1);
             }
         } else {
-            while (row.size() < size) {
+            while (row.size() < expectedSize) {
                 row.add(row.size(), null);
             }
         }
