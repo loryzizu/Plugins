@@ -12,6 +12,7 @@ Parse tabular file to relational data unit.
 |**Charset** | Charset of input file |
 |**Quote character** | Field delimiter to use during parsing od CSV file. e.g. '"' |
 |**Sepatator** | Field separator to use during parsing of CSV file. e.g. ',' |
+|**Validate CSV files**|If checked, input CSV files are validated (row column counts are compared to user defined columns count) and DPU fails if CSV is not valid|
 |**Table of column mappings** | Name and types of culumns in CSV files. Also marks if column is used as primary key |
 
 ### Inputs and outputs

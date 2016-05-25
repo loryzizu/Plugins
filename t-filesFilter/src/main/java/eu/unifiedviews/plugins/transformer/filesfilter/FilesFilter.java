@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import org.openrdf.repository.RepositoryConnection;
 
 import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
@@ -18,7 +19,9 @@ import eu.unifiedviews.helpers.dpu.config.migration.ConfigurationUpdate;
 import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
 import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
 import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,6 +117,16 @@ public class FilesFilter extends AbstractDpu<FilesFilterConfig_V1> {
                 return DataUnitUtils.getMetadataEntries(inFilesData);
             }
         }, "filesFilter.error.metadata.read");
+
+        //        final List<FilesDataUnit.Entry> sourceFiles = FaultToleranceUtils.getEntries(faultTolerance, inFilesData, FilesDataUnit.Entry.class);
+        //        for (FilesDataUnit.Entry e : sourceFiles) {
+        //            try {
+        //                log.info("Processing file with sn '{}' and path '{}'", e.getSymbolicName(), e.getFileURIString());
+        //            } catch (DataUnitException ex) {
+        //                java.util.logging.Logger.getLogger(FilesFilter.class.getName()).log(Level.SEVERE, null, ex);
+        //            }
+        //        }
+
         final RDFDataUnit.Entry target = faultTolerance.execute(
                 new FaultTolerance.ActionReturn<RDFDataUnit.Entry>() {
 

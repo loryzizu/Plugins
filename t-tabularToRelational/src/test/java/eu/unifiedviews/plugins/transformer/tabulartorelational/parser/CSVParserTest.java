@@ -1,8 +1,26 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational.parser;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
+import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.exec.ExecContext;
 import eu.unifiedviews.helpers.dpu.exec.UserExecContext;
@@ -12,21 +30,6 @@ import eu.unifiedviews.plugins.transformer.tabulartorelational.TabularToRelation
 import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
 import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ParserType;
 import eu.unifiedviews.plugins.transformer.tabulartorelational.util.DatabaseHelper;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(JUnit4.class)
 public class CSVParserTest {
@@ -48,6 +51,8 @@ public class CSVParserTest {
     public static final int CSV_FILE_ROW_COUNT = 11;
 
     public static final int CSV_FILE_WITH_HEADER_ROW_COUNT = 104;
+
+    public static final String CSV_INVALID_FILE = "sample_invalid.csv";
 
     @Before
     public void init() throws Exception {
@@ -247,6 +252,78 @@ public class CSVParserTest {
         config.setColumnMapping(list);
 
         assertEquals("CREATE TABLE test_table (id INT, name VARCHAR(255), surname VARCHAR(255), PRIMARY KEY (id, name));", parser.buildCreateTableQuery(config.getColumnMapping()));
+    }
+
+    @Test
+    public void parseInvalidCsvValidationOff() throws Exception {
+        TabularToRelationalConfig_V2 config = new TabularToRelationalConfig_V2();
+        config.setParserType(ParserType.CSV);
+        config.setTableName("invalid_tabulka_off");
+        config.setDataBegginningRow(2);
+        config.setFieldDelimiter("");
+        config.setFieldSeparator(";");
+        config.setProcessOnlyValidCsv(false);
+
+        List<ColumnMappingEntry> list = new ArrayList<>();
+        list.add(new ColumnMappingEntry("nazov_tovaru", "VARCHAR", true));
+        list.add(new ColumnMappingEntry("cena_za_kus", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("pocet_kusov", "VARCHAR", false));
+        config.setColumnMapping(list);
+
+        Connection conn = null;
+        Statement stmnt = null;
+        ResultSet rs = null;
+        try {
+            this.dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
+
+            addFileToInput(CSV_INVALID_FILE);
+            this.env.run(this.dpu);
+            conn = this.output.getDatabaseConnection();
+            stmnt = conn.createStatement();
+
+            rs = stmnt.executeQuery("SELECT COUNT(*) FROM invalid_tabulka_off");
+            rs.next();
+            int rowCount = rs.getInt(1);
+            assertEquals("Sample CSV should contain 10 entries!", 10, rowCount);
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmnt != null) {
+                    stmnt.close();
+                }
+            } catch (SQLException ignore) {
+                // ignore exception
+            }
+            DatabaseHelper.tryCloseConnection(conn);
+        }
+    }
+
+    @Test(expected = DataUnitException.class)
+    public void parseInvalidCsvValidationOn() throws Throwable {
+        TabularToRelationalConfig_V2 config = new TabularToRelationalConfig_V2();
+        config.setParserType(ParserType.CSV);
+        config.setTableName("invalid_tabulka_on");
+        config.setDataBegginningRow(2);
+        config.setFieldDelimiter("");
+        config.setFieldSeparator(";");
+        config.setProcessOnlyValidCsv(true);
+
+        List<ColumnMappingEntry> list = new ArrayList<>();
+        list.add(new ColumnMappingEntry("nazov_tovaru", "VARCHAR", true));
+        list.add(new ColumnMappingEntry("cena_za_kus", "VARCHAR", false));
+        list.add(new ColumnMappingEntry("pocet_kusov", "VARCHAR", false));
+        config.setColumnMapping(list);
+
+        this.dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
+
+        try {
+            addFileToInput(CSV_INVALID_FILE);
+            this.env.run(this.dpu);
+        } catch (DPUException e) {
+            throw e.getCause();
+        }
     }
 
     private void addFileToInput(final String filename) throws Exception {

@@ -1,7 +1,7 @@
 T-Tabular
 ----------
 
-v2.4.0
+v2.3.2
 ---
 * Added copy and paste
 * Fixed row width guard - row from xls-like files have same size as header.

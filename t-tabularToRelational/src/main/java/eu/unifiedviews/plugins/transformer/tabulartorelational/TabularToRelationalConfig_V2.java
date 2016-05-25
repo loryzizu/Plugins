@@ -1,10 +1,10 @@
 package eu.unifiedviews.plugins.transformer.tabulartorelational;
 
-import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
-import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ParserType;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ColumnMappingEntry;
+import eu.unifiedviews.plugins.transformer.tabulartorelational.model.ParserType;
 
 /**
  * Class holds configuration of DPU.
@@ -25,6 +25,8 @@ public class TabularToRelationalConfig_V2 {
 
     private Integer dataBegginningRow;
 
+    private boolean processOnlyValidCsv;
+
     public TabularToRelationalConfig_V2() {
         // default values
         this.tableName = "";
@@ -34,6 +36,7 @@ public class TabularToRelationalConfig_V2 {
         this.columnMapping = new ArrayList<>();
         this.parserType = ParserType.CSV;
         this.dataBegginningRow = 1;
+        this.processOnlyValidCsv = false;
     }
 
     public String getTableName() {
@@ -92,7 +95,16 @@ public class TabularToRelationalConfig_V2 {
         this.dataBegginningRow = dataBegginningRow;
     }
 
-    @Override public String toString() {
+    public boolean isProcessOnlyValidCsv() {
+        return this.processOnlyValidCsv;
+    }
+
+    public void setProcessOnlyValidCsv(boolean processOnlyValidCsv) {
+        this.processOnlyValidCsv = processOnlyValidCsv;
+    }
+
+    @Override
+    public String toString() {
         return "TabularToRelationalConfig_V2{" +
                 "tableName='" + tableName + '\'' +
                 ", encoding='" + encoding + '\'' +

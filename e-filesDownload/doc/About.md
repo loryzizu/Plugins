@@ -1,15 +1,18 @@
 ### Description
 
-Downloads files based on provided list. Individual files and also name of directories could be defined.
+Downloads one or more files from the defined locations. The files to be downloaded may be located at HTTP URLs, on the local filesystem, at certain SFTP/FTP servers, etc.
+
+If internal file name is specified for the downloaded entry, such file name is then used as a symbolic name to internally identify the given file further on the pipeline and also such value is used as the value of 
+VirtualPath (target location of the file when loaded outside of UnifiedViews at the end of pipeline). If you do not care about the internal name of the file or value of VirtualPath, e.g., 
+in cases where you just need to iterate over downloaded files later on process every downloaded file in the same way, you do not need to specify a file name. 
+
+Individual files and also whole directories may be downloaded. If directory is provided then all files and files in subdirectories are extracted.
 
 ### Configuration parameters
 
 | Name | Description |
 |:----|:----|
-|**List of files and directories to extract** | If directory is provided then all files and files in subdirectories are extracted. 
-If filename is specified for each downloaded entry, such filename is then used to internally identify the given file further on the pipeline and also such value is used as the value of 
-VirtualPath (target location of the file when loaded outside of UnifiedViews at the end of pipeline). If you do not care about the internal name of the file or value of VirtualPath, e.g., 
-in cases where you just need to iterate over downloaded files later on process every downloaded file in the same way,  you do not need to specify filename. |
+|**List of files and directories to download** | List of files and directories to be downloaded. Each entry contains location from which the file should be optained and optionally the internal file name.  |
 
 ### Inputs and outputs
 
@@ -20,7 +23,7 @@ in cases where you just need to iterate over downloaded files later on process e
 
 ### Advanced configuration
 
-It is also possible to dynamically configure the DPU over its input `config` using RDF data.
+It is also possible to dynamically configure the DPU over its input `config` data unit using RDF data.
 
 Configuration samples:
 

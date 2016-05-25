@@ -1,7 +1,7 @@
 E-FilesDownload
 ----------
 
-v2.1.5-SNAPSHOT
+v2.1.5
 ---
 * Adjusted layout of the DPU
 

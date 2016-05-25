@@ -78,13 +78,16 @@ public class FilesToRDFVaadinDialog extends AbstractDialog<FilesToRDFConfig_V1> 
 
         txtSymbolicName = new TextField(ctx.tr("FilesToRDFVaadinDialog.txtSymbolicName"));
         txtSymbolicName.setDescription(ctx.tr("FilesToRDFVaadinDialog.txtSymbolicName.description"));
-        txtSymbolicName.setWidth("100%");
-        txtSymbolicName.setInputPrompt("auto");
+        //txtSymbolicName.setWidth("100%");
+        //txtSymbolicName.setInputPrompt("custom");
         txtSymbolicName.setNullSettingAllowed(true);
         txtSymbolicName.setNullRepresentation("");
 
         mainLayout.addComponent(comboTypeOfGraph);
-        mainLayout.addComponent(new TextField(ctx.tr("FilesToRDFVaadinDialog.commitSize"), commitSize));
+        TextField tfCommitSize = new TextField(ctx.tr("FilesToRDFVaadinDialog.commitSize"), commitSize);
+        tfCommitSize.setDescription(ctx.tr("FilesToRDFVaadinDialog.commitSize.description"));
+        tfCommitSize.setVisible(false);
+        mainLayout.addComponent(tfCommitSize);
         mainLayout.addComponent(comboFailPolicy);
         mainLayout.addComponent(comboOutputGraph);
         mainLayout.addComponent(txtSymbolicName);
