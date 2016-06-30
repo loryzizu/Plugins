@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.unifiedviews.plugins</groupId>
     <artifactId>uv-plugin-dpus</artifactId>
-    <version>2.2.1</version>
+    <version>2.2.2</version>
     <packaging>pom</packaging>
     <description>Maven aggregation project for general purpose DPU implementations.</description>
 
@@ -12,6 +12,7 @@
         <!-- EXTRACTORS -->
         <module>e-distributionMetadata</module>
         <module>e-filesDownload</module>
+        <module>e-httpRequest</module>
         <module>e-relationalFromSql</module>
         <module>e-silkLinker</module>
         <module>e-sparqlEndpoint</module>
@@ -24,6 +25,7 @@
         <module>t-filesRenamer</module>
         <module>t-filesToRdf</module>
         <module>t-filterValidXml</module>
+        <module>t-fusionTool</module>
         <module>t-gunzipper</module>
         <module>t-gzipper</module>
         <module>t-metadata</module>

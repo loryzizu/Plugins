@@ -354,7 +354,7 @@ public class SparqlLimitOffsetJenaRewriterTest {
         System.out.println("ResultB:" + QueryPagingRewriter2.rewriteQuery(query, 100, 0));
     }
 
-    @Test
+    //@Test
     public void rewriteTestQuery() throws RepositoryException, QueryEvaluationException, RDFHandlerException, MalformedQueryException {
         int i = 0;
         for (Map.Entry<String, String> entry : queries.entrySet()) {
@@ -477,7 +477,7 @@ public class SparqlLimitOffsetJenaRewriterTest {
         }
     }
 
-    @Test
+    //@Test
     public void executeDPUTest1() throws Exception {
         // Prepare config.
         SparqlEndpointConfig_V1 config = new SparqlEndpointConfig_V1();
