@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.helpers.dataunit.DataUnitUtils;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
@@ -86,7 +87,8 @@ public class SparqlAsk extends AbstractDpu<SparqlAskConfig_V1> {
         if (msg == null || msg.isEmpty()) {
             msg = SparqlAskConfig_V1.AUTO_MESSAGE;
         }
-        ContextUtils.sendMessage(ctx, config.getMessageType(), msg, "");
+        //        ContextUtils.sendMessage(ctx, config.getMessageType(), msg, "");
+        ContextUtils.sendMessage(ctx, config.getMessageType(), "rdfvalidation.finished.error", "rdfvalidation.constraintfailed", config.getAskQuery().replaceAll("<", "").replaceAll(">", ""));
         emptyFound = true;
     }
 
@@ -99,6 +101,10 @@ public class SparqlAsk extends AbstractDpu<SparqlAskConfig_V1> {
                 SparqlUtils.execute(connection, ask);
                 if (!ask.result) {
                     reportFailure();
+                }
+                else {
+                    //everything OK:
+                    ContextUtils.sendShortInfo(ctx, "rdfvalidation.finished.ok");
                 }
             }
         });
