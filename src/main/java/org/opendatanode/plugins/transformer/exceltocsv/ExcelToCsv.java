@@ -115,7 +115,7 @@ public class ExcelToCsv extends AbstractDpu<ExcelToCsvConfig_V1> {
                 }
             }
         } catch (EncryptedDocumentException | InvalidFormatException | IOException ex) {
-            ContextUtils.sendError(ctx, "ExcelToCsv.excelTransformationFailed", ex.toString(), entry.getSymbolicName());
+            ContextUtils.sendError(ctx, "ExcelToCsv.excelTransformationFailed", ex, "ExcelToCsv.excelTransformationFailed", entry.getSymbolicName());
             throw ex;
         }
 
@@ -123,25 +123,17 @@ public class ExcelToCsv extends AbstractDpu<ExcelToCsvConfig_V1> {
     }
 
     private DpuFile createCsvFile(String excelFileName, String sheetName) throws DataUnitException {
-        excelFileName = getBaseFileName(excelFileName); // removes file extension
+        excelFileName = ExcelToCsvUtils.getBaseFileName(excelFileName); // removes file extension
 
         String csvFileName = config.getCsvFileNamePattern().replace(ExcelToCsvConfig_V1.PLACEHOLDER_EXCEL_FILE_NAME,
                 excelFileName);
         csvFileName = csvFileName.replace(ExcelToCsvConfig_V1.PLACEHOLDER_SHEET_NAME, sheetName);
+        
+        csvFileName = ExcelToCsvUtils.stripAccents(csvFileName);
 
         Entry newEntry = FilesHelper.createFile(output, csvFileName);
         File file = FilesHelper.asFile(newEntry);
         return new DpuFile(csvFileName, file);
-    }
-
-    /**
-     * @param fileName File name, eg. example.xlsx
-     * @return Base file name (file name without extension).
-     */
-    private String getBaseFileName(String fileName) {
-        // for "example.xlsx" parts is ["example", "xlsx"]
-        String[] parts = fileName.split("\\.(?=[^\\.]+$)");
-        return parts[0];
     }
 
     private void sheetToCsv(Sheet sheet, File csvFile) throws IOException {
