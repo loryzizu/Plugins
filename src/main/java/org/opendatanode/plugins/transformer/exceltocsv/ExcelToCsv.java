@@ -101,11 +101,7 @@ public class ExcelToCsv extends AbstractDpu<ExcelToCsvConfig_V1> {
 
         File excelFile = FilesHelper.asFile(entry);
 
-        Workbook wb = null;
-
-        try {
-            wb = WorkbookFactory.create(excelFile);
-
+        try (Workbook wb = WorkbookFactory.create(excelFile)) {
             for (int s = 0; s < wb.getNumberOfSheets(); s++) {
                 Sheet sheet = wb.getSheetAt(s);
                 ContextUtils.sendShortInfo(ctx, "ExcelToCsv.sheetName", sheet.getSheetName());
@@ -113,7 +109,6 @@ public class ExcelToCsv extends AbstractDpu<ExcelToCsvConfig_V1> {
                     DpuFile csvFile = createCsvFile(entry.getSymbolicName(), sheet.getSheetName());
                     ContextUtils.sendShortInfo(ctx, "ExcelToCsv.csvGenerationStarted", csvFile.symbolicName);
                     sheetToCsv(sheet, csvFile.file);
-                    //addFileToOutput(csvFile); // method createCsvFile() added file to output (it was done by method FilesHelper.createFile())
                     ContextUtils.sendShortInfo(ctx, "ExcelToCsv.csvGenerationFinished", csvFile.symbolicName);
                 } else {
                     ContextUtils.sendShortInfo(ctx, "ExcelToCsv.sheetIgnored", sheet.getSheetName());
@@ -122,10 +117,6 @@ public class ExcelToCsv extends AbstractDpu<ExcelToCsvConfig_V1> {
         } catch (EncryptedDocumentException | InvalidFormatException | IOException ex) {
             ContextUtils.sendError(ctx, "ExcelToCsv.excelTransformationFailed", ex.toString(), entry.getSymbolicName());
             throw ex;
-        } finally {
-            if (wb != null) {
-                wb.close();
-            }
         }
 
         ContextUtils.sendShortInfo(ctx, "ExcelToCsv.excelTransformationFinishedSuccessfully", entry.getSymbolicName());
@@ -153,16 +144,9 @@ public class ExcelToCsv extends AbstractDpu<ExcelToCsvConfig_V1> {
         return parts[0];
     }
 
-    private void addFileToOutput(DpuFile file) throws DataUnitException {
-        FilesHelper.addFile(output, file.file, file.symbolicName);
-    }
-
     private void sheetToCsv(Sheet sheet, File csvFile) throws IOException {
         final String[] empty_array = new String[]{};
-        CSVWriter csvWriter = null;
-        try {
-            csvWriter = new CSVWriter(new OutputStreamWriter(new FileOutputStream(csvFile), "utf-8"));
-
+        try (CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(new FileOutputStream(csvFile), "utf-8"))) {
             int minCellNumber = getMinCellNumber(sheet);
             for (int r = sheet.getFirstRowNum(); r <= sheet.getLastRowNum(); r++) {
                 Row row = sheet.getRow(r);
@@ -176,27 +160,18 @@ public class ExcelToCsv extends AbstractDpu<ExcelToCsvConfig_V1> {
                     csvWriter.writeNext(csvLine.toArray(empty_array));
                 }
             }
-        } finally {
-            if (csvWriter != null) {
-                csvWriter.close();
-            }
         }
     }
 
     private int getMinCellNumber(Sheet sheet) {
-        int minColumnNumber = Integer.MAX_VALUE;
+        int minCellNumber = Integer.MAX_VALUE;
         for (int r = sheet.getFirstRowNum(); r <= sheet.getLastRowNum(); r++) {
             Row row = sheet.getRow(r);
             if (row != null) {
-                for (int c = 0; c < row.getLastCellNum(); c++) {
-                    Cell cell = row.getCell(c);
-                    if (cell != null) {
-                        minColumnNumber = Math.min(minColumnNumber, c);
-                    }
-                }
+                minCellNumber = Math.min(minCellNumber, row.getFirstCellNum());
             }
         }
-        return minColumnNumber;
+        return minCellNumber;
     }
 
     private String getCellValue(Cell cell) {
