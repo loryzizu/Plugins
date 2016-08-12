@@ -36,6 +36,8 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
 
     TextField txtDefaultTimeout;
 
+    private CheckBox chkSoftFail;
+
     public FilesDownloadVaadinDialog() {
         super(FilesDownload.class);
     }
@@ -141,6 +143,11 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
         CheckBox chkIgnoreTlsErrors = new CheckBox(ctx.tr("FilesDownloadVaadinDialog.ignoreTlsErrors.caption"), ignoreTlsErrors);
         chkIgnoreTlsErrors.setDescription(ctx.tr("FilesDownloadVaadinDialog.ignoreTlsErrors.description"));
         bottomLayout.addComponent(chkIgnoreTlsErrors);
+
+        chkSoftFail = new CheckBox(ctx.tr("FilesDownloadVaadinDialog.softFail.caption"));
+        chkSoftFail.setDescription(ctx.tr("FilesDownloadVaadinDialog.softFail.description"));
+        bottomLayout.addComponent(chkSoftFail);
+
         mainLayout.addComponent(bottomLayout);
 
         setCompositionRoot(mainLayout);
@@ -209,6 +216,7 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
         }
         result.setDefaultTimeout(defaultTimeout.getValue());
         result.setIgnoreTlsErrors(ignoreTlsErrors.getValue());
+        result.setSoftFail(chkSoftFail.getValue());
         return result;
     }
 
@@ -279,6 +287,7 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
         }
         defaultTimeout.setValue(config.getDefaultTimeout());
         ignoreTlsErrors.setValue(config.isIgnoreTlsErrors());
+        chkSoftFail.setValue(config.isSoftFail());
     }
 
     @Override
