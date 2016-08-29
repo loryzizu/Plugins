@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.openxml4j.opc.PackageAccess;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
@@ -101,7 +103,7 @@ public class ExcelToCsv extends AbstractDpu<ExcelToCsvConfig_V1> {
 
         File excelFile = FilesHelper.asFile(entry);
 
-        try (Workbook wb = WorkbookFactory.create(excelFile)) {
+        try (Workbook wb = WorkbookFactory.create(OPCPackage.open(excelFile, PackageAccess.READ))) {
             for (int s = 0; s < wb.getNumberOfSheets(); s++) {
                 Sheet sheet = wb.getSheetAt(s);
                 ContextUtils.sendShortInfo(ctx, "ExcelToCsv.sheetName", sheet.getSheetName());
