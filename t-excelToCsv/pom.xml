@@ -10,7 +10,7 @@
     <artifactId>uv-t-excelToCsv</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>ExcelToCsv</name>
+    <name>T-ExcelToCsv</name>
     <description></description>
 
     <properties>
