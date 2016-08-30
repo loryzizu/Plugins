@@ -2,7 +2,95 @@ package eu.unifiedviews.plugins.loader.relationaltosql;
 
 public class RelationalToSqlConfig_V1 {
 
-    private String databaseURL;
+    private String databaseHost;
+
+    private int databasePort;
+
+    private String databaseName;
+
+    private SqlDatabase.DatabaseType databaseType;
+
+    private String sqlQuery;
+
+    private String targetTableName;
+
+    private String instanceName;
+
+    private String truststoreLocation;
+
+    private String truststorePassword;
+
+    public String getDatabaseHost() {
+        return this.databaseHost;
+    }
+
+    public void setDatabaseHost(String databaseHost) {
+        this.databaseHost = databaseHost;
+    }
+
+    public int getDatabasePort() {
+        return this.databasePort;
+    }
+
+    public void setDatabasePort(int databasePort) {
+        this.databasePort = databasePort;
+    }
+
+    public String getDatabaseName() {
+        return this.databaseName;
+    }
+
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
+    }
+
+    public SqlDatabase.DatabaseType getDatabaseType() {
+        return this.databaseType;
+    }
+
+    public void setDatabaseType(SqlDatabase.DatabaseType databaseType) {
+        this.databaseType = databaseType;
+    }
+
+    public String getSqlQuery() {
+        return this.sqlQuery;
+    }
+
+    public void setSqlQuery(String sqlQuery) {
+        this.sqlQuery = sqlQuery;
+    }
+
+    public String getTargetTableName() {
+        return this.targetTableName;
+    }
+
+    public void setTargetTableName(String targetTableName) {
+        this.targetTableName = targetTableName;
+    }
+
+    public String getInstanceName() {
+        return this.instanceName;
+    }
+
+    public void setInstanceName(String instanceName) {
+        this.instanceName = instanceName;
+    }
+
+    public String getTruststoreLocation() {
+        return this.truststoreLocation;
+    }
+
+    public void setTruststoreLocation(String truststoreLocation) {
+        this.truststoreLocation = truststoreLocation;
+    }
+
+    public String getTruststorePassword() {
+        return this.truststorePassword;
+    }
+
+    public void setTruststorePassword(String truststorePassword) {
+        this.truststorePassword = truststorePassword;
+    }
 
     private String userName;
 
@@ -15,17 +103,6 @@ public class RelationalToSqlConfig_V1 {
     private boolean clearTargetTable;
 
     private boolean useSSL;
-
-    //TODO: For now only PostgreSQL is supported. Maybe database type can be user defined
-    private String jdbcDriverName = "org.postgresql.Driver";
-
-    public String getDatabaseURL() {
-        return this.databaseURL;
-    }
-
-    public void setDatabaseURL(String databaseURL) {
-        this.databaseURL = databaseURL;
-    }
 
     public String getUserName() {
         return this.userName;
@@ -73,10 +150,6 @@ public class RelationalToSqlConfig_V1 {
 
     public void setUseSSL(boolean useSSL) {
         this.useSSL = useSSL;
-    }
-
-    public String getJDBCDriverName() {
-        return this.jdbcDriverName;
     }
 
 }
