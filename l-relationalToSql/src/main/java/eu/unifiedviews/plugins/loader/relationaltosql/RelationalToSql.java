@@ -45,15 +45,20 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
     @Override
     protected void innerExecute() throws DPUException {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
-        String longMessage = String.format("Configuration: DatabaseUrl: %s, username: %s, password: %s, "
-                + "useSSL: %s, targetTable: %s, clearTargetTable: %s, dropTargetTable: %s",
-                this.config.getDatabaseURL(), this.config.getUserName(), "***",
-                this.config.isUseSSL(), this.config.getTableNamePrefix(), this.config.isClearTargetTable(),
+        String longMessage = String.format("Configuration: Database host name: %s, port: %s, database name: %s, " +
+                        "username: %s, password: %s, useSSL: %s, targetTable: %s, clearTargetTable: %s, dropTargetTable: %s",
+                this.config.getDatabaseHost(),
+                this.config.getDatabasePort(),
+                this.config.getDatabaseName(),
+                this.config.getUserName(), "***",
+                this.config.isUseSSL(),
+                this.config.getTableNamePrefix(),
+                this.config.isClearTargetTable(),
                 this.config.isDropTargetTable());
         LOG.info(shortMessage + " " + longMessage);
 
         try {
-            Class.forName(this.config.getJDBCDriverName());
+            Class.forName(SqlDatabase.getDatabaseInfo(this.config.getDatabaseType()).getJdbcDriverName());
         } catch (ClassNotFoundException e) {
             throw ContextUtils.dpuException(ctx, ("errors.driver.loadfailed"), e);
         }
@@ -102,7 +107,7 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
                         }
                     }
                     String insertQuery = QueryBuilder.getInsertQueryForPreparedStatement(targetTableName, sourceColumns);
-                    LOG.debug("Creating prepared statement for insert into external database using query: {}", insertQuery);
+                    LOG.info("Creating prepared statement for insert into external database using query: {}", insertQuery);
                     insertStmnt = conn.prepareStatement(insertQuery);
                     insertDataFromSourceToTarget(insertStmnt, sourceColumns, sourceTableName);
                     conn.commit();
@@ -159,7 +164,7 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
         Statement stmnt = null;
         try {
             String query = QueryBuilder.getQueryForCreateTable(targetTableName, sourceColumns);
-            LOG.debug("Creating table in external database using query: {}", query);
+            LOG.info("Creating table in external database using query: {}", query);
 
             stmnt = conn.createStatement();
             stmnt.executeUpdate(query);
@@ -182,6 +187,7 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
             dbm = conn.getMetaData();
             rs = dbm.getColumns(null, null, sourceTableName, null);
             while (rs.next()) {
+                LOG.info(String.format("name: %s, type: %s, type: %s, size: %s ", rs.getString("COLUMN_NAME").toLowerCase(), rs.getString("TYPE_NAME"), rs.getInt("DATA_TYPE"), rs.getInt("COLUMN_SIZE")));
                 String columnName = rs.getString("COLUMN_NAME").toLowerCase();
                 columns.add(new ColumnDefinition(columnName,
                         rs.getString("TYPE_NAME"),
