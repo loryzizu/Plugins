@@ -1,16 +1,5 @@
 package eu.unifiedviews.plugins.extractor.filesdownload;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.httpclient.util.URIUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.vfs2.provider.UriParser;
-
 import com.vaadin.data.Container;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.BeanItemContainer;
@@ -21,9 +10,14 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.Table.ColumnHeaderMode;
-
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
+import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.vfs2.provider.UriParser;
+
+import java.net.URI;
+import java.util.*;
 
 @SuppressWarnings("serial")
 public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfig_V1> {
@@ -37,6 +31,7 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
     TextField txtDefaultTimeout;
 
     private CheckBox chkSoftFail;
+    private CheckBox chkCheckDuplicates;
 
     public FilesDownloadVaadinDialog() {
         super(FilesDownload.class);
@@ -148,6 +143,10 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
         chkSoftFail.setDescription(ctx.tr("FilesDownloadVaadinDialog.softFail.description"));
         bottomLayout.addComponent(chkSoftFail);
 
+        chkCheckDuplicates = new CheckBox(ctx.tr("FilesDownloadVaadinDialog.chkCheckDuplicates.caption"));
+        chkCheckDuplicates.setDescription(ctx.tr("FilesDownloadVaadinDialog.chkCheckDuplicates.description"));
+        bottomLayout.addComponent(chkCheckDuplicates);
+
         mainLayout.addComponent(bottomLayout);
 
         setCompositionRoot(mainLayout);
@@ -217,6 +216,7 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
         result.setDefaultTimeout(defaultTimeout.getValue());
         result.setIgnoreTlsErrors(ignoreTlsErrors.getValue());
         result.setSoftFail(chkSoftFail.getValue());
+        result.setCheckForDuplicatedInputFiles(chkCheckDuplicates.getValue());
         return result;
     }
 
@@ -288,6 +288,7 @@ public class FilesDownloadVaadinDialog extends AbstractDialog<FilesDownloadConfi
         defaultTimeout.setValue(config.getDefaultTimeout());
         ignoreTlsErrors.setValue(config.isIgnoreTlsErrors());
         chkSoftFail.setValue(config.isSoftFail());
+        chkCheckDuplicates.setValue(config.isCheckForDuplicatedInputFiles());
     }
 
     @Override
