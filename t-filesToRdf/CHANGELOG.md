@@ -1,6 +1,11 @@
 T-FilesToRdf
 ----------
 
+v2.2.1
+---
+* Possibility to attach Virtual Graph metadata to processed entries (https://github.com/UnifiedViews/Plugins/issues/392)
+
+
 v2.2.0
 ---
 * Manual RDF mimetype selection allowed
