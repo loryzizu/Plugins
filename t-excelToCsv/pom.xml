@@ -6,12 +6,13 @@
         <artifactId>uv-pom-dpu</artifactId>
         <version>2.1.6</version>
     </parent>
+
     <groupId>org.opendatanode.plugins</groupId>
     <artifactId>uv-t-excelToCsv</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>T-ExcelToCsv</name>
-    <description></description>
+    <description>Transformer for Excel files (.XLS, .XLSX) which will extract selected sheet (or sheets) into CSV file</description>
 
     <properties>
         <dpu.package>org.opendatanode.plugins.transformer.exceltocsv</dpu.package>
