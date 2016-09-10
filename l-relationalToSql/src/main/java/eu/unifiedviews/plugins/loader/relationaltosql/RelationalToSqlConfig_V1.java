@@ -8,7 +8,7 @@ public class RelationalToSqlConfig_V1 {
 
     private String databaseName;
 
-    private SqlDatabase.DatabaseType databaseType;
+    private DatabaseConfig.DatabaseType databaseType;
 
     private String sqlQuery;
 
@@ -44,11 +44,11 @@ public class RelationalToSqlConfig_V1 {
         this.databaseName = databaseName;
     }
 
-    public SqlDatabase.DatabaseType getDatabaseType() {
+    public DatabaseConfig.DatabaseType getDatabaseType() {
         return this.databaseType;
     }
 
-    public void setDatabaseType(SqlDatabase.DatabaseType databaseType) {
+    public void setDatabaseType(DatabaseConfig.DatabaseType databaseType) {
         this.databaseType = databaseType;
     }
 

@@ -5,7 +5,7 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import eu.unifiedviews.plugins.loader.relationaltosql.SqlDatabase.DatabaseType;
+import eu.unifiedviews.plugins.loader.relationaltosql.DatabaseConfig.DatabaseType;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
@@ -64,10 +64,10 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
 
         this.databaseType = new NativeSelect();
         this.databaseType.setCaption(ctx.tr("dialog.dbload.dbtype"));
-        this.databaseType.addItems(SqlDatabase.getSupportedDatabases());
+        this.databaseType.addItems(DatabaseConfig.getSupportedDatabases());
         this.databaseType.setNullSelectionAllowed(false);
         this.databaseType.setImmediate(true);
-        DatabaseInfo defaultDb = SqlDatabase.getDatabaseInfo(SqlDatabase.DatabaseType.POSTGRES);
+        DatabaseInfo defaultDb = DatabaseConfig.getDatabaseInfo(DatabaseConfig.DatabaseType.POSTGRES);
         this.databaseType.select(defaultDb);
         this.databaseType.addValueChangeListener(createDatabaseTypeChangeListener());
         this.mainLayout.addComponent(this.databaseType);
@@ -316,15 +316,15 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
     protected void setConfiguration(RelationalToSqlConfig_V1 config) throws DPUConfigException {
 
         if (config.getDatabaseType() != null) {
-            this.databaseType.select(SqlDatabase.getDatabaseInfo(config.getDatabaseType()));
+            this.databaseType.select(DatabaseConfig.getDatabaseInfo(config.getDatabaseType()));
         } else {
-            this.databaseType.select(SqlDatabase.getDatabaseInfo(DatabaseType.POSTGRES));
+            this.databaseType.select(DatabaseConfig.getDatabaseInfo(DatabaseType.POSTGRES));
         }
         this.txtDatabaseHost.setValue(config.getDatabaseHost());
         if (config.getDatabasePort() != 0) {
             this.txtDatabasePort.setValue(String.valueOf(config.getDatabasePort()));
         } else {
-            int defaultPort = SqlDatabase.getDatabaseInfo(DatabaseType.POSTGRES).getDefaultPort();
+            int defaultPort = DatabaseConfig.getDatabaseInfo(DatabaseType.POSTGRES).getDefaultPort();
             this.txtDatabasePort.setValue(String.valueOf(defaultPort));
         }
         this.txtDatabaseName.setValue(config.getDatabaseName());

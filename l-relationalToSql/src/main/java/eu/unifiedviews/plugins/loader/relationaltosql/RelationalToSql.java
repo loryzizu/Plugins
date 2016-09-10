@@ -58,7 +58,7 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
         LOG.info(shortMessage + " " + longMessage);
 
         try {
-            Class.forName(SqlDatabase.getDatabaseInfo(this.config.getDatabaseType()).getJdbcDriverName());
+            Class.forName(DatabaseConfig.getDatabaseInfo(this.config.getDatabaseType()).getJdbcDriverName());
         } catch (ClassNotFoundException e) {
             throw ContextUtils.dpuException(ctx, ("errors.driver.loadfailed"), e);
         }
@@ -185,13 +185,24 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
         try {
             conn = this.inTablesData.getDatabaseConnection();
             dbm = conn.getMetaData();
+            ResultSet schemas = dbm.getSchemas();
+            while (schemas.next()) {
+                String tableSchema = schemas.getString(1);
+                System.out.println("tableSchema: "+tableSchema);
+            }
             rs = dbm.getColumns(null, null, sourceTableName, null);
             while (rs.next()) {
+                for (int i = 1 ; i < 25 ; i ++) {
+                    if (rs.getObject(i) != null)
+                    LOG.info(rs.getMetaData().getColumnName(i) + ": " + rs.getObject(i).toString());
+                }
                 LOG.info(String.format("name: %s, type: %s, type: %s, size: %s ", rs.getString("COLUMN_NAME").toLowerCase(), rs.getString("TYPE_NAME"), rs.getInt("DATA_TYPE"), rs.getInt("COLUMN_SIZE")));
                 String columnName = rs.getString("COLUMN_NAME").toLowerCase();
                 columns.add(new ColumnDefinition(columnName,
                         rs.getString("TYPE_NAME"),
                         rs.getInt("DATA_TYPE"),
+                        false,
+                        String.class.getName(),
                         rs.getInt("COLUMN_SIZE")));
             }
         } catch (SQLException | DataUnitException e) {
@@ -218,6 +229,8 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
                 targetColumns.put(columnName.toUpperCase(), new ColumnDefinition(columnName,
                         rs.getString("TYPE_NAME"),
                         rs.getInt("DATA_TYPE"),
+                        false,
+                        String.class.getName(),
                         rs.getInt("COLUMN_SIZE")));
             }
         } catch (SQLException e) {

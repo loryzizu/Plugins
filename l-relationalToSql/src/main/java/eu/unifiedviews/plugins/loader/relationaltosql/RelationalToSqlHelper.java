@@ -1,12 +1,8 @@
 package eu.unifiedviews.plugins.loader.relationaltosql;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Properties;
-import eu.unifiedviews.plugins.loader.relationaltosql.SqlDatabase.DatabaseType;
+import eu.unifiedviews.plugins.loader.relationaltosql.DatabaseConfig.DatabaseType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,13 +96,13 @@ public class RelationalToSqlHelper {
             if (config.isUseSSL()) {
                 protocol = "tcps";
             }
-            String url = String.format(SqlDatabase.ORACLE_URL, protocol, config.getDatabaseHost(), config.getDatabasePort(),
+            String url = String.format(DatabaseConfig.ORACLE_URL, protocol, config.getDatabaseHost(), config.getDatabasePort(),
                     config.getDatabaseName());
             return url;
         }
 
         StringBuilder url = new StringBuilder();
-        url.append(SqlDatabase.getDatabaseInfo(config.getDatabaseType()).getJdbcPrefix());
+        url.append(DatabaseConfig.getDatabaseInfo(config.getDatabaseType()).getJdbcPrefix());
         url.append(config.getDatabaseHost());
         if (config.getDatabasePort() != 0) {
             url.append(":");
@@ -134,7 +130,7 @@ public class RelationalToSqlHelper {
 
     public static Connection createConnection(RelationalToSqlConfig_V1 config) throws SQLException {
         try {
-            Class.forName(SqlDatabase.getDatabaseInfo(config.getDatabaseType()).getJdbcDriverName());
+            Class.forName(DatabaseConfig.getDatabaseInfo(config.getDatabaseType()).getJdbcDriverName());
         } catch (ClassNotFoundException e) {
             throw new SQLException("Failed to load JDBC driver", e);
         }
@@ -184,4 +180,82 @@ public class RelationalToSqlHelper {
         return connection;
     }
 
+    public static String getSqlTypeName(int type) {
+        switch (type) {
+            case Types.BIT:
+                return "BIT";
+            case Types.TINYINT:
+                return "TINYINT";
+            case Types.SMALLINT:
+                return "SMALLINT";
+            case Types.INTEGER:
+                return "INTEGER";
+            case Types.BIGINT:
+                return "BIGINT";
+            case Types.FLOAT:
+                return "FLOAT";
+            case Types.REAL:
+                return "REAL";
+            case Types.DOUBLE:
+                return "DOUBLE";
+            case Types.NUMERIC:
+                return "NUMERIC";
+            case Types.DECIMAL:
+                return "DECIMAL";
+            case Types.CHAR:
+                return "CHAR";
+            case Types.VARCHAR:
+                return "VARCHAR";
+            case Types.LONGVARCHAR:
+                return "LONGVARCHAR";
+            case Types.DATE:
+                return "DATE";
+            case Types.TIME:
+                return "TIME";
+            case Types.TIMESTAMP:
+                return "TIMESTAMP";
+            case Types.BINARY:
+                return "BINARY";
+            case Types.VARBINARY:
+                return "VARBINARY";
+            case Types.LONGVARBINARY:
+                return "LONGVARBINARY";
+            case Types.NULL:
+                return "NULL";
+            case Types.OTHER:
+                return "OTHER";
+            case Types.JAVA_OBJECT:
+                return "JAVA_OBJECT";
+            case Types.DISTINCT:
+                return "DISTINCT";
+            case Types.STRUCT:
+                return "STRUCT";
+            case Types.ARRAY:
+                return "ARRAY";
+            case Types.BLOB:
+                return "BLOB";
+            case Types.CLOB:
+                return "CLOB";
+            case Types.REF:
+                return "REF";
+            case Types.DATALINK:
+                return "DATALINK";
+            case Types.BOOLEAN:
+                return "BOOLEAN";
+            case Types.ROWID:
+                return "ROWID";
+            case Types.NCHAR:
+                return "NCHAR";
+            case Types.NVARCHAR:
+                return "NVARCHAR";
+            case Types.LONGNVARCHAR:
+                return "LONGNVARCHAR";
+            case Types.NCLOB:
+                return "NCLOB";
+            case Types.SQLXML:
+                return "SQLXML";
+            default:
+                return null;
+        }
+    }
 }

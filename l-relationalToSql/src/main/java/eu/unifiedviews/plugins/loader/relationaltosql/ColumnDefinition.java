@@ -8,17 +8,23 @@ public class ColumnDefinition {
 
     private int columnType;
 
-    private Integer columnSize;
+    private boolean columnNotNull;
 
-    public ColumnDefinition(String columnName, String columnTypeName, int columnType, Integer columnSize) {
+    private int columnSize;
+
+    private String typeClassName;
+
+    public ColumnDefinition(String columnName, String columnTypeName, int columnType, boolean columnNotNull, String typeClass, int columnSize) {
         this.columnName = columnName;
         this.columnTypeName = columnTypeName;
         this.columnType = columnType;
+        this.columnNotNull = columnNotNull;
         this.columnSize = columnSize;
+        this.typeClassName = typeClass;
     }
 
-    public ColumnDefinition(String columnName, String columnTypeName, int columnType) {
-        this(columnName, columnTypeName, columnType, null);
+    public ColumnDefinition(String columnName, String columnTypeName, int columnType, boolean columnNotNull, String typeClass) {
+        this(columnName, columnTypeName, columnType, columnNotNull, typeClass, -1);
     }
 
     public String getColumnName() {
@@ -29,12 +35,29 @@ public class ColumnDefinition {
         return this.columnTypeName;
     }
 
-    public Integer getColumnSize() {
+    public int getColumnType() {
+        return this.columnType;
+    }
+
+    public boolean isNotNull() {
+        return this.columnNotNull;
+    }
+
+    public int getColumnSize() {
         return this.columnSize;
     }
 
-    public int getColumnType() {
-        return this.columnType;
+    public String getTypeClassName() {
+        return this.typeClassName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ColumnDefinition)) {
+            return false;
+        }
+        ColumnDefinition cd = (ColumnDefinition) o;
+        return (this.columnName.equals(cd.getColumnName()) && this.columnType == cd.getColumnType()) ;
     }
 
 }

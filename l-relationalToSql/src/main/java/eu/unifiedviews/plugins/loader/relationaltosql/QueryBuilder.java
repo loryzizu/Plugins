@@ -51,6 +51,11 @@ public class QueryBuilder {
             query.append(column.getColumnName());
             query.append(" ");
             query.append(column.getColumnTypeName());
+            if (column.getColumnSize() > 4000) {
+                query.append("(4000)");
+            } else {
+                query.append("(" + column.getColumnSize() + ")");
+            }
             query.append(", ");
         }
 

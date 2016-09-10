@@ -10,9 +10,9 @@ public class DatabaseInfo {
 
     private int defaultPort;
 
-    private SqlDatabase.DatabaseType databaseType;
+    private DatabaseConfig.DatabaseType databaseType;
 
-    public DatabaseInfo(String databaseName, String jdbcDriverName, String jdbcPrefix, int defaultPort, SqlDatabase.DatabaseType databaseType) {
+    public DatabaseInfo(String databaseName, String jdbcDriverName, String jdbcPrefix, int defaultPort, DatabaseConfig.DatabaseType databaseType) {
         this.databaseName = databaseName;
         this.jdbcDriverName = jdbcDriverName;
         this.jdbcPrefix = jdbcPrefix;
@@ -36,7 +36,7 @@ public class DatabaseInfo {
         return this.defaultPort;
     }
 
-    public SqlDatabase.DatabaseType getDatabaseType() {
+    public DatabaseConfig.DatabaseType getDatabaseType() {
         return this.databaseType;
     }
 

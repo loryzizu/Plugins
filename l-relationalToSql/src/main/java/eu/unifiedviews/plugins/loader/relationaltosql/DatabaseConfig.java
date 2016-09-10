@@ -10,9 +10,9 @@ import java.util.*;
 /**
  * This class contains database engines specific configuration parameters
  */
-public class SqlDatabase {
+public class DatabaseConfig {
 
-    private static Logger LOG = LoggerFactory.getLogger(SqlDatabase.class);
+    private static Logger LOG = LoggerFactory.getLogger(DatabaseConfig.class);
 
     private static String SUPPORTED_DB_PROPERTY_FORMAT = "db.type.%s.enabled";
 
