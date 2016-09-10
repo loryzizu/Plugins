@@ -98,4 +98,9 @@ public class SqlDatatype {
         return sqlTypeId;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof SqlDatatype && ((SqlDatatype) o).getSqlTypeId() == this.getSqlTypeId() ;
+    }
+
 }

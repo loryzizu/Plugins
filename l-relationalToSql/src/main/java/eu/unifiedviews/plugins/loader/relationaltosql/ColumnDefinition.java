@@ -4,38 +4,28 @@ public class ColumnDefinition {
 
     private String columnName;
 
-    private String columnTypeName;
-
-    private int columnType;
+    private SqlDatatype columnType;
 
     private boolean columnNotNull;
 
     private int columnSize;
 
-    private String typeClassName;
-
-    public ColumnDefinition(String columnName, String columnTypeName, int columnType, boolean columnNotNull, String typeClass, int columnSize) {
+    public ColumnDefinition(String columnName, SqlDatatype columnType, boolean columnNotNull, int columnSize) {
         this.columnName = columnName;
-        this.columnTypeName = columnTypeName;
         this.columnType = columnType;
         this.columnNotNull = columnNotNull;
         this.columnSize = columnSize;
-        this.typeClassName = typeClass;
     }
 
-    public ColumnDefinition(String columnName, String columnTypeName, int columnType, boolean columnNotNull, String typeClass) {
-        this(columnName, columnTypeName, columnType, columnNotNull, typeClass, -1);
+    public ColumnDefinition(String columnName, SqlDatatype columnType, boolean columnNotNull) {
+        this(columnName, columnType, columnNotNull, -1);
     }
 
     public String getColumnName() {
         return this.columnName;
     }
 
-    public String getColumnTypeName() {
-        return this.columnTypeName;
-    }
-
-    public int getColumnType() {
+    public SqlDatatype getColumnType() {
         return this.columnType;
     }
 
@@ -45,10 +35,6 @@ public class ColumnDefinition {
 
     public int getColumnSize() {
         return this.columnSize;
-    }
-
-    public String getTypeClassName() {
-        return this.typeClassName;
     }
 
     @Override
