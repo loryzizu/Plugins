@@ -199,10 +199,8 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
                 LOG.info(String.format("name: %s, type: %s, type: %s, size: %s ", rs.getString("COLUMN_NAME").toLowerCase(), rs.getString("TYPE_NAME"), rs.getInt("DATA_TYPE"), rs.getInt("COLUMN_SIZE")));
                 String columnName = rs.getString("COLUMN_NAME").toLowerCase();
                 columns.add(new ColumnDefinition(columnName,
-                        rs.getString("TYPE_NAME"),
-                        rs.getInt("DATA_TYPE"),
+                        SqlDatatype.ALL_DATATYPE.get(rs.getString("TYPE_NAME")).getDatatypeName(),
                         false,
-                        String.class.getName(),
                         rs.getInt("COLUMN_SIZE")));
             }
         } catch (SQLException | DataUnitException e) {
@@ -227,10 +225,8 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
             while (rs.next()) {
                 String columnName = rs.getString("COLUMN_NAME");
                 targetColumns.put(columnName.toUpperCase(), new ColumnDefinition(columnName,
-                        rs.getString("TYPE_NAME"),
-                        rs.getInt("DATA_TYPE"),
+                        SqlDatatype.POSTGRESQL_DATATYPE.get(rs.getString("TYPE_NAME")).getDatatypeName(),
                         false,
-                        String.class.getName(),
                         rs.getInt("COLUMN_SIZE")));
             }
         } catch (SQLException e) {

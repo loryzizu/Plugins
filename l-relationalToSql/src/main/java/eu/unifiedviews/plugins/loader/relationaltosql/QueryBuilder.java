@@ -50,7 +50,7 @@ public class QueryBuilder {
         for (ColumnDefinition column : columns) {
             query.append(column.getColumnName());
             query.append(" ");
-            query.append(column.getColumnTypeName());
+            query.append(SqlDatatype.ALL_DATATYPE.get(column.getColumnType()));
             if (column.getColumnSize() > 4000) {
                 query.append("(4000)");
             } else {

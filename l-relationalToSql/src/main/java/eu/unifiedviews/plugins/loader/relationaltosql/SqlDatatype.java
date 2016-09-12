@@ -46,6 +46,7 @@ public class SqlDatatype {
 
     public static final Map<String, SqlDatatype> ORACLE_DATATYPE = new HashMap<>();
     public static final Map<String, SqlDatatype> POSTGRESQL_DATATYPE = new HashMap<>();
+    public static final Map<String, SqlDatatype> ALL_DATATYPE = new HashMap<>();
 
     static {
         ORACLE_DATATYPE.put(CHAR.getDatatypeName(), CHAR);
@@ -74,6 +75,8 @@ public class SqlDatatype {
         POSTGRESQL_DATATYPE.put(TIMESTAMP.getDatatypeName(), TIMESTAMP);
         POSTGRESQL_DATATYPE.put(TIME.getDatatypeName(), TIME);
 
+        ALL_DATATYPE.putAll(ORACLE_DATATYPE);
+        ALL_DATATYPE.putAll(POSTGRESQL_DATATYPE);
     }
     
     private String datatypeName;

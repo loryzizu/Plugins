@@ -1,5 +1,8 @@
 package eu.unifiedviews.plugins.loader.relationaltosql;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RelationalToSqlConfig_V1 {
 
     private String databaseHost;
@@ -19,6 +22,16 @@ public class RelationalToSqlConfig_V1 {
     private String truststoreLocation;
 
     private String truststorePassword;
+
+    private List<ColumnDefinition> columnDefinitions = new ArrayList<>();
+
+    public List<ColumnDefinition> getColumnDefinitions() {
+        return columnDefinitions;
+    }
+
+    public void setColumnDefinitions(List<ColumnDefinition> columnDefinitions) {
+        this.columnDefinitions = columnDefinitions;
+    }
 
     public String getDatabaseHost() {
         return this.databaseHost;
