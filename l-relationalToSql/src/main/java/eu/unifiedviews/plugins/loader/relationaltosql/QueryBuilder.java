@@ -56,6 +56,9 @@ public class QueryBuilder {
                 query.append(column.getColumnSize());
                 query.append(")");
             }
+            if (column.isColumnNotNull()) {
+                query.append(" NOT NULL ");
+            }
             query.append(", ");
         }
 
