@@ -198,6 +198,7 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         });
         addColumn.setClickShortcut(ShortcutAction.KeyCode.INSERT);
         addColumn.setDescription(ctx.tr("dialog.dbload.addColumn"));
+        addColumn.setEnabled(false);
 
         table = new Table();
         table.addGeneratedColumn("remove", new Table.ColumnGenerator() {
@@ -227,6 +228,7 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         table.setVisibleColumns("remove", "columnName", "columnType", "columnSize", "columnNotNull");
         table.setImmediate(true);
         table.addValueChangeListener(createDatabaseTypeChangeListener());
+        table.setEnabled(false);
 
         chckUserDefinedColumn.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
@@ -248,6 +250,10 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
     }
 
     private boolean isContainerValid(boolean throwException) throws DPUConfigException {
+        if (!chckUserDefinedColumn.getValue()) {
+            return true;
+        }
+
         boolean result = true;
         DPUConfigException resultException = null;
         try {
@@ -464,6 +470,7 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         config.setTableNamePrefix(this.txtTableName.getValue());
         config.setClearTargetTable(this.chckClearTable.getValue());
         config.setDropTargetTable(this.chckDropTable.getValue());
+        config.setUserDefined(chckUserDefinedColumn.getValue());
 
         return config;
     }
@@ -500,6 +507,7 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         this.txtTableName.setValue(config.getTableNamePrefix());
         this.chckClearTable.setValue(config.isClearTargetTable());
         this.chckDropTable.setValue(config.isDropTargetTable());
+        chckUserDefinedColumn.setValue(config.isUserDefined());
     }
 
 }
