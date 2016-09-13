@@ -84,7 +84,12 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
                 index++;
 
                 try {
-                    List<ColumnDefinition> sourceColumns = getColumnDefinitionsForSourceTable(sourceTableName);
+                    List<ColumnDefinition> sourceColumns;
+                    if (config.isUserDefined()) {
+                        sourceColumns = config.getColumnDefinitions();
+                    } else {
+                        sourceColumns = getColumnDefinitionsFromSourceTable(sourceTableName);
+                    }
                     bTableExists = checkTableExists(conn, targetTableName);
                     if (bTableExists) {
                         LOG.debug("Target table already exists");
@@ -177,7 +182,7 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
         }
     }
 
-    private List<ColumnDefinition> getColumnDefinitionsForSourceTable(String sourceTableName) throws Exception {
+    private List<ColumnDefinition> getColumnDefinitionsFromSourceTable(String sourceTableName) throws Exception {
         List<ColumnDefinition> columns = new ArrayList<>();
         ResultSet rs = null;
         DatabaseMetaData dbm = null;
@@ -185,23 +190,24 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
         try {
             conn = this.inTablesData.getDatabaseConnection();
             dbm = conn.getMetaData();
-            /*ResultSet schemas = dbm.getSchemas();
-            while (schemas.next()) {
-                String tableSchema = schemas.getString(1);
-                System.out.println("tableSchema: "+tableSchema);
-            }*/
             rs = dbm.getColumns(null, null, sourceTableName, null);
+            String dbType  = config.getDatabaseName();
             while (rs.next()) {
-                /*for (int i = 1 ; i < 25 ; i ++) {
-                    if (rs.getObject(i) != null)
-                    LOG.info(rs.getMetaData().getColumnName(i) + ": " + rs.getObject(i).toString());
-                }*/
-                LOG.info(String.format("name: %s, type: %s, type: %s, size: %s ", rs.getString("COLUMN_NAME").toLowerCase(), rs.getString("TYPE_NAME"), rs.getInt("DATA_TYPE"), rs.getInt("COLUMN_SIZE")));
-                String columnName = rs.getString("COLUMN_NAME").toLowerCase();
+                LOG.info(String.format("Column - name: %s, datatype name: %s, jdbc datatype: %s, size: %s, nullable: %s ",
+                        rs.getString("COLUMN_NAME").toLowerCase(),
+                        rs.getString("TYPE_NAME"),
+                        rs.getInt("DATA_TYPE"),
+                        rs.getInt("COLUMN_SIZE"),
+                        rs.getString("IS_NULLABLE")));
+                String columnName = rs.getString("COLUMN_NAME");
+                String columnType = mapJdbcDatatypeToDatabaseDatatype(rs.getString("TYPE_NAME"), rs.getInt("DATA_TYPE"), dbType);
+                if (columnType == null) {
+                    throw new SQLException("Column type cannot be decided automatically, please try to add column definitions manually");
+                }
                 columns.add(new ColumnDefinition(columnName,
-                        SqlDatatype.ALL_DATATYPE.get(rs.getString("TYPE_NAME")).getDatatypeName(),
-                        false,
-                        rs.getInt("COLUMN_SIZE")));
+                        columnType,
+                        rs.getInt("NULLABLE") == 0,
+                        0));
             }
         } catch (SQLException | DataUnitException e) {
             LOG.error("Failed to obtain columns from the source internal database table " + sourceTableName, e);
@@ -214,6 +220,28 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
         return columns;
     }
 
+    private String mapJdbcDatatypeToDatabaseDatatype(String typeName, int typeId, String dbType) {
+        if (dbType.equals("PostgreSQL")) {
+            if (SqlDatatype.POSTGRESQL_DATATYPE.containsKey(typeName)) {
+                return SqlDatatype.POSTGRESQL_DATATYPE.get(typeName).getDatatypeName();
+            } else if (SqlDatatype.JDBC_TO_POSTGRESQL_DATATYPE.containsKey(typeId)) {
+                return SqlDatatype.JDBC_TO_POSTGRESQL_DATATYPE.get(typeId).getDatatypeName();
+            } else {
+                return null;
+            }
+        } else if (dbType.equals("ORACLE")) {
+            if (SqlDatatype.ORACLE_DATATYPE.containsKey(typeName)) {
+                return SqlDatatype.ORACLE_DATATYPE.get(typeName).getDatatypeName();
+            } else if (SqlDatatype.JDBC_TO_ORACLE_DATATYPE.containsKey(typeId)) {
+                return SqlDatatype.JDBC_TO_ORACLE_DATATYPE.get(typeId).getDatatypeName();
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
     private boolean checkTablesConsistent(Connection conn, String targetTableName, List<ColumnDefinition> sourceColumns) throws Exception {
         boolean bTableConsistent = true;
         ResultSet rs = null;
@@ -224,10 +252,11 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
             rs = dbm.getColumns(null, null, targetTableName, null);
             while (rs.next()) {
                 String columnName = rs.getString("COLUMN_NAME");
-                targetColumns.put(columnName.toUpperCase(), new ColumnDefinition(columnName,
-                        SqlDatatype.POSTGRESQL_DATATYPE.get(rs.getString("TYPE_NAME")).getDatatypeName(),
-                        false,
-                        rs.getInt("COLUMN_SIZE")));
+                targetColumns.put(columnName.toUpperCase(), new ColumnDefinition(
+                        columnName,
+                        rs.getString("TYPE_NAME"),
+                        rs.getInt("NULLABLE") == 0,
+                        0));
             }
         } catch (SQLException e) {
             throw new Exception("Failed to check consistency between existing table and provided files");
@@ -235,10 +264,18 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
             RelationalToSqlHelper.tryCloseResultSet(rs);
         }
 
-        // TODO: check data types
-        // TODO: check column count; what if target has more columns and some of them are not null?
         for (ColumnDefinition sourceColumn : sourceColumns) {
             if (!targetColumns.containsKey(sourceColumn.getColumnName().toUpperCase())) {
+                bTableConsistent = false;
+                break;
+            }
+            // Datatypes of two columns are considered equal As long as their JDBC datatypes are equal
+            ColumnDefinition targetColumn = targetColumns.get(sourceColumn.getColumnName().toUpperCase());
+            if (!SqlDatatype.ALL_DATATYPE.containsKey(targetColumn.getColumnType())
+                    || !SqlDatatype.ALL_DATATYPE.containsKey(sourceColumn.getColumnType())
+                    || SqlDatatype.ALL_DATATYPE.get(targetColumn.getColumnType()).getSqlTypeId()
+                        != SqlDatatype.ALL_DATATYPE.get(sourceColumn.getColumnType()).getSqlTypeId()
+                    || targetColumn.isColumnNotNull() != sourceColumn.isColumnNotNull()) {
                 bTableConsistent = false;
                 break;
             }

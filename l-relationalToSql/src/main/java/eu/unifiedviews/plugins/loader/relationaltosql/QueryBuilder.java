@@ -30,7 +30,7 @@ public class QueryBuilder {
         query.setLength(query.length() - 1);
         query.append(")");
 
-        LOG.debug(String.format("SQL insert query created: %s", query.toString()));
+        LOG.info(String.format("SQL insert query created: %s", query.toString()));
 
         return query.toString();
     }
@@ -50,17 +50,19 @@ public class QueryBuilder {
         for (ColumnDefinition column : columns) {
             query.append(column.getColumnName());
             query.append(" ");
-            query.append(SqlDatatype.ALL_DATATYPE.get(column.getColumnType()));
-            if (column.getColumnSize() > 4000) {
-                query.append("(4000)");
-            } else {
-                query.append("(" + column.getColumnSize() + ")");
+            query.append(column.getColumnType());
+            if (column.getColumnSize() > 0) {
+                query.append("(");
+                query.append(column.getColumnSize());
+                query.append(")");
             }
             query.append(", ");
         }
 
         query.setLength(query.length() - 2);
         query.append(")");
+
+        LOG.info(String.format("SQL table creation query created: %s", query.toString()));
 
         return query.toString();
     }
@@ -91,6 +93,8 @@ public class QueryBuilder {
         query.setLength(query.length() - 2);
         query.append(" FROM ");
         query.append(sourceTableName);
+
+        LOG.info(String.format("SQL get query from source table created: %s", query.toString()));
 
         return query.toString();
     }
