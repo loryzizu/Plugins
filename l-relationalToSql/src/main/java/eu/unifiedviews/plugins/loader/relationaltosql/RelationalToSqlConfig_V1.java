@@ -23,7 +23,17 @@ public class RelationalToSqlConfig_V1 {
 
     private String truststorePassword;
 
+    private boolean userDefined;
+
     private List<ColumnDefinition> columnDefinitions = new ArrayList<>();
+
+    public boolean isUserDefined() {
+        return userDefined;
+    }
+
+    public void setUserDefined(boolean userDefined) {
+        this.userDefined = userDefined;
+    }
 
     public List<ColumnDefinition> getColumnDefinitions() {
         return columnDefinitions;

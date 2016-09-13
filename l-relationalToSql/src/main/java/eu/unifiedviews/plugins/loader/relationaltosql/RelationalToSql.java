@@ -185,17 +185,17 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
         try {
             conn = this.inTablesData.getDatabaseConnection();
             dbm = conn.getMetaData();
-            ResultSet schemas = dbm.getSchemas();
+            /*ResultSet schemas = dbm.getSchemas();
             while (schemas.next()) {
                 String tableSchema = schemas.getString(1);
                 System.out.println("tableSchema: "+tableSchema);
-            }
+            }*/
             rs = dbm.getColumns(null, null, sourceTableName, null);
             while (rs.next()) {
-                for (int i = 1 ; i < 25 ; i ++) {
+                /*for (int i = 1 ; i < 25 ; i ++) {
                     if (rs.getObject(i) != null)
                     LOG.info(rs.getMetaData().getColumnName(i) + ": " + rs.getObject(i).toString());
-                }
+                }*/
                 LOG.info(String.format("name: %s, type: %s, type: %s, size: %s ", rs.getString("COLUMN_NAME").toLowerCase(), rs.getString("TYPE_NAME"), rs.getInt("DATA_TYPE"), rs.getInt("COLUMN_SIZE")));
                 String columnName = rs.getString("COLUMN_NAME").toLowerCase();
                 columns.add(new ColumnDefinition(columnName,

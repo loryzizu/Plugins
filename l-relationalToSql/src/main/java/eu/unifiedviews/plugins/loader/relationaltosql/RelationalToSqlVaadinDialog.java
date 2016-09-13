@@ -61,6 +61,8 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
 
     private Table table;
 
+    private CheckBox chckUserDefinedColumn;
+
     public RelationalToSqlVaadinDialog() {
         super(RelationalToSql.class);
     }
@@ -181,6 +183,10 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         this.chckDropTable.setCaption(ctx.tr("dialog.dbload.droptable"));
         this.mainLayout.addComponent(this.chckDropTable);
 
+        chckUserDefinedColumn = new CheckBox();
+        chckUserDefinedColumn.setCaption(ctx.tr("dialog.dbload.userDefinedColumn"));
+        this.mainLayout.addComponent(chckUserDefinedColumn);
+
         container = new BeanItemContainer<>(ColumnDefinition.class);
 
         final Button addColumn = new Button("+");
@@ -221,6 +227,15 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         table.setVisibleColumns("remove", "columnName", "columnType", "columnSize", "columnNotNull");
         table.setImmediate(true);
         table.addValueChangeListener(createDatabaseTypeChangeListener());
+
+        chckUserDefinedColumn.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                boolean value = (boolean) valueChangeEvent.getProperty().getValue();
+                table.setEnabled(value);
+                addColumn.setEnabled(value);
+            }
+        });
 
         mainLayout.addComponent(table);
         mainLayout.addComponent(addColumn);
