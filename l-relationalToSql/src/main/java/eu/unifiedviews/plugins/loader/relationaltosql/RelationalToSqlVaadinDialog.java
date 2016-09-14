@@ -47,6 +47,8 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
 
     private TextField txtTableName;
 
+    private CheckBox chckOneTable;
+
     private CheckBox chckClearTable;
 
     private CheckBox chckDropTable;
@@ -174,6 +176,11 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         this.txtTableName.setWidth("100%");
         this.txtTableName.setDescription(ctx.tr("dialog.dbload.tooltip.tablename"));
         this.mainLayout.addComponent(this.txtTableName);
+
+        this.chckOneTable = new CheckBox();
+        this.chckOneTable.setValue(true);
+        this.chckOneTable.setCaption(ctx.tr("dialog.dbload.oneTable"));
+        this.mainLayout.addComponent(this.chckOneTable);
 
         this.chckClearTable = new CheckBox();
         this.chckClearTable.setCaption(ctx.tr("dialog.dbload.cleartable"));
@@ -468,6 +475,7 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         config.setTruststoreLocation(this.txtTruststoreLocation.getValue());
         config.setTruststorePassword(this.txtTruststorePassword.getValue());
         config.setTableNamePrefix(this.txtTableName.getValue());
+        config.setOneTable(chckOneTable.getValue());
         config.setClearTargetTable(this.chckClearTable.getValue());
         config.setDropTargetTable(this.chckDropTable.getValue());
         config.setUserDefined(chckUserDefinedColumn.getValue());
@@ -503,7 +511,7 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         this.txtInstanceName.setValue(config.getInstanceName());
         this.txtTruststoreLocation.setValue(config.getTruststoreLocation());
         this.txtTruststorePassword.setValue(config.getTruststorePassword());
-
+        chckOneTable.setValue(config.isOneTable());
         this.txtTableName.setValue(config.getTableNamePrefix());
         this.chckClearTable.setValue(config.isClearTargetTable());
         this.chckDropTable.setValue(config.isDropTargetTable());

@@ -15,8 +15,6 @@ public class RelationalToSqlConfig_V1 {
 
     private String sqlQuery;
 
-    private String targetTableName;
-
     private String instanceName;
 
     private String truststoreLocation;
@@ -25,7 +23,17 @@ public class RelationalToSqlConfig_V1 {
 
     private boolean userDefined;
 
+    private boolean oneTable;
+
     private List<ColumnDefinition> columnDefinitions = new ArrayList<>();
+
+    public boolean isOneTable() {
+        return oneTable;
+    }
+
+    public void setOneTable(boolean oneTable) {
+        this.oneTable = oneTable;
+    }
 
     public boolean isUserDefined() {
         return userDefined;
@@ -81,14 +89,6 @@ public class RelationalToSqlConfig_V1 {
 
     public void setSqlQuery(String sqlQuery) {
         this.sqlQuery = sqlQuery;
-    }
-
-    public String getTargetTableName() {
-        return this.targetTableName;
-    }
-
-    public void setTargetTableName(String targetTableName) {
-        this.targetTableName = targetTableName;
     }
 
     public String getInstanceName() {

@@ -73,42 +73,79 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
         boolean bTableExists = false;
         PreparedStatement insertStmnt = null;
         Connection conn = null;
+        int index = 1;
+        List<ColumnDefinition> sourceColumns = new ArrayList<>();
         try {
             conn = RelationalToSqlHelper.createConnection(this.config);
+            if (config.isOneTable()) {
+                bTableExists = checkTableExists(conn, this.config.getTableNamePrefix());
+                if (bTableExists) {
+                    LOG.debug("Target table already exists");
+                    if (this.config.isDropTargetTable()) {
+                        LOG.info(String.format("Dropping table %s", this.config.getTableNamePrefix()));
+                        dropTable(conn, this.config.getTableNamePrefix());
+                        bTableExists = false;
+                    } else if (this.config.isClearTargetTable()) {
+                        LOG.info(String.format("Truncating table %s", this.config.getTableNamePrefix()));
+                        truncateTable(conn);
+                    }
+                }
 
-            int index = 1;
+                if (config.isUserDefined()) {
+                    sourceColumns = config.getColumnDefinitions();
+                } else {
+                    sourceColumns = getColumnDefinitionsFromSourceTable(config.getTableNamePrefix());
+                }
+
+                if (!bTableExists) {
+                    LOG.info("Target table does not exist. Recreating");
+                    createTable(conn, config.getTableNamePrefix(), sourceColumns);
+                } else {
+                    if (!checkTablesConsistent(conn, config.getTableNamePrefix(), sourceColumns)) {
+                        throw ContextUtils.dpuException(ctx, "errors.table.inconsistent");
+                    }
+                }
+            }
+
             while (!this.ctx.canceled() && tablesIteration.hasNext()) {
+                if (config.isOneTable()) {
+                    index = 0;
+                } else {
+                    index++;
+                }
+
                 final RelationalDataUnit.Entry entry = tablesIteration.next();
                 final String sourceTableName = entry.getTableName();
                 final String targetTableName = createTargetTableName(index);
-                index++;
 
                 try {
-                    List<ColumnDefinition> sourceColumns;
-                    if (config.isUserDefined()) {
-                        sourceColumns = config.getColumnDefinitions();
-                    } else {
-                        sourceColumns = getColumnDefinitionsFromSourceTable(sourceTableName);
-                    }
-                    bTableExists = checkTableExists(conn, targetTableName);
-                    if (bTableExists) {
-                        LOG.debug("Target table already exists");
-                        if (this.config.isDropTargetTable()) {
-                            LOG.info(String.format("Dropping table %s", this.config.getTableNamePrefix()));
-                            dropTable(conn, targetTableName);
-                            bTableExists = false;
-                        } else if (this.config.isClearTargetTable()) {
-                            LOG.info(String.format("Truncating table %s", this.config.getTableNamePrefix()));
-                            truncateTable(conn);
+                    if (!config.isOneTable()) {
+                        bTableExists = checkTableExists(conn, targetTableName);
+                        if (bTableExists) {
+                            LOG.debug("Target table already exists");
+                            if (this.config.isDropTargetTable()) {
+                                LOG.info(String.format("Dropping table %s", this.config.getTableNamePrefix()));
+                                dropTable(conn, targetTableName);
+                                bTableExists = false;
+                            } else if (this.config.isClearTargetTable()) {
+                                LOG.info(String.format("Truncating table %s", this.config.getTableNamePrefix()));
+                                truncateTable(conn);
+                            }
                         }
-                    }
 
-                    if (!bTableExists) {
-                        LOG.info("Target table does not exist. Recreating");
-                        createTable(conn, targetTableName, sourceColumns);
-                    } else {
-                        if (!checkTablesConsistent(conn, targetTableName, sourceColumns)) {
-                            throw ContextUtils.dpuException(ctx, "errors.table.inconsistent");
+                        if (config.isUserDefined()) {
+                            sourceColumns = config.getColumnDefinitions();
+                        } else {
+                            sourceColumns = getColumnDefinitionsFromSourceTable(sourceTableName);
+                        }
+
+                        if (!bTableExists) {
+                            LOG.info("Target table does not exist. Recreating");
+                            createTable(conn, targetTableName, sourceColumns);
+                        } else {
+                            if (!checkTablesConsistent(conn, targetTableName, sourceColumns)) {
+                                throw ContextUtils.dpuException(ctx, "errors.table.inconsistent");
+                            }
                         }
                     }
                     String insertQuery = QueryBuilder.getInsertQueryForPreparedStatement(targetTableName, sourceColumns);
@@ -159,9 +196,10 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
     private String createTargetTableName(int index) {
         StringBuilder sb = new StringBuilder();
         sb.append(this.config.getTableNamePrefix());
-        sb.append("_");
-        sb.append(index);
-
+        if (index != 0) {
+            sb.append("_");
+            sb.append(index);
+        }
         return sb.toString();
     }
 
