@@ -1,8 +1,6 @@
 package eu.unifiedviews.plugins.loader.relationaltosql;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -36,8 +34,16 @@ public class QueryBuilder {
     }
 
     public static void fillInsertQueryData(PreparedStatement stmt, ResultSet rs, List<ColumnDefinition> columns) throws SQLException {
+        Object value;
+        int type;
         for (int i = 1; i <= columns.size(); i++) {
-            stmt.setObject(i, rs.getObject(i));
+            type = SqlDatatype.ALL_DATATYPE.get(columns.get(i-1).getColumnType()).getSqlTypeId();
+            value = rs.getObject(i);
+            // TODO: generalize date
+            if (value != null && !value.toString().equals("") && type == Types.DATE) {
+                value = Timestamp.valueOf(value.toString());
+            }
+            stmt.setObject(i, value, type);
         }
     }
 

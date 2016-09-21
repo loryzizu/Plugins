@@ -43,6 +43,7 @@ public class SqlDatatype {
     private static final SqlDatatype BINARY_FLOAT = new SqlDatatype("BINARY FLOAT", Float.class.getName(), Types.FLOAT);
     private static final SqlDatatype DOUBLE_PRECISION = new SqlDatatype("DOUBLE PRECISION", Double.class.getName(), Types.DOUBLE);
     private static final SqlDatatype TEXT = new SqlDatatype("TEXT", String.class.getName(), Types.LONGVARCHAR);
+    //private static final SqlDatatype NULL = new SqlDatatype("NULL", "null", Types.NULL);
 
     public static final Map<String, SqlDatatype> ORACLE_DATATYPE = new HashMap<>();
     public static final Map<String, SqlDatatype> POSTGRESQL_DATATYPE = new HashMap<>();
