@@ -77,6 +77,7 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
         List<ColumnDefinition> sourceColumns = new ArrayList<>();
         try {
             conn = RelationalToSqlHelper.createConnection(this.config);
+            conn.setAutoCommit(false);
             if (config.isOneTable()) {
                 index = 0;
                 bTableExists = checkTableExists(conn, this.config.getTableNamePrefix());
@@ -182,8 +183,9 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
             sourceData = stmnt.executeQuery(QueryBuilder.getQueryFromSourceTableSelect(columns, sourceTableName));
             while (sourceData.next()) {
                 QueryBuilder.fillInsertQueryData(insertStmnt, sourceData, columns);
-                insertStmnt.execute();
+                insertStmnt.addBatch();
             }
+            insertStmnt.executeBatch();
         } catch (Exception e) {
             LOG.error("Failed to insert data from internal source table into external table", e);
             throw e;
