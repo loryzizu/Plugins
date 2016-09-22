@@ -233,7 +233,7 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
             String dbType  = config.getDatabaseName();
             while (rs.next()) {
                 LOG.info(String.format("Column - name: %s, datatype name: %s, jdbc datatype: %s, size: %s, nullable: %s ",
-                        rs.getString("COLUMN_NAME").toLowerCase(),
+                        rs.getString("COLUMN_NAME"),
                         rs.getString("TYPE_NAME"),
                         rs.getInt("DATA_TYPE"),
                         rs.getInt("COLUMN_SIZE"),
@@ -291,7 +291,7 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
             rs = dbm.getColumns(null, null, targetTableName, null);
             while (rs.next()) {
                 String columnName = rs.getString("COLUMN_NAME");
-                targetColumns.put(columnName, new ColumnDefinition(
+                targetColumns.put(columnName.toUpperCase(), new ColumnDefinition(
                         columnName,
                         rs.getString("TYPE_NAME"),
                         rs.getInt("NULLABLE") == 0,
@@ -302,7 +302,6 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
         } finally {
             RelationalToSqlHelper.tryCloseResultSet(rs);
         }
-
         for (ColumnDefinition sourceColumn : sourceColumns) {
             if (!targetColumns.containsKey(sourceColumn.getColumnName().toUpperCase())) {
                 bTableConsistent = false;
