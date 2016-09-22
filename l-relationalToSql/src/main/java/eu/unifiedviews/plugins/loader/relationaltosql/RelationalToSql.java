@@ -78,6 +78,7 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
         try {
             conn = RelationalToSqlHelper.createConnection(this.config);
             if (config.isOneTable()) {
+                index = 0;
                 bTableExists = checkTableExists(conn, this.config.getTableNamePrefix());
                 if (bTableExists) {
                     LOG.debug("Target table already exists");
@@ -108,9 +109,7 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
             }
 
             while (!this.ctx.canceled() && tablesIteration.hasNext()) {
-                if (config.isOneTable()) {
-                    index = 0;
-                } else {
+                if (!config.isOneTable()) {
                     index++;
                 }
 
@@ -290,7 +289,7 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
             rs = dbm.getColumns(null, null, targetTableName, null);
             while (rs.next()) {
                 String columnName = rs.getString("COLUMN_NAME");
-                targetColumns.put(columnName.toUpperCase(), new ColumnDefinition(
+                targetColumns.put(columnName, new ColumnDefinition(
                         columnName,
                         rs.getString("TYPE_NAME"),
                         rs.getInt("NULLABLE") == 0,
@@ -352,7 +351,7 @@ public class RelationalToSql extends AbstractDpu<RelationalToSqlConfig_V1> {
         ResultSet tables = null;
         try {
             dbm = conn.getMetaData();
-            tables = dbm.getTables(null, null, targetTableName.toLowerCase(), null);
+            tables = dbm.getTables(null, null, targetTableName, null);
             if (tables.next()) {
                 bTableExists = true;
             }

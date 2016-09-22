@@ -180,6 +180,17 @@ public class RelationalToSqlVaadinDialog extends AbstractDialog<RelationalToSqlC
         this.chckOneTable = new CheckBox();
         this.chckOneTable.setValue(true);
         this.chckOneTable.setCaption(ctx.tr("dialog.dbload.oneTable"));
+        this.chckOneTable.setImmediate(true);
+        this.chckOneTable.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                if ((boolean)valueChangeEvent.getProperty().getValue()) {
+                    txtTableName.setCaption(ctx.tr("dialog.dbload.tablename"));
+                } else {
+                    txtTableName.setCaption(ctx.tr("dialog.dbload.tablePrefix"));
+                }
+            }
+        });
         this.mainLayout.addComponent(this.chckOneTable);
 
         this.chckClearTable = new CheckBox();
