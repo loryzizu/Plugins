@@ -21,7 +21,7 @@ public class SqlDatatype {
     private static final SqlDatatype DOUBLE = new SqlDatatype("DOUBLE", Double.class.getName(), Types.DOUBLE);
     private static final SqlDatatype FLOAT = new SqlDatatype("FLOAT", Float.class.getName(), Types.FLOAT);
     private static final SqlDatatype INTEGER = new SqlDatatype("INTEGER", Integer.class.getName(), Types.INTEGER);
-    private static final SqlDatatype NUMBER = new SqlDatatype("NUMBER", BigDecimal.class.getName(), Types.NUMERIC);
+    private static final SqlDatatype NUMBER = new SqlDatatype("NUMBER", BigDecimal.class.getName(), Types.DECIMAL);
     private static final SqlDatatype NUMERIC = new SqlDatatype("NUMERIC", BigDecimal.class.getName(), Types.NUMERIC);
     private static final SqlDatatype REAL = new SqlDatatype("REAL", BigDecimal.class.getName(), Types.REAL);
     private static final SqlDatatype ROWID = new SqlDatatype("ROWID", String.class.getName(), Types.VARCHAR);
