@@ -7,11 +7,7 @@ import eu.unifiedviews.dpu.DPUContext;
  */
 public class SparqlAskConfig_V1 {
 
-    public static final String AUTO_MESSAGE = "Outputted RDF data does not satisfy SPARQL ASK constraint";
-
     private DPUContext.MessageType messageType = DPUContext.MessageType.ERROR;
-
-    private String message = null;
 
     private String askQuery = "ASK { ?s ?p ?o }";
 
@@ -27,14 +23,6 @@ public class SparqlAskConfig_V1 {
 
     public void setMessageType(DPUContext.MessageType messageType) {
         this.messageType = messageType;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public String getAskQuery() {

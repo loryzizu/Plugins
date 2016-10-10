@@ -1,18 +1,10 @@
 package eu.unifiedviews.plugins.quality.sparqlask;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.openrdf.repository.RepositoryConnection;
-import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
-import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.DataUnitUtils;
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
@@ -21,6 +13,11 @@ import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
 import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
+import org.openrdf.repository.RepositoryConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 @DPU.AsQuality
 public class SparqlAsk extends AbstractDpu<SparqlAskConfig_V1> {
@@ -64,31 +61,21 @@ public class SparqlAsk extends AbstractDpu<SparqlAskConfig_V1> {
         // Get input graphs.
         LOG.info("Reading input graphs ...");
         final List<RDFDataUnit.Entry> graphs = FaultToleranceUtils.getEntries(faultTolerance, rdfInData, RDFDataUnit.Entry.class);
-        // Execute query.
-        //        if (config.isPerGraph()) {
-        //            ContextUtils.sendShortInfo(ctx, "per-graph mode");
-        //
-        //            for (RDFDataUnit.Entry sourceGraph : graphs) {
-        //                checkGraph(Arrays.asList(sourceGraph));
-        //                if (this.emptyFound) {
-        //                    break;
-        //                }
-        //            }
-        //        } else {
+
         checkGraph(graphs);
-        //        }
+
     }
 
     /**
      * Report failure ie. send user defined message.
      */
     private void reportFailure() {
-        String msg = config.getMessage();
-        if (msg == null || msg.isEmpty()) {
-            msg = SparqlAskConfig_V1.AUTO_MESSAGE;
-        }
+//        String msg = config.getMessage();
+//        if (msg == null || msg.isEmpty()) {
+//            msg = SparqlAskConfig_V1.AUTO_MESSAGE;
+//        }
         //        ContextUtils.sendMessage(ctx, config.getMessageType(), msg, "");
-        ContextUtils.sendMessage(ctx, config.getMessageType(), "rdfvalidation.finished.error", "rdfvalidation.constraintfailed", config.getAskQuery().replaceAll("<", "").replaceAll(">", ""));
+        ContextUtils.sendMessage(ctx, config.getMessageType(), "rdfvalidation.finished.error", "rdfvalidation.constraintfailed", config.getAskQuery().replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
         emptyFound = true;
     }
 

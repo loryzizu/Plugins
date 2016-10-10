@@ -1,6 +1,5 @@
 package eu.unifiedviews.plugins.quality.sparqlask;
 
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -30,16 +29,13 @@ public class SparqlAskVaadinDialog extends AbstractDialog<SparqlAskConfig_V1> {
     public void setConfiguration(SparqlAskConfig_V1 c) throws DPUConfigException {
         //checkPerGraph.setValue(c.isPerGraph());
         optMessageType.setValue(c.getMessageType());
-        txtMessage.setValue(c.getMessage());
+//        txtMessage.setValue(c.getMessage());
         txtAskQuery.setValue(c.getAskQuery());
     }
 
     @Override
     public SparqlAskConfig_V1 getConfiguration() throws DPUConfigException {
         final SparqlAskConfig_V1 c = new SparqlAskConfig_V1();
-
-        //c.setPerGraph(checkPerGraph.getValue());
-        c.setMessage(txtMessage.getValue());
         c.setMessageType((DPUContext.MessageType) optMessageType.getValue());
         c.setAskQuery(txtAskQuery.getValue());
 
@@ -53,24 +49,13 @@ public class SparqlAskVaadinDialog extends AbstractDialog<SparqlAskConfig_V1> {
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
 
-        //        checkPerGraph = new CheckBox("Per graph execution:");
-        //        checkPerGraph.setWidth("100%");
-        //        mainLayout.addComponent(checkPerGraph);
-
-        optMessageType = new OptionGroup("Message type:");
+        optMessageType = new OptionGroup(ctx.tr("rdfvalidation.dialog.optMessageType.caption"));
         optMessageType.addItem(DPUContext.MessageType.ERROR);
         optMessageType.addItem(DPUContext.MessageType.WARNING);
         optMessageType.setValue(optMessageType.getItem(0));
         mainLayout.addComponent(optMessageType);
 
-        txtMessage = new TextField("Message:");
-        txtMessage.setWidth("100%");
-        txtMessage.setInputPrompt(SparqlAskConfig_V1.AUTO_MESSAGE);
-        txtMessage.setNullRepresentation("");
-        txtMessage.setNullSettingAllowed(true);
-        mainLayout.addComponent(txtMessage);
-
-        txtAskQuery = new TextArea("SPARQL ASK query:");
+        txtAskQuery = new TextArea(ctx.tr("rdfvalidation.dialog.txtAskQuery.caption"));
         txtAskQuery.setSizeFull();
         txtAskQuery.setNullRepresentation("");
         txtAskQuery.setNullSettingAllowed(true);
